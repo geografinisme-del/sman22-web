@@ -275,7 +275,7 @@ const situsStatis = (): Situs => ({
     tombolUtama: statis.hero.tombolUtama,
     tombolKedua: statis.hero.tombolKedua,
     detik: 7,
-    slide: statis.hero.foto.map((f) => ({ id: f.src, gambar: f.src, alt: f.alt, fokus: f.posisi, skala: 100 })),
+    slide: statis.hero.foto.map((f, i) => ({ id: `${f.src}#${i}`, gambar: f.src, alt: f.alt, fokus: f.posisi, skala: 100, tautan: f.tautan })),
   },
   layanan: statis.layanan,
   sosialMedia: statis.sekolah.sosialMedia.filter((s) => s.url),

@@ -2,249 +2,256 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { KataMuncul } from "@/components/motion/JudulMuncul";
-import { LencanaPutar } from "@/components/motion/LencanaPutar";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent } from "react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Pause, Play } from "lucide-react";
+import { ceritaHero } from "@/content/sekolah";
 import type { Situs } from "@/lib/data";
 
-export function Hero({ hero, kabar }: { hero: Situs["hero"]; kabar?: { judul: string; href: string } }) {
-  const [idx, setIdx] = useState(0);
-  const [jeda, setJeda] = useState(false);
-  const foto = hero.slide;
-  const total = foto.length;
-  const INTERVAL_MS = Math.min(8, Math.max(6, hero.detik)) * 1000;
-  const ref = useRef<HTMLElement>(null);
-  // video hanya diputar bila animasi tidak dikurangi & bukan mode hemat data
-  const bolehVideo = useSyncExternalStore(
-    () => () => {},
-    () =>
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
-      !(navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData,
-    () => false,
-  );
+const TRANSISI_MS = 500;
 
-  // kedalaman: bingkai mengecil saat scroll, latar mengikuti kursor, teks memudar
+const pantauGerak = (beri: () => void) => {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", beri);
+  return () => mq.removeEventListener("change", beri);
+};
+const pantauSesi = (beri: () => void) => {
+  window.addEventListener("storage", beri);
+  return () => window.removeEventListener("storage", beri);
+};
+const slideTersimpan = () => {
+  try {
+    return sessionStorage.getItem("hero-slide");
+  } catch {
+    return null;
+  }
+};
+/** PNG/WebP dianggap potongan berlatar transparan; selain itu foto biasa yang dibingkai lengkung. */
+const potongan = (src: string) => /\.(png|webp)(\?|#|$)/i.test(src);
+/** Model bawaan adalah ilustrasi sintetis — diberi keterangan jujur di bawahnya. */
+const sintetis = (src: string) => src.includes("/images/hero/model-sintetis");
+
+export function Hero({ hero }: { hero: Situs["hero"] }) {
+  const slides = hero.slide;
+  const total = slides.length;
+  const INTERVAL_MS = Math.min(8, Math.max(6, hero.detik || 7)) * 1000;
+  const [dipilih, setDipilih] = useState<string | null>(null);
+  const [jeda, setJeda] = useState(false);
+  const [disorot, setDisorot] = useState(false);
+  const [difokus, setDifokus] = useState(false);
+  const [tersembunyi, setTersembunyi] = useState(false);
+  const [pergi, setPergi] = useState(false);
+  const router = useRouter();
+  const navigasi = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dikurangi = useSyncExternalStore(pantauGerak, () => window.matchMedia("(prefers-reduced-motion: reduce)").matches, () => false);
+  const diingat = useSyncExternalStore(pantauSesi, slideTersimpan, () => null);
+
+  const idx = Math.max(0, slides.findIndex((s) => s.id === (dipilih ?? diingat)));
+  const slide = slides[idx];
+  const cerita = ceritaHero[idx % ceritaHero.length];
+  const berhenti = jeda || disorot || difokus || tersembunyi || dikurangi || pergi;
+
+  const ingat = (id: string) => {
+    setDipilih(id);
+    try {
+      sessionStorage.setItem("hero-slide", id);
+    } catch {}
+  };
+
+  // berhenti saat tab tidak terlihat; pulihkan saat kembali dari halaman tujuan (tombol back)
   useEffect(() => {
-    const el = ref.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let frame = 0;
-    const gulir = () => {
-      if (frame) return;
-      frame = requestAnimationFrame(() => {
-        frame = 0;
-        const p = Math.min(1, Math.max(0, window.scrollY / el.offsetHeight));
-        el.style.setProperty("--p", p.toFixed(3));
-      });
-    };
-    const kursor = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
-      el.style.setProperty("--mx", ((e.clientX / window.innerWidth) * 2 - 1).toFixed(3));
-      el.style.setProperty("--my", ((e.clientY / window.innerHeight) * 2 - 1).toFixed(3));
-    };
-    window.addEventListener("scroll", gulir, { passive: true });
-    el.addEventListener("pointermove", kursor);
-    gulir();
+    const lihat = () => setTersembunyi(document.hidden);
+    const pulih = () => setPergi(false);
+    document.addEventListener("visibilitychange", lihat);
+    window.addEventListener("pageshow", pulih);
     return () => {
-      window.removeEventListener("scroll", gulir);
-      el.removeEventListener("pointermove", kursor);
-      cancelAnimationFrame(frame);
+      document.removeEventListener("visibilitychange", lihat);
+      window.removeEventListener("pageshow", pulih);
+      if (navigasi.current) clearTimeout(navigasi.current);
     };
   }, []);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mq.matches || jeda || total < 2) return;
-    const t = setTimeout(() => setIdx((i) => (i + 1) % total), INTERVAL_MS);
+    if (berhenti || total < 2) return;
+    const t = setTimeout(() => ingat(slides[(idx + 1) % total].id), INTERVAL_MS);
     return () => clearTimeout(t);
-  }, [idx, jeda, total, INTERVAL_MS]);
+  }, [idx, berhenti, total, slides, INTERVAL_MS]);
 
-  const berikut = foto[(idx + 1) % total];
-  const mulaiMiring = 150 + hero.judulAwal.split(/\s+/).length * 80;
-  const mulaiAkhir = mulaiMiring + hero.judulMiring.split(/\s+/).length * 80;
+  const ganti = (ke: number) => {
+    if (!pergi) ingat(slides[(ke + total) % total].id);
+  };
+
+  // klik potret: transisi singkat lalu menuju halaman terkait
+  const ikuti = (e: MouseEvent<HTMLAnchorElement>, tujuan: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    if (navigasi.current) return;
+    setPergi(true);
+    navigasi.current = setTimeout(() => {
+      navigasi.current = null;
+      router.push(tujuan);
+    }, dikurangi ? 0 : TRANSISI_MS);
+  };
+
+  const kata = [hero.judulAwal, hero.judulMiring, hero.judulAkhir].filter(Boolean);
 
   return (
-    <section ref={ref} aria-label="Pembuka" className="p-2 sm:p-3">
-      <div className="hero-kartu grain relative flex min-h-[calc(100svh-1rem)] flex-col overflow-hidden bg-brand-900 text-white sm:min-h-[calc(100svh-1.5rem)]">
-        {/* Foto latar dengan crossfade + zoom pelan */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="hero-latar absolute inset-0">
-            {foto.map((f, i) => (
-              <div
-                key={f.id}
-                aria-hidden={i !== idx}
-                className={`absolute inset-0 transition-opacity duration-[1600ms] ease-in-out ${i === idx ? "opacity-100" : "opacity-0"}`}
+    <>
+      <section
+        className={`editorial-hero ${pergi ? "is-leaving" : ""}`}
+        aria-label={`Cerita ${hero.label}`}
+        aria-roledescription={total > 1 ? "carousel" : undefined}
+        onMouseEnter={() => setDisorot(true)}
+        onMouseLeave={() => setDisorot(false)}
+        onFocusCapture={() => setDifokus(true)}
+        onBlurCapture={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setDifokus(false);
+        }}
+        style={{ "--hero-theme": cerita?.warna ?? "#284fd7" } as CSSProperties}
+      >
+        <div className="hero-intro">
+          <p className="eyebrow">{hero.label}</p>
+          <h1>
+            {kata.map((k, i) => (
+              <span key={i} className="block">
+                {i === 1 ? <em>{k}</em> : k}
+              </span>
+            ))}
+          </h1>
+          <p className="hero-subtitle">{hero.teks}</p>
+          <div className="hero-primary-actions">
+            <Link className="btn btn-primary" href={hero.tombolUtama.href}>
+              {hero.tombolUtama.label} <ArrowUpRight size={17} aria-hidden />
+            </Link>
+            <Link className="hero-portal-link" href={hero.tombolKedua.href}>
+              {hero.tombolKedua.label} <ArrowRight size={16} aria-hidden />
+            </Link>
+          </div>
+        </div>
+
+        <div className="hero-visual">
+          <div className="hero-petal" aria-hidden />
+          <div className="hero-disc" aria-hidden />
+          <div className="hero-orbit" aria-hidden />
+          <span className="hero-spark" aria-hidden>
+            ✳
+          </span>
+          {slides.map((s, i) => {
+            const tujuan = s.tautan || hero.tombolUtama.href;
+            const gaya = {
+              "--focus": s.fokus,
+              "--focus-hp": s.fokus,
+              "--scale": potongan(s.gambar) ? 1.08 * (s.skala / 100) : s.skala / 100,
+              "--scale-hp": potongan(s.gambarHp || s.gambar) ? 1.12 * (s.skala / 100) : s.skala / 100,
+            } as CSSProperties;
+            return (
+              <a
+                key={s.id}
+                href={tujuan}
+                onClick={(e) => ikuti(e, tujuan)}
+                className={`hero-portrait ${i === idx ? "is-active" : ""} ${potongan(s.gambar) ? "" : "is-foto"}`}
+                inert={i !== idx}
+                aria-hidden={i !== idx || undefined}
+                aria-label={`${s.alt} — buka halaman terkait`}
+                style={gaya}
               >
-                <div className="absolute inset-0" style={{ transform: `scale(${f.skala / 100})` }}>
+                <span className="hero-portrait-isi">
                   <Image
-                    src={f.gambar}
-                    alt={f.alt}
+                    src={s.gambar}
+                    alt={i === idx ? s.alt : ""}
                     fill
                     priority={i === 0}
-                    sizes="100vw"
-                    quality={80}
-                    style={{ objectPosition: f.fokus }}
-                    className={`object-cover ${f.gambarHp ? "hidden sm:block" : ""} ${i === idx ? "kenburns" : ""}`}
-                    key={i === idx ? `aktif-${idx}` : f.id}
+                    sizes="(max-width: 760px) 92vw, (max-width: 1100px) 48vw, 560px"
+                    quality={75}
+                    className={s.gambarHp ? "hidden sm:block" : ""}
+                    style={{ objectPosition: s.fokus }}
                   />
-                  {f.gambarHp && (
+                  {s.gambarHp && (
                     <Image
-                      src={f.gambarHp}
-                      alt={f.alt}
+                      src={s.gambarHp}
+                      alt={i === idx ? s.alt : ""}
                       fill
                       priority={i === 0}
-                      sizes="100vw"
-                      quality={80}
-                      style={{ objectPosition: f.fokus }}
-                      className={`object-cover sm:hidden ${i === idx ? "kenburns" : ""}`}
-                      key={i === idx ? `hp-aktif-${idx}` : `hp-${f.id}`}
+                      sizes="92vw"
+                      quality={75}
+                      className="sm:hidden"
+                      style={{ objectPosition: s.fokus }}
                     />
                   )}
-                  {f.video && bolehVideo && (
-                    <video
-                      src={f.video}
-                      poster={f.gambar}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload={i === 0 ? "auto" : "none"}
-                      aria-hidden
-                      ref={(v) => {
-                        if (!v) return;
-                        if (i === idx) void v.play().catch(() => {});
-                        else v.pause();
-                      }}
-                      className="absolute inset-0 h-full w-full object-cover"
-                      style={{ objectPosition: f.fokus }}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
+                </span>
+              </a>
+            );
+          })}
+          <div className="hero-sticker" aria-hidden>
+            <span>Hari ini belajar.</span>
+            <strong>Esok, memberi arti.</strong>
+            <span className="sticker-line" />
           </div>
-          {/* gradasi hangat (bukan hitam pekat) agar teks terbaca tapi foto tetap hidup */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0e1430] via-[#0e1430]/35 to-[#0e1430]/40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0e1430]/70 via-transparent to-transparent" />
-          <div className="absolute -bottom-1/3 -left-1/4 h-[70%] w-[70%] rounded-full bg-kobalt/30 blur-[120px]" />
+          {slide && sintetis(slide.gambar) && <span className="hero-image-credit">Visual ilustratif · model sintetis</span>}
         </div>
 
-        <div className="hero-isi relative z-[2] mx-auto flex w-full max-w-[90rem] flex-1 flex-col justify-end px-5 pb-6 pt-28 sm:px-10 sm:pb-8">
-          {kabar && (
-            <Link
-              href={kabar.href}
-              className="naik mb-7 inline-flex max-w-full items-center gap-3 self-start rounded-full bg-white/10 py-1.5 pl-1.5 pr-4 text-sm ring-1 ring-white/20 backdrop-blur-md transition hover:bg-white/20"
-            >
-              <span className="rounded-full bg-mentega px-2.5 py-0.5 text-xs font-semibold text-tinta">Terbaru</span>
-              <span className="truncate">{kabar.judul}</span>
-              <span className="panah shrink-0">→</span>
+        <div className="hero-aside">
+          <span className="hero-edition" aria-hidden>
+            RUANG TUMBUH / 22
+          </span>
+          <div className="hero-story" aria-live={berhenti ? "polite" : "off"} aria-atomic="true">
+            <p className="eyebrow">{cerita?.label}</p>
+            <h2>{cerita?.judul}</h2>
+            <p>{cerita?.teks}</p>
+          </div>
+          <div className="hero-secondary-actions">
+            <Link href="#program">
+              Lihat program <ArrowUpRight size={16} aria-hidden />
             </Link>
-          )}
-
-          <div className="flex items-end justify-between gap-10">
-            <h1 className="max-w-6xl font-display text-[3.1rem] font-semibold leading-[0.92] tracking-[-0.045em] sm:text-7xl lg:text-[7.4rem]">
-              <KataMuncul teks={hero.judulAwal} mulai={150} jeda={80} />{" "}
-              <span className="relative inline-block">
-                <em className="font-serif text-[1.12em] font-normal italic tracking-[-0.02em] text-mentega">
-                  <KataMuncul teks={hero.judulMiring} mulai={mulaiMiring} jeda={80} />
-                </em>
-                <svg aria-hidden viewBox="0 0 300 24" preserveAspectRatio="none" className="coretan absolute -bottom-[0.06em] left-0 h-[0.18em] w-full text-mentega">
-                  <path d="M3 17 C 60 6, 130 4, 190 10 S 280 18, 297 8" pathLength={1} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-                </svg>
-              </span>{" "}
-              <KataMuncul teks={hero.judulAkhir} mulai={mulaiAkhir} jeda={80} />
-            </h1>
-            <div className="naik hidden shrink-0 xl:block" style={{ animationDelay: "900ms" }}>
-              <LencanaPutar teks={`${hero.label} · `} className="h-36 w-36 text-white/80">
-                <Image src="/images/logo.png" alt="" width={52} height={52} className="h-13 w-13" />
-              </LencanaPutar>
-            </div>
+            <Link href="/berita">
+              Berita terbaru <ArrowUpRight size={16} aria-hidden />
+            </Link>
           </div>
-
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:gap-10">
-              <p className="naik max-w-md text-base leading-relaxed text-white/80 sm:text-lg" style={{ animationDelay: "700ms" }}>
-                {hero.teks}
-              </p>
-              <div className="naik flex flex-wrap gap-3" style={{ animationDelay: "850ms" }}>
-                <Link
-                  href={hero.tombolUtama.href}
-                  className="group inline-flex items-center gap-3 rounded-full bg-white py-2 pl-6 pr-2 text-sm font-semibold text-brand-900 transition hover:bg-mentega"
-                >
-                  {hero.tombolUtama.label}
-                  <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-900 text-white transition duration-500 group-hover:-rotate-45">→</span>
-                </Link>
-                <Link
-                  href={hero.tombolKedua.href}
-                  className="rounded-full px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/35 backdrop-blur transition hover:bg-white/10"
-                >
-                  {hero.tombolKedua.label}
-                </Link>
-              </div>
-            </div>
-
-            {total > 1 && berikut && (
-              <button
-                type="button"
-                onClick={() => setIdx((i) => (i + 1) % total)}
-                className="naik group hidden items-center gap-4 rounded-2xl bg-white/10 p-2 pr-5 text-left ring-1 ring-white/15 backdrop-blur-md transition hover:bg-white/15 lg:flex"
-                style={{ animationDelay: "1000ms" }}
-                aria-label={`Foto berikutnya: ${berikut.alt}`}
-              >
-                <span className="relative h-16 w-24 overflow-hidden rounded-xl">
-                  <Image src={berikut.gambar} alt="" fill sizes="96px" className="object-cover transition duration-700 group-hover:scale-110" />
-                </span>
-                <span className="text-xs leading-snug">
-                  <span className="block uppercase tracking-[0.2em] text-white/50">Berikutnya</span>
-                  <span className="mt-1 block max-w-[12rem] text-sm text-white/90">{berikut.alt}</span>
-                </span>
-              </button>
-            )}
-          </div>
-
-          {total > 1 && (
-            <div className="mt-8 flex items-center gap-4 border-t border-white/15 pt-4 text-xs text-white/70">
-              {foto[idx]?.tautan && (
-                <Link href={foto[idx].tautan!} className="rounded-full border border-white/30 px-3 py-1 hover:bg-white/10">
-                  Lihat selengkapnya →
-                </Link>
-              )}
-              <span className="tabular-nums">
-                {String(idx + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-              </span>
-              <div className="flex flex-1 gap-2">
-                {foto.map((f, i) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => setIdx(i)}
-                    aria-label={`Tampilkan foto ${i + 1}: ${f.alt}`}
-                    aria-current={i === idx}
-                    className="group relative h-6 flex-1"
-                  >
-                    <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white/25" />
-                    {i < idx && <span className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-white" />}
-                    {i === idx && (
-                      <span
-                        key={`bar-${idx}`}
-                        className="isi-bar absolute left-0 top-1/2 h-px -translate-y-1/2 bg-white"
-                        style={{ animationDuration: `${INTERVAL_MS}ms`, animationPlayState: jeda ? "paused" : "running" }}
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setJeda((j) => !j)}
-                className="rounded-full border border-white/30 px-3 py-1 hover:bg-white/10"
-                aria-label={jeda ? "Putar slideshow" : "Jeda slideshow"}
-              >
-                {jeda ? "Putar" : "Jeda"}
-              </button>
-            </div>
-          )}
         </div>
+
+        {total > 1 && (
+          <div className="editorial-controls" role="group" aria-label="Kontrol slideshow">
+            <button type="button" onClick={() => ganti(idx - 1)} aria-label="Slide sebelumnya">
+              <ArrowLeft size={17} aria-hidden />
+            </button>
+            <span className="hero-count" aria-hidden>
+              {String(idx + 1).padStart(2, "0")} <span>/ {String(total).padStart(2, "0")}</span>
+            </span>
+            <div className="hero-dots">
+              {slides.map((s, i) => (
+                <button key={s.id} type="button" aria-label={`Tampilkan slide ${i + 1}`} aria-pressed={idx === i} onClick={() => ganti(i)}>
+                  <span />
+                </button>
+              ))}
+            </div>
+            <button type="button" onClick={() => ganti(idx + 1)} aria-label="Slide berikutnya">
+              <ArrowRight size={17} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => setJeda(!jeda)}
+              aria-label={jeda ? "Putar slideshow" : "Jeda slideshow"}
+              aria-pressed={jeda}
+              disabled={dikurangi}
+            >
+              {jeda || dikurangi ? <Play size={16} aria-hidden /> : <Pause size={16} aria-hidden />}
+            </button>
+            <span className="sr-only" role="status">
+              {dikurangi
+                ? "Gerakan dikurangi. Slideshow otomatis dinonaktifkan."
+                : berhenti
+                  ? "Slideshow dijeda."
+                  : `Slideshow berganti setiap ${INTERVAL_MS / 1000} detik.`}
+            </span>
+          </div>
+        )}
+      </section>
+      <div className="editorial-hero-bottom">
+        <span>RUANG UNTUK BELAJAR. KESEMPATAN UNTUK BERARTI.</span>
+        <a href="#nilai">
+          Kenali sekolah lebih dekat <ArrowDown size={14} aria-hidden />
+        </a>
       </div>
-    </section>
+    </>
   );
 }

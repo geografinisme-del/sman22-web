@@ -56,21 +56,48 @@ export const statistik = [
   { label: "Ekstrakurikuler", nilai: "[ISI]" },
 ];
 
-/** Bagian pembuka beranda. Foto berganti pelan setiap 7 detik. */
+/** Bagian pembuka beranda (hero editorial). Slide berganti setiap 7 detik. */
 export const hero = {
-  label: `Sejak ${sekolah.tahunBerdiri} · Kota Bandung`,
-  judulAwal: "Tumbuh berkarakter,",
-  judulMiring: "bersinar",
-  judulAkhir: "bersama.",
-  teks: "Ruang belajar yang hangat untuk menumbuhkan iman, ilmu, dan kepedulian generasi muda Bandung.",
-  tombolUtama: { label: "Kenali sekolah kami", href: "/profil" },
-  tombolKedua: { label: "Informasi SPMB", href: "/spmb" },
+  label: "SMAN 22 Bandung",
+  judulAwal: "Belajar.",
+  judulMiring: "Bertumbuh.",
+  judulAkhir: "Berdampak.",
+  teks: "Sekolah dalam satu ekosistem digital.",
+  tombolUtama: { label: "Jelajahi sekolah", href: "/profil" },
+  tombolKedua: { label: "Masuk portal", href: "/masuk" },
+  /**
+   * Potret hero. Paling bagus berupa PNG/WebP berlatar transparan (potongan tubuh),
+   * yang tampil di atas bentuk berwarna. Foto biasa (JPG) otomatis dibingkai lengkung.
+   * Model bawaan adalah ilustrasi sintetis — ganti dengan foto berizin dari sekolah.
+   */
   foto: [
-    { src: "/images/gedung.jpg", alt: "Gedung SMA Negeri 22 Bandung", posisi: "center 60%" },
-    { src: "/images/keluarga-besar.jpg", alt: "Guru dan siswa SMA Negeri 22 Bandung di lapangan sekolah", posisi: "center 55%" },
-    { src: "/images/apel-lapangan.jpg", alt: "Apel pagi siswa di lapangan sekolah", posisi: "center 60%" },
+    { src: "/images/hero/model-sintetis.png", alt: "Model perempuan sintetis berbaju putih membawa buku biru dan lavender", posisi: "50% 50%", tautan: "/profil" },
+    { src: "/images/hero/model-sintetis.png", alt: "Model perempuan sintetis berbaju putih membawa buku biru dan lavender", posisi: "50% 50%", tautan: "/berita" },
+    { src: "/images/hero/model-sintetis.png", alt: "Model perempuan sintetis berbaju putih membawa buku biru dan lavender", posisi: "50% 50%", tautan: "/ekskul" },
   ],
 };
+
+/** Cerita di sisi kanan hero — dipasangkan berurutan dengan slide (berulang bila slide lebih banyak). */
+export const ceritaHero = [
+  {
+    label: "Setiap potensi, punya ruang",
+    judul: "Ruang untuk jadi dirimu.",
+    teks: "Temukan pengalaman belajar, kebiasaan baik, dan kesempatan untuk memberi arti.",
+    warna: "#284fd7",
+  },
+  {
+    label: "Belajar dengan tujuan",
+    judul: "Rasa ingin tahu, tanpa batas.",
+    teks: "Buka wawasan. Temukan minat. Jadikan setiap hari bagian dari perjalanan belajarmu.",
+    warna: "#7564b5",
+  },
+  {
+    label: "Lebih dari ruang kelas",
+    judul: "Tumbuh bersama. Beri makna.",
+    teks: "Kenali ruang berkarya, berkolaborasi, dan mengembangkan potensi bersama warga sekolah.",
+    warna: "#325fb9",
+  },
+];
 
 /** Kalimat besar di bawah hero */
 export const pernyataan =
@@ -91,22 +118,27 @@ export const sejarah = ["[ISI sejarah singkat sekolah]"];
 
 export const programUnggulan = [
   {
+    kode: "7KAIH",
     nama: "7 Kebiasaan Anak Indonesia Hebat",
     ringkas: "Pembiasaan karakter harian melalui jurnal, bukti kegiatan, dan refleksi.",
   },
   {
+    kode: "GP",
     nama: "Gerbang Pancawaluya",
     ringkas: "Penguatan nilai Cageur, Bageur, Bener, Pinter, Singer dalam kegiatan sekolah.",
   },
   {
+    kode: "KT",
     nama: "Kokurikuler Tematik",
     ringkas: "Proyek lintas mapel yang menghasilkan karya, refleksi, dan pameran.",
   },
   {
+    kode: "PBL",
     nama: "Pojok Baca & Literasi",
     ringkas: "Gerakan membaca, jurnal baca, dan tantangan literasi.",
   },
   {
+    kode: "MB",
     nama: "Mitigasi Bencana",
     ringkas: "Simulasi, jalur evakuasi, dan tim siaga untuk sekolah yang aman.",
   },

@@ -8,14 +8,11 @@ export function Reveal({
   className = "",
   delay = 0,
   as: Tag = "div",
-  efek = "naik",
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
   as?: "div" | "li" | "section" | "figure";
-  /** "naik" = muncul dari bawah; "tirai" = terbuka seperti tirai (cocok untuk foto) */
-  efek?: "naik" | "tirai";
 }) {
   const ref = useRef<HTMLElement>(null);
 
@@ -40,7 +37,7 @@ export function Reveal({
   return (
     <Tag
       ref={ref as React.Ref<HTMLDivElement & HTMLLIElement>}
-      className={`${efek === "tirai" ? "tirai" : "reveal"} ${className}`}
+      className={`reveal ${className}`}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
     >
       {children}
