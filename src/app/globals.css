@@ -1,0 +1,204 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+@import "tailwindcss";
+
+/* Design token — warna diambil dari logo sekolah */
+@theme {
+  --color-brand-50: #eef0f7;
+  --color-brand-100: #d8dcec;
+  --color-brand-600: #46507a;
+  --color-brand-700: #2f3863;
+  --color-brand-800: #1f2748;
+  --color-brand-900: #121831;
+  --color-accent-400: #f2c14e;
+  --color-accent-500: #e3ab2a;
+  --color-merah: #c8102e;
+  --color-krem: #f2eee9;
+  --color-krem-tua: #e6dfd5;
+  --color-tinta: #1b1a17;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-krem);
+  color: var(--color-tinta);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-accent-400);
+  outline-offset: 2px;
+}
+
+/* Efek zoom pelan pada foto hero (Ken Burns) */
+@keyframes kenburns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.16);
+  }
+}
+.kenburns {
+  animation: kenburns 9s ease-out forwards;
+}
+
+/* Muncul saat di-scroll (naik + dari buram ke tajam) */
+.reveal {
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.tampil {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+@keyframes naik {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.naik {
+  animation: naik 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes geser {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee {
+  animation: geser 40s linear infinite;
+}
+
+.marquee-balik {
+  animation-direction: reverse;
+}
+/* pita foto: berhenti saat di-hover / disentuh agar mudah dilihat */
+.pita:hover .marquee,
+.pita:focus-within .marquee {
+  animation-play-state: paused;
+}
+
+/* Judul hero: kata muncul dari balik tirai */
+.kata-bungkus {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.kata {
+  display: inline-block;
+  animation: kata 1s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+@keyframes kata {
+  from {
+    transform: translateY(105%) rotate(4deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* Hero: kedalaman saat scroll & gerak kursor (variabel diisi oleh Hero.tsx) */
+.hero-latar {
+  transform: translate3d(calc(var(--mx, 0) * -14px), calc(var(--p, 0) * 30svh + var(--my, 0) * -14px), 0)
+    scale(calc(1.06 + var(--p, 0) * 0.1));
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+.hero-isi {
+  opacity: calc(1 - var(--p, 0) * 1.6);
+  transform: translate3d(0, calc(var(--p, 0) * -12svh), 0);
+  filter: blur(calc(var(--p, 0) * 10px));
+}
+
+/* Kartu bercahaya mengikuti kursor */
+.sorot {
+  position: relative;
+  isolation: isolate;
+}
+.sorot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  background: radial-gradient(260px circle at var(--sx, 50%) var(--sy, 50%), rgb(242 193 78 / 0.35), transparent 70%);
+}
+.sorot:hover::before {
+  opacity: 1;
+}
+
+/* Tombol dengan panah yang bergeser */
+.panah {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+a:hover .panah,
+.group:hover .panah {
+  transform: translateX(6px);
+}
+
+@keyframes isi {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+.isi-bar {
+  animation: isi linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .isi-bar {
+    animation: none;
+    width: 100%;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+  .kenburns,
+  .naik,
+  .kata,
+  .marquee {
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: none;
+  }
+  .hero-latar,
+  .hero-isi {
+    transform: none;
+    opacity: 1;
+    filter: none;
+  }
+}

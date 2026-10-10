@@ -1,0 +1,2 @@
+export type Pinjaman = { id: string; kode: string; judul: string; peminjam: string; kelas: string; pinjam_pada: string; jatuh_tempo: string; kembali_pada: string | null; perpanjang: number; denda: number; denda_lunas: boolean; terlambat: number };
+export const tgl = (s: string) => new Date(s + "T00:00:00Z").toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
