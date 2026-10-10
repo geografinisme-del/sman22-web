@@ -1,20 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
 import { menu } from "@/content/menu";
+import { sekolah } from "@/content/sekolah";
 
 export function Brand() {
   return (
     <Link href="/" className="brand" aria-label="Beranda SMAN 22 Bandung">
-      <span className="brand-mark" aria-hidden>
-        22
-      </span>
+      <Image src={sekolah.logo} alt="" width={502} height={497} sizes="48px" priority className="brand-logo" />
       <span>
-        <strong>SMAN 22 BANDUNG</strong>
-        <small>BELAJAR. BERTUMBUH. BERDAMPAK.</small>
+        <strong>{sekolah.namaPendek}</strong>
+        <small>SEJAK {sekolah.tahunBerdiri} · KOTA BANDUNG</small>
       </span>
     </Link>
   );
