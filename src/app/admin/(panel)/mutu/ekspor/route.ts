@@ -1,11 +1,8 @@
-import writeXlsxFile from "write-excel-file/node";
 import { NextResponse, type NextRequest } from "next/server";
 import { getAkses } from "@/lib/admin/auth";
+import { bukuXlsx, kirimXlsx, lembarInfo } from "@/lib/admin/excel";
 import { pilihKerangka, type BarisAnalisis } from "@/lib/admin/mutu-data";
 import { CELAH, PERSETUJUAN, STATUS_CAPAIAN, STATUS_TEMUAN, SUMBER_MODUL } from "@/lib/mutu";
-
-const tebal = (v: string) => ({ value: v, fontWeight: "bold" as const, backgroundColor: "#EEF0F7" });
-const t = (v: unknown) => ({ value: v == null ? "" : String(v) });
 
 /** Paket laporan mutu: indikator + evaluasi, daftar bukti (dengan hash), temuan & rencana */
 export async function GET(req: NextRequest) {
@@ -25,28 +22,80 @@ export async function GET(req: NextRequest) {
   if (!baris.length) return new NextResponse("Tidak berhak atau belum ada indikator", { status: 403 });
   const evMap = new Map((ev ?? []).map((e) => [e.indikator_id, e]));
   const situs = req.nextUrl.origin;
-  const s1 = [["Standar", "Kode", "Indikator", "Pemilik", "Target", "Capaian", "Skor", "Status", "Persetujuan", "Disetujui pada", "Jumlah bukti", "Temuan terbuka", "Penanda kelengkapan", "Evaluasi diri"].map(tebal),
-    ...baris.map((b) => [t(`${b.standar_kode}. ${b.standar}`), t(b.kode), t(b.nama), t(b.pemilik), t(b.target), t(b.capaian), b.skor ? { value: b.skor, type: Number } : t(""),
-      t(STATUS_CAPAIAN[b.status]?.label), t(PERSETUJUAN[b.persetujuan]?.label), t(evMap.get(b.indikator_id)?.disetujui_pada?.slice(0, 10)), { value: b.jumlah_bukti, type: Number },
-      { value: b.temuan_terbuka, type: Number }, t(b.celah.map((c) => CELAH[c]).join("; ")), t(evMap.get(b.indikator_id)?.evaluasi_diri)])];
   type BK = { periode: string; indikator_mutu: { kode: string }; bukti_mutu: { judul: string; jenis: string; tautan: string; sumber_modul: string; sumber_ref: string; nama_berkas: string; hash_sha256: string; versi: number; tanggal_dokumen: string | null; created_at: string; digantikan: boolean } };
-  const s2 = [["Indikator", "Judul bukti", "Jenis", "Versi", "Masih berlaku", "Sumber / tautan", "Nama berkas", "SHA-256", "Tanggal dokumen", "Diunggah"].map(tebal),
-    ...((bk ?? []) as unknown as BK[]).map((x) => { const b = x.bukti_mutu; return [t(x.indikator_mutu.kode), t(b.judul), t(b.jenis), { value: b.versi, type: Number }, t(b.digantikan ? "tidak" : "ya"),
-      t(b.jenis === "tautan" ? b.tautan : b.jenis === "modul" ? `${SUMBER_MODUL[b.sumber_modul]?.label ?? b.sumber_modul}: ${situs}${SUMBER_MODUL[b.sumber_modul]?.url(b.sumber_ref) ?? ""}` : "berkas di sistem"),
-      t(b.nama_berkas), t(b.hash_sha256), t(b.tanggal_dokumen), t(b.created_at.slice(0, 10))]; })];
   type TM = { jenis: string; uraian: string; status: string; tenggat: string | null; indikator_mutu: { kode: string } | null; rencana_perbaikan: { kegiatan: string; status: string; tenggat: string | null; hasil: string }[] };
-  const s3 = [["Indikator", "Jenis", "Uraian temuan", "Status", "Tenggat", "Rencana perbaikan"].map(tebal),
-    ...((tm ?? []) as unknown as TM[]).map((x) => [t(x.indikator_mutu?.kode ?? "umum"), t(x.jenis), t(x.uraian), t(STATUS_TEMUAN[x.status]?.label), t(x.tenggat),
-      t(x.rencana_perbaikan.map((r) => `${r.kegiatan} (${r.status}${r.tenggat ? `, ${r.tenggat}` : ""})${r.hasil ? `: ${r.hasil}` : ""}`).join(" | "))])];
-  const s0 = [[tebal("Paket laporan mutu")], [t(`${kini.nama} — ${kini.kode} versi ${kini.versi}`)], [t(`Periode: ${periode}`)], [t(`Diunduh: ${new Date().toISOString().slice(0, 16).replace("T", " ")} UTC`)],
-    [t("Catatan: angka & penanda kelengkapan dihasilkan sistem untuk membantu pengumpulan bukti; bukan pernyataan kepatuhan. Penilaian mutu dilakukan tim & asesor.")]];
-  const buffer = await writeXlsxFile([s0, s1, s2, s3] as never, {
-    sheets: ["Ringkasan", "Indikator", "Bukti", "Temuan"], buffer: true,
-    columns: [[{ width: 90 }], [{ width: 28 }, { width: 8 }, { width: 50 }, { width: 22 }, { width: 22 }, { width: 22 }, { width: 6 }, { width: 14 }, { width: 16 }, { width: 12 }, { width: 8 }, { width: 8 }, { width: 40 }, { width: 60 }],
-      [{ width: 10 }, { width: 40 }, { width: 8 }, { width: 6 }, { width: 8 }, { width: 50 }, { width: 25 }, { width: 66 }, { width: 12 }, { width: 12 }], [{ width: 10 }, { width: 12 }, { width: 60 }, { width: 14 }, { width: 12 }, { width: 70 }]],
-  } as never);
+  const bukti = (bk ?? []) as unknown as BK[];
+  const temuan = (tm ?? []) as unknown as TM[];
+  const isi = await bukuXlsx([
+    {
+      nama: "Indikator",
+      kolom: [
+        { judul: "Kode standar", lebar: 9 },
+        { judul: "Standar", lebar: 28 },
+        { judul: "Kode indikator", lebar: 10 },
+        { judul: "Indikator", lebar: 50 },
+        { judul: "Pemilik", lebar: 22 },
+        { judul: "Target", lebar: 22 },
+        { judul: "Capaian", lebar: 22 },
+        { judul: "Skor", jenis: "angka", lebar: 7 },
+        { judul: "Status capaian", lebar: 14 },
+        { judul: "Persetujuan", lebar: 16 },
+        { judul: "Disetujui pada", jenis: "tanggal" },
+        { judul: "Jumlah bukti", jenis: "angka", lebar: 9 },
+        { judul: "Temuan terbuka", jenis: "angka", lebar: 9 },
+        { judul: "Penanda kelengkapan", lebar: 40 },
+        { judul: "Evaluasi diri", lebar: 60 },
+      ],
+      baris: baris.map((b) => [
+        b.standar_kode, b.standar, b.kode, b.nama, b.pemilik, b.target, b.capaian, b.skor || null,
+        STATUS_CAPAIAN[b.status]?.label, PERSETUJUAN[b.persetujuan]?.label, evMap.get(b.indikator_id)?.disetujui_pada?.slice(0, 10),
+        b.jumlah_bukti, b.temuan_terbuka, b.celah.map((c) => CELAH[c]).join("; "), evMap.get(b.indikator_id)?.evaluasi_diri,
+      ]),
+    },
+    {
+      nama: "Bukti",
+      kolom: [
+        { judul: "Kode indikator", lebar: 10 },
+        { judul: "Judul bukti", lebar: 40 },
+        { judul: "Jenis", lebar: 9 },
+        { judul: "Versi", jenis: "angka", lebar: 6 },
+        { judul: "Masih berlaku", lebar: 9 },
+        { judul: "Sumber / tautan", lebar: 50 },
+        { judul: "Nama berkas", lebar: 25 },
+        { judul: "SHA-256", lebar: 66 },
+        { judul: "Tanggal dokumen", jenis: "tanggal" },
+        { judul: "Diunggah", jenis: "tanggal" },
+      ],
+      baris: bukti.map((x) => {
+        const b = x.bukti_mutu;
+        const sumber = b.jenis === "tautan" ? b.tautan : b.jenis === "modul" ? `${SUMBER_MODUL[b.sumber_modul]?.label ?? b.sumber_modul}: ${situs}${SUMBER_MODUL[b.sumber_modul]?.url(b.sumber_ref) ?? ""}` : "Berkas di sistem";
+        return [x.indikator_mutu.kode, b.judul, b.jenis, b.versi, b.digantikan ? "Tidak" : "Ya", sumber, b.nama_berkas, b.hash_sha256, b.tanggal_dokumen, b.created_at.slice(0, 10)];
+      }),
+    },
+    {
+      nama: "Temuan",
+      kolom: [
+        { judul: "Kode indikator", lebar: 10 },
+        { judul: "Jenis", lebar: 12 },
+        { judul: "Uraian temuan", lebar: 60 },
+        { judul: "Status", lebar: 14 },
+        { judul: "Tenggat", jenis: "tanggal" },
+        { judul: "Rencana perbaikan", lebar: 70 },
+      ],
+      baris: temuan.map((x) => [
+        x.indikator_mutu?.kode ?? "Umum", x.jenis, x.uraian, STATUS_TEMUAN[x.status]?.label, x.tenggat,
+        x.rencana_perbaikan.map((r) => `${r.kegiatan} (${r.status}${r.tenggat ? `, ${r.tenggat}` : ""})${r.hasil ? `: ${r.hasil}` : ""}`).join(" | "),
+      ]),
+    },
+    lembarInfo("Paket laporan mutu", [
+      ["Kerangka", `${kini.nama} — ${kini.kode} versi ${kini.versi}`],
+      ["Periode", periode],
+      ["Jumlah indikator", baris.length],
+      ["Jumlah bukti", bukti.length],
+      ["Jumlah temuan", temuan.length],
+      ["Catatan", "Angka & penanda kelengkapan dihasilkan sistem untuk membantu pengumpulan bukti; bukan pernyataan kepatuhan. Penilaian mutu dilakukan tim & asesor."],
+    ]),
+  ]);
   await supabase.rpc("catat_aktivitas", { nama_tabel: "evaluasi_indikator", aksi: "EKSPOR", keterangan: { kerangka: kini.kode, versi: kini.versi, periode } });
-  return new NextResponse(new Uint8Array(buffer as unknown as ArrayBuffer), {
-    headers: { "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Content-Disposition": `attachment; filename="paket-mutu-${kini.kode}-${periode.replace("/", "-")}.xlsx"`, "Cache-Control": "no-store" },
-  });
+  return kirimXlsx(isi, `paket-mutu-${kini.kode}-${periode.replace("/", "-")}`);
 }

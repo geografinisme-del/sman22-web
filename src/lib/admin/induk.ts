@@ -286,5 +286,6 @@ export function keCsv(header: string[], baris: (string | number | null | undefin
     if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
     return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  return "﻿" + [header, ...baris].map((r) => r.map(sel).join(",")).join("\r\n");
+  // pemisah ";" — Excel berbahasa Indonesia memakai titik koma sehingga tiap nilai masuk kolomnya sendiri
+  return "﻿" + [header, ...baris].map((r) => r.map(sel).join(";")).join("\r\n");
 }

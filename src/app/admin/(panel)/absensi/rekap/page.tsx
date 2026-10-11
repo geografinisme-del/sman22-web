@@ -35,7 +35,7 @@ export default async function Rekap({ searchParams }: { searchParams: Promise<{ 
       <JudulHalaman
         judul="Rekap Absensi"
         deskripsi={pilih ? `${pilih.nama} · ${formatTanggal(dari)} – ${formatTanggal(sampai)} · ${he} hari efektif` : undefined}
-        aksi={pilih && <TombolLink href={ekspor} sekunder>Unduh CSV</TombolLink>}
+        aksi={pilih && <TombolLink href={ekspor} sekunder>Unduh Excel</TombolLink>}
       />
       <form className="mb-5 grid gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5 sm:grid-cols-[1fr_1fr_1fr_auto]">
         <label className="text-sm">

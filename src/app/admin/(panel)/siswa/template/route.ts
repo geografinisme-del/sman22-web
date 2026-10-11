@@ -1,11 +1,7 @@
-import { KOLOM_SISWA, keCsv } from "@/lib/admin/induk";
+import type { NextRequest } from "next/server";
+import { KOLOM_SISWA } from "@/lib/admin/induk";
+import { kirimTemplate } from "@/lib/admin/template-impor";
 
-export function GET() {
-  const csv = keCsv(KOLOM_SISWA.map((k) => k.label), [KOLOM_SISWA.map((k) => k.contoh)]);
-  return new Response(csv, {
-    headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="template-impor-siswa.csv"',
-    },
-  });
+export function GET(req: NextRequest) {
+  return kirimTemplate(KOLOM_SISWA, "siswa", req.nextUrl.searchParams.get("format"));
 }

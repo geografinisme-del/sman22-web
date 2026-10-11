@@ -4,7 +4,22 @@ import { getAkses } from "@/lib/admin/auth";
 import { jamPendek, namaHari } from "@/lib/admin/jadwal";
 import { muatEntri, muatJam } from "@/lib/admin/jadwal-data";
 
-type Sel = { value?: string; fontWeight?: "bold"; wrap?: boolean; backgroundColor?: string; align?: "center"; alignVertical?: "top" | "center" } | null;
+type Sel = {
+  value?: string;
+  fontWeight?: "bold";
+  fontSize?: number;
+  color?: string;
+  wrap?: boolean;
+  backgroundColor?: string;
+  align?: "center";
+  alignVertical?: "top" | "center";
+  borderColor?: string;
+  borderStyle?: "thin";
+  height?: number;
+} | null;
+
+const GARIS = { borderColor: "#D9DEE8", borderStyle: "thin" as const };
+const KEPALA = { fontWeight: "bold" as const, color: "#FFFFFF", backgroundColor: "#284FD7", borderColor: "#284FD7", borderStyle: "thin" as const, alignVertical: "center" as const, height: 24 };
 
 export async function GET(req: NextRequest) {
   const { supabase, akses } = await getAkses();
@@ -29,16 +44,16 @@ export async function GET(req: NextRequest) {
 
   const lembar: Sel[][][] = daftar.map(({ nama, isi }) => {
     const peta = new Map(isi.map((e) => [`${e.hari}-${e.jp_ke}`, e]));
-    const judul: Sel[] = [{ value: `Jadwal ${nama}`, fontWeight: "bold" }];
-    const kepala: Sel[] = [{ value: "JP", fontWeight: "bold", backgroundColor: "#EEF0F7", align: "center" }, ...hari.map((h): Sel => ({ value: namaHari(h), fontWeight: "bold", backgroundColor: "#EEF0F7" }))];
+    const judul: Sel[] = [{ value: `Jadwal ${lihat === "kelas" ? "kelas" : lihat === "guru" ? "guru" : "ruang"} ${nama} — SMA Negeri 22 Bandung`, fontWeight: "bold", fontSize: 13 }];
+    const kepala: Sel[] = [{ value: "JP", ...KEPALA, align: "center" }, ...hari.map((h): Sel => ({ value: namaHari(h), ...KEPALA }))];
     const baris = Array.from({ length: maksJp }, (_, i) => i + 1).map((jp): Sel[] => [
-      { value: String(jp), align: "center", alignVertical: "center" },
+      { value: String(jp), align: "center", alignVertical: "center", fontWeight: "bold", ...GARIS },
       ...hari.map((h): Sel => {
         const e = peta.get(`${h}-${jp}`);
         const w = waktu.get(`${h}-${jp}`);
-        if (!w) return null;
+        if (!w) return { value: "", ...GARIS, backgroundColor: "#F5F7FC" };
         const lain = lihat === "kelas" ? e?.guru : lihat === "guru" ? e?.kelas : `${e?.kelas ?? ""} ${e?.guru ?? ""}`;
-        return { value: e ? `${w}\n${e.mapel}\n${lain ?? ""}${e.ruang && lihat !== "ruang" ? ` · ${e.ruang}` : ""}` : w, wrap: true, alignVertical: "top" };
+        return { value: e ? `${w}\n${e.mapel}\n${lain ?? ""}${e.ruang && lihat !== "ruang" ? ` · ${e.ruang}` : ""}` : w, wrap: true, alignVertical: "top", ...GARIS };
       }),
     ]);
     return [judul, [], kepala, ...baris];

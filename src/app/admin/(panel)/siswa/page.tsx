@@ -47,7 +47,7 @@ export default async function DaftarSiswa({ searchParams }: { searchParams: Prom
         aksi={
           <div className="flex flex-wrap gap-2">
             <TombolLink href={`/admin/siswa/ekspor?${ekspor}`} sekunder>
-              Ekspor CSV
+              Unduh Excel
             </TombolLink>
             {bisaUbah && (
               <>

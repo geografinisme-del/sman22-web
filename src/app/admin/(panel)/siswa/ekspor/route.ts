@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { aksesAksi } from "@/lib/admin/auth";
-import { keCsv, STATUS_SISWA } from "@/lib/admin/induk";
+import { bukuXlsx, kirimXlsx, lembarInfo, tanggalFile } from "@/lib/admin/excel";
+import { STATUS_SISWA } from "@/lib/admin/induk";
 
 export async function GET(req: NextRequest) {
   const ctx = await aksesAksi("data_induk.baca");
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
   for (let i = 0; i < 20000; i += 1000) {
     let query = ctx.supabase
       .from("siswa_kelas_aktif")
-      .select("id, nisn, nis, nama, jenis_kelamin, kelas, status, tahun_masuk")
+      .select("id, nisn, nis, nama, jenis_kelamin, kelas, tingkat, status, tahun_masuk")
       .is("deleted_at", null)
       .order("kelas", { nullsFirst: false })
       .order("nama")
@@ -43,24 +44,43 @@ export async function GET(req: NextRequest) {
     for (const d of (data ?? []) as Baris[]) detail.set(d.id as string, d);
   }
 
-  const csv = keCsv(
-    ["NISN", "NIS", "Nama", "JK", "Tempat Lahir", "Tanggal Lahir", "Agama", "Kelas", "Status", "Tahun Masuk", "Alamat", "No HP"],
-    semua.map((s) => {
-      const d = detail.get(s.id as string) ?? {};
-      return [s.nisn, s.nis, s.nama, s.jenis_kelamin, d.tempat_lahir, d.tanggal_lahir, d.agama, s.kelas, s.status, s.tahun_masuk, d.alamat, d.telepon];
-    }),
-  );
+  // judul kolom sama dengan template impor, jadi file ini bisa diedit lalu diimpor ulang
+  const isi = await bukuXlsx([
+    {
+      nama: "Data Siswa",
+      kolom: [
+        { judul: "No", jenis: "angka", lebar: 5 },
+        { judul: "Nama" },
+        { judul: "NISN" },
+        { judul: "NIS / NIPD" },
+        { judul: "Jenis kelamin (L/P)", lebar: 11 },
+        { judul: "Tempat lahir" },
+        { judul: "Tanggal lahir", jenis: "tanggal" },
+        { judul: "Agama" },
+        { judul: "Tingkat", lebar: 8 },
+        { judul: "Kelas / Rombel" },
+        { judul: "Status" },
+        { judul: "Tahun masuk", jenis: "angka", lebar: 9 },
+        { judul: "Alamat", lebar: 40 },
+        { judul: "No. HP siswa" },
+      ],
+      baris: semua.map((s, i) => {
+        const d = detail.get(s.id as string) ?? {};
+        return [i + 1, s.nama, s.nisn, s.nis, s.jenis_kelamin, d.tempat_lahir, d.tanggal_lahir, d.agama, s.tingkat, s.kelas, s.status, s.tahun_masuk, d.alamat, d.telepon];
+      }),
+    },
+    lembarInfo("Data induk siswa", [
+      ["Jumlah siswa", semua.length],
+      ["Filter status", status && status !== "semua" ? status : "Semua status"],
+      ["Filter tingkat", tingkat || "Semua tingkat"],
+      ["Filter kelas", kelas === "tanpa" ? "Belum punya kelas" : kelas ? "Kelas terpilih" : "Semua kelas"],
+      ["Pencarian", q || "—"],
+    ]),
+  ]);
   await ctx.supabase.rpc("catat_aktivitas", {
     nama_tabel: "siswa",
     aksi: "EKSPOR",
     keterangan: { jumlah: semua.length, filter: { status, kelas, tingkat, q } },
   });
-  const tgl = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta" }).format(new Date());
-  return new Response(csv, {
-    headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="data-siswa-${tgl}.csv"`,
-      "Cache-Control": "no-store",
-    },
-  });
+  return kirimXlsx(isi, `data-siswa-${tanggalFile()}`);
 }

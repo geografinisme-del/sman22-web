@@ -1,9 +1,7 @@
-import writeXlsxFile from "write-excel-file/node";
 import { NextResponse, type NextRequest } from "next/server";
 import { getAkses } from "@/lib/admin/auth";
+import { bukuXlsx, kirimXlsx, lembarInfo, tanggalFile } from "@/lib/admin/excel";
 import { penugasanSaya } from "@/lib/admin/lms-data";
-
-type Sel = { value?: string | number; fontWeight?: "bold"; backgroundColor?: string; type?: NumberConstructor } | null;
 
 /** Rekap nilai tugas & kuis satu kelas–mapel (untuk bahan rapor) */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ penugasan: string }> }) {
@@ -33,22 +31,31 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ penu
     }
     nilai.set(c.id, m);
   }
-  const kepala: Sel[] = [{ value: "No", fontWeight: "bold", backgroundColor: "#EEF0F7" }, { value: "Nama", fontWeight: "bold", backgroundColor: "#EEF0F7" },
-    ...kolom.map((c): Sel => ({ value: c.judul, fontWeight: "bold", backgroundColor: "#EEF0F7" })), { value: "Rata-rata", fontWeight: "bold", backgroundColor: "#EEF0F7" }];
-  const baris = [...siswa].sort((a, b) => a[1].localeCompare(b[1])).map(([id, nama], i): Sel[] => {
-    const isi = kolom.map((c) => nilai.get(c.id)?.get(id) ?? null);
-    const ada = isi.filter((x): x is number => x != null).map(Number);
-    return [{ value: i + 1, type: Number }, { value: nama }, ...isi.map((v): Sel => (v == null ? null : { value: Number(v), type: Number })),
-      ada.length ? { value: Math.round((ada.reduce((a, b) => a + b, 0) / ada.length) * 100) / 100, type: Number } : null];
-  });
-  const data = [[{ value: `Rekap nilai ${p.mapel} kelas ${p.kelas}`, fontWeight: "bold" }] as Sel[], [] as Sel[], kepala, ...baris];
-  const buffer = await writeXlsxFile(data as never, { columns: [{ width: 5 }, { width: 32 }, ...kolom.map(() => ({ width: 18 })), { width: 12 }], buffer: true });
-  await supabase.rpc("catat_aktivitas", { nama_tabel: "pengumpulan_tugas", aksi: "EKSPOR", keterangan: { kelas: p.kelas, mapel: p.mapel } });
-  return new NextResponse(new Uint8Array(buffer), {
-    headers: {
-      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="${`nilai-${p.mapel}-${p.kelas}`.replace(/[^\w-]+/g, "-")}.xlsx"`,
-      "Cache-Control": "no-store",
+  const urut = [...siswa].sort((a, b) => a[1].localeCompare(b[1], "id"));
+  const isi = await bukuXlsx([
+    {
+      nama: `Nilai ${p.kelas}`,
+      kolom: [
+        { judul: "No", jenis: "angka", lebar: 5 },
+        { judul: "Nama siswa", lebar: 32 },
+        ...kolom.map((c) => ({ judul: c.judul, jenis: "angka" as const, lebar: Math.min(28, Math.max(12, c.judul.length + 2)) })),
+        { judul: "Rata-rata", jenis: "angka", lebar: 11 },
+      ],
+      baris: urut.map(([id, nama], i) => {
+        const nilaiSiswa = kolom.map((c) => nilai.get(c.id)?.get(id) ?? null);
+        const ada = nilaiSiswa.filter((x): x is number => x != null).map(Number);
+        const rata = ada.length ? Math.round((ada.reduce((a, b) => a + b, 0) / ada.length) * 100) / 100 : null;
+        return [i + 1, nama, ...nilaiSiswa, rata];
+      }),
     },
-  });
+    lembarInfo("Rekap nilai kelas digital", [
+      ["Mata pelajaran", p.mapel],
+      ["Kelas", p.kelas],
+      ["Jumlah siswa", urut.length],
+      ["Jumlah penilaian", `${(tugas ?? []).length} tugas, ${(kuis ?? []).length} kuis`],
+      ["Keterangan", "Sel kosong = belum mengumpulkan / belum dinilai. Rata-rata dari nilai yang ada."],
+    ]),
+  ]);
+  await supabase.rpc("catat_aktivitas", { nama_tabel: "pengumpulan_tugas", aksi: "EKSPOR", keterangan: { kelas: p.kelas, mapel: p.mapel } });
+  return kirimXlsx(isi, `nilai-${p.mapel}-${p.kelas}-${tanggalFile()}`);
 }

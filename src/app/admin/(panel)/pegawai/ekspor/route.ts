@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { aksesAksi } from "@/lib/admin/auth";
-import { keCsv } from "@/lib/admin/induk";
+import { bukuXlsx, kirimXlsx, lembarInfo, tanggalFile } from "@/lib/admin/excel";
 
 export async function GET() {
   const ctx = await aksesAksi("data_induk.baca");
@@ -11,6 +11,7 @@ export async function GET() {
       .from("pegawai")
       .select("nama, nip, nuptk, jenis_kelamin, jenis, jabatan, status, telepon, email")
       .is("deleted_at", null)
+      .order("jenis")
       .order("nama")
       .range(i, i + 999);
     if (error) return NextResponse.json({ pesan: "Gagal mengekspor" }, { status: 500 });
@@ -18,11 +19,30 @@ export async function GET() {
     if (data.length < 1000) break;
   }
   await ctx.supabase.rpc("catat_aktivitas", { nama_tabel: "pegawai", aksi: "EKSPOR", keterangan: { jumlah: semua.length } });
-  const csv = keCsv(
-    ["Nama", "NIP", "NUPTK", "JK", "Jenis", "Jabatan", "Status", "No HP", "Email"],
-    semua.map((p) => [p.nama, p.nip, p.nuptk, p.jenis_kelamin, p.jenis, p.jabatan, p.status, p.telepon, p.email]),
-  );
-  return new Response(csv, {
-    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": 'attachment; filename="data-pegawai.csv"', "Cache-Control": "no-store" },
-  });
+  const guru = semua.filter((p) => p.jenis === "guru").length;
+  // judul kolom sama dengan template impor, jadi file ini bisa diedit lalu diimpor ulang
+  const isi = await bukuXlsx([
+    {
+      nama: "Data Guru & Pegawai",
+      kolom: [
+        { judul: "No", jenis: "angka", lebar: 5 },
+        { judul: "Nama" },
+        { judul: "NIP" },
+        { judul: "NUPTK" },
+        { judul: "Jenis kelamin (L/P)", lebar: 11 },
+        { judul: "Jenis (guru/tendik)", lebar: 12 },
+        { judul: "Jabatan / tugas" },
+        { judul: "Status" },
+        { judul: "No. HP" },
+        { judul: "Email" },
+      ],
+      baris: semua.map((p, i) => [i + 1, p.nama, p.nip, p.nuptk, p.jenis_kelamin, p.jenis, p.jabatan, p.status, p.telepon, p.email]),
+    },
+    lembarInfo("Data guru & pegawai", [
+      ["Jumlah", semua.length],
+      ["Guru", guru],
+      ["Tenaga kependidikan", semua.length - guru],
+    ]),
+  ]);
+  return kirimXlsx(isi, `data-pegawai-${tanggalFile()}`);
 }

@@ -121,10 +121,24 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
       {tahap === "pilih" && (
         <div className={kartu}>
           <h2 className="font-serif text-2xl">Pilih file Excel atau CSV</h2>
-          <p className="mt-2 text-black/60">
-            Bisa memakai file ekspor <strong>Dapodik</strong> langsung, atau{" "}
-            <a href={templateHref} className="font-semibold text-brand-700 underline">unduh template</a>. Baris judul di atas tabel
-            akan dilewati otomatis.
+          <div className="mt-4 flex flex-col gap-4 rounded-2xl bg-brand-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold">Belum punya file? Mulai dari template.</p>
+              <p className="mt-1 text-sm text-black/60">
+                Template berisi judul kolom yang benar dan lembar <strong>Petunjuk</strong> cara mengisinya. File ekspor dari menu ini juga bisa diedit lalu diimpor ulang.
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <a href={templateHref} download className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">
+                Unduh template Excel
+              </a>
+              <a href={`${templateHref}?format=csv`} download className="rounded-full px-5 py-2.5 text-sm font-semibold ring-1 ring-black/15 hover:bg-white">
+                Template CSV
+              </a>
+            </div>
+          </div>
+          <p className="mt-4 text-black/60">
+            Bisa juga memakai file ekspor <strong>Dapodik</strong> langsung — baris judul di atas tabel akan dilewati otomatis.
           </p>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-black/60">
             <li>Kolom yang dikenali: {kolom.map((k) => k.label).join(", ")}.</li>

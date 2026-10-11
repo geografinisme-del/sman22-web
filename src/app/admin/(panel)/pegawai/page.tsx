@@ -31,7 +31,7 @@ export default async function DaftarPegawai({ searchParams }: { searchParams: Pr
         judul="Guru & Pegawai"
         aksi={
           <div className="flex flex-wrap gap-2">
-            <TombolLink href="/admin/pegawai/ekspor" sekunder>Ekspor CSV</TombolLink>
+            <TombolLink href="/admin/pegawai/ekspor" sekunder>Unduh Excel</TombolLink>
             {bisaUbah && (
               <>
                 <TombolLink href="/admin/pegawai/impor" sekunder>Impor Excel</TombolLink>

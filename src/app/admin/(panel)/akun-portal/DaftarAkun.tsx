@@ -1,7 +1,6 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
-import { keCsv } from "@/lib/admin/induk";
 import { aturUlangSandiPortal, buatAkunPortal, type AkunBaru, type HasilAkun } from "../../actions-portal";
 
 export type BarisAkun = { siswa_id: string; nisn: string | null; nama: string; akun_siswa: boolean; akun_ortu: boolean };
@@ -35,12 +34,25 @@ body{font-family:system-ui,sans-serif;margin:16px}.g{display:grid;grid-template-
   w.document.close();
 }
 
-function unduhCsv(akun: AkunBaru[], kelas: string) {
-  const isi = keCsv(["Nama siswa", "Kelas", "Jenis akun", "NISN (login)", "Kata sandi awal"], akun.map((a) => [a.nama, kelas, label(a.jenis), a.nisn, a.sandi]));
-  const url = URL.createObjectURL(new Blob([isi], { type: "text/csv;charset=utf-8" }));
-  const a = Object.assign(document.createElement("a"), { href: url, download: `akun-portal-${kelas.replace(/\s+/g, "-")}.csv` });
-  a.click();
-  URL.revokeObjectURL(url);
+/** Daftar akun baru sebagai .xlsx — NISN tetap teks agar angka 0 di depan tidak hilang. */
+async function unduhExcel(akun: AkunBaru[], kelas: string) {
+  const { default: writeXlsxFile } = await import("write-excel-file");
+  const kepala = ["No", "Nama siswa", "Kelas", "Jenis akun", "NISN (login)", "Kata sandi awal"].map((v) => ({
+    value: v,
+    type: String,
+    fontWeight: "bold" as const,
+    color: "#FFFFFF",
+    backgroundColor: "#284FD7",
+  }));
+  const baris = akun.map((a, i) => [
+    { value: i + 1, type: Number },
+    ...[a.nama, kelas, label(a.jenis), a.nisn, a.sandi].map((v) => ({ value: v ?? "", type: String })),
+  ]);
+  await writeXlsxFile([kepala, ...baris], {
+    fileName: `akun-portal-${kelas.replace(/[^\w-]+/g, "-")}.xlsx`,
+    columns: [{ width: 5 }, { width: 32 }, { width: 10 }, { width: 12 }, { width: 16 }, { width: 18 }],
+    stickyRowsCount: 1,
+  });
 }
 
 function HasilAkunBaru({ hasil, kelas }: { hasil: HasilAkun; kelas: string }) {
@@ -51,14 +63,14 @@ function HasilAkunBaru({ hasil, kelas }: { hasil: HasilAkun; kelas: string }) {
       {!!hasil.akun?.length && (
         <>
           <p className="mt-2 text-sm text-black/70">
-            <strong>Kata sandi hanya ditampilkan sekali.</strong> Cetak kartu atau unduh CSV sekarang, lalu bagikan langsung ke siswa/orang tua (jangan lewat grup).
+            <strong>Kata sandi hanya ditampilkan sekali.</strong> Cetak kartu atau unduh Excel sekarang, lalu bagikan langsung ke siswa/orang tua (jangan lewat grup).
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button type="button" onClick={() => cetakKartu(hasil.akun!, hasil.kelas || kelas)} className="rounded-full bg-brand-900 px-5 py-2 text-sm font-semibold text-white">
               Cetak kartu akun
             </button>
-            <button type="button" onClick={() => unduhCsv(hasil.akun!, hasil.kelas || kelas)} className="rounded-full px-5 py-2 text-sm font-semibold ring-1 ring-black/15">
-              Unduh CSV
+            <button type="button" onClick={() => void unduhExcel(hasil.akun!, hasil.kelas || kelas)} className="rounded-full px-5 py-2 text-sm font-semibold ring-1 ring-black/15">
+              Unduh Excel
             </button>
           </div>
           <details className="mt-3 text-sm">
