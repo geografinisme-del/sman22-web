@@ -230,7 +230,7 @@ export function InputGambar({
   );
 }
 
-export function TombolSimpan({ children = "Simpan" }: { children?: ReactNode }) {
+export function TombolSimpan({ children = "Simpan", teksProses = "Menyimpan…" }: { children?: ReactNode; teksProses?: string }) {
   const pending = useContext(ProsesCtx);
   return (
     <button
@@ -239,7 +239,7 @@ export function TombolSimpan({ children = "Simpan" }: { children?: ReactNode }) 
       className="inline-flex items-center gap-2 rounded-full bg-brand-900 px-6 py-3 font-semibold text-white transition hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60"
     >
       {pending && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden />}
-      {pending ? "Menyimpan…" : children}
+      {pending ? teksProses : children}
     </button>
   );
 }

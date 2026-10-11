@@ -17,11 +17,11 @@ export function FormLogin({ awal = "staf" }: { awal?: "staf" | "siswa" | "orang_
     <FormAksi aksi={masuk} className="mt-8 space-y-5">
       <fieldset>
         <legend className="mb-2 text-sm font-semibold">Masuk sebagai</legend>
-        <div className="grid grid-cols-3 gap-1 rounded-full bg-black/5 p-1">
+        <div className="grid grid-cols-3 gap-1 rounded-xl bg-[#f3f0fc] p-1">
           {JENIS.map((j) => (
             <label key={j.nilai} className="cursor-pointer">
               <input type="radio" name="jenis" value={j.nilai} checked={jenis === j.nilai} onChange={() => setJenis(j.nilai)} className="peer sr-only" />
-              <span className="block rounded-full px-2 py-2 text-center text-sm font-medium text-black/60 transition peer-checked:bg-white peer-checked:text-tinta peer-checked:shadow peer-focus-visible:ring-2 peer-focus-visible:ring-accent-400">
+              <span className="block rounded-lg px-2 py-2.5 text-center text-sm font-medium text-[#555f6b] transition hover:text-[#284fd7] peer-checked:bg-[#284fd7] peer-checked:text-white peer-checked:shadow-[0_8px_18px_-10px_rgb(40_79_215/0.9)] peer-focus-visible:ring-2 peer-focus-visible:ring-[#ad80f3]">
                 {j.label}
               </span>
             </label>
@@ -44,7 +44,7 @@ export function FormLogin({ awal = "staf" }: { awal?: "staf" | "siswa" | "orang_
       )}
       <Input label="Kata sandi" nama="password" tipe="password" wajib />
       <div className="flex items-center justify-between gap-4">
-        <TombolSimpan>Masuk</TombolSimpan>
+        <TombolSimpan teksProses="Memeriksa…">Masuk</TombolSimpan>
         {jenis === "staf" ? (
           <Link href="/admin/lupa-sandi" className="text-sm font-medium text-brand-700 underline-offset-2 hover:underline">Lupa kata sandi?</Link>
         ) : (
