@@ -1,9 +1,6 @@
-@import "@fontsource-variable/inter";
 @import "@fontsource-variable/dm-sans";
 @import "@fontsource-variable/newsreader";
 @import "@fontsource-variable/newsreader/wght-italic.css";
-@import "@fontsource/instrument-serif/400.css";
-@import "@fontsource/instrument-serif/400-italic.css";
 @import "tailwindcss";
 
 /* Design token — warna diambil dari logo sekolah */
@@ -20,12 +17,30 @@
   --color-krem: #f2eee9;
   --color-krem-tua: #e6dfd5;
   --color-tinta: #1b1a17;
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+  /* satu pasangan huruf untuk seluruh situs, portal, dan admin (sama dengan beranda) */
+  --font-sans: "DM Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Newsreader Variable", ui-serif, Georgia, "Times New Roman", serif;
+  /* Newsreader lebih lebar dari huruf lama, jadi ukuran judul besar dibuat lebih proporsional */
+  --text-4xl: 2.125rem;
+  --text-4xl--line-height: 1.15;
+  --text-5xl: 2.625rem;
+  --text-5xl--line-height: 1.08;
+  --text-6xl: 3.25rem;
+  --text-6xl--line-height: 1.05;
+  --text-7xl: 3.875rem;
+  --text-7xl--line-height: 1.02;
+  --text-8xl: 4.75rem;
+  --text-8xl--line-height: 1;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+/* judul serif: sedikit dirapatkan & seimbang agar tidak terasa kaku */
+.font-serif {
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 body {

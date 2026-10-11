@@ -31,7 +31,7 @@ const potongan = (src: string) => /\.(png|webp)(\?|#|$)/i.test(src);
 /** Model bawaan adalah ilustrasi sintetis — diberi keterangan jujur di bawahnya. */
 const sintetis = (src: string) => src.includes("/images/hero/model-sintetis");
 
-export function Hero({ hero }: { hero: Situs["hero"] }) {
+export function Hero({ hero, info = [] }: { hero: Situs["hero"]; info?: { judul: string; isi: string }[] }) {
   const slides = hero.slide;
   const total = slides.length;
   const INTERVAL_MS = Math.min(8, Math.max(6, hero.detik || 7)) * 1000;
@@ -57,6 +57,35 @@ export function Hero({ hero }: { hero: Situs["hero"] }) {
       sessionStorage.setItem("hero-slide", id);
     } catch {}
   };
+
+  const visual = useRef<HTMLDivElement>(null);
+  // kedalaman: lapisan visual bergeser halus mengikuti kursor (hanya mouse, tidak saat gerak dikurangi)
+  useEffect(() => {
+    const el = visual.current;
+    if (!el || dikurangi) return;
+    let frame = 0;
+    const gerak = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const r = el.getBoundingClientRect();
+        el.style.setProperty("--mx", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+        el.style.setProperty("--my", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+      });
+    };
+    const reset = () => {
+      el.style.setProperty("--mx", "0");
+      el.style.setProperty("--my", "0");
+    };
+    const induk = el.closest("section") ?? el;
+    induk.addEventListener("pointermove", gerak as EventListener);
+    induk.addEventListener("pointerleave", reset);
+    return () => {
+      induk.removeEventListener("pointermove", gerak as EventListener);
+      induk.removeEventListener("pointerleave", reset);
+      cancelAnimationFrame(frame);
+    };
+  }, [dikurangi]);
 
   // berhenti saat tab tidak terlihat; pulihkan saat kembali dari halaman tujuan (tombol back)
   useEffect(() => {
@@ -94,6 +123,8 @@ export function Hero({ hero }: { hero: Situs["hero"] }) {
   };
 
   const kata = [hero.judulAwal, hero.judulMiring, hero.judulAkhir].filter(Boolean);
+  // ukuran judul mengikuti kata terpanjang (baris boleh membungkus) agar tidak menabrak potret
+  const panjang = Math.max(9, ...kata.flatMap((k) => k.split(/\s+/)).map((w) => w.length));
 
   return (
     <>
@@ -111,10 +142,10 @@ export function Hero({ hero }: { hero: Situs["hero"] }) {
       >
         <div className="hero-intro">
           <p className="eyebrow">{hero.label}</p>
-          <h1>
+          <h1 style={{ "--panjang": panjang } as CSSProperties}>
             {kata.map((k, i) => (
-              <span key={i} className="block">
-                {i === 1 ? <em>{k}</em> : k}
+              <span key={i} className="baris-judul">
+                <span style={{ animationDelay: `${120 + i * 130}ms` }}>{i === 1 ? <em>{k}</em> : k}</span>
               </span>
             ))}
           </h1>
@@ -129,7 +160,7 @@ export function Hero({ hero }: { hero: Situs["hero"] }) {
           </div>
         </div>
 
-        <div className="hero-visual">
+        <div className="hero-visual" ref={visual}>
           <div className="hero-petal" aria-hidden />
           <div className="hero-disc" aria-hidden />
           <div className="hero-orbit" aria-hidden />
@@ -149,7 +180,7 @@ export function Hero({ hero }: { hero: Situs["hero"] }) {
                 key={s.id}
                 href={tujuan}
                 onClick={(e) => ikuti(e, tujuan)}
-                className={`hero-portrait ${i === idx ? "is-active" : ""} ${potongan(s.gambar) ? "" : "is-foto"}`}
+                className={`hero-portrait ${i === idx ? "is-active" : ""} ${potongan(s.gambar) && !s.video ? "" : "is-foto"}`}
                 inert={i !== idx}
                 aria-hidden={i !== idx || undefined}
                 aria-label={`${s.alt} — buka halaman terkait`}
@@ -175,6 +206,24 @@ export function Hero({ hero }: { hero: Situs["hero"] }) {
                       sizes="92vw"
                       quality={75}
                       className="sm:hidden"
+                      style={{ objectPosition: s.fokus }}
+                    />
+                  )}
+                  {s.video && !dikurangi && (
+                    <video
+                      src={s.video}
+                      poster={s.gambar}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload={i === 0 ? "auto" : "none"}
+                      aria-hidden
+                      ref={(v) => {
+                        if (!v) return;
+                        if (i === idx) void v.play().catch(() => {});
+                        else v.pause();
+                      }}
                       style={{ objectPosition: s.fokus }}
                     />
                   )}
@@ -247,7 +296,23 @@ export function Hero({ hero }: { hero: Situs["hero"] }) {
         )}
       </section>
       <div className="editorial-hero-bottom">
-        <span>RUANG UNTUK BELAJAR. KESEMPATAN UNTUK BERARTI.</span>
+        {info.length > 0 ? (
+          <div className="pita-info" aria-label="Pengumuman terbaru">
+            <div className="pita-jalan">
+              {[0, 1].map((salinan) => (
+                <span key={salinan} aria-hidden={salinan === 1 || undefined} className="pita-isi">
+                  {info.map((p, i) => (
+                    <span key={i}>
+                      <strong>{p.judul}</strong> {p.isi}
+                    </span>
+                  ))}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <span>RUANG UNTUK BELAJAR. KESEMPATAN UNTUK BERARTI.</span>
+        )}
         <a href="#nilai">
           Kenali sekolah lebih dekat <ArrowDown size={14} aria-hidden />
         </a>

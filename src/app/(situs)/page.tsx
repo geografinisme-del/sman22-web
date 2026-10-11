@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import { Hero } from "@/components/Hero";
+import { Reveal } from "@/components/Reveal";
 import { programUnggulan } from "@/content/sekolah";
 import { getAgenda, getBerita, getGaleri, getPengumuman, getSitus } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
@@ -39,7 +40,7 @@ export default async function Beranda() {
     getSitus(),
     getBerita(3),
     getAgenda(1),
-    getPengumuman(1),
+    getPengumuman(4),
     getGaleri(),
   ]);
 
@@ -57,13 +58,13 @@ export default async function Beranda() {
   return (
     <div className="lp lp-halaman pt-[68px] min-[761px]:pt-20">
       <div className="lp-wadah">
-        <Hero hero={situs.hero} />
+        <Hero hero={situs.hero} info={pengumuman.map((p) => ({ judul: p.judul, isi: p.isi }))} />
       </div>
 
       {/* Nilai sekolah */}
       <section id="nilai" className="lp-wadah feature-strip scroll-mt-24" aria-label="Nilai sekolah">
         {NILAI.map(({ Ikon, judul, teks }, i) => (
-          <div className="feature-item" key={judul}>
+          <Reveal className="feature-item" key={judul} delay={i * 120}>
             <span className="value-number" aria-hidden>
               0{i + 1}
             </span>
@@ -72,14 +73,14 @@ export default async function Beranda() {
               <h2>{judul}</h2>
               <p>{teks}</p>
             </div>
-          </div>
+          </Reveal>
         ))}
       </section>
 
       {/* Program sekolah */}
       <section className="section landing-programs scroll-mt-20" id="program" aria-labelledby="judul-program">
         <div className="lp-wadah">
-          <div className="section-head">
+          <Reveal className="section-head">
             <div>
               <p className="eyebrow">01 / Lebih dari ruang kelas</p>
               <h2 id="judul-program">
@@ -89,12 +90,12 @@ export default async function Beranda() {
               </h2>
             </div>
             <p>Belajar bukan hanya tentang hari ini. Kenali ruang untuk membangun karakter, berkarya, dan memberi arti.</p>
-          </div>
+          </Reveal>
           <div className="program-grid">
             {programUnggulan.map((p, i) => {
               const tema = TEMA_PROGRAM[i % TEMA_PROGRAM.length];
               return (
-                <article className="program-card" key={p.nama}>
+                <Reveal as="article" className="program-card" key={p.nama} delay={(i % 3) * 120}>
                   <div className="program-cover" style={{ background: tema.latar, color: tema.tinta }}>
                     <span className="tag">Program sekolah</span>
                     <span className="big" aria-hidden>
@@ -111,7 +112,7 @@ export default async function Beranda() {
                       Kenali program <ArrowUpRight size={16} aria-hidden />
                     </Link>
                   </div>
-                </article>
+                </Reveal>
               );
             })}
           </div>
@@ -120,7 +121,7 @@ export default async function Beranda() {
 
       {/* Portal */}
       <section className="lp-wadah section" aria-labelledby="judul-portal">
-        <div className="portal-banner">
+        <Reveal className="portal-banner">
           <div>
             <p className="eyebrow">02 / Satu pintu, terhubung</p>
             <h2 id="judul-portal">
@@ -146,12 +147,12 @@ export default async function Beranda() {
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Berita */}
       <section className="lp-wadah section pt-0!" id="berita" aria-labelledby="judul-berita">
-        <div className="section-head">
+        <Reveal className="section-head">
           <div>
             <p className="eyebrow">03 / Kabar dari sekolah</p>
             <h2 id="judul-berita">
@@ -161,11 +162,11 @@ export default async function Beranda() {
           <Link className="btn btn-link" href="/berita">
             Semua berita <ArrowUpRight size={16} aria-hidden />
           </Link>
-        </div>
+        </Reveal>
         {berita.length ? (
           <div className="program-grid">
-            {berita.map((b) => (
-              <article className="panel news-card" key={b.slug}>
+            {berita.map((b, i) => (
+              <Reveal as="article" className="panel news-card" key={b.slug} delay={i * 120}>
                 <p className="eyebrow">{b.kategori || "Berita sekolah"}</p>
                 <p className="news-meta">{formatTanggal(b.tanggal)}</p>
                 <h3>{b.judul}</h3>
@@ -173,7 +174,7 @@ export default async function Beranda() {
                 <Link href={`/berita/${b.slug}`} className="btn btn-link mt-4 self-start" aria-label={`Baca ${b.judul}`}>
                   Baca cerita <ArrowUpRight size={15} aria-hidden />
                 </Link>
-              </article>
+              </Reveal>
             ))}
           </div>
         ) : (
@@ -189,24 +190,24 @@ export default async function Beranda() {
 
       {/* Informasi terbaru */}
       <section className="lp-wadah section pt-0!" aria-labelledby="judul-terbaru">
-        <div className="section-head">
+        <Reveal className="section-head">
           <div>
             <p className="eyebrow">04 / Informasi terbaru</p>
             <h2 id="judul-terbaru">
               Yang sedang <em>berjalan.</em>
             </h2>
           </div>
-        </div>
+        </Reveal>
         <div className="program-grid">
-          {terbaru.map(({ label, href, judul, teks }) => (
-            <article className="panel" key={label}>
+          {terbaru.map(({ label, href, judul, teks }, i) => (
+            <Reveal as="article" className="panel" key={label} delay={i * 120}>
               <p className="eyebrow">{label}</p>
               <h3 className="mt-2">{judul || `${label} sedang disiapkan`}</h3>
               <p className="muted mt-1 text-[13px]">{judul ? teks : "Konten resmi akan hadir setelah diterbitkan sekolah."}</p>
               <Link className="btn btn-link mt-4 self-start" href={href}>
                 Lihat {label.toLowerCase()} <ArrowUpRight size={16} aria-hidden />
               </Link>
-            </article>
+            </Reveal>
           ))}
         </div>
       </section>
