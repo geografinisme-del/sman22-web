@@ -12,7 +12,7 @@ export function ArtikelBerita({ b, kembali = true }: { b: BeritaItem; kembali?: 
           ← Kembali ke berita
         </Link>
       )}
-      <p className="mt-8 text-xs uppercase tracking-[0.25em] text-merah">
+      <p className="mt-8 text-xs uppercase tracking-[0.25em] text-[#284fd7]">
         {b.kategori} · <time dateTime={b.tanggal}>{formatTanggal(b.tanggal)}</time>
       </p>
       <h1 className="mt-3 font-serif text-5xl leading-[1.02] tracking-tight sm:text-6xl">{b.judul}</h1>

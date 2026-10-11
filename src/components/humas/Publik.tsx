@@ -24,7 +24,7 @@ export function FormPengaduan({ login }: { login: boolean }) {
           <div className="rounded-xl bg-white p-4"><dt className="text-xs uppercase tracking-widest text-black/50">Kode akses</dt><dd className="font-mono text-2xl font-bold tracking-widest">{hasil.kode}</dd></div>
         </dl>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => navigator.clipboard?.writeText(`Tiket: ${hasil.tiket}\nKode akses: ${hasil.kode}`)} className="rounded-full bg-brand-900 px-5 py-2.5 font-semibold text-white">Salin</button>
+          <button type="button" onClick={() => navigator.clipboard?.writeText(`Tiket: ${hasil.tiket}\nKode akses: ${hasil.kode}`)} className="rounded-full bg-[#284fd7] px-5 py-2.5 font-semibold text-white">Salin</button>
           <a href="/pengaduan/cek" className="rounded-full px-5 py-2.5 font-semibold ring-1 ring-black/15">Cek status</a>
         </div>
         {login && <p className="text-sm text-black/60">Karena Anda masuk, perkembangan juga dikirim ke notifikasi akun Anda.</p>}
@@ -44,17 +44,17 @@ export function FormPengaduan({ login }: { login: boolean }) {
           Laporan ini <strong>rahasia</strong>: hanya dibaca kepala sekolah, BK, dan kesiswaan, dan ditangani dengan melindungi korban. Dalam keadaan darurat, segera hubungi guru/wali kelas atau layanan SAPA 129.
         </p>
       )}
-      <label className="block text-sm font-semibold">Judul singkat<input name="judul" maxLength={150} className={`${inp} mt-1.5 font-normal`} aria-invalid={Boolean(e.judul)} />{e.judul && <span className="mt-1 block text-merah">{e.judul}</span>}</label>
-      <label className="block text-sm font-semibold">Uraian<textarea name="isi" rows={6} maxLength={5000} className={`${inp} mt-1.5 font-normal`} aria-invalid={Boolean(e.isi)} placeholder="Apa yang terjadi, kapan, di mana. Hindari menyebar data pribadi orang lain di luar yang diperlukan." />{e.isi && <span className="mt-1 block text-merah">{e.isi}</span>}</label>
+      <label className="block text-sm font-semibold">Judul singkat<input name="judul" maxLength={150} className={`${inp} mt-1.5 font-normal`} aria-invalid={Boolean(e.judul)} />{e.judul && <span className="mt-1 block text-[#284fd7]">{e.judul}</span>}</label>
+      <label className="block text-sm font-semibold">Uraian<textarea name="isi" rows={6} maxLength={5000} className={`${inp} mt-1.5 font-normal`} aria-invalid={Boolean(e.isi)} placeholder="Apa yang terjadi, kapan, di mana. Hindari menyebar data pribadi orang lain di luar yang diperlukan." />{e.isi && <span className="mt-1 block text-[#284fd7]">{e.isi}</span>}</label>
       <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="anonim" checked={anonim} onChange={(x) => setAnonim(x.target.checked)} className="h-5 w-5" /> Rahasiakan identitas saya</label>
       {!anonim && (
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block text-sm font-semibold">Nama<input name="nama" maxLength={120} className={`${inp} mt-1.5 font-normal`} />{e.nama && <span className="mt-1 block text-merah">{e.nama}</span>}</label>
+          <label className="block text-sm font-semibold">Nama<input name="nama" maxLength={120} className={`${inp} mt-1.5 font-normal`} />{e.nama && <span className="mt-1 block text-[#284fd7]">{e.nama}</span>}</label>
           <label className="block text-sm font-semibold">Email / No. HP (opsional)<input name="kontak" maxLength={120} className={`${inp} mt-1.5 font-normal`} /></label>
         </div>
       )}
-      <label className="flex items-start gap-2 text-sm"><input type="checkbox" name="setuju" className="mt-1 h-5 w-5" /> <span>Isi pengaduan ini benar sepanjang pengetahuan saya dan tidak bermaksud memfitnah.{e.setuju && <span className="block text-merah">{e.setuju}</span>}</span></label>
-      <button disabled={proses} className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim pengaduan"}</button>
+      <label className="flex items-start gap-2 text-sm"><input type="checkbox" name="setuju" className="mt-1 h-5 w-5" /> <span>Isi pengaduan ini benar sepanjang pengetahuan saya dan tidak bermaksud memfitnah.{e.setuju && <span className="block text-[#284fd7]">{e.setuju}</span>}</span></label>
+      <button disabled={proses} className="rounded-full bg-[#284fd7] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim pengaduan"}</button>
     </form>
   );
 }
@@ -84,8 +84,8 @@ export function FormNilai({ tiket, kode, id }: { tiket?: string; kode?: string; 
       {id ? <input type="hidden" name="id" value={id} /> : <><input type="hidden" name="tiket" value={tiket} /><input type="hidden" name="kode" value={kode} /></>}
       <PilihBintang />
       <input name="komentar" maxLength={500} placeholder="Komentar (opsional)" aria-label="Komentar" className={inp} />
-      {hasil.pesan && <p role="alert" className="text-sm text-merah">{hasil.pesan}</p>}
-      <button disabled={proses} className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">Kirim penilaian</button>
+      {hasil.pesan && <p role="alert" className="text-sm text-[#284fd7]">{hasil.pesan}</p>}
+      <button disabled={proses} className="rounded-full bg-[#284fd7] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">Kirim penilaian</button>
     </form>
   );
 }
@@ -100,18 +100,18 @@ export function FormCek({ tiketAwal = "" }: { tiketAwal?: string }) {
       <form onSubmit={kirim} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
         <label className="block text-sm font-semibold">Nomor tiket<input name="tiket" value={tiket} onChange={(x) => setTiket(x.target.value)} placeholder="ADU-2610-1A2B3" className={`${inp} mt-1.5 font-mono uppercase`} /></label>
         <label className="block text-sm font-semibold">Kode akses<input name="kode" value={kode} onChange={(x) => setKode(x.target.value)} placeholder="10 karakter" autoComplete="off" className={`${inp} mt-1.5 font-mono uppercase`} /></label>
-        <button disabled={proses} className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Memeriksa…" : "Cek"}</button>
+        <button disabled={proses} className="rounded-full bg-[#284fd7] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Memeriksa…" : "Cek"}</button>
       </form>
       {hasil.pesan && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">{hasil.pesan}</p>}
       {hasil.data && (
-        <div role="status" className="space-y-3 rounded-2xl bg-white p-6 ring-1 ring-black/5">
+        <div role="status" className="space-y-3 kartu p-6 ">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono font-bold">{hasil.data.tiket}</span>
             <span className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 ${STATUS_ADUAN[hasil.data.status]?.warna}`}>{STATUS_ADUAN[hasil.data.status]?.label}</span>
           </div>
           <h2 className="font-serif text-2xl">{hasil.data.judul}</h2>
           <p className="text-sm text-black/50">{KATEGORI_ADUAN[hasil.data.kategori as keyof typeof KATEGORI_ADUAN]} · dikirim {new Date(hasil.data.dibuat).toLocaleDateString("id-ID", { dateStyle: "long" })} · diperbarui {new Date(hasil.data.diperbarui).toLocaleDateString("id-ID", { dateStyle: "long" })}</p>
-          <div className="rounded-xl bg-krem p-4"><p className="text-xs uppercase tracking-widest text-black/50">Tanggapan sekolah</p><p className="mt-1 whitespace-pre-line">{hasil.data.tanggapan_publik || "Belum ada tanggapan. Pengaduan Anda sedang ditinjau."}</p></div>
+          <div className="rounded-xl bg-[#f6f5fc] p-4"><p className="text-xs uppercase tracking-widest text-black/50">Tanggapan sekolah</p><p className="mt-1 whitespace-pre-line">{hasil.data.tanggapan_publik || "Belum ada tanggapan. Pengaduan Anda sedang ditinjau."}</p></div>
           {["selesai", "ditolak"].includes(hasil.data.status) && (hasil.data.rating
             ? <p className="text-sm text-black/60">Penilaian Anda: <span className="text-amber-500">{"★".repeat(hasil.data.rating)}</span></p>
             : <FormNilai key={hasil.data.tiket} tiket={tiket.trim().toUpperCase()} kode={kode.trim().toUpperCase()} />)}
@@ -130,14 +130,14 @@ export function FormSurvei({ id, pertanyaan }: { id: string; pertanyaan: Pertany
       <input type="hidden" name="survei_id" value={id} />
       <div className="hidden" aria-hidden><label>Situs web<input name="situs_web" tabIndex={-1} autoComplete="off" /></label></div>
       {pertanyaan.map((q, i) => (
-        <fieldset key={q.id} className="rounded-2xl bg-white p-5 ring-1 ring-black/5">
+        <fieldset key={q.id} className="kartu p-5 ">
           <legend className="sr-only">Pertanyaan {i + 1}</legend>
           <input type="hidden" name={`t_${q.id}`} value={q.jenis} />
-          <p className="mb-3 font-semibold">{i + 1}. {q.teks}{q.wajib !== false && <span className="text-merah" aria-label="wajib"> *</span>}</p>
+          <p className="mb-3 font-semibold">{i + 1}. {q.teks}{q.wajib !== false && <span className="text-[#284fd7]" aria-label="wajib"> *</span>}</p>
           {q.jenis === "skala" && (
             <div className="flex flex-wrap gap-2">
               {[1, 2, 3, 4, 5].map((n) => (
-                <label key={n} className="flex cursor-pointer flex-col items-center gap-1 rounded-xl px-3 py-2 ring-1 ring-black/10 has-[:checked]:bg-brand-900 has-[:checked]:text-white">
+                <label key={n} className="flex cursor-pointer flex-col items-center gap-1 rounded-xl px-3 py-2 ring-1 ring-black/10 has-[:checked]:bg-[#284fd7] has-[:checked]:text-white">
                   <input type="radio" name={`j_${q.id}`} value={n} className="sr-only" />
                   <span className="text-lg font-semibold">{n}</span>
                   <span className="text-[10px] uppercase tracking-wider opacity-70">{n === 1 ? "Sangat kurang" : n === 5 ? "Sangat baik" : "\u00a0"}</span>
@@ -155,7 +155,7 @@ export function FormSurvei({ id, pertanyaan }: { id: string; pertanyaan: Pertany
       ))}
       {hasil.pesan && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">{hasil.pesan}</p>}
       <p className="text-xs text-black/50">Jawaban disimpan tanpa nama dan hanya dilaporkan dalam bentuk rekap.</p>
-      <button disabled={proses} className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim jawaban"}</button>
+      <button disabled={proses} className="rounded-full bg-[#284fd7] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim jawaban"}</button>
     </form>
   );
 }

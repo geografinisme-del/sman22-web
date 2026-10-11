@@ -58,7 +58,7 @@ export default async function ProfilEkskul({ params }: { params: Promise<{ slug:
                   <li key={i}><img src={g} alt={`Kegiatan ${d.nama} ${i + 1}`} className="aspect-[4/3] w-full rounded-xl object-cover" referrerPolicy="no-referrer" loading="lazy" /></li>))}</ul></div>
             )}
           </div>
-          <aside className="space-y-3 self-start rounded-2xl bg-white p-6 text-sm ring-1 ring-black/5">
+          <aside className="space-y-3 self-start kartu p-6 text-sm ">
             <p><span className="text-black/50">Jadwal:</span> {d.jadwal_rutin || "—"}</p>
             <p><span className="text-black/50">Tempat:</span> {d.tempat || "—"}</p>
             <p><span className="text-black/50">Pembina:</span> {d.pembina.join(", ") || "—"}</p>

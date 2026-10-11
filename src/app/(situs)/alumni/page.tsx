@@ -23,7 +23,7 @@ export default async function Alumni() {
       <PageHeader judul="Alumni" deskripsi="Tetap terhubung dengan sekolah dan adik-adik kelas: berbagi cerita, peluang, dan pengalaman." />
       <Section>
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="rounded-2xl bg-brand-900 p-8 text-white">
+          <div className="rounded-2xl bg-[#284fd7] p-8 text-white">
             <p className="font-serif text-3xl">Gabung jejaring alumni</p>
             <p className="mt-2 text-white/80">Daftar sekali, data diverifikasi sekolah. Anda mengatur sendiri apa yang terlihat oleh alumni lain.</p>
             <div className="mt-5 flex flex-wrap gap-3">
@@ -31,7 +31,7 @@ export default async function Alumni() {
               <Link href="/admin/login" className="rounded-full px-5 py-2.5 font-semibold ring-1 ring-white/40">Masuk area alumni</Link>
             </div>
           </div>
-          <div className="rounded-2xl bg-white p-6 ring-1 ring-black/5">
+          <div className="kartu p-6 ">
             <p className="text-sm uppercase tracking-widest text-black/50">Tracer study</p>
             <p className="mt-1 font-serif text-4xl">{ring.alumni.toLocaleString("id-ID")}</p><p className="text-sm text-black/60">alumni terdaftar</p>
             {ring.cukup ? (
@@ -43,7 +43,7 @@ export default async function Alumni() {
       {cerita.length > 0 && (
         <Section judul="Cerita alumni" className="!pt-0">
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{cerita.map((x) => (
-            <li key={x.id} className="overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
+            <li key={x.id} className="overflow-hidden kartu">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {x.foto_url && <img src={x.foto_url} alt="" className="aspect-[16/9] w-full object-cover" referrerPolicy="no-referrer" loading="lazy" />}
               <div className="p-5"><h3 className="font-serif text-2xl">{x.judul}</h3>

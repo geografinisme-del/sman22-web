@@ -23,26 +23,26 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
       <Section>
         <form className="mb-6 flex gap-2" role="search">
           <input name="q" defaultValue={q} placeholder="Judul, pengarang, kategori, atau ISBN" aria-label="Cari buku" className="flex-1 rounded-full border border-black/15 bg-white px-5 py-3" />
-          <button className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white">Cari</button>
+          <button className="rounded-full bg-[#284fd7] px-6 py-3 font-semibold text-white">Cari</button>
         </form>
-        <p className="-mt-3 mb-6 text-sm"><Link href="?q=rekomendasi" className="font-semibold text-brand-700 underline">★ Rekomendasi pustakawan</Link></p>
+        <p className="-mt-3 mb-6 text-sm"><Link href="?q=rekomendasi" className="font-semibold text-[#284fd7] underline">★ Rekomendasi pustakawan</Link></p>
         {list.length === 0 ? <Kosong teks={q ? `Tidak ada buku untuk “${q}”.` : "Katalog belum tersedia."} /> : (
           <>
             <p className="mb-3 text-sm text-black/50">{total.toLocaleString("id-ID")} judul</p>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {list.map((b) => (
-                <li key={b.id} className="flex gap-4 rounded-2xl bg-white p-4 ring-1 ring-black/5">
+                <li key={b.id} className="flex gap-4 kartu p-4 ">
                   {b.sampul_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={b.sampul_url} alt="" className="h-28 w-20 shrink-0 rounded object-cover" referrerPolicy="no-referrer" loading="lazy" />
-                  ) : <div className="grid h-28 w-20 shrink-0 place-items-center rounded bg-brand-50 font-serif text-3xl text-brand-700" aria-hidden>{b.judul.slice(0, 1)}</div>}
+                  ) : <div className="grid h-28 w-20 shrink-0 place-items-center rounded bg-brand-50 font-serif text-3xl text-[#284fd7]" aria-hidden>{b.judul.slice(0, 1)}</div>}
                   <div className="min-w-0">
                     <p className="text-xs uppercase tracking-[0.15em] text-black/50">{b.kategori}</p>
                     <h2 className="font-semibold leading-snug"><Link href={`/perpustakaan/${b.id}`} className="hover:underline">{b.judul}</Link></h2>
                     {(b.rekomendasi || b.rating) && <p className="text-xs">{b.rekomendasi && <span className="mr-2 rounded bg-amber-100 px-1.5 font-semibold text-amber-900">Rekomendasi</span>}{b.rating && <span className="text-amber-600">★ {b.rating} <span className="text-black/50">({b.jumlah_ulasan})</span></span>}</p>}
                     <p className="text-sm text-black/60">{[b.pengarang, b.tahun].filter(Boolean).join(" · ")}</p>
-                    <p className={`mt-2 text-sm font-semibold ${b.tersedia ? "text-emerald-700" : "text-merah"}`}>{b.tersedia ? `${b.tersedia} tersedia` : "Sedang dipinjam semua"}{b.rak && <span className="font-normal text-black/50"> · rak {b.rak}</span>}</p>
-                    {b.tautan_digital && <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm font-semibold text-brand-700 underline">Baca versi digital</a>}
+                    <p className={`mt-2 text-sm font-semibold ${b.tersedia ? "text-emerald-700" : "text-[#284fd7]"}`}>{b.tersedia ? `${b.tersedia} tersedia` : "Sedang dipinjam semua"}{b.rak && <span className="font-normal text-black/50"> · rak {b.rak}</span>}</p>
+                    {b.tautan_digital && <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm font-semibold text-[#284fd7] underline">Baca versi digital</a>}
                   </div>
                 </li>
               ))}

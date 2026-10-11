@@ -20,7 +20,7 @@ export default async function VerifikasiSertifikat({ searchParams }: { searchPar
         <div className="max-w-2xl space-y-6">
           <form className="flex gap-2" role="search">
             <input name="kode" defaultValue={kode} placeholder="S22-XXXXXXXX" aria-label="Kode sertifikat" className="flex-1 rounded-full border border-black/15 bg-white px-5 py-3 font-mono uppercase" />
-            <button className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white">Periksa</button>
+            <button className="rounded-full bg-[#284fd7] px-6 py-3 font-semibold text-white">Periksa</button>
           </form>
           {kode && (v ? (
             <div role="status" className={`rounded-2xl p-6 ring-1 ${v.berlaku ? "bg-emerald-50 ring-emerald-200" : "bg-red-50 ring-red-200"}`}>

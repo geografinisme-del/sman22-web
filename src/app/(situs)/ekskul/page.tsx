@@ -20,7 +20,7 @@ export default async function DaftarEkskul() {
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((o) => (
               <li key={o.id}>
-                <Link href={`/ekskul/${o.slug}`} className="group block h-full overflow-hidden rounded-2xl bg-white ring-1 ring-black/5 transition hover:-translate-y-0.5 hover:shadow-lg">
+                <Link href={`/ekskul/${o.slug}`} className="group block h-full overflow-hidden kartu transition hover:-translate-y-0.5 hover:shadow-lg">
                   <div className="flex items-center gap-3 p-5 text-white" style={{ background: o.warna }}>
                     {o.logo_url ? (
                       // eslint-disable-next-line @next/next/no-img-element

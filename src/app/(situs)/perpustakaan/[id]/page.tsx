@@ -49,7 +49,7 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
               {b.sampul_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={b.sampul_url} alt="" className="h-48 w-32 shrink-0 rounded object-cover" referrerPolicy="no-referrer" />
-              ) : <div className="grid h-48 w-32 shrink-0 place-items-center rounded bg-brand-50 font-serif text-5xl text-brand-700" aria-hidden>{b.judul.slice(0, 1)}</div>}
+              ) : <div className="grid h-48 w-32 shrink-0 place-items-center rounded bg-brand-50 font-serif text-5xl text-[#284fd7]" aria-hidden>{b.judul.slice(0, 1)}</div>}
               <dl className="grid grid-cols-[110px_1fr] content-start gap-y-1 text-sm">
                 <dt className="text-black/50">Kategori</dt><dd>{b.kategori || "—"}</dd>
                 <dt className="text-black/50">No. panggil</dt><dd>{b.nomor_panggil || "—"}</dd>
@@ -64,7 +64,7 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
               <h2 className="mb-3 font-serif text-2xl">Ulasan pembaca</h2>
               {ulasan.length === 0 ? <p className="text-sm text-black/50">Belum ada ulasan.</p> : (
                 <ul className="space-y-3">{ulasan.map((x, i) => (
-                  <li key={i} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+                  <li key={i} className="kartu p-4 ">
                     <p className="text-amber-500" aria-label={`${x.rating} dari 5 bintang`}>{"★".repeat(x.rating)}<span className="text-black/20">{"★".repeat(5 - x.rating)}</span></p>
                     <p className="mt-1 text-sm">{x.isi}</p>
                     <p className="mt-1 text-xs text-black/40">{x.penulis} · {new Date(x.dibuat).toLocaleDateString("id-ID", { month: "long", year: "numeric", timeZone: "Asia/Jakarta" })}</p>
@@ -73,21 +73,21 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
             </section>
           </div>
           <aside className="space-y-4 self-start">
-            <div className="rounded-2xl bg-white p-5 ring-1 ring-black/5">
-              <p className={`text-lg font-semibold ${b.tersedia ? "text-emerald-700" : "text-merah"}`}>{b.tersedia ? `${b.tersedia} dari ${b.total} tersedia` : b.total ? "Sedang dipinjam semua" : "Tidak bisa dipinjam"}</p>
+            <div className="kartu p-5 ">
+              <p className={`text-lg font-semibold ${b.tersedia ? "text-emerald-700" : "text-[#284fd7]"}`}>{b.tersedia ? `${b.tersedia} dari ${b.total} tersedia` : b.total ? "Sedang dipinjam semua" : "Tidak bisa dipinjam"}</p>
               {b.total > 0 && (masuk ? (
                 <form action={pesanBuku} className="mt-3">
                   <input type="hidden" name="buku_id" value={b.id} /><input type="hidden" name="kembali" value={`/perpustakaan/${b.id}`} />
-                  <button className="w-full rounded-full bg-brand-900 px-5 py-3 font-semibold text-white">{b.tersedia ? "Pesan & ambil nanti" : "Masuk antrean pesanan"}</button>
+                  <button className="w-full rounded-full bg-[#284fd7] px-5 py-3 font-semibold text-white">{b.tersedia ? "Pesan & ambil nanti" : "Masuk antrean pesanan"}</button>
                   <p className="mt-2 text-xs text-black/50">Buku ditahan 3 hari setelah siap. Untuk siswa dan guru/staf.</p>
                 </form>
               ) : <p className="mt-2 text-sm text-black/60"><Link href="/masuk" className="underline">Masuk</Link> untuk memesan buku ini.</p>)}
               {b.tautan_digital ? (
-                <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-full px-5 py-3 text-center font-semibold ring-1 ring-brand-700 text-brand-700">Baca versi digital ↗</a>
+                <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-full px-5 py-3 text-center font-semibold ring-1 ring-brand-700 text-[#284fd7]">Baca versi digital ↗</a>
               ) : b.akses_digital === "warga" && b.lisensi && !masuk ? <p className="mt-3 text-sm text-black/60">Versi digital tersedia untuk warga sekolah — masuk untuk membaca.</p> : null}
               {b.lisensi && <p className="mt-2 text-xs text-black/40">Lisensi: {b.lisensi}</p>}
             </div>
-            {masuk && <div className="rounded-2xl bg-white p-5 ring-1 ring-black/5"><h2 className="mb-3 font-semibold">Tulis ulasan</h2><FormUlasan buku_id={b.id} /></div>}
+            {masuk && <div className="kartu p-5 "><h2 className="mb-3 font-semibold">Tulis ulasan</h2><FormUlasan buku_id={b.id} /></div>}
           </aside>
         </div>
       </Section>
