@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu } from "lucide-react";
 import { menu } from "@/content/menu";
 import { sekolah } from "@/content/sekolah";
@@ -26,9 +26,24 @@ export function Header() {
   const aktif = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const tutup = () => menuHp.current?.removeAttribute("open");
   const tautan = menu.filter((m) => m.href !== "/");
+  // di beranda, header transparan & putih selama berada di atas panggung sinematik yang gelap
+  const [gelap, setGelap] = useState(() => pathname === "/");
+  useEffect(() => {
+    const panggung = pathname === "/" ? document.querySelector<HTMLElement>(".sinema") : null;
+    if (!panggung) return;
+    const cek = () => setGelap(panggung.getBoundingClientRect().bottom > 90);
+    const awal = requestAnimationFrame(cek);
+    window.addEventListener("scroll", cek, { passive: true });
+    window.addEventListener("resize", cek);
+    return () => {
+      cancelAnimationFrame(awal);
+      window.removeEventListener("scroll", cek);
+      window.removeEventListener("resize", cek);
+    };
+  }, [pathname]);
 
   return (
-    <header className="lp lp-header">
+    <header className={`lp lp-header ${gelap && pathname === "/" ? "header-gelap" : ""}`}>
       <div className="lp-wadah lp-header-isi">
         <Brand />
         <nav className="nav-links" aria-label="Menu utama">

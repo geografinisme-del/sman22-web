@@ -327,3 +327,55 @@ export const getSitus = cache(async (): Promise<Situs> => {
     seo: { judul: s.seo_judul, deskripsi: s.seo_deskripsi || dasar.seo.deskripsi, gambar: s.seo_gambar_url },
   };
 });
+
+/* ------------------------------------------------------------------ */
+/* Visual panel halaman masuk/portal (dikelola di Tampilan Website)    */
+/* ------------------------------------------------------------------ */
+
+export type VisualAkunItem = {
+  id: string;
+  jenis: "gambar" | "video";
+  berkas: string;
+  poster?: string;
+  keterangan: string;
+  judulTautan?: string;
+  tautan?: string;
+};
+
+export const getVisualAkun = cache(async (lokasi: "akun" | "beranda" = "akun"): Promise<VisualAkunItem[]> => {
+  if (!supabaseAktif) return [];
+  const kolom = "id, jenis, berkas_url, poster_url, keterangan, judul_tautan, tautan";
+  const db = supabasePublik();
+  let { data, error } = await db.from("visual_akun").select(kolom).eq("lokasi", lokasi).order("urutan").order("created_at");
+  if (error && lokasi === "akun") {
+    // kolom lokasi belum ada (migrasi 20261122000000_visual_beranda.sql belum dijalankan) → semua visual milik halaman masuk
+    ({ data, error } = await db.from("visual_akun").select(kolom).order("urutan").order("created_at"));
+  }
+  if (error) {
+    // tabel belum ada (migrasi 20261120000000_visual_akun.sql belum dijalankan) → pakai visual bawaan
+    logGagal(`visual ${lokasi}`, error);
+    return [];
+  }
+  return (data ?? []).map((v) => ({
+    id: v.id,
+    jenis: v.jenis === "video" ? "video" : "gambar",
+    berkas: v.berkas_url,
+    poster: v.poster_url || undefined,
+    keterangan: v.keterangan,
+    judulTautan: v.judul_tautan || undefined,
+    tautan: v.tautan || undefined,
+  }));
+});
+
+export type EkskulRingkas = { nama: string; slug: string; bidang: string };
+
+/** Daftar ekskul & organisasi yang tampil publik (untuk pita bergerak di beranda). */
+export const getEkskulRingkas = cache(async (): Promise<EkskulRingkas[]> => {
+  if (!supabaseAktif) return [];
+  const { data, error } = await supabasePublik().rpc("organisasi_publik");
+  if (error) {
+    logGagal("ekskul", error);
+    return [];
+  }
+  return ((data ?? []) as { nama: string; slug: string; bidang: string | null }[]).map((o) => ({ nama: o.nama, slug: o.slug, bidang: o.bidang ?? "" }));
+});

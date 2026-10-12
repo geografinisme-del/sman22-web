@@ -1,26 +1,12 @@
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  BookOpen,
-  CalendarCheck,
-  ClipboardList,
-  Flower2,
-  GraduationCap,
-  LayoutDashboard,
-  ShieldCheck,
-  Users,
-} from "lucide-react";
-import { Hero } from "@/components/Hero";
+import { ArrowUpRight, BookOpen } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
-import { programUnggulan } from "@/content/sekolah";
-import { getAgenda, getBerita, getGaleri, getPengumuman, getSitus } from "@/lib/data";
+import { HeroSinema } from "@/components/sinema/HeroSinema";
+import { SeksiGelap } from "@/components/sinema/SeksiGelap";
+import "@/components/sinema/sinema.css";
+import { programUnggulan, sekolah } from "@/content/sekolah";
+import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getPengumuman, getProfil, getSitus, getVisualAkun } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
-
-const NILAI = [
-  { Ikon: GraduationCap, judul: "Belajar dengan tujuan", teks: "Mengembangkan pengetahuan, karakter, dan potensi diri." },
-  { Ikon: Users, judul: "Tumbuh bersama", teks: "Menghubungkan siswa, guru, dan seluruh warga sekolah." },
-  { Ikon: Flower2, judul: "Memberi dampak", teks: "Kebiasaan baik hari ini, perubahan berarti untuk masa depan." },
-];
 
 const TEMA_PROGRAM = [
   { latar: "#ebe5fa", tinta: "#51419c" },
@@ -28,21 +14,27 @@ const TEMA_PROGRAM = [
   { latar: "#f9f3e9", tinta: "#785726" },
 ];
 
-const LAYANAN_PORTAL = [
-  { Ikon: LayoutDashboard, label: "Dashboard personal" },
-  { Ikon: CalendarCheck, label: "Absensi harian" },
-  { Ikon: ClipboardList, label: "Tugas & jadwal pelajaran" },
-  { Ikon: ShieldCheck, label: "Akses sesuai kewenangan" },
-];
-
 export default async function Beranda() {
-  const [situs, berita, agenda, pengumuman, galeri] = await Promise.all([
+  const [situs, berita, agenda, pengumuman, galeri, visual, ekskul, profil] = await Promise.all([
     getSitus(),
     getBerita(3),
     getAgenda(1),
     getPengumuman(4),
     getGaleri(),
+    getVisualAkun("beranda"),
+    getEkskulRingkas(),
+    getProfil(),
   ]);
+  const tahunBerkarya = new Date().getFullYear() - sekolah.tahunBerdiri;
+  const stat = [
+    { nilai: String(sekolah.tahunBerdiri), label: "Tahun berdiri" },
+    { nilai: `${tahunBerkarya}`, label: "Tahun berkarya" },
+    ...profil.statistik.filter((x) => x.nilai && x.label !== "Tahun berdiri").map((x) => ({ nilai: x.nilai, label: x.label })),
+  ];
+  const pita = ekskul.length
+    ? ekskul.map((e) => ({ nama: e.nama, sub: e.bidang, href: `/ekskul/${e.slug}` }))
+    : programUnggulan.map((p) => ({ nama: p.nama, sub: "Program sekolah", href: "/profil" }));
+  const fotoGaleri = galeri.map((g) => g.gambar).filter(Boolean);
 
   const terbaru = [
     {
@@ -56,26 +48,23 @@ export default async function Beranda() {
   ];
 
   return (
-    <div className="lp lp-halaman pt-[68px] min-[761px]:pt-20">
-      <div className="lp-wadah">
-        <Hero hero={situs.hero} info={pengumuman.map((p) => ({ judul: p.judul, isi: p.isi }))} />
-      </div>
+    <div className="lp lp-halaman">
+      <HeroSinema hero={situs.hero} visual={visual} program={programUnggulan.map((p) => p.nama)} stat={stat} />
 
-      {/* Nilai sekolah */}
-      <section id="nilai" className="lp-wadah feature-strip scroll-mt-24" aria-label="Nilai sekolah">
-        {NILAI.map(({ Ikon, judul, teks }, i) => (
-          <Reveal className="feature-item" key={judul} delay={i * 120}>
-            <span className="value-number" aria-hidden>
-              0{i + 1}
-            </span>
-            <div>
-              <Ikon size={22} aria-hidden />
-              <h2>{judul}</h2>
-              <p>{teks}</p>
-            </div>
-          </Reveal>
-        ))}
-      </section>
+      <SeksiGelap
+        d={{
+          pita,
+          program: programUnggulan[0],
+          tahunBerkarya,
+          tahunBerdiri: sekolah.tahunBerdiri,
+          beritaTerbaru: berita[0] ? { judul: berita[0].judul, slug: berita[0].slug, tanggal: formatTanggal(berita[0].tanggal) } : undefined,
+          jumlahEkskul: ekskul.length,
+          fotoUtama: fotoGaleri[0] ?? "/images/kegiatan-aula.jpg",
+          fotoGaleri: fotoGaleri[1] ?? "/images/apel-lapangan.jpg",
+          jumlahFoto: galeri.length,
+          kepalaSekolah: profil.kepalaSekolah,
+        }}
+      />
 
       {/* Program sekolah */}
       <section className="section landing-programs scroll-mt-20" id="program" aria-labelledby="judul-program">
@@ -117,37 +106,6 @@ export default async function Beranda() {
             })}
           </div>
         </div>
-      </section>
-
-      {/* Portal */}
-      <section className="lp-wadah section" aria-labelledby="judul-portal">
-        <Reveal className="portal-banner">
-          <div>
-            <p className="eyebrow">02 / Satu pintu, terhubung</p>
-            <h2 id="judul-portal">
-              Sekolah dalam
-              <br />
-              <em>genggaman.</em>
-            </h2>
-            <p>Informasi, kehadiran, tugas, dan layanan sekolah hadir dalam satu ruang yang terhubung — untuk siswa, orang tua, dan guru.</p>
-            <Link className="btn btn-primary portal-cta" href="/masuk">
-              Masuk portal sekolah <ArrowUpRight size={16} aria-hidden />
-            </Link>
-          </div>
-          <div className="mini-window" aria-label="Layanan portal">
-            <div className="panel-title">
-              <strong>PORTAL 22</strong>
-              <span className="badge">Warga sekolah</span>
-            </div>
-            {LAYANAN_PORTAL.map(({ Ikon, label }) => (
-              <div className="mini-row" key={label}>
-                <Ikon size={19} aria-hidden />
-                <span>{label}</span>
-                <ArrowUpRight size={13} className="mini-arrow" aria-hidden />
-              </div>
-            ))}
-          </div>
-        </Reveal>
       </section>
 
       {/* Berita */}

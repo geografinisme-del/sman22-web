@@ -1584,3 +1584,133 @@ a:hover .kartu-gambar img,
     box-shadow: none;
   }
 }
+
+/* visual halaman akun dari CMS: zoom pelan pada gambar */
+@keyframes panggung-zoom {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.panggung-zoom {
+  animation: panggung-zoom 7s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .panggung-zoom {
+    animation: none;
+  }
+}
+
+/* ---------- halaman akun sinematik (latar penuh + kartu kaca) ---------- */
+.akun-sinema {
+  background:
+    radial-gradient(900px 520px at 10% 0%, rgb(124 92 255 / 0.35), transparent 70%),
+    radial-gradient(800px 520px at 100% 100%, rgb(40 79 215 / 0.3), transparent 70%),
+    #0b0a1a;
+  color: #fff;
+}
+.akun-latar {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.panggung-tint {
+  background:
+    linear-gradient(90deg, rgb(11 10 26 / 0.82) 0%, rgb(11 10 26 / 0.45) 50%, rgb(11 10 26 / 0.35) 100%),
+    linear-gradient(180deg, rgb(11 10 26 / 0.5) 0%, transparent 30%, transparent 65%, rgb(11 10 26 / 0.8) 100%);
+}
+@media (max-width: 1023px) {
+  .panggung-tint {
+    background: rgb(11 10 26 / 0.62);
+  }
+}
+.akun-sinema .akun-kiri {
+  pointer-events: none;
+}
+.akun-sinema .akun-kiri a,
+.akun-sinema .akun-kiri button {
+  pointer-events: auto;
+}
+.akun-sinema .brand small {
+  color: rgb(255 255 255 / 0.65);
+}
+.akun-sinema .brand-logo {
+  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 0.4));
+}
+.akun-sinema h2 {
+  font-family: var(--font-interface);
+}
+.akun-sinema h2 em.akun-miring,
+.akun-miring {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  background: linear-gradient(100deg, #fff, #c9bcff 60%, #9d84ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.akun-pil {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  backdrop-filter: blur(10px);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.akun-pil span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8cf0b5;
+}
+.akun-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  backdrop-filter: blur(10px);
+  font-size: 13px;
+  font-weight: 500;
+}
+.akun-sinema .akun-isi {
+  background: transparent;
+}
+.akun-sinema .akun-kartu {
+  padding: 32px;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 0.96);
+  border: 1px solid rgb(255 255 255 / 0.55);
+  backdrop-filter: blur(22px) saturate(1.3);
+  box-shadow:
+    0 40px 90px -30px rgb(0 0 0 / 0.65),
+    0 0 0 1px rgb(255 255 255 / 0.06);
+  color: #20252c;
+}
+.akun-sinema .akun-bawah a {
+  color: rgb(255 255 255 / 0.75) !important;
+}
+.akun-sinema .akun-bawah a:hover {
+  color: #fff !important;
+}
+/* ilustrasi bawaan di atas latar gelap */
+.akun-sinema .akun-visual .hero-sticker {
+  color: #20252c;
+}
+@media (max-width: 480px) {
+  .akun-sinema .akun-kartu {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+}

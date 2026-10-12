@@ -4,6 +4,8 @@ import { punya, wajibLogin } from "@/lib/admin/auth";
 import { formatWaktu, keInputWaktu } from "@/lib/format";
 import { redirect } from "next/navigation";
 import { arsipSlide } from "../../actions-situs";
+import { arsipVisual } from "../../actions-visual";
+import { FormVisual } from "./FormVisual";
 import { FormFooter, FormHeroTeks, FormLayanan, FormPersetujuan, FormSeo, FormSlide, type DataSitus } from "./Form";
 
 export const metadata = { title: "Tampilan Website" };
@@ -14,9 +16,12 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
   const kelola = punya(akses, "konten.kelola");
   const terbitkan = punya(akses, "konten.terbitkan");
   if (!kelola && !terbitkan) redirect("/admin?pesan=tanpa-akses");
-  const [{ data: s }, { data: slide }] = await Promise.all([
+  const [{ data: s }, { data: slide }, { data: visual, error: errVisual }] = await Promise.all([
     supabase.from("pengaturan_situs").select("*").eq("id", 1).maybeSingle(),
     kelola ? supabase.from("hero_slide").select("*").is("deleted_at", null).order("urutan").order("created_at") : Promise.resolve({ data: [] }),
+    kelola
+      ? supabase.from("visual_akun").select("*").is("deleted_at", null).order("urutan").order("created_at")
+      : Promise.resolve({ data: [], error: null }),
   ]);
   if (!s) return <p>Pengaturan situs belum tersedia. Jalankan migrasi 20261018000000_cms_lanjutan.sql.</p>;
   const d = s as DataSitus;
@@ -69,6 +74,67 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
                   <FormSlide s={{ alt: "", fokus_x: 50, fokus_y: 50, skala: 100, tautan: "", urutan: (slide?.length ?? 0) + 1, aktif: true, tayang_mulai: "", tayang_selesai: "" }} />
                 </div>
               </details>
+            </Kartu>
+
+            <Kartu>
+              <h2 id="visual-masuk" className="scroll-mt-24 font-serif text-3xl">Visual sinematik (beranda & halaman masuk)</h2>
+              <p className="mt-1 text-sm text-black/60">
+                Video atau gambar untuk <strong>beranda</strong> (bergerak mengikuti gulir) dan latar <strong>halaman masuk</strong> guru, siswa &amp;
+                orang tua. Bila kosong, memakai visual bawaan.{" "}
+                <a href="/" target="_blank" className="font-medium text-brand-700 underline">
+                  Lihat beranda ↗
+                </a>{" "}
+                ·{" "}
+                <a href="/admin/login" target="_blank" className="font-medium text-brand-700 underline">
+                  Lihat halaman masuk ↗
+                </a>
+              </p>
+              {errVisual ? (
+                <p className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+                  Fitur ini perlu migrasi <code>20261120000000_visual_akun.sql</code> dijalankan di Supabase → SQL Editor.
+                </p>
+              ) : (
+                <>
+                  <ul className="mt-5 space-y-4">
+                    {(visual ?? []).map((x) => (
+                      <li key={x.id} className="rounded-2xl bg-krem p-4">
+                        <details open={sp.ubah === x.id}>
+                          <summary className="flex cursor-pointer flex-wrap items-center gap-3">
+                            {x.jenis === "video" ? (
+                              <video src={x.berkas_url} poster={x.poster_url || undefined} muted preload="metadata" className="h-16 w-14 rounded-lg bg-black object-cover" />
+                            ) : (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img src={x.berkas_url} alt="" className="h-16 w-14 rounded-lg object-cover" />
+                            )}
+                            <span className="font-medium">
+                              #{x.urutan} {x.jenis === "video" ? "Video" : "Gambar"}
+                              {x.keterangan ? ` · ${x.keterangan}` : ""}
+                            </span>
+                            <Lencana warna="kuning">{x.lokasi === "beranda" ? "Beranda" : "Halaman masuk"}</Lencana>
+                            {x.aktif ? <Lencana warna="hijau">Tayang</Lencana> : <Lencana>Disembunyikan</Lencana>}
+                            {x.tautan && <Lencana>→ {x.tautan}</Lencana>}
+                          </summary>
+                          <div className="mt-4">
+                            <FormVisual v={x} />
+                            <form action={arsipVisual} className="mt-3">
+                              <input type="hidden" name="id" value={x.id} />
+                              <button className="text-sm text-merah underline">Hapus visual ini</button>
+                            </form>
+                          </div>
+                        </details>
+                      </li>
+                    ))}
+                  </ul>
+                  <details className="mt-5" open={!visual?.length}>
+                    <summary className="cursor-pointer font-semibold text-brand-700">+ Tambah gambar / video</summary>
+                    <div className="mt-4">
+                      <FormVisual
+                        v={{ jenis: "video", keterangan: "", judul_tautan: "", tautan: "", urutan: (visual?.length ?? 0) + 1, aktif: true }}
+                      />
+                    </div>
+                  </details>
+                </>
+              )}
             </Kartu>
 
             <Kartu>

@@ -36,6 +36,8 @@ Buka **SQL Editor** → **New query**, lalu jalankan **sembilan file** ini **ber
 14. `supabase/migrations/20261108000000_bk_ekskul.sql` (bimbingan konseling; ekskul, OSIS & kegiatan) → **Run**
 15. `supabase/migrations/20261111000000_alumni_mutu.sql` (alumni & tracer study; mutu, akreditasi & bukti) → **Run**
 16. `supabase/migrations/20261115000000_hero_video.sql` (video latar opsional di foto pembuka beranda) → **Run**
+17. `supabase/migrations/20261120000000_visual_akun.sql` (visual sinematik halaman masuk) → **Run**
+18. `supabase/migrations/20261122000000_visual_beranda.sql` (visual sinematik beranda) → **Run**
 
 Masing-masing harus menampilkan **Success**. Semuanya aman dijalankan ulang.
 Bila sistem sudah berjalan dan ada file migrasi baru, cukup jalankan file yang baru saja.
@@ -119,6 +121,26 @@ Lalu **Deployments → ⋯ → Redeploy**.
 6. **Kehadiran Guru** (Operator/TU, Kepala Sekolah): siapa yang sudah/belum presensi. Operator mencatat izin, sakit, dinas luar, atau cuti.
 
 Angka merah atau kuning di menu menandai pengajuan atau SP yang perlu ditindaklanjuti.
+
+## Visual sinematik: beranda & halaman masuk (Fase 15–16)
+
+Beranda dibuka dengan **panggung sinematik gelap**: saat digulir, kamera "berjalan masuk" (atau video diputar maju-mundur
+mengikuti gulir) dan teks berganti tiga babak, lalu pita kegiatan yang mengalir dua arah dan kisi kartu kaca (bento).
+Bagian berita & agenda di bawahnya tetap terang. Halaman masuk portal memakai visual yang sama sebagai **latar penuh**
+dengan formulir di kartu kaca.
+
+Kelola di **Tampilan Website → Visual sinematik → + Tambah gambar / video**:
+- **Tampil di**: *Halaman masuk portal* atau *Beranda — animasi saat digulir*.
+- **Video** diunggah langsung dari komputer (MP4/WEBM, maks. 20 MB). Untuk beranda, paling bagus video **5–10 detik**
+  dengan kamera bergerak maju pelan, tanpa suara (mis. hasil AI video atau rekaman drone/gimbal). Bila video terasa
+  patah-patah saat digulir, kirim ke admin teknis untuk dikodekan ulang (keyframe rapat).
+- **Gambar**: di beranda, tiap gambar menjadi satu adegan berurutan dengan efek kamera mendekat; di halaman masuk,
+  lebih dari satu visual bergantian otomatis.
+- **Keterangan** kecil di pojok (wajib "Visual ilustratif · …" untuk visual buatan AI) dan **tautan** ke halaman lain
+  (sambutan kepala sekolah, prestasi siswa, SPMB, galeri, berita tertentu, dll.).
+- Tanpa visual beranda, website memakai foto sekolah bawaan + ilustrasi model. Di HP dan bagi pengunjung yang
+  mematikan animasi, video tidak dimuat (memakai gambar sampul).
+- Pita kegiatan berisi **Ekskul & OSIS** yang tampil publik; bila belum ada, berisi program unggulan.
 
 ## Animasi beranda & video latar (Fase 14)
 
