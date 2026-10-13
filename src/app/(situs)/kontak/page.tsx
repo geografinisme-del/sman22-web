@@ -29,7 +29,7 @@ export default async function Kontak() {
           <ul className="flex flex-wrap gap-2">
             {sosmed.map((s) => (
               <li key={s.nama}>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-[#284fd7]/20 transition hover:bg-[#284fd7] hover:text-white">
+                <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-[var(--tema-utama)]/20 transition hover:bg-[var(--tema-utama)] hover:text-white">
                   {s.nama} {s.akun && <span className="font-normal opacity-70">{s.akun}</span>}
                 </a>
               </li>
@@ -43,13 +43,13 @@ export default async function Kontak() {
           {kartu.map(({ Ikon, judul, isi, href, aksi }, i) => {
             const dalam = (
               <>
-                <span className="grid h-11 w-11 place-items-center rounded-full bg-[#ede8fa] text-[#284fd7] transition group-hover:bg-[#284fd7] group-hover:text-white">
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-[#ede8fa] text-[var(--tema-utama)] transition group-hover:bg-[var(--tema-utama)] group-hover:text-white">
                   <Ikon size={19} aria-hidden />
                 </span>
                 <p className="mt-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#646c7a]">{judul}</p>
                 <p className={`mt-1 ${isi ? "text-[#20252c]" : "text-[#9aa1ab]"}`}>{isi || "Segera diperbarui"}</p>
                 {href && isi && (
-                  <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#284fd7]">
+                  <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[var(--tema-utama)]">
                     {aksi} <ArrowUpRight size={14} aria-hidden />
                   </span>
                 )}
@@ -72,12 +72,12 @@ export default async function Kontak() {
               <Link href="/pengaduan" className="kartu group flex items-center gap-3 p-4">
                 <MessageSquareWarning size={20} aria-hidden className="text-[#51419c]" />
                 <span className="text-sm font-semibold">Kirim pengaduan / aspirasi</span>
-                <ArrowUpRight size={15} aria-hidden className="ml-auto text-[#284fd7] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight size={15} aria-hidden className="ml-auto text-[var(--tema-utama)] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
               <Link href="/pengaduan/cek" className="kartu group flex items-center gap-3 p-4">
                 <Search size={20} aria-hidden className="text-[#51419c]" />
                 <span className="text-sm font-semibold">Cek status tiket</span>
-                <ArrowUpRight size={15} aria-hidden className="ml-auto text-[#284fd7] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight size={15} aria-hidden className="ml-auto text-[var(--tema-utama)] transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
           </Reveal>

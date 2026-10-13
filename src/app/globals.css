@@ -33,6 +33,15 @@
   --text-8xl--line-height: 1;
 }
 
+/* Warna tema situs — bawaan; ditimpa dari Tampilan Website → Tema & warna (lihat app/layout.tsx) */
+:root {
+  --tema-utama: #284fd7;
+  --tema-aksen: #7c5cff;
+  --tema-gelap: #0b0a1a;
+  color-scheme: light;
+}
+
+
 html {
   scroll-behavior: smooth;
 }

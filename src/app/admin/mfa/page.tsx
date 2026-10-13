@@ -20,7 +20,7 @@ export default async function HalamanMfa() {
       judul="Verifikasi dua langkah"
       bawah={
         <form action={keluar}>
-          <button type="submit" className="text-[#646c7a] hover:text-[#284fd7]">
+          <button type="submit" className="text-[#646c7a] hover:text-[var(--tema-utama)]">
             Keluar
           </button>
         </form>

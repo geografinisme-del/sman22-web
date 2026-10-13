@@ -3,6 +3,7 @@ import { cache } from "react";
 import * as statis from "@/content/sekolah";
 import { supabaseAktif } from "@/lib/supabase/config";
 import { supabasePublik } from "@/lib/supabase/public";
+import { bacaTema, TEMA_BAWAAN, type Tema } from "@/lib/tema";
 
 /**
  * Satu pintu untuk semua konten situs publik.
@@ -263,6 +264,7 @@ export type Situs = {
   sosialMedia: SosialMedia[];
   footerTeks: string;
   seo: { judul: string; deskripsi: string; gambar: string };
+  tema: Tema;
 };
 
 const situsStatis = (): Situs => ({
@@ -281,6 +283,7 @@ const situsStatis = (): Situs => ({
   sosialMedia: statis.sekolah.sosialMedia.filter((s) => s.url),
   footerTeks: "",
   seo: { judul: "", deskripsi: statis.sekolah.deskripsi, gambar: "" },
+  tema: TEMA_BAWAAN,
 });
 
 const daftarJson = <T,>(v: unknown, kunci: (keyof T)[]): T[] =>
@@ -325,6 +328,8 @@ export const getSitus = cache(async (): Promise<Situs> => {
     sosialMedia: daftarJson<SosialMedia>(s.sosial_media, ["nama", "akun", "url"]).filter((x) => x.url),
     footerTeks: s.footer_teks,
     seo: { judul: s.seo_judul, deskripsi: s.seo_deskripsi || dasar.seo.deskripsi, gambar: s.seo_gambar_url },
+    // kolom tema belum ada (migrasi 20261124000000_tema_tampilan.sql) → tema bawaan
+    tema: bacaTema((s as { tema?: unknown }).tema),
   };
 });
 

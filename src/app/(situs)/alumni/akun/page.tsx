@@ -32,7 +32,7 @@ export default async function AreaAlumni({ searchParams }: { searchParams: Promi
       {sp.pesan && <p role="status" className="mb-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">Tersimpan.</p>}
       {sp.galat && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-800">{sp.galat}</p>}
       <nav className="mb-6 flex gap-2 overflow-x-auto pb-1 text-sm">{TAB.map(([k, l]) => (
-        <Link key={k} href={`?tab=${k}`} className={`shrink-0 rounded-full px-4 py-2 font-semibold ${tab === k ? "bg-[#284fd7] text-white" : "bg-white ring-1 ring-black/10"}`}>{l}</Link>))}</nav>
+        <Link key={k} href={`?tab=${k}`} className={`shrink-0 rounded-full px-4 py-2 font-semibold ${tab === k ? "bg-[var(--tema-utama)] text-white" : "bg-white ring-1 ring-black/10"}`}>{l}</Link>))}</nav>
       {tab === "profil" && (
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
           <div className="kartu p-6 "><FormProfilAlumni d={p as DataProfil} /></div>
@@ -58,7 +58,7 @@ export default async function AreaAlumni({ searchParams }: { searchParams: Promi
         <form className="flex flex-wrap gap-2"><input type="hidden" name="tab" value="direktori" />
           <input name="q" defaultValue={sp.q} placeholder="Nama, kampus, bidang" aria-label="Cari" className="min-w-56 flex-1 rounded-full border border-black/15 bg-white px-4 py-2.5" />
           <input name="tahun" defaultValue={sp.tahun} type="number" placeholder="Angkatan" aria-label="Angkatan" className="w-32 rounded-full border border-black/15 bg-white px-4 py-2.5" />
-          <button className="rounded-full bg-[#284fd7] px-5 py-2.5 font-semibold text-white">Cari</button></form>
+          <button className="rounded-full bg-[var(--tema-utama)] px-5 py-2.5 font-semibold text-white">Cari</button></form>
         <p className="text-sm text-black/50">Hanya alumni yang memilih tampil, dengan kolom yang mereka izinkan. Jangan menyebarkan data ini ke luar.</p>
         {list.length === 0 ? <p className="kartu p-5 text-black/50 ">Tidak ada hasil.</p> : (
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{list.map((a) => (
@@ -68,7 +68,7 @@ export default async function AreaAlumni({ searchParams }: { searchParams: Promi
               {!a.status_kegiatan && a.institusi && <p>{a.institusi}{a.bidang && ` · ${a.bidang}`}</p>}
               {a.jabatan && <p className="text-black/60">{a.jabatan}</p>}{a.kota && <p className="text-black/60">{a.kota}</p>}
               {a.bio && <p className="mt-1 text-black/70">{a.bio}</p>}
-              <p className="mt-1 space-x-3">{a.tautan_profesional && <a href={a.tautan_profesional} target="_blank" rel="noreferrer" className="text-[#284fd7] underline">profil</a>}{a.email && <a href={`mailto:${a.email}`} className="text-[#284fd7] underline">{a.email}</a>}{a.telepon && <span>{a.telepon}</span>}</p>
+              <p className="mt-1 space-x-3">{a.tautan_profesional && <a href={a.tautan_profesional} target="_blank" rel="noreferrer" className="text-[var(--tema-utama)] underline">profil</a>}{a.email && <a href={`mailto:${a.email}`} className="text-[var(--tema-utama)] underline">{a.email}</a>}{a.telepon && <span>{a.telepon}</span>}</p>
             </li>))}</ul>
         )}
       </div>
@@ -88,7 +88,7 @@ export default async function AreaAlumni({ searchParams }: { searchParams: Promi
           {a.deskripsi && <p className="mt-2 whitespace-pre-line text-sm">{a.deskripsi}</p>}
           <form action={rsvpAcara} className="mt-3 flex flex-wrap items-center gap-2 text-sm"><input type="hidden" name="acara_id" value={a.id} />
             {rsvp.has(a.id) && <span className="font-semibold">{rsvp.get(a.id) ? "✓ Anda akan hadir" : "Anda tidak hadir"}</span>}
-            <button name="hadir" value="1" className="rounded-full bg-[#284fd7] px-4 py-2 font-semibold text-white">Saya hadir</button>
+            <button name="hadir" value="1" className="rounded-full bg-[var(--tema-utama)] px-4 py-2 font-semibold text-white">Saya hadir</button>
             <button name="hadir" value="0" className="rounded-full px-4 py-2 font-semibold ring-1 ring-black/15">Tidak hadir</button></form>
         </li>))}</ul>
     );
@@ -103,7 +103,7 @@ export default async function AreaAlumni({ searchParams }: { searchParams: Promi
             <div className="flex flex-wrap items-center gap-2"><span className="text-xs uppercase tracking-widest text-black/50">{JENIS_PELUANG[x.jenis]}</span>{x.status !== "tayang" && <Lencana s={x.status} peta={STATUS_MODERASI} />}</div>
             <p className="font-semibold">{x.judul}</p><p className="text-sm text-black/60">{x.penyedia}{x.tenggat && ` · tenggat ${new Date(x.tenggat + "T00:00:00Z").toLocaleDateString("id-ID", { dateStyle: "long", timeZone: "UTC" })}`}</p>
             {x.deskripsi && <p className="mt-1 text-sm">{x.deskripsi}</p>}
-            {x.tautan && <a href={x.tautan} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm font-semibold text-[#284fd7] underline">Info lengkap ↗</a>}
+            {x.tautan && <a href={x.tautan} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm font-semibold text-[var(--tema-utama)] underline">Info lengkap ↗</a>}
           </li>))}</ul>
         <div className="self-start kartu p-5 "><h2 className="mb-3 font-serif text-2xl">Bagikan peluang</h2><FormPeluang /></div>
       </div>
@@ -116,7 +116,7 @@ export default async function AreaAlumni({ searchParams }: { searchParams: Promi
     return list.length === 0 ? <p className="kartu p-5 text-black/50 ">Belum ada tracer study untuk angkatan Anda.</p> : (
       <ul className="space-y-3">{list.map((x) => (
         <li key={x.id} className="kartu p-5 "><p className="font-semibold">{x.judul}</p>{x.deskripsi && <p className="text-sm text-black/60">{x.deskripsi}</p>}
-          {x.sudah ? <p className="mt-2 text-sm font-semibold text-emerald-700">✓ Sudah diisi</p> : <Link href={`/survei/${x.id}`} className="mt-2 inline-block rounded-full bg-[#284fd7] px-4 py-2 text-sm font-semibold text-white">Isi sekarang</Link>}</li>))}</ul>
+          {x.sudah ? <p className="mt-2 text-sm font-semibold text-emerald-700">✓ Sudah diisi</p> : <Link href={`/survei/${x.id}`} className="mt-2 inline-block rounded-full bg-[var(--tema-utama)] px-4 py-2 text-sm font-semibold text-white">Isi sekarang</Link>}</li>))}</ul>
     );
   }
 

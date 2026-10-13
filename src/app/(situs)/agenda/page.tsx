@@ -22,14 +22,14 @@ export default async function HalamanAgenda() {
       <PageHeader judul="Agenda & Pengumuman" deskripsi="Jadwal kegiatan dan informasi resmi sekolah.">
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-baseline gap-2 rounded-full bg-[#f3f0fc] px-4 py-2">
-            <strong className="font-serif text-xl font-medium text-[#284fd7]">{listAgenda.length}</strong>
+            <strong className="font-serif text-xl font-medium text-[var(--tema-utama)]">{listAgenda.length}</strong>
             <span className="text-xs text-[#5e6074]">agenda</span>
           </span>
           <span className="inline-flex items-baseline gap-2 rounded-full bg-[#f3f0fc] px-4 py-2">
-            <strong className="font-serif text-xl font-medium text-[#284fd7]">{listPengumuman.length}</strong>
+            <strong className="font-serif text-xl font-medium text-[var(--tema-utama)]">{listPengumuman.length}</strong>
             <span className="text-xs text-[#5e6074]">pengumuman{penting ? ` · ${penting} penting` : ""}</span>
           </span>
-          <a href="/kalender.ics" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[#284fd7] ring-1 ring-[#284fd7]/25 transition hover:bg-[#284fd7] hover:text-white">
+          <a href="/kalender.ics" className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[var(--tema-utama)] ring-1 ring-[var(--tema-utama)]/25 transition hover:bg-[var(--tema-utama)] hover:text-white">
             <CalendarPlus size={16} aria-hidden /> Tambahkan ke kalender
           </a>
         </div>
@@ -38,7 +38,7 @@ export default async function HalamanAgenda() {
       <div className="lp-wadah grid items-start gap-8 py-10 sm:py-12 lg:grid-cols-[1fr_1.1fr]">
         <section aria-labelledby="judul-pengumuman">
           <Reveal>
-            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#284fd7]">Informasi resmi</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--tema-utama)]">Informasi resmi</p>
             <h2 id="judul-pengumuman" className="mt-1 font-serif text-[clamp(1.8rem,3vw,2.5rem)] tracking-[-0.02em]">
               Pengumuman
             </h2>
@@ -71,7 +71,7 @@ export default async function HalamanAgenda() {
 
         <section aria-labelledby="judul-agenda" className="lg:sticky lg:top-24">
           <Reveal>
-            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#284fd7]">Kalender kegiatan</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--tema-utama)]">Kalender kegiatan</p>
             <h2 id="judul-agenda" className="mt-1 font-serif text-[clamp(1.8rem,3vw,2.5rem)] tracking-[-0.02em]">
               Agenda <em className="text-[#544881]">mendatang</em>
             </h2>
@@ -88,7 +88,7 @@ export default async function HalamanAgenda() {
                   <ul className="space-y-2">
                     {isi.map((a, i) => (
                       <Reveal as="li" key={a.id} delay={Math.min(i, 5) * 80} className="kartu kartu-hidup group flex items-center gap-4 p-3 pr-5">
-                        <time dateTime={a.tanggal} className="grid h-16 w-16 shrink-0 place-content-center rounded-xl bg-[#284fd7] text-center text-white transition group-hover:bg-[#51419c]">
+                        <time dateTime={a.tanggal} className="grid h-16 w-16 shrink-0 place-content-center rounded-xl bg-[var(--tema-utama)] text-center text-white transition group-hover:bg-[#51419c]">
                           <span className="font-serif text-2xl leading-none">{formatTanggal(a.tanggal, { day: "numeric", month: undefined, year: undefined })}</span>
                           <span className="mt-1 text-[10px] uppercase tracking-wider text-white/75">{formatTanggal(a.tanggal, { day: undefined, weekday: "short", month: undefined, year: undefined })}</span>
                         </time>

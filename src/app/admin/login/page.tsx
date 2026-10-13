@@ -12,9 +12,8 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   return (
     <BingkaiAkun
       judul="Masuk"
-      deskripsi="Untuk guru, staf, siswa, dan orang tua SMAN 22 Bandung."
       bawah={
-        <Link href="/" className="text-[#646c7a] hover:text-[#284fd7]">
+        <Link href="/" className="text-[#646c7a] hover:text-[var(--tema-utama)]">
           ← Kembali ke website
         </Link>
       }

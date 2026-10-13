@@ -16,7 +16,7 @@ export default async function DaftarBerita({ searchParams }: { searchParams: Pro
   const list = kategori ? semua.filter((b) => b.kategori === kategori) : semua;
   const [utama, ...lain] = list;
   const chip = (aktif: boolean) =>
-    `rounded-full px-4 py-2 text-sm font-semibold transition ${aktif ? "bg-[#284fd7] text-white" : "ring-1 ring-[#284fd7]/20 hover:bg-[#f3f0fc]"}`;
+    `rounded-full px-4 py-2 text-sm font-semibold transition ${aktif ? "bg-[var(--tema-utama)] text-white" : "ring-1 ring-[var(--tema-utama)]/20 hover:bg-[#f3f0fc]"}`;
 
   return (
     <>
@@ -44,16 +44,16 @@ export default async function DaftarBerita({ searchParams }: { searchParams: Pro
               <Link href={`/berita/${utama.slug}`} className="kartu group grid overflow-hidden md:grid-cols-[1.25fr_1fr]">
                 <Gambar src={utama.gambar} alt={utama.judul} priority sizes="(min-width: 768px) 60vw, 100vw" className="kartu-gambar aspect-[16/10] md:aspect-auto md:min-h-[340px]" />
                 <div className="flex flex-col p-6 sm:p-9">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#284fd7]">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--tema-utama)]">
                     Terbaru · {utama.kategori}
                   </p>
-                  <h2 className="mt-3 font-serif text-[clamp(1.7rem,3vw,2.5rem)] leading-[1.1] tracking-[-0.02em] transition group-hover:text-[#284fd7]">{utama.judul}</h2>
+                  <h2 className="mt-3 font-serif text-[clamp(1.7rem,3vw,2.5rem)] leading-[1.1] tracking-[-0.02em] transition group-hover:text-[var(--tema-utama)]">{utama.judul}</h2>
                   <p className="mt-4 text-[#555f6b]">{utama.ringkasan}</p>
                   <p className="mt-auto flex items-center justify-between pt-6 text-sm">
                     <time dateTime={utama.tanggal} className="text-[#646c7a]">
                       {formatTanggal(utama.tanggal)}
                     </time>
-                    <span className="inline-flex items-center gap-2 font-semibold text-[#284fd7]">
+                    <span className="inline-flex items-center gap-2 font-semibold text-[var(--tema-utama)]">
                       Baca cerita <ArrowUpRight size={16} aria-hidden className="transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                     </span>
                   </p>
@@ -68,8 +68,8 @@ export default async function DaftarBerita({ searchParams }: { searchParams: Pro
                     <Link href={`/berita/${b.slug}`} className="kartu group flex h-full flex-col overflow-hidden">
                       <Gambar src={b.gambar} alt={b.judul} className="kartu-gambar aspect-[16/10]" />
                       <div className="flex flex-1 flex-col p-5">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#284fd7]">{b.kategori}</p>
-                        <h2 className="mt-2 font-serif text-[1.45rem] leading-[1.15] transition group-hover:text-[#284fd7]">{b.judul}</h2>
+                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--tema-utama)]">{b.kategori}</p>
+                        <h2 className="mt-2 font-serif text-[1.45rem] leading-[1.15] transition group-hover:text-[var(--tema-utama)]">{b.judul}</h2>
                         <p className="mt-2 line-clamp-2 text-sm text-[#626a76]">{b.ringkasan}</p>
                         <time dateTime={b.tanggal} className="mt-auto pt-4 text-xs text-[#646c7a]">
                           {formatTanggal(b.tanggal)}

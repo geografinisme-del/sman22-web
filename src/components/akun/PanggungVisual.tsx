@@ -55,7 +55,7 @@ export function PanggungVisual({ item, penuh = false }: { item: VisualAkunItem[]
   return (
     <div className={penuh ? "absolute inset-0" : "absolute inset-x-10 bottom-12 top-6 xl:inset-x-14"}>
       <figure
-        className={`panggung-akun relative h-full w-full overflow-hidden bg-[#0b0a1a] ${
+        className={`panggung-akun relative h-full w-full overflow-hidden bg-[var(--tema-gelap)] ${
           penuh ? "panggung-penuh" : "rounded-[28px] shadow-[0_40px_80px_-40px_rgb(40_79_215/0.55)] ring-1 ring-white/60"
         }`}
       >

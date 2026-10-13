@@ -49,7 +49,7 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
               {b.sampul_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={b.sampul_url} alt="" className="h-48 w-32 shrink-0 rounded object-cover" referrerPolicy="no-referrer" />
-              ) : <div className="grid h-48 w-32 shrink-0 place-items-center rounded bg-brand-50 font-serif text-5xl text-[#284fd7]" aria-hidden>{b.judul.slice(0, 1)}</div>}
+              ) : <div className="grid h-48 w-32 shrink-0 place-items-center rounded bg-brand-50 font-serif text-5xl text-[var(--tema-utama)]" aria-hidden>{b.judul.slice(0, 1)}</div>}
               <dl className="grid grid-cols-[110px_1fr] content-start gap-y-1 text-sm">
                 <dt className="text-black/50">Kategori</dt><dd>{b.kategori || "—"}</dd>
                 <dt className="text-black/50">No. panggil</dt><dd>{b.nomor_panggil || "—"}</dd>
@@ -74,16 +74,16 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
           </div>
           <aside className="space-y-4 self-start">
             <div className="kartu p-5 ">
-              <p className={`text-lg font-semibold ${b.tersedia ? "text-emerald-700" : "text-[#284fd7]"}`}>{b.tersedia ? `${b.tersedia} dari ${b.total} tersedia` : b.total ? "Sedang dipinjam semua" : "Tidak bisa dipinjam"}</p>
+              <p className={`text-lg font-semibold ${b.tersedia ? "text-emerald-700" : "text-[var(--tema-utama)]"}`}>{b.tersedia ? `${b.tersedia} dari ${b.total} tersedia` : b.total ? "Sedang dipinjam semua" : "Tidak bisa dipinjam"}</p>
               {b.total > 0 && (masuk ? (
                 <form action={pesanBuku} className="mt-3">
                   <input type="hidden" name="buku_id" value={b.id} /><input type="hidden" name="kembali" value={`/perpustakaan/${b.id}`} />
-                  <button className="w-full rounded-full bg-[#284fd7] px-5 py-3 font-semibold text-white">{b.tersedia ? "Pesan & ambil nanti" : "Masuk antrean pesanan"}</button>
+                  <button className="w-full rounded-full bg-[var(--tema-utama)] px-5 py-3 font-semibold text-white">{b.tersedia ? "Pesan & ambil nanti" : "Masuk antrean pesanan"}</button>
                   <p className="mt-2 text-xs text-black/50">Buku ditahan 3 hari setelah siap. Untuk siswa dan guru/staf.</p>
                 </form>
               ) : <p className="mt-2 text-sm text-black/60"><Link href="/masuk" className="underline">Masuk</Link> untuk memesan buku ini.</p>)}
               {b.tautan_digital ? (
-                <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-full px-5 py-3 text-center font-semibold ring-1 ring-brand-700 text-[#284fd7]">Baca versi digital ↗</a>
+                <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-full px-5 py-3 text-center font-semibold ring-1 ring-brand-700 text-[var(--tema-utama)]">Baca versi digital ↗</a>
               ) : b.akses_digital === "warga" && b.lisensi && !masuk ? <p className="mt-3 text-sm text-black/60">Versi digital tersedia untuk warga sekolah — masuk untuk membaca.</p> : null}
               {b.lisensi && <p className="mt-2 text-xs text-black/40">Lisensi: {b.lisensi}</p>}
             </div>

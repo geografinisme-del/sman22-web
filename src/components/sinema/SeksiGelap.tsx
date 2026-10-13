@@ -1,19 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, CalendarCheck, ClipboardList, LayoutDashboard, ShieldCheck } from "lucide-react";
+import { Ikon } from "@/components/Ikon";
 import { Reveal } from "@/components/Reveal";
+import type { KartuBento, Tema } from "@/lib/tema";
 
-export type DataSeksiGelap = {
-  pita: { nama: string; sub: string; href: string }[];
-  program: { nama: string; ringkas: string };
+/** Data situs yang mengisi kartu bento secara otomatis */
+export type DataOtomatis = {
   tahunBerkarya: number;
   tahunBerdiri: number;
   beritaTerbaru?: { judul: string; slug: string; tanggal: string };
   jumlahEkskul: number;
-  fotoUtama: string;
-  fotoGaleri: string;
   jumlahFoto: number;
   kepalaSekolah: string;
+  fotoCadangan: string[];
 };
 
 const PORTAL = [
@@ -32,12 +32,12 @@ const singkat = (nama: string) =>
     .join("")
     .toUpperCase();
 
-function Pita({ isi, balik }: { isi: DataSeksiGelap["pita"]; balik?: boolean }) {
+function Pita({ isi, balik }: { isi: { nama: string; sub: string; href: string }[]; balik?: boolean }) {
   return (
     <div className={`pita-baris ${balik ? "balik" : ""}`}>
       {[0, 1].map((salinan) =>
-        isi.map((x) => (
-          <Link key={`${salinan}-${x.nama}`} href={x.href} className="pita-item" tabIndex={salinan ? -1 : undefined} aria-hidden={salinan ? true : undefined}>
+        isi.map((x, i) => (
+          <Link key={`${salinan}-${i}-${x.nama}`} href={x.href} className="pita-item" tabIndex={salinan ? -1 : undefined} aria-hidden={salinan ? true : undefined}>
             <span className="ikon">{singkat(x.nama)}</span>
             <span>
               {x.nama}
@@ -50,19 +50,77 @@ function Pita({ isi, balik }: { isi: DataSeksiGelap["pita"]; balik?: boolean }) 
   );
 }
 
-/** Lanjutan gelap setelah hero: pita kegiatan dua arah + kisi bento kaca, lalu memudar ke bagian terang. */
-export function SeksiGelap({ d }: { d: DataSeksiGelap }) {
-  const tengah = Math.ceil(d.pita.length / 2);
-  const atas = d.pita.slice(0, tengah);
-  const bawah = d.pita.length > 3 ? d.pita.slice(tengah) : d.pita;
+function Kartu({ k, d, foto }: { k: KartuBento; d: DataOtomatis; foto?: string }) {
+  const gambar = k.gambar || foto;
+  const href = k.isi === "berita" && d.beritaTerbaru ? `/berita/${d.beritaTerbaru.slug}` : k.tautan || "/";
+  const kelas = `bento-kartu ${k.ukuran === "besar" ? "bento-besar" : k.ukuran === "lebar" ? "bento-lebar" : ""} ${gambar ? "bento-foto" : ""}`;
+  return (
+    <Link href={href} className={kelas}>
+      {gambar && <Image src={gambar} alt="" fill sizes={k.ukuran === "besar" ? "(min-width: 1000px) 50vw, 100vw" : "(min-width: 1000px) 25vw, 100vw"} className="object-cover" />}
+      <span className="panah" aria-hidden>
+        <ArrowUpRight size={18} />
+      </span>
+      {k.ikon && (
+        <span className="bento-ikon">
+          <Ikon nama={k.ikon} size={20} />
+        </span>
+      )}
+      {k.isi === "portal" && (
+        <ul className="bento-daftar">
+          {PORTAL.map(({ Ikon: I, label }) => (
+            <li key={label}>
+              <I size={16} aria-hidden className="text-[color-mix(in_srgb,var(--tema-aksen)_60%,white)]" /> {label}
+            </li>
+          ))}
+        </ul>
+      )}
+      {k.isi === "tahun" && <span className="bento-angka">{d.tahunBerkarya}</span>}
+      {k.isi === "ekskul" && d.jumlahEkskul > 0 && <span className="bento-angka">{d.jumlahEkskul}</span>}
+      {k.label && (
+        <span className="label">
+          {k.label}
+          {k.isi === "berita" && d.beritaTerbaru ? ` · ${d.beritaTerbaru.tanggal}` : ""}
+        </span>
+      )}
+      {(k.judul || k.isi === "berita" || k.isi === "galeri") && (
+        <h3>
+          {k.isi === "berita" && d.beritaTerbaru
+            ? d.beritaTerbaru.judul
+            : k.isi === "galeri" && d.jumlahFoto
+              ? `${d.jumlahFoto} ${k.judul ? k.judul.toLowerCase() : "momen kegiatan"}`
+              : k.judul}
+        </h3>
+      )}
+      {k.isi === "kepsek" && d.kepalaSekolah ? <p>{d.kepalaSekolah}</p> : k.teks && <p>{k.teks}</p>}
+    </Link>
+  );
+}
+
+/** Lanjutan gelap setelah hero: pita kegiatan dua arah + kisi bento kaca (diatur di Tema & Tampilan). */
+export function SeksiGelap({
+  pita,
+  tema,
+  d,
+}: {
+  pita: { nama: string; sub: string; href: string }[];
+  tema: Tema["beranda"];
+  d: DataOtomatis;
+}) {
+  const tengah = Math.ceil(pita.length / 2);
+  const atas = pita.slice(0, tengah);
+  const bawah = pita.length > 3 ? pita.slice(tengah) : pita;
+  const isi = (x: typeof pita) => (x.length < 6 ? [...x, ...x, ...x].slice(0, Math.max(6, x.length)) : x);
+  // kartu besar & kartu galeri tanpa gambar sendiri memakai foto galeri sekolah (bergiliran)
+  const butuh = tema.bento.map((k) => !k.gambar && (k.ukuran === "besar" || k.isi === "galeri"));
+  const urutanFoto = butuh.map((b, i) => (b ? butuh.slice(0, i).filter(Boolean).length : -1));
   return (
     <section className="gelap-lanjut lp" aria-labelledby="judul-bento">
-      {d.pita.length > 0 && (
+      {pita.length > 0 && (
         <div aria-label="Kegiatan & program sekolah">
-          <p className="pita-judul">Ruang tumbuh warga SMAN 22</p>
+          {tema.pitaJudul && <p className="pita-judul">{tema.pitaJudul}</p>}
           <div className="pita-wadah">
-            <Pita isi={atas.length < 6 ? [...atas, ...atas] : atas} />
-            <Pita isi={bawah.length < 6 ? [...bawah, ...bawah] : bawah} balik />
+            <Pita isi={isi(atas)} />
+            <Pita isi={isi(bawah)} balik />
           </div>
         </div>
       )}
@@ -70,89 +128,17 @@ export function SeksiGelap({ d }: { d: DataSeksiGelap }) {
       <div className="lp-wadah">
         <Reveal className="bento-judul">
           <h2 id="judul-bento">
-            Satu sekolah,
+            {tema.bentoJudul}
             <br />
-            <em>banyak cerita.</em>
+            <em>{tema.bentoMiring}</em>
           </h2>
-          <p>Jelajahi program, layanan, dan kabar terbaru SMA Negeri 22 Bandung — semuanya terhubung dalam satu pintu.</p>
+          {tema.bentoTeks && <p>{tema.bentoTeks}</p>}
         </Reveal>
 
         <div className="bento">
-          <Link href="/profil" className="bento-kartu bento-besar bento-foto">
-            <Image src={d.fotoUtama} alt="" fill sizes="(min-width: 1000px) 50vw, 100vw" className="object-cover" />
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            <span className="label">Program unggulan</span>
-            <h3>{d.program.nama}</h3>
-            <p>{d.program.ringkas}</p>
-          </Link>
-
-          <Link href="/profil" className="bento-kartu">
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            <span className="bento-angka">{d.tahunBerkarya}</span>
-            <p>tahun berkarya, sejak {d.tahunBerdiri}</p>
-          </Link>
-
-          <Link href="/masuk" className="bento-kartu">
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            <ul className="bento-daftar">
-              {PORTAL.map(({ Ikon, label }) => (
-                <li key={label}>
-                  <Ikon size={16} aria-hidden className="text-[#b9a6ff]" /> {label}
-                </li>
-              ))}
-            </ul>
-            <span className="label">Portal 22</span>
-            <h3>Sekolah dalam genggaman</h3>
-          </Link>
-
-          <Link href="/galeri" className="bento-kartu bento-foto">
-            <Image src={d.fotoGaleri} alt="" fill sizes="(min-width: 1000px) 25vw, 100vw" className="object-cover" />
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            <span className="label">Galeri</span>
-            <h3>{d.jumlahFoto ? `${d.jumlahFoto} momen kegiatan` : "Momen kegiatan"}</h3>
-          </Link>
-
-          <Link href="/spmb" className="bento-kartu">
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            <span className="label">Penerimaan murid baru</span>
-            <h3>Mari bergabung bersama keluarga besar SMAN 22.</h3>
-          </Link>
-
-          <Link href={d.beritaTerbaru ? `/berita/${d.beritaTerbaru.slug}` : "/berita"} className="bento-kartu bento-lebar">
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            <span className="label">Kabar terbaru{d.beritaTerbaru ? ` · ${d.beritaTerbaru.tanggal}` : ""}</span>
-            <h3>{d.beritaTerbaru?.judul ?? "Berita & prestasi sekolah"}</h3>
-          </Link>
-
-          <Link href="/ekskul" className="bento-kartu">
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            {d.jumlahEkskul > 0 && <span className="bento-angka">{d.jumlahEkskul}</span>}
-            <span className="label">Ekskul & OSIS</span>
-            <h3>Temukan wadah bakatmu</h3>
-          </Link>
-
-          <Link href="/profil#sambutan" className="bento-kartu">
-            <span className="panah" aria-hidden>
-              <ArrowUpRight size={18} />
-            </span>
-            <span className="label">Sambutan</span>
-            <h3>Pesan kepala sekolah</h3>
-            {d.kepalaSekolah && <p>{d.kepalaSekolah}</p>}
-          </Link>
+          {tema.bento.map((k, i) => (
+            <Kartu key={i} k={k} d={d} foto={urutanFoto[i] >= 0 ? d.fotoCadangan[urutanFoto[i] % Math.max(1, d.fotoCadangan.length)] : undefined} />
+          ))}
         </div>
       </div>
     </section>

@@ -8,8 +8,8 @@
   --lp-ink: #20252c;
   --lp-muted: #68716f;
   --lp-line: #e1e5df;
-  --lp-blue: #284fd7;
-  --lp-blue-tua: #2041b9;
+  --lp-blue: var(--tema-utama);
+  --lp-blue-tua: color-mix(in srgb, var(--tema-utama) 85%, black);
   --lp-lavender: #ede9fb;
   --font-editorial: "Newsreader Variable", Georgia, "Times New Roman", serif;
   --font-interface: "DM Sans Variable", Arial, Helvetica, sans-serif;
@@ -195,7 +195,7 @@
   padding: 28px 32px;
   border-radius: 20px;
   background:
-    radial-gradient(400px 180px at 100% 0%, rgb(40 79 215 / 0.12), transparent 70%),
+    radial-gradient(400px 180px at 100% 0%, color-mix(in srgb, var(--tema-utama) 12%, transparent), transparent 70%),
     #ede8fa;
 }
 .footer-kolom {
@@ -290,7 +290,7 @@
 
 /* ---------- hero editorial ---------- */
 .editorial-hero {
-  --hero-theme: #284fd7;
+  --hero-theme: var(--tema-utama);
   position: relative;
   min-height: 760px;
   display: grid;
@@ -1358,10 +1358,10 @@
   --dalam: 8px;
   inset: 22% 22% 6% 26%;
   border-radius: 50%;
-  background: var(--nada, #284fd7);
+  background: var(--nada, var(--tema-utama));
   display: grid;
   place-items: center;
-  box-shadow: 0 30px 50px -28px color-mix(in srgb, var(--nada, #284fd7) 80%, black);
+  box-shadow: 0 30px 50px -28px color-mix(in srgb, var(--nada, var(--tema-utama)) 80%, black);
   animation: lp-skala 1s cubic-bezier(0.2, 0.7, 0.2, 1) 200ms both;
 }
 .kv-monogram {
@@ -1424,7 +1424,7 @@ a.kartu:hover,
 .kartu-hidup:hover {
   transform: translateY(-4px);
   border-color: #c7cff3;
-  box-shadow: 0 22px 44px -26px rgb(40 79 215 / 0.45);
+  box-shadow: 0 22px 44px -26px color-mix(in srgb, var(--tema-utama) 45%, transparent);
 }
 .kartu-gambar {
   overflow: hidden;
@@ -1513,12 +1513,12 @@ a:hover .kartu-gambar img,
 /* ---------- halaman akun (masuk, lupa sandi, MFA) ---------- */
 .akun-panel {
   background:
-    radial-gradient(700px 400px at 90% 10%, rgb(40 79 215 / 0.1), transparent 70%),
+    radial-gradient(700px 400px at 90% 10%, color-mix(in srgb, var(--tema-utama) 10%, transparent), transparent 70%),
     linear-gradient(160deg, #f7f5fd 0%, #ede8fa 100%);
   border-right: 1px solid #e6e1f4;
 }
 .akun-visual {
-  --hero-theme: #284fd7;
+  --hero-theme: var(--tema-utama);
   position: absolute;
   left: 50%;
   bottom: 0;
@@ -1550,7 +1550,7 @@ a:hover .kartu-gambar img,
   border-radius: 22px;
   background: #fff;
   border: 1px solid #ebe8f4;
-  box-shadow: 0 30px 60px -40px rgb(40 79 215 / 0.35);
+  box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--tema-utama) 35%, transparent);
 }
 /* formulir di dalam kartu memakai gaya beranda */
 .akun-kartu input:not([type="radio"]):not([type="checkbox"]) {
@@ -1558,19 +1558,19 @@ a:hover .kartu-gambar img,
   border-color: #dfe3ec;
 }
 .akun-kartu input:focus {
-  border-color: #284fd7;
-  box-shadow: 0 0 0 4px rgb(40 79 215 / 0.12);
+  border-color: var(--tema-utama);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tema-utama) 12%, transparent);
 }
 .akun-kartu button[type="submit"] {
   border-radius: 10px;
-  background: #284fd7;
-  box-shadow: 0 10px 24px -14px rgb(40 79 215 / 0.9);
+  background: var(--tema-utama);
+  box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--tema-utama) 90%, transparent);
 }
 .akun-kartu button[type="submit"]:hover {
-  background: #2041b9;
+  background: color-mix(in srgb, var(--tema-utama) 85%, black);
 }
 .akun-kartu a {
-  color: #284fd7;
+  color: var(--tema-utama);
 }
 @media (max-width: 1023px) {
   .akun-kartu {
@@ -1606,9 +1606,9 @@ a:hover .kartu-gambar img,
 /* ---------- halaman akun sinematik (latar penuh + kartu kaca) ---------- */
 .akun-sinema {
   background:
-    radial-gradient(900px 520px at 10% 0%, rgb(124 92 255 / 0.35), transparent 70%),
-    radial-gradient(800px 520px at 100% 100%, rgb(40 79 215 / 0.3), transparent 70%),
-    #0b0a1a;
+    radial-gradient(900px 520px at 10% 0%, color-mix(in srgb, var(--tema-aksen) 35%, transparent), transparent 70%),
+    radial-gradient(800px 520px at 100% 100%, color-mix(in srgb, var(--tema-utama) 30%, transparent), transparent 70%),
+    var(--tema-gelap);
   color: #fff;
 }
 .akun-latar {
@@ -1618,12 +1618,12 @@ a:hover .kartu-gambar img,
 }
 .panggung-tint {
   background:
-    linear-gradient(90deg, rgb(11 10 26 / 0.82) 0%, rgb(11 10 26 / 0.45) 50%, rgb(11 10 26 / 0.35) 100%),
-    linear-gradient(180deg, rgb(11 10 26 / 0.5) 0%, transparent 30%, transparent 65%, rgb(11 10 26 / 0.8) 100%);
+    linear-gradient(90deg, color-mix(in srgb, var(--tema-gelap) 82%, transparent) 0%, color-mix(in srgb, var(--tema-gelap) 45%, transparent) 50%, color-mix(in srgb, var(--tema-gelap) 35%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--tema-gelap) 50%, transparent) 0%, transparent 30%, transparent 65%, color-mix(in srgb, var(--tema-gelap) 80%, transparent) 100%);
 }
 @media (max-width: 1023px) {
   .panggung-tint {
-    background: rgb(11 10 26 / 0.62);
+    background: color-mix(in srgb, var(--tema-gelap) 62%, transparent);
   }
 }
 .akun-sinema .akun-kiri {
@@ -1647,7 +1647,7 @@ a:hover .kartu-gambar img,
   font-family: var(--font-editorial);
   font-style: italic;
   font-weight: 400;
-  background: linear-gradient(100deg, #fff, #c9bcff 60%, #9d84ff);
+  background: linear-gradient(100deg, #fff, color-mix(in srgb, var(--tema-aksen) 30%, white) 60%, color-mix(in srgb, var(--tema-aksen) 55%, white));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

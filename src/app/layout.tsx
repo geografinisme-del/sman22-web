@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { sekolah } from "@/content/sekolah";
 import { getSitus } from "@/lib/data";
+import { cssTema } from "@/lib/tema";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getSitus();
@@ -22,9 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const viewport: Viewport = { themeColor: "#121831" };
+// colorScheme "light": cegah peramban HP (mode gelap paksa) mengubah warna situs sehingga tampilan HP & laptop seragam
+export const viewport: Viewport = { themeColor: "#121831", colorScheme: "light" };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { tema } = await getSitus();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "HighSchool",
@@ -35,6 +38,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="id">
+      <head>
+        {/* warna tema dari Admin → Tema & Tampilan (sudah divalidasi berformat #rrggbb) */}
+        <style dangerouslySetInnerHTML={{ __html: cssTema(tema) }} />
+      </head>
       <body className="flex min-h-screen flex-col antialiased">
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

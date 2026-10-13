@@ -23,7 +23,7 @@ export default async function Alumni() {
       <PageHeader judul="Alumni" deskripsi="Tetap terhubung dengan sekolah dan adik-adik kelas: berbagi cerita, peluang, dan pengalaman." />
       <Section>
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div className="rounded-2xl bg-[#284fd7] p-8 text-white">
+          <div className="rounded-2xl bg-[var(--tema-utama)] p-8 text-white">
             <p className="font-serif text-3xl">Gabung jejaring alumni</p>
             <p className="mt-2 text-white/80">Daftar sekali, data diverifikasi sekolah. Anda mengatur sendiri apa yang terlihat oleh alumni lain.</p>
             <div className="mt-5 flex flex-wrap gap-3">

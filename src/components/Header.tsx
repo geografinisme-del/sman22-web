@@ -66,7 +66,7 @@ export function Header() {
                 {m.label}
               </Link>
             ))}
-            <Link href="/masuk" onClick={tutup} className="font-semibold text-[#284fd7]">
+            <Link href="/masuk" onClick={tutup} className="font-semibold text-[var(--tema-utama)]">
               Masuk portal ↗
             </Link>
           </nav>

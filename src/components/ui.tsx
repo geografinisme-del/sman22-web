@@ -4,7 +4,7 @@ import { KepalaVisual } from "@/components/KepalaVisual";
 import { Reveal } from "@/components/Reveal";
 
 /** Warna aksen cakram di kepala halaman — bergantian per halaman agar tidak monoton */
-const NADA = ["#284fd7", "#7564b5", "#325fb9", "#4a5fd0"];
+const NADA = ["var(--tema-utama)", "#7564b5", "#325fb9", "#4a5fd0"];
 const nadaDari = (teks: string) => NADA[[...teks].reduce((t, c) => t + c.charCodeAt(0), 0) % NADA.length];
 
 /**
@@ -28,7 +28,7 @@ export function PageHeader({
       <div className="lp-wadah grid items-center gap-8 pb-10 pt-[92px] min-[761px]:pt-[110px] md:grid-cols-[1fr_300px] md:pb-12 lg:grid-cols-[1fr_380px]">
         <div className="relative z-10">
           <nav aria-label="Lokasi halaman" className="kh-muncul flex items-center gap-2 text-xs text-[#646c7a]">
-            <Link href="/" className="hover:text-[#284fd7]">
+            <Link href="/" className="hover:text-[var(--tema-utama)]">
               Beranda
             </Link>
             <span aria-hidden>/</span>
@@ -81,7 +81,7 @@ export function Section({
       {(judul || linkSemua) && (
         <Reveal className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
           <div>
-            {label && <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#284fd7]">{label}</p>}
+            {label && <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--tema-utama)]">{label}</p>}
             {judul && (
               <h2 className="mt-1 font-serif text-[clamp(1.9rem,3.4vw,2.9rem)] leading-[1.08] tracking-[-0.03em]">
                 {judul} {miring && <em className="text-[#544881]">{miring}</em>}
@@ -91,7 +91,7 @@ export function Section({
           {linkSemua && (
             <Link
               href={linkSemua.href}
-              className="group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[#284fd7] ring-1 ring-[#284fd7]/25 transition hover:bg-[#284fd7] hover:text-white"
+              className="group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-[var(--tema-utama)] ring-1 ring-[var(--tema-utama)]/25 transition hover:bg-[var(--tema-utama)] hover:text-white"
             >
               {linkSemua.label} <span className="panah">→</span>
             </Link>

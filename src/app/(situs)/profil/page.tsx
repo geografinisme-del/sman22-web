@@ -42,14 +42,14 @@ export default async function Profil() {
         <div className="flex flex-wrap items-center gap-3">
           {ringkas.map((r) => (
             <span key={r.label} className="inline-flex items-baseline gap-2 rounded-full bg-[#f3f0fc] px-4 py-2">
-              <strong className="font-serif text-xl font-medium text-[#284fd7]">{r.nilai}</strong>
+              <strong className="font-serif text-xl font-medium text-[var(--tema-utama)]">{r.nilai}</strong>
               <span className="text-xs text-[#5e6074]">{r.label}</span>
             </span>
           ))}
         </div>
         <nav aria-label="Bagian halaman" className="mt-5 flex flex-wrap gap-2">
           {BAGIAN.map(([href, label]) => (
-            <a key={href} href={href} className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-[#284fd7]/20 transition hover:bg-[#284fd7] hover:text-white">
+            <a key={href} href={href} className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-[var(--tema-utama)]/20 transition hover:bg-[var(--tema-utama)] hover:text-white">
               {label}
             </a>
           ))}
@@ -61,7 +61,7 @@ export default async function Profil() {
         <div className="grid items-center gap-10 md:grid-cols-[minmax(240px,340px)_1fr] lg:gap-16">
           <Reveal className="relative mx-auto w-full max-w-[300px] md:max-w-none">
             <span aria-hidden className="absolute -inset-x-3 bottom-0 top-[22%] rounded-[45%_50%_40%_35%] bg-[#ebe5fa]" />
-            <span aria-hidden className="absolute inset-x-[8%] bottom-[4%] top-[34%] rounded-full bg-[#284fd7]" />
+            <span aria-hidden className="absolute inset-x-[8%] bottom-[4%] top-[34%] rounded-full bg-[var(--tema-utama)]" />
             <Gambar
               src={p.fotoKepalaSekolah}
               alt={`Foto ${p.kepalaSekolah}`}
@@ -74,7 +74,7 @@ export default async function Profil() {
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#284fd7]">{sambutan.judul}</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--tema-utama)]">{sambutan.judul}</p>
             <blockquote className="mt-3 font-serif text-[clamp(1.8rem,3.2vw,2.75rem)] italic leading-[1.12] tracking-[-0.02em]">
               “{p.sambutanKutipan || "Selamat datang di keluarga besar SMA Negeri 22 Bandung."}”
             </blockquote>
@@ -96,7 +96,7 @@ export default async function Profil() {
       {/* Visi & Misi */}
       <Section judul="Visi" miring="& Misi" label="Arah sekolah" className="pt-4!">
         <div id="visi-misi" className="grid scroll-mt-28 gap-5 lg:grid-cols-[5fr_7fr]">
-          <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[#284fd7] to-[#51419c] p-8 text-white sm:p-10">
+          <div className="relative overflow-hidden rounded-[22px] bg-gradient-to-br from-[var(--tema-utama)] to-[#51419c] p-8 text-white sm:p-10">
             <span aria-hidden className="putar-pelan absolute -right-6 -top-8 text-[120px] leading-none text-white/10">✳</span>
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">Visi</p>
             <p className="relative mt-4 font-serif text-[clamp(1.6rem,2.6vw,2.2rem)] leading-[1.18]">{p.visi || "Visi sekolah segera diperbarui."}</p>
@@ -107,7 +107,7 @@ export default async function Profil() {
               <ol className="mt-4 divide-y divide-[#eeecf5]">
                 {p.misi.map((m, i) => (
                   <li key={m} className="group flex gap-4 py-3 transition hover:pl-2">
-                    <span className="font-serif text-2xl italic leading-none text-[#73698f] transition group-hover:text-[#284fd7]">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="font-serif text-2xl italic leading-none text-[#73698f] transition group-hover:text-[var(--tema-utama)]">{String(i + 1).padStart(2, "0")}</span>
                     <span className="pt-0.5 text-[#3d4450]">{m}</span>
                   </li>
                 ))}

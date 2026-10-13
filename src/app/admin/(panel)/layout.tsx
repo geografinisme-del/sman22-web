@@ -54,6 +54,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         ...(punya(akses, "konten.terbitkan") ? [{ href: "/admin/persetujuan", label: "Persetujuan Konten", badge: menungguSetuju ?? 0 }] : []),
         ...(punya(akses, "konten.kelola") ? WEBSITE : []),
         { href: "/admin/situs", label: "Tampilan Website" },
+        ...(punya(akses, "konten.kelola") ? [{ href: "/admin/tampilan", label: "Tema & Tampilan" }] : []),
       ],
     });
   if (punya(akses, "data_induk.baca"))

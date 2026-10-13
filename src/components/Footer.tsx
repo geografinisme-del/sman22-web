@@ -93,7 +93,7 @@ export async function Footer() {
             <ul className="mt-4 space-y-3 text-[13px] text-[#4f5763]">
               {kontak.map(({ Ikon, isi }) => (
                 <li key={isi} className="flex gap-3">
-                  <Ikon size={16} aria-hidden className="mt-0.5 shrink-0 text-[#284fd7]" />
+                  <Ikon size={16} aria-hidden className="mt-0.5 shrink-0 text-[var(--tema-utama)]" />
                   <span>{isi}</span>
                 </li>
               ))}

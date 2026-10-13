@@ -38,6 +38,7 @@ Buka **SQL Editor** → **New query**, lalu jalankan **sembilan file** ini **ber
 16. `supabase/migrations/20261115000000_hero_video.sql` (video latar opsional di foto pembuka beranda) → **Run**
 17. `supabase/migrations/20261120000000_visual_akun.sql` (visual sinematik halaman masuk) → **Run**
 18. `supabase/migrations/20261122000000_visual_beranda.sql` (visual sinematik beranda) → **Run**
+19. `supabase/migrations/20261124000000_tema_tampilan.sql` (tema & tampilan: warna, teks, ikon, kartu) → **Run**
 
 Masing-masing harus menampilkan **Success**. Semuanya aman dijalankan ulang.
 Bila sistem sudah berjalan dan ada file migrasi baru, cukup jalankan file yang baru saja.
@@ -121,6 +122,23 @@ Lalu **Deployments → ⋯ → Redeploy**.
 6. **Kehadiran Guru** (Operator/TU, Kepala Sekolah): siapa yang sudah/belum presensi. Operator mencatat izin, sakit, dinas luar, atau cuti.
 
 Angka merah atau kuning di menu menandai pengajuan atau SP yang perlu ditindaklanjuti.
+
+## Tema & tampilan tanpa kode (Fase 17)
+
+Menu **Website → Tema & Tampilan** (peran dengan izin kelola konten):
+- **Warna**: warna utama (tombol & tautan), aksen (cahaya & gradasi), dan latar gelap. Ada palet siap pakai
+  (kobalt-ungu, merah marun, hijau, biru laut, jingga) dan pratinjau. Berlaku di semua halaman, di HP maupun laptop.
+- **Beranda sinematik**: nyalakan/matikan efek gulir, tulisan raksasa samar (kosongkan untuk menyembunyikan), teks
+  babak 2 & 3, judul pita kegiatan, dan judul kartu.
+- **Kartu beranda (bento)**: tambah/hapus/urutkan hingga 10 kartu; tiap kartu punya label, judul, teks, **ikon**
+  (28 pilihan), **gambar latar** (unggah), ukuran (biasa/lebar/besar), **halaman tujuan**, dan isi otomatis
+  (angka tahun berkarya, berita terbaru, jumlah foto galeri, jumlah ekskul, nama kepala sekolah, daftar layanan portal).
+- **Halaman masuk portal**: judul, kata berwarna, teks di bawah "Masuk", dan hingga 4 label fitur beserta ikonnya.
+- Setiap bagian punya tombol **Kembalikan bawaan**. Perubahan tampil di website ±1 menit setelah disimpan.
+
+Foto pembuka (yang berganti otomatis di kanan hero, masing-masing bisa diklik ke halamannya) tetap diatur di
+**Tampilan Website → Foto pembuka**; video/gambar latar sinematik di **Tampilan Website → Visual sinematik**.
+Halaman baru: **/program** (daftar & detail program unggulan) dan **/sambutan** (sambutan kepala sekolah).
 
 ## Visual sinematik: beranda & halaman masuk (Fase 15–16)
 

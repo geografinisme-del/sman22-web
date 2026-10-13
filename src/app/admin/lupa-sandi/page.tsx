@@ -11,7 +11,7 @@ export default async function LupaSandi({ searchParams }: { searchParams: Promis
       judul="Lupa kata sandi"
       deskripsi="Untuk guru & staf. Kami kirim tautan atur ulang ke email akun Anda."
       bawah={
-        <Link href="/admin/login" className="text-[#646c7a] hover:text-[#284fd7]">
+        <Link href="/admin/login" className="text-[#646c7a] hover:text-[var(--tema-utama)]">
           ← Kembali ke halaman masuk
         </Link>
       }

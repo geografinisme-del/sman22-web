@@ -1,0 +1,70 @@
+import {
+  Award,
+  BookOpen,
+  CalendarCheck,
+  ClipboardList,
+  Compass,
+  Flower2,
+  Globe,
+  GraduationCap,
+  HeartHandshake,
+  Images,
+  LayoutDashboard,
+  Library,
+  Lightbulb,
+  MapPin,
+  Medal,
+  Megaphone,
+  MessageCircle,
+  Music,
+  Newspaper,
+  Palette,
+  Phone,
+  Rocket,
+  School,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Trophy,
+  Users,
+  type LucideProps,
+} from "lucide-react";
+import type { NamaIkon } from "@/lib/tema";
+
+const PETA = {
+  LayoutDashboard,
+  CalendarCheck,
+  ClipboardList,
+  ShieldCheck,
+  GraduationCap,
+  Users,
+  BookOpen,
+  Trophy,
+  Award,
+  Sparkles,
+  Megaphone,
+  Images,
+  HeartHandshake,
+  Flower2,
+  Star,
+  Lightbulb,
+  Music,
+  Globe,
+  School,
+  Newspaper,
+  MapPin,
+  Phone,
+  Compass,
+  Rocket,
+  MessageCircle,
+  Library,
+  Palette,
+  Medal,
+} satisfies Record<NamaIkon, unknown>;
+
+/** Ikon pilihan admin (Tema & Tampilan). Nama tak dikenal → tidak menampilkan apa-apa. */
+export function Ikon({ nama, ...p }: { nama: NamaIkon | "" } & LucideProps) {
+  if (!nama) return null;
+  const K = PETA[nama];
+  return K ? <K aria-hidden {...p} /> : null;
+}

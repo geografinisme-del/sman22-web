@@ -21,7 +21,7 @@ export function FormLogin({ awal = "staf" }: { awal?: "staf" | "siswa" | "orang_
           {JENIS.map((j) => (
             <label key={j.nilai} className="cursor-pointer">
               <input type="radio" name="jenis" value={j.nilai} checked={jenis === j.nilai} onChange={() => setJenis(j.nilai)} className="peer sr-only" />
-              <span className="block rounded-lg px-2 py-2.5 text-center text-sm font-medium text-[#555f6b] transition hover:text-[#284fd7] peer-checked:bg-[#284fd7] peer-checked:text-white peer-checked:shadow-[0_8px_18px_-10px_rgb(40_79_215/0.9)] peer-focus-visible:ring-2 peer-focus-visible:ring-[#ad80f3]">
+              <span className="block rounded-lg px-2 py-2.5 text-center text-sm font-medium text-[#555f6b] transition hover:text-[var(--tema-utama)] peer-checked:bg-[var(--tema-utama)] peer-checked:text-white peer-checked:shadow-[0_8px_18px_-10px_rgb(40_79_215/0.9)] peer-focus-visible:ring-2 peer-focus-visible:ring-[#ad80f3]">
                 {j.label}
               </span>
             </label>

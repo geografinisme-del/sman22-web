@@ -7,10 +7,11 @@ import "@/components/sinema/sinema.css";
 import { programUnggulan, sekolah } from "@/content/sekolah";
 import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getPengumuman, getProfil, getSitus, getVisualAkun } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
+import { slugProgram } from "@/lib/program";
 
 const TEMA_PROGRAM = [
   { latar: "#ebe5fa", tinta: "#51419c" },
-  { latar: "#e6ecff", tinta: "#284fd7" },
+  { latar: "#e6ecff", tinta: "var(--tema-utama)" },
   { latar: "#f9f3e9", tinta: "#785726" },
 ];
 
@@ -33,7 +34,7 @@ export default async function Beranda() {
   ];
   const pita = ekskul.length
     ? ekskul.map((e) => ({ nama: e.nama, sub: e.bidang, href: `/ekskul/${e.slug}` }))
-    : programUnggulan.map((p) => ({ nama: p.nama, sub: "Program sekolah", href: "/profil" }));
+    : programUnggulan.map((p) => ({ nama: p.nama, sub: "Program sekolah", href: `/program/${slugProgram(p)}` }));
   const fotoGaleri = galeri.map((g) => g.gambar).filter(Boolean);
 
   const terbaru = [
@@ -49,20 +50,19 @@ export default async function Beranda() {
 
   return (
     <div className="lp lp-halaman">
-      <HeroSinema hero={situs.hero} visual={visual} program={programUnggulan.map((p) => p.nama)} stat={stat} />
+      <HeroSinema hero={situs.hero} visual={visual} program={programUnggulan.map((p) => p.nama)} stat={stat} teks={situs.tema.beranda} />
 
       <SeksiGelap
+        pita={pita}
+        tema={situs.tema.beranda}
         d={{
-          pita,
-          program: programUnggulan[0],
           tahunBerkarya,
           tahunBerdiri: sekolah.tahunBerdiri,
           beritaTerbaru: berita[0] ? { judul: berita[0].judul, slug: berita[0].slug, tanggal: formatTanggal(berita[0].tanggal) } : undefined,
           jumlahEkskul: ekskul.length,
-          fotoUtama: fotoGaleri[0] ?? "/images/kegiatan-aula.jpg",
-          fotoGaleri: fotoGaleri[1] ?? "/images/apel-lapangan.jpg",
           jumlahFoto: galeri.length,
           kepalaSekolah: profil.kepalaSekolah,
+          fotoCadangan: fotoGaleri.length ? fotoGaleri : ["/images/kegiatan-aula.jpg", "/images/apel-lapangan.jpg"],
         }}
       />
 
@@ -97,7 +97,7 @@ export default async function Beranda() {
                   <div className="program-copy">
                     <h3>{p.nama}</h3>
                     <p>{p.ringkas}</p>
-                    <Link href="/profil" aria-label={`Kenali ${p.nama}`}>
+                    <Link href={`/program/${slugProgram(p)}`} aria-label={`Kenali ${p.nama}`}>
                       Kenali program <ArrowUpRight size={16} aria-hidden />
                     </Link>
                   </div>
