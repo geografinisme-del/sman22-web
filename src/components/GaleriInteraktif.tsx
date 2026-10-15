@@ -2,11 +2,8 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Expand, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import type { FotoItem } from "@/lib/data";
-
-/** Pola ukuran kotak agar grid terasa seperti majalah, bukan deretan kotak seragam */
-const POLA = ["md:col-span-2 md:row-span-2", "", "", "md:row-span-2", "", "md:col-span-2", "", ""];
 
 export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
   const [buka, setBuka] = useState<number | null>(null);
@@ -35,30 +32,15 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
 
   return (
     <>
-      <ul className="grid grid-flow-dense auto-rows-[180px] grid-cols-2 gap-3 md:auto-rows-[200px] md:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3">
         {foto.map((f, i) => (
-          <li key={f.id} className={`galeri-kotak ${POLA[i % POLA.length]}`} style={{ animationDelay: `${Math.min(i, 12) * 60}ms` }}>
-            <button
-              type="button"
-              onClick={() => setBuka(i)}
-              className="group relative block h-full w-full overflow-hidden rounded-2xl bg-[#ede8fa] text-left"
-              aria-label={`Perbesar foto: ${f.judul}`}
-            >
-              {f.gambar && (
-                <Image
-                  src={f.gambar}
-                  alt={f.judul}
-                  fill
-                  sizes="(min-width: 768px) 50vw, 50vw"
-                  className="object-cover transition duration-700 ease-out group-hover:scale-[1.07]"
-                />
-              )}
-              <span className="absolute inset-0 bg-gradient-to-t from-[#1a1f3a]/80 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100 group-focus-visible:opacity-100" />
-              <span className="absolute inset-x-0 bottom-0 flex translate-y-3 items-end justify-between gap-3 p-4 text-white opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
-                <span className="text-sm font-medium leading-snug">{f.judul}</span>
-                <Expand size={16} aria-hidden className="shrink-0" />
-              </span>
-            </button>
+          <li key={f.id}>
+            <figure>
+              <button type="button" onClick={() => setBuka(i)} className="foto relative block aspect-[4/3] w-full" aria-label={`Perbesar foto: ${f.judul}`}>
+                {f.gambar && <Image src={f.gambar} alt={f.judul} fill sizes="(min-width: 768px) 33vw, 50vw" className="object-cover" />}
+              </button>
+              <figcaption className="keterangan-foto">{f.judul}</figcaption>
+            </figure>
           </li>
         ))}
       </ul>
@@ -86,7 +68,7 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
               </button>
             </div>
             <div className="relative flex-1">
-              <Image key={aktif.id} src={aktif.gambar} alt={aktif.judul} fill sizes="100vw" className="galeri-besar object-contain" />
+              <Image key={aktif.id} src={aktif.gambar} alt={aktif.judul} fill sizes="100vw" className="object-contain" />
               {total > 1 && (
                 <>
                   <button type="button" onClick={() => setBuka(((buka ?? 0) - 1 + total) % total)} className="galeri-panah left-3" aria-label="Foto sebelumnya">

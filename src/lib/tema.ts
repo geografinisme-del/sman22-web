@@ -108,36 +108,33 @@ export type Tema = {
 };
 
 export const TEMA_BAWAAN: Tema = {
-  warna: { utama: "#284fd7", aksen: "#7c5cff", gelap: "#0b0a1a" },
+  // aksen sementara dari merah logo sekolah (lihat globals.css); bisa diganti di Admin → Tema & Tampilan
+  warna: { utama: "#b3123c", aksen: "#db224c", gelap: "#1f2328" },
   beranda: {
-    efekGulir: true,
-    teksRaksasa: "SMAN 22",
-    babak2: { label: "Nilai kami", judul: "Belajar dengan tujuan.", miring: "Tumbuh bersama." },
-    babak3: { label: "Satu keluarga, satu pintu", judul: "Siap tumbuh", miring: "bersama kami?" },
-    pitaJudul: "Ruang tumbuh warga SMAN 22",
-    bentoJudul: "Satu sekolah,",
-    bentoMiring: "banyak cerita.",
-    bentoTeks: "Jelajahi program, layanan, dan kabar terbaru SMA Negeri 22 Bandung — semuanya terhubung dalam satu pintu.",
+    // bidang sinematik lama — tidak dipakai lagi oleh beranda editorial, disimpan agar data lama tetap valid
+    efekGulir: false,
+    teksRaksasa: "",
+    babak2: { label: "", judul: "", miring: "" },
+    babak3: { label: "", judul: "", miring: "" },
+    pitaJudul: "",
+    bentoJudul: "Akses layanan",
+    bentoMiring: "",
+    bentoTeks: "Layanan yang paling sering dicari warga sekolah dan masyarakat.",
+    // kartu "Akses layanan" di beranda (bagian setelah pembuka)
     bento: [
-      { label: "Program unggulan", judul: "7 Kebiasaan Anak Indonesia Hebat", teks: "Pembiasaan karakter harian melalui jurnal, bukti kegiatan, dan refleksi.", tautan: "/program", ikon: "Sparkles", gambar: "", ukuran: "besar", isi: "" },
-      { label: "Sejak 1989", judul: "", teks: "tahun berkarya untuk pendidikan Kota Bandung", tautan: "/profil", ikon: "", gambar: "", ukuran: "biasa", isi: "tahun" },
-      { label: "Portal 22", judul: "Sekolah dalam genggaman", teks: "", tautan: "/masuk", ikon: "", gambar: "", ukuran: "biasa", isi: "portal" },
-      { label: "Galeri", judul: "Momen kegiatan", teks: "", tautan: "/galeri", ikon: "Images", gambar: "", ukuran: "biasa", isi: "galeri" },
-      { label: "Penerimaan murid baru", judul: "Mari bergabung bersama keluarga besar SMAN 22.", teks: "", tautan: "/spmb", ikon: "GraduationCap", gambar: "", ukuran: "biasa", isi: "" },
-      { label: "Kabar terbaru", judul: "Berita & prestasi sekolah", teks: "", tautan: "/berita", ikon: "Newspaper", gambar: "", ukuran: "lebar", isi: "berita" },
-      { label: "Ekskul & OSIS", judul: "Temukan wadah bakatmu", teks: "", tautan: "/ekskul", ikon: "Trophy", gambar: "", ukuran: "biasa", isi: "ekskul" },
-      { label: "Sambutan", judul: "Pesan kepala sekolah", teks: "", tautan: "/sambutan", ikon: "MessageCircle", gambar: "", ukuran: "biasa", isi: "kepsek" },
+      { label: "Penerimaan murid baru", judul: "Informasi SPMB", teks: "Jalur, persyaratan, dan jadwal resmi.", tautan: "/spmb", ikon: "GraduationCap", gambar: "", ukuran: "biasa", isi: "" },
+      { label: "Siswa, orang tua, guru", judul: "Portal sekolah", teks: "Kehadiran, jadwal, tugas, dan layanan akun.", tautan: "/masuk", ikon: "LayoutDashboard", gambar: "", ukuran: "biasa", isi: "" },
+      { label: "Kalender", judul: "Agenda & pengumuman", teks: "Kegiatan dan informasi resmi sekolah.", tautan: "/agenda", ikon: "CalendarCheck", gambar: "", ukuran: "biasa", isi: "" },
+      { label: "Layanan publik", judul: "Pengaduan & aspirasi", teks: "Sampaikan saran atau laporan, pantau dengan nomor tiket.", tautan: "/pengaduan", ikon: "MessageCircle", gambar: "", ukuran: "biasa", isi: "" },
+      { label: "Literasi", judul: "Katalog perpustakaan", teks: "Cari buku dan cek ketersediaannya.", tautan: "/perpustakaan", ikon: "Library", gambar: "", ukuran: "biasa", isi: "" },
+      { label: "Kesiswaan", judul: "Ekskul & OSIS", teks: "Wadah minat, bakat, dan kepemimpinan siswa.", tautan: "/ekskul", ikon: "Users", gambar: "", ukuran: "biasa", isi: "" },
     ],
   },
   masuk: {
-    judul: "Satu pintu untuk keluarga",
-    miring: "SMAN 22.",
-    deskripsi: "Bagi seluruh warga SMAN 22 Bandung.",
-    fitur: [
-      { ikon: "LayoutDashboard", teks: "Dashboard sesuai peran" },
-      { ikon: "CalendarCheck", teks: "Absensi & jadwal" },
-      { ikon: "ClipboardList", teks: "Tugas, nilai & layanan" },
-    ],
+    judul: "Masuk ke Portal Sekolah",
+    miring: "",
+    deskripsi: "Untuk guru, staf, siswa, dan orang tua SMA Negeri 22 Bandung.",
+    fitur: [],
   },
 };
 

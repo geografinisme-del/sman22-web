@@ -20,7 +20,7 @@ export default async function Pengaduan() {
             <div className="kartu p-5 ">
               <h2 className="font-semibold">Sudah pernah melapor?</h2>
               <p className="mt-1">Cek perkembangan dengan nomor tiket & kode akses.</p>
-              <Link href="/pengaduan/cek" className="mt-3 inline-block rounded-full px-4 py-2 font-semibold ring-1 ring-black/15">Cek status pengaduan</Link>
+              <Link href="/pengaduan/cek" className="mt-3 inline-block rounded-lg px-4 py-2 font-semibold ring-1 ring-black/15">Cek status pengaduan</Link>
             </div>
             <div className="kartu p-5 ">
               <h2 className="font-semibold">Privasi</h2>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
-import { Centang, FormAksi, Input, TextArea, TombolSimpan, useErrorKolom } from "@/components/admin/form";
+import { FormAksi, Input, TextArea, TombolSimpan, useErrorKolom } from "@/components/admin/form";
 import { Ikon } from "@/components/Ikon";
 import { DAFTAR_IKON, ISI_OTOMATIS, LABEL_IKON, type IsiOtomatis, type KartuBento, type NamaIkon, type Tema } from "@/lib/tema";
 import { simpanTema } from "../../actions-tema";
@@ -99,16 +99,18 @@ export function FormWarna({ w }: { w: Tema["warna"] }) {
       </div>
       <div>
         <p className="mb-2 text-sm font-semibold">Pratinjau</p>
-        <div className="flex flex-wrap items-center gap-4 rounded-2xl p-6" style={{ background: `radial-gradient(400px 200px at 20% 0%, ${warna.aksen}55, transparent 70%), ${warna.gelap}` }}>
-          <span className="rounded-full px-5 py-3 text-sm font-bold text-white" style={{ background: `linear-gradient(110deg, ${warna.utama}, ${warna.aksen})` }}>
+        <div className="flex flex-wrap items-center gap-4 rounded-[10px] border border-[#e3e5e8] bg-white p-6">
+          <span className="rounded-lg px-5 py-3 text-sm font-semibold text-white" style={{ background: warna.utama }}>
             Tombol utama
           </span>
-          <span className="rounded-full border border-white/25 bg-white/10 px-5 py-3 text-sm font-bold text-white">Tombol kaca</span>
-          <span className="text-2xl font-bold text-white">
-            Judul <em className="font-serif font-normal" style={{ color: warna.aksen }}>miring</em>
+          <span className="rounded-lg border px-5 py-3 text-sm font-semibold" style={{ borderColor: warna.utama, color: warna.utama }}>
+            Masuk Portal
           </span>
-          <span className="rounded-full bg-white px-4 py-2 text-sm font-semibold" style={{ color: warna.utama }}>
+          <span className="font-semibold underline underline-offset-4" style={{ color: warna.utama }}>
             Tautan
+          </span>
+          <span className="border-l-4 bg-[#faf8f5] px-3 py-2 text-sm" style={{ borderColor: warna.aksen }}>
+            Blok pengumuman
           </span>
         </div>
       </div>
@@ -122,26 +124,19 @@ export function FormBeranda({ b }: { b: Tema["beranda"] }) {
   return (
     <FormAksi aksi={simpanTema} className="space-y-5">
       <input type="hidden" name="bagian" value="beranda" />
-      <Centang label="Efek bergerak saat digulir" nama="efekGulir" nilai={b.efekGulir} bantuan="Matikan bila ingin hero beranda cukup satu layar tanpa animasi gulir." />
-      <Input label="Tulisan raksasa samar di hero" nama="teksRaksasa" nilai={b.teksRaksasa} maks={14} bantuan="Kosongkan untuk menyembunyikan. Tampil samar di belakang teks & foto (tidak tampil di HP)." />
-      <fieldset className="grid gap-4 rounded-2xl bg-krem p-4 sm:grid-cols-3">
-        <legend className="px-1 text-sm font-semibold">Babak 2 (saat mulai digulir)</legend>
-        <Input label="Label kecil" nama="b2_label" nilai={b.babak2.label} maks={60} />
-        <Input label="Judul" nama="b2_judul" nilai={b.babak2.judul} maks={80} />
-        <Input label="Judul miring" nama="b2_miring" nilai={b.babak2.miring} maks={60} />
-      </fieldset>
-      <fieldset className="grid gap-4 rounded-2xl bg-krem p-4 sm:grid-cols-3">
-        <legend className="px-1 text-sm font-semibold">Babak 3 (ajakan & angka)</legend>
-        <Input label="Label kecil" nama="b3_label" nilai={b.babak3.label} maks={60} />
-        <Input label="Judul" nama="b3_judul" nilai={b.babak3.judul} maks={80} />
-        <Input label="Judul miring" nama="b3_miring" nilai={b.babak3.miring} maks={60} />
-      </fieldset>
-      <Input label="Judul pita kegiatan" nama="pitaJudul" nilai={b.pitaJudul} maks={80} bantuan="Pita berisi Ekskul & OSIS (atau program unggulan bila belum ada)." />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input label="Judul kartu beranda" nama="bentoJudul" nilai={b.bentoJudul} maks={60} />
-        <Input label="Judul kartu (miring)" nama="bentoMiring" nilai={b.bentoMiring} maks={60} />
-      </div>
-      <TextArea label="Teks pengantar kartu" nama="bentoTeks" nilai={b.bentoTeks} maks={240} baris={2} />
+      {/* bidang beranda sinematik lama tidak dipakai lagi; nilainya disimpan apa adanya agar data tetap utuh */}
+      {b.efekGulir && <input type="hidden" name="efekGulir" value="on" />}
+      <input type="hidden" name="teksRaksasa" value={b.teksRaksasa} />
+      <input type="hidden" name="b2_label" value={b.babak2.label} />
+      <input type="hidden" name="b2_judul" value={b.babak2.judul} />
+      <input type="hidden" name="b2_miring" value={b.babak2.miring} />
+      <input type="hidden" name="b3_label" value={b.babak3.label} />
+      <input type="hidden" name="b3_judul" value={b.babak3.judul} />
+      <input type="hidden" name="b3_miring" value={b.babak3.miring} />
+      <input type="hidden" name="pitaJudul" value={b.pitaJudul} />
+      <input type="hidden" name="bentoMiring" value={b.bentoMiring} />
+      <Input label="Judul bagian akses layanan" nama="bentoJudul" nilai={b.bentoJudul} maks={60} bantuan="Tampil di beranda, di samping daftar pengumuman." />
+      <TextArea label="Teks pengantar (opsional)" nama="bentoTeks" nilai={b.bentoTeks} maks={240} baris={2} />
       <TombolSimpan>Simpan beranda</TombolSimpan>
     </FormAksi>
   );
@@ -329,26 +324,21 @@ export function FormBento({ kartu }: { kartu: KartuBento[] }) {
 
 /* ---------------- halaman masuk ---------------- */
 export function FormMasuk({ m }: { m: Tema["masuk"] }) {
-  const [fitur, setFitur] = useState(() => [0, 1, 2, 3].map((i) => m.fitur[i] ?? { ikon: "Sparkles" as NamaIkon, teks: "" }));
+  const fitur = [0, 1, 2, 3].map((i) => m.fitur[i] ?? { ikon: "Sparkles" as NamaIkon, teks: "" });
   return (
     <FormAksi aksi={simpanTema} className="space-y-5">
       <input type="hidden" name="bagian" value="masuk" />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input label="Judul" nama="judul" nilai={m.judul} maks={60} />
-        <Input label="Judul miring (berwarna)" nama="miring" nilai={m.miring} maks={40} />
-      </div>
-      <Input label="Teks di bawah kata “Masuk”" nama="deskripsi" nilai={m.deskripsi} maks={160} />
-      <fieldset className="space-y-3 rounded-2xl bg-krem p-4">
-        <legend className="px-1 text-sm font-semibold">Label fitur (maks. 4, kosongkan untuk menyembunyikan)</legend>
-        {fitur.map((f, i) => (
-          <div key={i} className="grid gap-3 sm:grid-cols-[260px_1fr]">
-            <input type="hidden" name={`fitur_ikon_${i}`} value={f.ikon} />
-            <PilihIkon nilai={f.ikon} kosong={false} ubah={(v) => setFitur((x) => x.map((y, j) => (j === i ? { ...y, ikon: (v || "Sparkles") as NamaIkon } : y)))} />
-            <input name={`fitur_teks_${i}`} value={f.teks} onChange={(e) => setFitur((x) => x.map((y, j) => (j === i ? { ...y, teks: e.target.value } : y)))} maxLength={40} placeholder="Teks fitur" className={kelas} />
-          </div>
-        ))}
-      </fieldset>
-      <p className="text-sm text-black/55">Video/gambar latar halaman masuk diatur di Tampilan Website → Visual sinematik.</p>
+      <Input label="Judul halaman masuk" nama="judul" nilai={m.judul} maks={60} bantuan="Sebaiknya langsung, mis. “Masuk ke Portal Sekolah”." />
+      <Input label="Teks di bawah judul" nama="deskripsi" nilai={m.deskripsi} maks={160} />
+      {/* judul miring & label fitur tidak ditampilkan lagi; nilainya disimpan apa adanya */}
+      <input type="hidden" name="miring" value={m.miring} />
+      {fitur.map((f, i) => (
+        <span key={i}>
+          <input type="hidden" name={`fitur_ikon_${i}`} value={f.ikon} />
+          <input type="hidden" name={`fitur_teks_${i}`} value={f.teks} />
+        </span>
+      ))}
+      <p className="text-sm text-black/55">Foto panel halaman masuk diambil dari Tampilan Website → Visual halaman masuk (gambar pertama); tanpa visual, dipakai foto gedung sekolah.</p>
       <TombolSimpan>Simpan halaman masuk</TombolSimpan>
     </FormAksi>
   );

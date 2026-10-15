@@ -1,13 +1,63 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentType } from "react";
+import {
+  Award,
+  BadgeCheck,
+  Bell,
+  BookMarked,
+  BookOpen,
+  Building2,
+  CalendarCheck,
+  CalendarClock,
+  ChevronRight,
+  Database,
+  ExternalLink,
+  Folder,
+  Globe,
+  GraduationCap,
+  HeartHandshake,
+  LayoutDashboard,
+  Library,
+  LogOut,
+  Megaphone,
+  Menu,
+  Search,
+  Settings,
+  ShieldCheck,
+  UserRound,
+  Users,
+  X,
+  type LucideProps,
+} from "lucide-react";
+import { sekolah } from "@/content/sekolah";
 
 export type GrupMenu = { judul?: string; item: { href: string; label: string; badge?: number }[] };
 
 /** Urutan grup: yang dipakai harian di atas, pengaturan & arsip di bawah. Grup lain menyusul sesuai urutan asli. */
 const PRIORITAS = ["Absensi", "Perwalian", "Kesiswaan", "Jadwal", "Pembelajaran", "Kurikulum", "Data Induk", "Website", "Bimbingan Konseling", "Ekskul & OSIS", "Perpustakaan", "Sarpras", "Humas", "Alumni", "Mutu", "Pengaturan"];
+/** Satu gaya ikon (lucide, garis 1.75) per grup modul */
+const IKON_GRUP: Record<string, ComponentType<LucideProps>> = {
+  Absensi: CalendarCheck,
+  Perwalian: UserRound,
+  Kesiswaan: Award,
+  Jadwal: CalendarClock,
+  Pembelajaran: BookOpen,
+  Kurikulum: BookMarked,
+  "Data Induk": Database,
+  Website: Globe,
+  "Bimbingan Konseling": HeartHandshake,
+  "Ekskul & OSIS": Users,
+  Perpustakaan: Library,
+  Sarpras: Building2,
+  Humas: Megaphone,
+  Alumni: GraduationCap,
+  Mutu: BadgeCheck,
+  Pengaturan: Settings,
+};
 const KUNCI_TERAKHIR = "admin-menu-terakhir";
 const KUNCI_GRUP = "admin-menu-grup";
 
@@ -45,7 +95,7 @@ function useDaftarTersimpan(kunci: string): string[] {
     }
   }, [mentah]);
 }
-const normal = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const normal = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 /** huruf kata kunci muncul berurutan di dalam satu kata — "pinjam" cocok dengan "peminjaman" */
 const urutDalamKata = (kata: string, q: string) => {
   let j = 0;
@@ -58,6 +108,13 @@ const skorCocok = (teks: string, q: string) => {
   const bagian = q.split(/\s+/).filter(Boolean);
   const kata = teks.split(/[^a-z0-9]+/);
   return bagian.every((b) => b.length >= 3 && kata.some((k) => k.startsWith(b[0]) && urutDalamKata(k, b))) ? 1 : 0;
+};
+
+/** Fokuskan kotak cari yang sedang terlihat (sidebar layar lebar atau laci ponsel). */
+const fokusCari = () => {
+  const kotak = [...document.querySelectorAll<HTMLInputElement>("input[data-cari-menu]")].find((k) => k.offsetParent);
+  kotak?.focus();
+  return Boolean(kotak);
 };
 
 export function Sidebar({
@@ -81,7 +138,8 @@ export function Sidebar({
   const [cari, setCari] = useState("");
   const grupBuka = useDaftarTersimpan(KUNCI_GRUP);
   const terakhir = useDaftarTersimpan(KUNCI_TERAKHIR);
-  const kotakCari = useRef<HTMLInputElement>(null);
+  const tombolMenu = useRef<HTMLButtonElement>(null);
+  const laci = useRef<HTMLDivElement>(null);
 
   const urut = useMemo(() => {
     const posisi = (j?: string) => (j ? (PRIORITAS.indexOf(j) + 1 || PRIORITAS.length + 1) : 0);
@@ -110,17 +168,46 @@ export function Sidebar({
       const el = e.target instanceof Element ? e.target : null;
       if (e.key !== "/" || e.ctrlKey || e.metaKey || el?.closest("input, textarea, select, [contenteditable]")) return;
       e.preventDefault();
-      const kotak = kotakCari.current;
-      // di layar lebar kotak cari sudah tampil; di HP menu dibuka dulu baru difokuskan
-      if (kotak?.offsetParent) kotak.focus();
-      else {
-        setBuka(true);
-        setTimeout(() => kotakCari.current?.focus(), 0);
-      }
+      // di layar lebar kotak cari sudah tampil; di HP laci dibuka dulu (fokus dipindah oleh efek laci)
+      if (!fokusCari()) setBuka(true);
     };
     window.addEventListener("keydown", tekan);
     return () => window.removeEventListener("keydown", tekan);
   }, []);
+
+  // laci ponsel: fokus ke kotak cari saat dibuka; Esc menutup & mengembalikan fokus ke tombol Menu; Tab tetap di dalam laci
+  useEffect(() => {
+    if (!buka) return;
+    const t = setTimeout(fokusCari, 0);
+    const tekan = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setBuka(false);
+        tombolMenu.current?.focus();
+        return;
+      }
+      if (e.key !== "Tab" || !laci.current) return;
+      const f = laci.current.querySelectorAll<HTMLElement>("a[href], button:not([tabindex='-1']), input, summary");
+      const pertama = f[0];
+      const akhir = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === pertama) {
+        e.preventDefault();
+        akhir?.focus();
+      } else if (!e.shiftKey && document.activeElement === akhir) {
+        e.preventDefault();
+        pertama?.focus();
+      }
+    };
+    document.addEventListener("keydown", tekan);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("keydown", tekan);
+    };
+  }, [buka]);
+
+  const tutupLaci = (kembalikanFokus = true) => {
+    setBuka(false);
+    if (kembalikanFokus) tombolMenu.current?.focus();
+  };
 
   const alihGrup = (judul: string) =>
     tulis(KUNCI_GRUP, grupBuka.includes(judul) ? grupBuka.filter((j) => j !== judul) : [...grupBuka, judul]);
@@ -144,151 +231,233 @@ export function Sidebar({
     <Link
       href={m.href}
       onClick={() => {
-        setBuka(false);
         setCari("");
+        tutupLaci(false);
       }}
       aria-current={aktif(m.href) ? "page" : undefined}
-      className={`block rounded-xl px-4 ${kecil ? "py-1.5 text-[13px]" : "py-2 text-sm"} font-medium transition ${
-        aktif(m.href) ? "bg-white text-brand-900" : "text-white/75 hover:bg-white/10 hover:text-white"
+      className={`relative flex items-center justify-between gap-2 rounded-md py-2 pl-9 pr-3 transition-colors duration-150 ${kecil ? "text-[13.5px]" : "text-sm"} ${
+        aktif(m.href)
+          ? "bg-[color-mix(in_srgb,var(--tema-utama)_8%,#fff)] font-semibold text-[#1f2328] before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-[var(--tema-utama)]"
+          : "text-[#3b414b] hover:bg-[#f2f3f5] hover:text-[#1f2328]"
       }`}
     >
-      <span className="flex items-center justify-between gap-2">
-        <span className="truncate">{m.label}</span>
-        {m.badge ? (
-          <span className="shrink-0 rounded-full bg-accent-400 px-2 text-xs font-bold text-brand-900" aria-label={`${m.badge} perlu ditindaklanjuti`}>
-            {m.badge}
-          </span>
-        ) : null}
-      </span>
+      <span className="truncate">{m.label}</span>
+      {m.badge ? (
+        <span className="shrink-0 rounded-md bg-[#fdf1d6] px-1.5 text-xs font-semibold tabular-nums text-[#7a5300]" aria-label={`${m.badge} perlu ditindaklanjuti`}>
+          {m.badge}
+        </span>
+      ) : null}
     </Link>
   );
 
-  return (
-    <aside className="border-b border-black/10 bg-brand-900 text-white print:hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 lg:overflow-y-auto lg:border-0">
-      <div className="flex h-16 items-center justify-between px-5 lg:h-20">
-        <Link href="/admin" className="font-serif text-2xl">
-          Admin <em className="text-accent-400">SMAN 22</em>
-        </Link>
-        <Link href="/admin/notifikasi" aria-label={`Notifikasi${notif ? `, ${notif} belum dibaca` : ""}`} className="relative ml-auto mr-1 rounded-full p-2 hover:bg-white/10">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 003.4 0" /></svg>
-          {notif > 0 && <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-merah px-1 text-[11px] font-bold">{notif > 99 ? "99+" : notif}</span>}
-        </Link>
-        <button
-          type="button"
-          className="rounded-full p-2 hover:bg-white/10 lg:hidden"
-          aria-expanded={buka}
-          aria-label={buka ? "Tutup menu" : "Buka menu"}
-          onClick={() => setBuka((v) => !v)}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            {buka ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
-          </svg>
-        </button>
+  const isiNavigasi = (asal: "sisi" | "laci") => (
+    <>
+      <div className="relative px-3 pb-3">
+        <label htmlFor={`cari-menu-${asal}`} className="sr-only">
+          Cari menu
+        </label>
+        <input
+          id={`cari-menu-${asal}`}
+          data-cari-menu
+          type="search"
+          value={cari}
+          onChange={(e) => setCari(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setCari("");
+            // Enter langsung membuka hasil pertama
+            const pertama = hasilCari?.[0]?.item[0];
+            if (e.key === "Enter" && pertama) {
+              e.preventDefault();
+              setCari("");
+              tutupLaci(false);
+              router.push(pertama.href);
+            }
+          }}
+          placeholder="Cari menu"
+          autoComplete="off"
+          className="w-full rounded-md border border-[#d9dce1] bg-white py-2 pl-9 pr-9 text-sm text-[#1f2328] placeholder:text-[#6b7280] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]"
+        />
+        <Search size={16} aria-hidden className="pointer-events-none absolute left-6 top-[18px] -translate-y-1/2 text-[#6b7280]" />
+        {!cari && <kbd className="pointer-events-none absolute right-6 top-[18px] hidden -translate-y-1/2 rounded border border-[#d9dce1] px-1.5 text-[11px] text-[#6b7280] lg:block">/</kbd>}
       </div>
-      <div className={`${buka ? "block" : "hidden"} px-3 pb-5 lg:flex lg:min-h-[calc(100%-5rem)] lg:flex-col lg:pb-6`}>
-        <div className="relative mb-4 px-1">
-          <label htmlFor="cari-menu" className="sr-only">
-            Cari menu
-          </label>
-          <input
-            id="cari-menu"
-            ref={kotakCari}
-            type="search"
-            value={cari}
-            onChange={(e) => setCari(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") setCari("");
-              // Enter langsung membuka hasil pertama
-              const pertama = hasilCari?.[0]?.item[0];
-              if (e.key === "Enter" && pertama) {
-                e.preventDefault();
-                setCari("");
-                setBuka(false);
-                router.push(pertama.href);
-              }
-            }}
-            placeholder="Cari menu…"
-            autoComplete="off"
-            className="w-full rounded-xl bg-white/10 py-2 pl-9 pr-9 text-sm text-white placeholder:text-white/40 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-accent-400"
-          />
-          <svg aria-hidden width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
-            <circle cx="11" cy="11" r="7" />
-            <path d="m20 20-3.5-3.5" />
-          </svg>
-          {!cari && <kbd className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded border border-white/20 px-1.5 text-[10px] text-white/50 lg:block">/</kbd>}
-        </div>
 
-        <nav aria-label="Menu admin" className="space-y-1">
-          {hasilCari ? (
-            hasilCari.length ? (
-              hasilCari.map((g) => (
-                <div key={g.i} className="pb-2">
-                  {g.judul && <p className="mb-1 px-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/40">{g.judul}</p>}
-                  <ul className="space-y-0.5">{g.item.map((m) => <li key={m.href}>{tautan(m)}</li>)}</ul>
-                </div>
-              ))
-            ) : (
-              <p className="px-4 py-3 text-sm text-white/60">Tidak ada menu “{cari}”.</p>
-            )
+      <nav aria-label="Menu admin" className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
+        {hasilCari ? (
+          hasilCari.length ? (
+            hasilCari.map((g) => (
+              <div key={g.i} className="pb-2">
+                {g.judul && <p className="px-3 pb-1 pt-2 text-xs font-semibold text-[#5b6270]">{g.judul}</p>}
+                <ul className="space-y-0.5">
+                  {g.item.map((m) => (
+                    <li key={m.href}>{tautan(m)}</li>
+                  ))}
+                </ul>
+              </div>
+            ))
           ) : (
-            <>
-              {pintasan.length > 1 && (
-                <div className="pb-3">
-                  <p className="mb-1 px-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-accent-400/80">Terakhir dibuka</p>
-                  <ul className="space-y-0.5">{pintasan.map((m) => <li key={m.href}>{tautan(m, true)}</li>)}</ul>
-                </div>
-              )}
+            <p className="px-3 py-3 text-sm text-[#5b6270]">Tidak ada menu “{cari}”.</p>
+          )
+        ) : (
+          <>
+            {pintasan.length > 1 && (
+              <div className="mb-2 border-b border-[#eceef1] pb-2">
+                <p className="px-3 pb-1 pt-1 text-xs font-semibold text-[#5b6270]">Terakhir dibuka</p>
+                <ul className="space-y-0.5">
+                  {pintasan.map((m) => (
+                    <li key={m.href}>{tautan(m, true)}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <ul className="space-y-0.5">
               {urut.map((g) => {
-                if (!g.judul) return <ul key={g.i} className="space-y-0.5 pb-2">{g.item.map((m) => <li key={m.href}>{tautan(m)}</li>)}</ul>;
+                if (!g.judul)
+                  return g.item.map((m) => (
+                    <li key={m.href} className="relative">
+                      <LayoutDashboard size={17} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[#5b6270]" />
+                      {tautan(m)}
+                    </li>
+                  ));
                 const terbuka = g.judul === grupAktif || grupBuka.includes(g.judul);
                 const totalBadge = g.item.reduce((t, m) => t + (m.badge ?? 0), 0);
-                const idIsi = `grup-${g.i}`;
+                const idIsi = `grup-${asal}-${g.i}`;
+                const IkonGrup = IKON_GRUP[g.judul] ?? Folder;
                 return (
-                  <div key={g.i}>
+                  <li key={g.i}>
                     <button
                       type="button"
                       onClick={() => alihGrup(g.judul!)}
                       aria-expanded={terbuka}
                       aria-controls={idIsi}
-                      className="flex w-full items-center justify-between rounded-xl px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.2em] text-white/55 transition hover:bg-white/5 hover:text-white"
+                      className={`flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 hover:bg-[#f2f3f5] ${
+                        g.judul === grupAktif ? "text-[#1f2328]" : "text-[#3b414b]"
+                      }`}
                     >
-                      <span>{g.judul}</span>
-                      <span className="flex items-center gap-2">
-                        {!terbuka && totalBadge > 0 && (
-                          <span className="rounded-full bg-accent-400 px-1.5 text-[10px] font-bold tracking-normal text-brand-900" aria-label={`${totalBadge} perlu ditindaklanjuti`}>
-                            {totalBadge}
-                          </span>
-                        )}
-                        <svg aria-hidden width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform ${terbuka ? "rotate-90" : ""}`}>
-                          <path d="m9 6 6 6-6 6" />
-                        </svg>
-                      </span>
+                      <IkonGrup size={17} strokeWidth={1.75} aria-hidden className="shrink-0 text-[#5b6270]" />
+                      <span className="flex-1">{g.judul}</span>
+                      {!terbuka && totalBadge > 0 && (
+                        <span className="rounded-md bg-[#fdf1d6] px-1.5 text-xs font-semibold tabular-nums text-[#7a5300]" aria-label={`${totalBadge} perlu ditindaklanjuti`}>
+                          {totalBadge}
+                        </span>
+                      )}
+                      <ChevronRight size={15} aria-hidden className={`shrink-0 text-[#6b7280] transition-transform duration-150 ${terbuka ? "rotate-90" : ""}`} />
                     </button>
                     {terbuka && (
-                      <ul id={idIsi} className="space-y-0.5 pb-2">
-                        {g.item.map((m) => <li key={m.href}>{tautan(m)}</li>)}
+                      <ul id={idIsi} className="mb-1 space-y-0.5">
+                        {g.item.map((m) => (
+                          <li key={m.href}>{tautan(m)}</li>
+                        ))}
                       </ul>
                     )}
-                  </div>
+                  </li>
                 );
               })}
-            </>
-          )}
-          <a href="/" target="_blank" rel="noopener" className="mt-3 block rounded-xl px-4 py-2 text-sm text-white/60 hover:bg-white/10">
-            Lihat website ↗
-          </a>
-        </nav>
-        <div className="mt-6 border-t border-white/10 px-4 pt-5 lg:mt-auto">
-          <p className="truncate text-sm font-semibold">{nama || email}</p>
-          <p className="truncate text-xs text-white/50">{email}</p>
-          <p className="mt-1 text-xs text-accent-400">{peran}</p>
-          <form action={keluar}>
-            <button type="submit" className="mt-3 text-sm text-white/70 hover:text-white hover:underline">
-              Keluar
-            </button>
-          </form>
-        </div>
+            </ul>
+          </>
+        )}
+      </nav>
+
+      <div className="border-t border-[#eceef1] p-3">
+        <details className="group/akun relative">
+          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md px-2 py-2 hover:bg-[#f2f3f5] [&::-webkit-details-marker]:hidden">
+            <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#eceef1] text-sm font-semibold text-[#3b414b]">
+              {(nama || email).trim().charAt(0).toUpperCase()}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-semibold text-[#1f2328]">{nama || email}</span>
+              <span className="block truncate text-xs text-[#5b6270]">{peran}</span>
+            </span>
+            <ChevronRight size={15} aria-hidden className="shrink-0 -rotate-90 text-[#6b7280] transition-transform duration-150 group-open/akun:rotate-90" />
+            <span className="sr-only">Menu akun</span>
+          </summary>
+          <div className="absolute bottom-full left-0 right-0 mb-2 rounded-lg border border-[#e3e5e8] bg-white p-1.5 shadow-[0_12px_28px_-12px_rgb(31_35_40/0.35)]">
+            <p className="truncate px-2.5 py-1.5 text-xs text-[#5b6270]">{email}</p>
+            <Link href="/admin/keamanan" onClick={() => tutupLaci(false)} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[#f2f3f5]">
+              <ShieldCheck size={16} aria-hidden /> Keamanan akun
+            </Link>
+            <a href="/" target="_blank" rel="noopener" className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[#f2f3f5]">
+              <ExternalLink size={16} aria-hidden /> Lihat website
+            </a>
+            <form action={keluar}>
+              <button type="submit" className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-merah hover:bg-[#f2f3f5]">
+                <LogOut size={16} aria-hidden /> Keluar
+              </button>
+            </form>
+          </div>
+        </details>
       </div>
-    </aside>
+    </>
+  );
+
+  const merek = (
+    <Link href="/admin" className="flex min-w-0 items-center gap-2.5" onClick={() => tutupLaci(false)}>
+      <Image src={sekolah.logo} alt="" width={502} height={497} sizes="36px" className="h-auto w-9 shrink-0" />
+      <span className="min-w-0 leading-tight">
+        <span className="block truncate text-sm font-bold text-[#1f2328]">{sekolah.namaPendek}</span>
+        <span className="block text-xs text-[#5b6270]">Portal Sekolah</span>
+      </span>
+    </Link>
+  );
+  const lonceng = (
+    <Link
+      href="/admin/notifikasi"
+      onClick={() => tutupLaci(false)}
+      aria-label={`Notifikasi${notif ? `, ${notif} belum dibaca` : ""}`}
+      className="relative ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-md text-[#3b414b] hover:bg-[#f2f3f5]"
+    >
+      <Bell size={19} strokeWidth={1.75} aria-hidden />
+      {notif > 0 && (
+        <span className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-merah px-1 text-[11px] font-bold text-white">
+          {notif > 99 ? "99+" : notif}
+        </span>
+      )}
+    </Link>
+  );
+
+  return (
+    <>
+      {/* bilah atas ponsel */}
+      <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[#e3e5e8] bg-white px-4 print:hidden lg:hidden">
+        <button
+          ref={tombolMenu}
+          type="button"
+          onClick={() => setBuka(true)}
+          aria-expanded={buka}
+          aria-controls="laci-menu"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-[#d9dce1] text-[#1f2328]"
+        >
+          <Menu size={20} aria-hidden />
+          <span className="sr-only">Buka menu</span>
+        </button>
+        {merek}
+        {lonceng}
+      </div>
+
+      {/* laci ponsel */}
+      {buka && (
+        <div className="fixed inset-0 z-40 print:hidden lg:hidden">
+          <button type="button" aria-label="Tutup menu" tabIndex={-1} onClick={() => tutupLaci()} className="absolute inset-0 bg-black/30" />
+          <div ref={laci} id="laci-menu" role="dialog" aria-modal="true" aria-label="Menu admin" className="absolute inset-y-0 left-0 flex w-[min(320px,88vw)] flex-col bg-white shadow-xl">
+            <div className="flex h-14 items-center gap-2 border-b border-[#eceef1] px-4">
+              {merek}
+              <button type="button" onClick={() => tutupLaci()} className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-md hover:bg-[#f2f3f5]">
+                <X size={20} aria-hidden />
+                <span className="sr-only">Tutup menu</span>
+              </button>
+            </div>
+            <div className="flex min-h-0 flex-1 flex-col pt-3">{isiNavigasi("laci")}</div>
+          </div>
+        </div>
+      )}
+
+      {/* sidebar layar lebar dengan area gulir sendiri */}
+      <aside className="hidden border-r border-[#e3e5e8] bg-white print:hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-[260px] lg:flex-col">
+        <div className="flex h-16 shrink-0 items-center gap-2 px-4">
+          {merek}
+          {lonceng}
+        </div>
+        {isiNavigasi("sisi")}
+      </aside>
+    </>
   );
 }

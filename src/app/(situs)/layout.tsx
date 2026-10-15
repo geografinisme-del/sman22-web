@@ -12,7 +12,7 @@ export default function SitusLayout({ children }: { children: React.ReactNode })
         Lewati ke konten
       </a>
       <Header />
-      <main id="konten" className="halaman-publik flex-1">
+      <main id="konten" className="lp halaman-publik flex-1">
         {children}
       </main>
       <Footer />

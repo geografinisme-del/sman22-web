@@ -24,7 +24,7 @@ export default async function TemaTampilan({ searchParams }: { searchParams: Pro
     <>
       <JudulHalaman
         judul="Tema & Tampilan"
-        deskripsi="Atur warna, teks, ikon, dan kartu beranda sinematik serta halaman masuk — tanpa mengubah kode. Foto pembuka diatur di Tampilan Website; video/gambar sinematik di Tampilan Website → Visual sinematik."
+        deskripsi="Atur warna aksen, daftar akses layanan di beranda, dan teks halaman masuk — tanpa mengubah kode. Foto pembuka beranda diatur di Tampilan Website."
       />
       <Notifikasi kode={sp.pesan} />
       {!adaKolom && (
@@ -35,26 +35,26 @@ export default async function TemaTampilan({ searchParams }: { searchParams: Pro
       <div className="space-y-8">
         <Kartu>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-serif text-3xl">Warna</h2>
+            <h2 className="text-xl font-semibold">Warna</h2>
             <TombolReset yang="warna" />
           </div>
           <FormWarna key={kunci(t.warna)} w={t.warna} />
         </Kartu>
         <Kartu>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-serif text-3xl">Beranda sinematik</h2>
+            <h2 className="text-xl font-semibold">Beranda</h2>
             <TombolReset yang="beranda" />
           </div>
           <FormBeranda key={kunci({ ...t.beranda, bento: 0 })} b={t.beranda} />
         </Kartu>
         <Kartu>
-          <h2 className="font-serif text-3xl">Kartu beranda (bento)</h2>
-          <p className="mb-4 mt-1 text-sm text-black/60">Kartu kaca di bawah hero. Atur judul, ikon, gambar, ukuran, dan halaman tujuannya. Maksimal 10 kartu.</p>
+          <h2 className="text-xl font-semibold">Akses layanan</h2>
+          <p className="mb-4 mt-1 text-sm text-black/60">Daftar tautan layanan di beranda (6 pertama yang tampil). Atur judul, teks singkat, ikon, dan halaman tujuan. Gambar & ukuran kartu tidak dipakai pada tampilan saat ini.</p>
           <FormBento key={kunci(t.beranda.bento)} kartu={t.beranda.bento} />
         </Kartu>
         <Kartu>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-serif text-3xl">Halaman masuk portal</h2>
+            <h2 className="text-xl font-semibold">Halaman masuk portal</h2>
             <TombolReset yang="masuk" />
           </div>
           <FormMasuk key={kunci(t.masuk)} m={t.masuk} />

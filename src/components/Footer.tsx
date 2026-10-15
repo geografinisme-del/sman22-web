@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { ArrowUp, ArrowUpRight, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { Brand } from "@/components/Header";
 import { sekolah } from "@/content/sekolah";
 import { menu } from "@/content/menu";
 import { getProfil, getSitus } from "@/lib/data";
 
 const LAYANAN = [
-  { href: "/masuk", label: "Portal siswa & orang tua" },
+  { href: "/masuk", label: "Portal siswa, orang tua & guru" },
   { href: "/perpustakaan", label: "Katalog perpustakaan" },
   { href: "/ekskul", label: "Ekskul & OSIS" },
   { href: "/pengaduan", label: "Pengaduan & aspirasi" },
@@ -17,47 +16,26 @@ const LAYANAN = [
 
 export async function Footer() {
   const [profil, situs] = await Promise.all([getProfil(), getSitus()]);
+  // hanya data kontak resmi yang sudah diisi di CMS — tidak ada isian karangan
   const kontak = [
-    { Ikon: MapPin, isi: [profil.alamat, sekolah.kota].filter(Boolean).join(", ") },
-    { Ikon: Phone, isi: profil.telepon },
-    { Ikon: Mail, isi: profil.email },
-    { Ikon: Clock, isi: profil.jamLayanan },
+    { label: "Alamat", isi: [profil.alamat, sekolah.kota].filter(Boolean).join(", ") },
+    { label: "Telepon", isi: profil.telepon },
+    { label: "Email", isi: profil.email },
+    { label: "Jam layanan", isi: profil.jamLayanan },
   ].filter((k) => k.isi);
 
   return (
     <footer className="lp lp-footer">
-      {/* ajakan */}
-      <div className="lp-wadah">
-        <div className="footer-ajakan">
-          <div>
-            <p className="eyebrow">Satu pintu, terhubung</p>
-            <p className="mt-2 font-serif text-[clamp(1.6rem,3vw,2.4rem)] leading-tight tracking-[-0.02em]">
-              Ada yang bisa kami <em className="text-[#544881]">bantu?</em>
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/masuk" className="btn btn-primary">
-              Masuk portal <ArrowUpRight size={16} aria-hidden />
-            </Link>
-            <Link href="/kontak" className="btn">
-              Hubungi sekolah
-            </Link>
-          </div>
-        </div>
-      </div>
-
       <div className="lp-wadah footer-kolom">
-        <div className="max-w-sm">
+        <div>
           <Brand />
-          <p className="muted mt-4 text-[13px] leading-relaxed">
-            {situs.footerTeks || "Ruang untuk belajar, bertumbuh, dan memberi dampak — sejak 1989 di Kota Bandung."}
-          </p>
+          {situs.footerTeks && <p className="muted mt-4 max-w-sm whitespace-pre-line">{situs.footerTeks}</p>}
           {situs.sosialMedia.length > 0 && (
-            <ul className="mt-5 flex flex-wrap gap-2">
+            <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
               {situs.sosialMedia.map((s) => (
                 <li key={s.nama}>
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="footer-pil">
-                    {s.nama} <ArrowUpRight size={12} aria-hidden />
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="tautan">
+                    {s.nama}
                   </a>
                 </li>
               ))}
@@ -90,17 +68,20 @@ export async function Footer() {
         <div>
           <p className="footer-judul">Kontak</p>
           {kontak.length ? (
-            <ul className="mt-4 space-y-3 text-[13px] text-[#4f5763]">
-              {kontak.map(({ Ikon, isi }) => (
-                <li key={isi} className="flex gap-3">
-                  <Ikon size={16} aria-hidden className="mt-0.5 shrink-0 text-[var(--tema-utama)]" />
-                  <span>{isi}</span>
-                </li>
+            <dl className="mt-3 space-y-2">
+              {kontak.map((k) => (
+                <div key={k.label}>
+                  <dt className="text-sm text-[#5b6270]">{k.label}</dt>
+                  <dd className="text-[#3b414b]">{k.isi}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
           ) : (
-            <p className="muted mt-4 text-[13px]">Segera diperbarui.</p>
+            <p className="muted mt-3">Kontak resmi sedang dilengkapi.</p>
           )}
+          <Link href="/kontak" className="tautan mt-4 inline-block">
+            Lokasi & kontak
+          </Link>
         </div>
       </div>
 
@@ -108,9 +89,8 @@ export async function Footer() {
         <span>
           © {new Date().getFullYear()} {sekolah.nama}
         </span>
-        <span>Satu sekolah. Banyak kemungkinan.</span>
-        <a href="#" className="footer-atas" aria-label="Kembali ke atas">
-          Ke atas <ArrowUp size={14} aria-hidden />
+        <a href="#konten" className="hover:text-[var(--tema-utama)]">
+          Kembali ke atas
         </a>
       </div>
     </footer>

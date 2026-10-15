@@ -31,7 +31,7 @@ export default async function DaftarEkskul() {
                   <div className="p-5">
                     <p className="line-clamp-3 text-sm text-black/70">{o.deskripsi || "—"}</p>
                     <p className="mt-3 text-xs text-black/50">{o.jadwal_rutin}{o.jadwal_rutin && " · "}{o.jumlah_anggota} anggota</p>
-                    {o.pendaftaran_buka && <p className="mt-2 inline-block rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">Pendaftaran dibuka — daftar lewat portal siswa</p>}
+                    {o.pendaftaran_buka && <p className="mt-2 inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800">Pendaftaran dibuka — daftar lewat portal siswa</p>}
                   </div>
                 </Link>
               </li>

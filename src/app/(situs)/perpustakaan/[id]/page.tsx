@@ -78,12 +78,12 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
               {b.total > 0 && (masuk ? (
                 <form action={pesanBuku} className="mt-3">
                   <input type="hidden" name="buku_id" value={b.id} /><input type="hidden" name="kembali" value={`/perpustakaan/${b.id}`} />
-                  <button className="w-full rounded-full bg-[var(--tema-utama)] px-5 py-3 font-semibold text-white">{b.tersedia ? "Pesan & ambil nanti" : "Masuk antrean pesanan"}</button>
+                  <button className="w-full rounded-lg bg-[var(--tema-utama)] px-5 py-3 font-semibold text-white">{b.tersedia ? "Pesan & ambil nanti" : "Masuk antrean pesanan"}</button>
                   <p className="mt-2 text-xs text-black/50">Buku ditahan 3 hari setelah siap. Untuk siswa dan guru/staf.</p>
                 </form>
               ) : <p className="mt-2 text-sm text-black/60"><Link href="/masuk" className="underline">Masuk</Link> untuk memesan buku ini.</p>)}
               {b.tautan_digital ? (
-                <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-full px-5 py-3 text-center font-semibold ring-1 ring-brand-700 text-[var(--tema-utama)]">Baca versi digital ↗</a>
+                <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-lg px-5 py-3 text-center font-semibold ring-1 ring-brand-700 text-[var(--tema-utama)]">Baca versi digital ↗</a>
               ) : b.akses_digital === "warga" && b.lisensi && !masuk ? <p className="mt-3 text-sm text-black/60">Versi digital tersedia untuk warga sekolah — masuk untuk membaca.</p> : null}
               {b.lisensi && <p className="mt-2 text-xs text-black/40">Lisensi: {b.lisensi}</p>}
             </div>

@@ -24,8 +24,8 @@ export function FormPengaduan({ login }: { login: boolean }) {
           <div className="rounded-xl bg-white p-4"><dt className="text-xs uppercase tracking-widest text-black/50">Kode akses</dt><dd className="font-mono text-2xl font-bold tracking-widest">{hasil.kode}</dd></div>
         </dl>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => navigator.clipboard?.writeText(`Tiket: ${hasil.tiket}\nKode akses: ${hasil.kode}`)} className="rounded-full bg-[var(--tema-utama)] px-5 py-2.5 font-semibold text-white">Salin</button>
-          <a href="/pengaduan/cek" className="rounded-full px-5 py-2.5 font-semibold ring-1 ring-black/15">Cek status</a>
+          <button type="button" onClick={() => navigator.clipboard?.writeText(`Tiket: ${hasil.tiket}\nKode akses: ${hasil.kode}`)} className="rounded-lg bg-[var(--tema-utama)] px-5 py-2.5 font-semibold text-white">Salin</button>
+          <a href="/pengaduan/cek" className="rounded-lg px-5 py-2.5 font-semibold ring-1 ring-black/15">Cek status</a>
         </div>
         {login && <p className="text-sm text-black/60">Karena Anda masuk, perkembangan juga dikirim ke notifikasi akun Anda.</p>}
       </div>
@@ -54,7 +54,7 @@ export function FormPengaduan({ login }: { login: boolean }) {
         </div>
       )}
       <label className="flex items-start gap-2 text-sm"><input type="checkbox" name="setuju" className="mt-1 h-5 w-5" /> <span>Isi pengaduan ini benar sepanjang pengetahuan saya dan tidak bermaksud memfitnah.{e.setuju && <span className="block text-[var(--tema-utama)]">{e.setuju}</span>}</span></label>
-      <button disabled={proses} className="rounded-full bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim pengaduan"}</button>
+      <button disabled={proses} className="rounded-lg bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim pengaduan"}</button>
     </form>
   );
 }
@@ -85,7 +85,7 @@ export function FormNilai({ tiket, kode, id }: { tiket?: string; kode?: string; 
       <PilihBintang />
       <input name="komentar" maxLength={500} placeholder="Komentar (opsional)" aria-label="Komentar" className={inp} />
       {hasil.pesan && <p role="alert" className="text-sm text-[var(--tema-utama)]">{hasil.pesan}</p>}
-      <button disabled={proses} className="rounded-full bg-[var(--tema-utama)] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">Kirim penilaian</button>
+      <button disabled={proses} className="rounded-lg bg-[var(--tema-utama)] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">Kirim penilaian</button>
     </form>
   );
 }
@@ -100,18 +100,18 @@ export function FormCek({ tiketAwal = "" }: { tiketAwal?: string }) {
       <form onSubmit={kirim} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
         <label className="block text-sm font-semibold">Nomor tiket<input name="tiket" value={tiket} onChange={(x) => setTiket(x.target.value)} placeholder="ADU-2610-1A2B3" className={`${inp} mt-1.5 font-mono uppercase`} /></label>
         <label className="block text-sm font-semibold">Kode akses<input name="kode" value={kode} onChange={(x) => setKode(x.target.value)} placeholder="10 karakter" autoComplete="off" className={`${inp} mt-1.5 font-mono uppercase`} /></label>
-        <button disabled={proses} className="rounded-full bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Memeriksa…" : "Cek"}</button>
+        <button disabled={proses} className="rounded-lg bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Memeriksa…" : "Cek"}</button>
       </form>
       {hasil.pesan && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">{hasil.pesan}</p>}
       {hasil.data && (
         <div role="status" className="space-y-3 kartu p-6 ">
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono font-bold">{hasil.data.tiket}</span>
-            <span className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 ${STATUS_ADUAN[hasil.data.status]?.warna}`}>{STATUS_ADUAN[hasil.data.status]?.label}</span>
+            <span className={`rounded-lg px-3 py-1 text-xs font-semibold ring-1 ${STATUS_ADUAN[hasil.data.status]?.warna}`}>{STATUS_ADUAN[hasil.data.status]?.label}</span>
           </div>
           <h2 className="font-serif text-2xl">{hasil.data.judul}</h2>
           <p className="text-sm text-black/50">{KATEGORI_ADUAN[hasil.data.kategori as keyof typeof KATEGORI_ADUAN]} · dikirim {new Date(hasil.data.dibuat).toLocaleDateString("id-ID", { dateStyle: "long" })} · diperbarui {new Date(hasil.data.diperbarui).toLocaleDateString("id-ID", { dateStyle: "long" })}</p>
-          <div className="rounded-xl bg-[#f6f5fc] p-4"><p className="text-xs uppercase tracking-widest text-black/50">Tanggapan sekolah</p><p className="mt-1 whitespace-pre-line">{hasil.data.tanggapan_publik || "Belum ada tanggapan. Pengaduan Anda sedang ditinjau."}</p></div>
+          <div className="rounded-xl bg-[#f6f5f2] p-4"><p className="text-xs uppercase tracking-widest text-black/50">Tanggapan sekolah</p><p className="mt-1 whitespace-pre-line">{hasil.data.tanggapan_publik || "Belum ada tanggapan. Pengaduan Anda sedang ditinjau."}</p></div>
           {["selesai", "ditolak"].includes(hasil.data.status) && (hasil.data.rating
             ? <p className="text-sm text-black/60">Penilaian Anda: <span className="text-amber-500">{"★".repeat(hasil.data.rating)}</span></p>
             : <FormNilai key={hasil.data.tiket} tiket={tiket.trim().toUpperCase()} kode={kode.trim().toUpperCase()} />)}
@@ -155,7 +155,7 @@ export function FormSurvei({ id, pertanyaan }: { id: string; pertanyaan: Pertany
       ))}
       {hasil.pesan && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800">{hasil.pesan}</p>}
       <p className="text-xs text-black/50">Jawaban disimpan tanpa nama dan hanya dilaporkan dalam bentuk rekap.</p>
-      <button disabled={proses} className="rounded-full bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim jawaban"}</button>
+      <button disabled={proses} className="rounded-lg bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Kirim jawaban"}</button>
     </form>
   );
 }

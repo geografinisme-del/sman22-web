@@ -58,22 +58,20 @@ export const statistik = [
 
 /** Bagian pembuka beranda (hero editorial). Slide berganti setiap 7 detik. */
 export const hero = {
-  label: "SMAN 22 Bandung",
-  judulAwal: "Belajar.",
-  judulMiring: "Bertumbuh.",
-  judulAkhir: "Berdampak.",
-  teks: "Sekolah dalam satu ekosistem digital.",
-  tombolUtama: { label: "Jelajahi sekolah", href: "/profil" },
-  tombolKedua: { label: "Masuk portal", href: "/masuk" },
+  label: "SMA Negeri 22 Bandung",
+  judulAwal: "Sekolah menengah atas negeri",
+  judulMiring: "di Kota Bandung",
+  judulAkhir: "sejak 1989.",
+  teks: "Informasi profil, program, kegiatan, dan layanan sekolah untuk siswa, orang tua, dan masyarakat.",
+  tombolUtama: { label: "Kenali Sekolah", href: "/profil" },
+  tombolKedua: { label: "Informasi SPMB", href: "/spmb" },
   /**
-   * Potret hero. Paling bagus berupa PNG/WebP berlatar transparan (potongan tubuh),
-   * yang tampil di atas bentuk berwarna. Foto biasa (JPG) otomatis dibingkai lengkung.
-   * Model bawaan adalah ilustrasi sintetis — ganti dengan foto berizin dari sekolah.
+   * Foto pembuka bawaan: foto asli sekolah. Ganti/tambah lewat Admin → Tampilan Website → Foto pembuka.
+   * Ilustrasi model sintetis (public/images/hero/model-sintetis.png) tetap tersedia, tetapi tidak dipakai bawaan.
    */
   foto: [
-    { src: "/images/hero/model-sintetis.png", alt: "Model perempuan sintetis berbaju putih membawa buku biru dan lavender", posisi: "50% 50%", tautan: "/profil" },
-    { src: "/images/hero/model-sintetis.png", alt: "Model perempuan sintetis berbaju putih membawa buku biru dan lavender", posisi: "50% 50%", tautan: "/berita" },
-    { src: "/images/hero/model-sintetis.png", alt: "Model perempuan sintetis berbaju putih membawa buku biru dan lavender", posisi: "50% 50%", tautan: "/ekskul" },
+    { src: "/images/keluarga-besar.jpg", alt: "Keluarga besar SMA Negeri 22 Bandung di halaman sekolah", posisi: "50% 55%", tautan: "/profil" },
+    { src: "/images/gedung.jpg", alt: "Gedung utama SMA Negeri 22 Bandung", posisi: "50% 60%", tautan: "/profil" },
   ],
 };
 

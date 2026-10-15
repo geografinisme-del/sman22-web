@@ -50,7 +50,7 @@ export function FormAksi({
 }
 
 const kelasInput =
-  "w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-base outline-none transition focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 aria-[invalid=true]:border-merah";
+  "w-full rounded-lg border border-black/20 bg-white px-4 py-2.5 text-base outline-none transition-colors focus:border-[var(--tema-utama)] focus:ring-[3px] focus:ring-[color-mix(in_srgb,var(--tema-utama)_18%,transparent)] aria-[invalid=true]:border-merah";
 
 export function Kolom({
   label,
@@ -236,7 +236,7 @@ export function TombolSimpan({ children = "Simpan", teksProses = "Menyimpan…" 
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex items-center gap-2 rounded-full bg-brand-900 px-6 py-3 font-semibold text-white transition hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60"
+      className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand-900 px-5 py-2.5 font-semibold text-white transition-colors duration-150 hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60"
     >
       {pending && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden />}
       {pending ? teksProses : children}

@@ -9,16 +9,12 @@ export default async function Galeri() {
   const galeri = (await getGaleri()).filter((g) => g.gambar);
   return (
     <>
-      <PageHeader judul="Galeri" deskripsi="Dokumentasi kegiatan sekolah. Klik foto untuk melihat lebih besar.">
-        {galeri.length > 0 && (
-          <span className="inline-flex items-baseline gap-2 rounded-full bg-[#f3f0fc] px-4 py-2">
-            <strong className="font-serif text-xl font-medium text-[var(--tema-utama)]">{galeri.length}</strong>
-            <span className="text-xs text-[#5e6074]">foto kegiatan</span>
-          </span>
-        )}
-      </PageHeader>
-      <section className="lp-wadah py-10 sm:py-12">
-        {galeri.length === 0 ? <Kosong teks="Belum ada foto." /> : <GaleriInteraktif foto={galeri} />}
+      <PageHeader
+        judul="Galeri"
+        deskripsi={galeri.length ? `${galeri.length} foto dokumentasi kegiatan sekolah. Pilih foto untuk melihat lebih besar.` : "Dokumentasi kegiatan sekolah."}
+      />
+      <section className="bagian">
+        <div className="lp-wadah">{galeri.length === 0 ? <Kosong teks="Belum ada foto yang diterbitkan." /> : <GaleriInteraktif foto={galeri} />}</div>
       </section>
     </>
   );

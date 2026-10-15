@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { BingkaiAkun } from "@/components/akun/BingkaiAkun";
 import { getAkses, labelPeran } from "@/lib/admin/auth";
+import { samarkanEmail } from "@/lib/format";
 import { DaftarMfa, FormTantangan } from "@/components/keamanan/Mfa";
 import { keluar } from "../actions";
 
@@ -17,32 +18,36 @@ export default async function HalamanMfa() {
 
   return (
     <BingkaiAkun
+      tanpaFoto
       judul="Verifikasi dua langkah"
+      deskripsi={
+        faktor.length > 0 ? (
+          <>
+            Masukkan kode dari aplikasi autentikator di HP Anda untuk akun <strong>{samarkanEmail(user.email)}</strong>.
+          </>
+        ) : (
+          <>
+            Akun dengan peran <strong>{labelPeran(tertunda.length ? tertunda : ["super_admin"])}</strong> wajib memakai verifikasi dua langkah. Siapkan HP
+            Anda — cukup sekali, sekitar 2 menit.
+          </>
+        )
+      }
       bawah={
-        <form action={keluar}>
-          <button type="submit" className="text-[#646c7a] hover:text-[var(--tema-utama)]">
-            Keluar
-          </button>
-        </form>
+        <>
+          {faktor.length > 0 && (
+            <p className="text-[#3b414b]">
+              HP hilang atau berganti HP? Minta super admin lain mereset verifikasi dua langkah akun Anda melalui menu Pengguna & Peran.
+            </p>
+          )}
+          <form action={keluar}>
+            <button type="submit" className="font-semibold underline underline-offset-4">
+              Keluar dan kembali ke halaman masuk
+            </button>
+          </form>
+        </>
       }
     >
-      {faktor.length > 0 ? (
-        <>
-          <p className="mt-2 text-[15px] text-[#555f6b]">
-            Masukkan kode 6 angka dari aplikasi autentikator di HP Anda untuk <strong>{user.email}</strong>.
-          </p>
-          <FormTantangan faktor={faktor} />
-          <p className="mt-6 text-xs text-[#646c7a]">HP hilang atau ganti HP? Minta super admin lain mereset verifikasi dua langkah akun Anda.</p>
-        </>
-      ) : (
-        <>
-          <p className="mt-2 text-[15px] text-[#555f6b]">
-            Akun dengan peran <strong>{labelPeran(tertunda.length ? tertunda : ["super_admin"])}</strong> wajib memakai verifikasi dua langkah, agar akun tetap aman
-            walaupun kata sandi bocor. Siapkan HP Anda — cukup sekali, sekitar 2 menit.
-          </p>
-          <DaftarMfa />
-        </>
-      )}
+      {faktor.length > 0 ? <FormTantangan faktor={faktor} /> : <DaftarMfa />}
     </BingkaiAkun>
   );
 }

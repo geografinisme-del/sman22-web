@@ -65,7 +65,7 @@ export default async function ProfilEkskul({ params }: { params: Promise<{ slug:
             <p><span className="text-black/50">Anggota:</span> {d.jumlah_anggota}</p>
             <p><span className="text-black/50">Untuk kelas:</span> {d.tingkat_boleh.join(", ")}</p>
             {d.syarat && <p className="whitespace-pre-line"><span className="text-black/50">Syarat:</span> {d.syarat}</p>}
-            {buka ? <Link href="/masuk" className="mt-2 block rounded-full px-5 py-3 text-center font-semibold text-white" style={{ background: d.warna }}>Daftar lewat portal siswa</Link>
+            {buka ? <Link href="/masuk" className="mt-2 block rounded-lg px-5 py-3 text-center font-semibold text-white" style={{ background: d.warna }}>Daftar lewat portal siswa</Link>
               : <p className="text-black/50">Pendaftaran sedang ditutup.</p>}
           </aside>
         </div>

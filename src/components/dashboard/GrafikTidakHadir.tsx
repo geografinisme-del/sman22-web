@@ -29,7 +29,7 @@ export function GrafikTidakHadir({ data }: { data: TitikHarian[] }) {
               const akhir = i === data.length - 1;
               return (
                 <li key={d.tanggal} tabIndex={0} className="group relative flex h-full flex-1 items-end justify-center outline-none">
-                  <span className="block w-full max-w-6 rounded-t transition-opacity group-hover:opacity-80 group-focus:opacity-80" style={{ height: h, backgroundColor: "#4a5fc1" }} />
+                  <span className="block w-full max-w-6 rounded-t transition-opacity group-hover:opacity-80 group-focus:opacity-80" style={{ height: h, backgroundColor: "#4a5677" }} />
                   {akhir && <span className="absolute text-[11px] font-semibold tabular-nums text-black/70" style={{ bottom: h + 4 }}>{d.persen.toFixed(1)}%</span>}
                   <span className="pointer-events-none absolute z-10 hidden w-max rounded-lg bg-brand-900 px-2.5 py-1.5 text-xs text-white shadow-lg group-hover:block group-focus:block" style={{ bottom: h + 22 }}>
                     {d.label}: <strong>{d.persen.toFixed(1)}%</strong> ({d.tidakHadir} dari {d.total})

@@ -4,26 +4,47 @@ import { useState, useTransition } from "react";
 import { mulaiDaftarMfa, verifikasiMfa, type HasilDaftarMfa } from "@/app/admin/actions-keamanan";
 import { FormAksi, TombolSimpan, useErrorKolom } from "@/components/admin/form";
 
-/** Kolom kode 6 angka (keyboard angka di HP, isi otomatis dari aplikasi) */
-export function InputKode({ label = "Kode 6 angka", fokus = true }: { label?: string; fokus?: boolean }) {
+/**
+ * Satu kolom kode 6 angka: keyboard angka di HP, isi otomatis dari aplikasi (one-time-code),
+ * tempel kode berspasi tetap diterima, angka 0 di depan tetap dipertahankan (disimpan sebagai teks).
+ */
+export function InputKode({ label = "Kode dari aplikasi autentikator", fokus = true }: { label?: string; fokus?: boolean }) {
   const error = useErrorKolom("kode");
+  const [nilai, setNilai] = useState("");
   return (
     <div>
-      <label htmlFor="kode" className="mb-1.5 block text-sm font-semibold">{label}</label>
+      <label htmlFor="kode" className="mb-1.5 block text-sm font-semibold">
+        {label}
+      </label>
       <input
         id="kode"
         name="kode"
+        type="text"
         inputMode="numeric"
         autoComplete="one-time-code"
-        pattern="[0-9 ]*"
-        maxLength={7}
+        pattern="[0-9]{6}"
+        maxLength={6}
         required
         autoFocus={fokus}
-        placeholder="123456"
+        value={nilai}
+        onChange={(e) => setNilai(e.target.value.replace(/\D/g, "").slice(0, 6))}
+        onPaste={(e) => {
+          e.preventDefault();
+          setNilai(e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6));
+        }}
         aria-invalid={Boolean(error)}
-        className="w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-center font-mono text-2xl tracking-[0.4em] outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10 aria-[invalid=true]:border-merah"
+        aria-describedby={error ? "kode-error" : "kode-bantuan"}
+        className="w-full rounded-lg border border-black/20 bg-white px-4 py-3 font-mono text-2xl tracking-[0.3em] tabular-nums outline-none focus:border-[var(--tema-utama)] focus:ring-[3px] focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)] aria-[invalid=true]:border-merah"
       />
-      {error && <p className="mt-1.5 text-sm text-merah">{error}</p>}
+      {error ? (
+        <p id="kode-error" role="alert" className="mt-1.5 text-sm font-medium text-merah">
+          {error}
+        </p>
+      ) : (
+        <p id="kode-bantuan" className="mt-1.5 text-sm text-[#5b6270]">
+          6 angka; kode berganti setiap 30 detik.
+        </p>
+      )}
     </div>
   );
 }
@@ -38,13 +59,13 @@ export function FormTantangan({ faktor, lanjut = "/admin" }: { faktor: { id: str
       {faktor.length > 1 && (
         <label className="block text-sm">
           <span className="mb-1.5 block font-semibold">Aplikasi</span>
-          <select value={pilih} onChange={(e) => setPilih(e.target.value)} className="w-full rounded-xl border border-black/15 bg-white px-4 py-3">
+          <select value={pilih} onChange={(e) => setPilih(e.target.value)} className="w-full rounded-lg border border-black/20 bg-white px-4 py-3">
             {faktor.map((f) => <option key={f.id} value={f.id}>{f.nama}</option>)}
           </select>
         </label>
       )}
       <InputKode />
-      <TombolSimpan>Verifikasi</TombolSimpan>
+      <TombolSimpan teksProses="Memverifikasi…">Verifikasi</TombolSimpan>
     </FormAksi>
   );
 }
@@ -63,7 +84,7 @@ export function DaftarMfa({ lanjut = "/admin", teksTombol = "Mulai pasang aplika
           type="button"
           disabled={proses}
           onClick={() => mulai(async () => setData(await mulaiDaftarMfa()))}
-          className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white hover:bg-brand-700 disabled:opacity-60"
+          className="min-h-12 w-full rounded-lg bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white hover:bg-[color-mix(in_srgb,var(--tema-utama)_86%,#000)] disabled:opacity-60"
         >
           {proses ? "Menyiapkan…" : teksTombol}
         </button>
@@ -92,7 +113,7 @@ export function DaftarMfa({ lanjut = "/admin", teksTombol = "Mulai pasang aplika
         <input type="hidden" name="baru" value="1" />
         <input type="hidden" name="lanjut" value={lanjut} />
         <InputKode />
-        <TombolSimpan>Aktifkan</TombolSimpan>
+        <TombolSimpan teksProses="Memverifikasi…">Aktifkan</TombolSimpan>
       </FormAksi>
     </div>
   );

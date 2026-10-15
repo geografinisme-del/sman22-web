@@ -243,8 +243,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         peran={akses.peran.map((p) => NAMA_PERAN[p] ?? p).join(", ")}
         keluar={keluar}
       />
-      <main className="px-5 py-8 sm:px-8 lg:ml-64 lg:px-12 lg:py-12 print:m-0 print:p-0">
-        <div className="mx-auto max-w-6xl">{children}</div>
+      <main className="px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8 lg:py-7 print:m-0 print:p-0">
+        <div className="max-w-[1320px]">{children}</div>
       </main>
     </>
   );

@@ -1,67 +1,32 @@
 import Link from "next/link";
-import { Kartu, JudulHalaman, Notifikasi } from "@/components/admin/ui";
+import { JudulHalaman, Notifikasi } from "@/components/admin/ui";
+import { BagianHariIni, Keadaan, Panel } from "@/components/dashboard/HariIni";
+import { hariIniWIB } from "@/lib/admin/absensi";
 import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
-import { formatTanggal } from "@/lib/format";
-import { BagianHariIni } from "@/components/dashboard/HariIni";
+import { kalimatAktivitas, waktuWIB } from "@/lib/admin/label-audit";
 
 export const metadata = { title: "Ringkasan" };
 
-const NAMA_TABEL: Record<string, string> = {
-  profil_sekolah: "Profil sekolah",
-  berita: "Berita",
-  agenda: "Agenda",
-  pengumuman: "Pengumuman",
-  galeri: "Galeri",
-  siswa: "Siswa",
-  pegawai: "Pegawai",
-  kelas: "Kelas",
-  anggota_kelas: "Anggota kelas",
-  tahun_ajaran: "Tahun ajaran",
-  orang_tua: "Orang tua",
-  siswa_orang_tua: "Relasi orang tua",
-  pengguna: "Pengguna",
-  pengguna_peran: "Peran pengguna",
-  pelanggaran_siswa: "Pelanggaran siswa",
-  prestasi_siswa: "Prestasi siswa",
-  pembinaan_siswa: "Pembinaan siswa",
-  rujukan_bk: "Rujukan BK",
-  jenis_pelanggaran: "Aturan pelanggaran",
-  absensi_siswa: "Absensi siswa",
-  absensi_pegawai: "Kehadiran pegawai",
-  absensi_jp: "Absensi per jam",
-  jurnal_jp: "Jurnal mengajar",
-  izin_ortu: "Izin orang tua",
-  pengajuan_koreksi: "Koreksi absensi",
-  pengajuan_izin_pegawai: "Izin pegawai",
-  jadwal: "Jadwal",
-  perubahan_jadwal: "Perubahan jadwal",
-  penugasan_mengajar: "Penugasan mengajar",
-  hero_slide: "Foto pembuka",
-  pengaturan_situs: "Tampilan website",
-};
-const AKSI: Record<string, string> = { INSERT: "ditambah", UPDATE: "diubah", DELETE: "dihapus", LIHAT: "dibuka", EKSPOR: "diekspor", LOGIN: "masuk", CETAK: "dicetak" };
-
-function Angka({ nilai, label, href }: { nilai: number | string; label: string; href?: string }) {
-  const isi = (
-    <>
-      <p className="font-serif text-5xl leading-none">{nilai}</p>
-      <p className="mt-2 text-sm text-black/60">{label}</p>
-    </>
-  );
-  return href ? (
-    <Link href={href} className="block rounded-2xl bg-white p-5 ring-1 ring-black/5 transition hover:ring-brand-600">
-      {isi}
-    </Link>
-  ) : (
-    <div className="rounded-2xl bg-white p-5 ring-1 ring-black/5">{isi}</div>
-  );
-}
+/** Isian profil sekolah yang tampil di website publik */
+const KOLOM_PROFIL = [
+  ["alamat", "Alamat"],
+  ["telepon", "Telepon"],
+  ["email", "Email"],
+  ["npsn", "NPSN"],
+  ["visi", "Visi"],
+  ["misi", "Misi"],
+  ["sambutan_isi", "Sambutan kepala sekolah"],
+  ["slogan", "Slogan"],
+] as const;
 
 export default async function Ringkasan({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
   const { pesan } = await searchParams;
   const { supabase, akses } = await wajibLogin();
   if (!akses) return null;
   const hitung = (tabel: string) => supabase.from(tabel).select("id", { count: "exact", head: true }).is("deleted_at", null);
+  const tanggal = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date(`${hariIniWIB()}T12:00:00+07:00`));
+
+  const { data: ta } = await supabase.from("tahun_ajaran").select("id, nama, semester").eq("aktif", true).maybeSingle();
 
   const konten = punya(akses, "konten.kelola")
     ? await Promise.all([
@@ -73,20 +38,20 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
       ])
     : null;
 
-  let induk: null | { ta: string | null; siswa: number; pegawai: number; kelas: number; tingkat: Record<string, number>; tanpaKelas: number } = null;
+  let induk: null | { gagal: boolean; siswa: number; pegawai: number; kelas: number; tingkat: Record<string, number>; tanpaKelas: number } = null;
   if (punya(akses, "data_induk.baca")) {
-    const { data: ta } = await supabase.from("tahun_ajaran").select("id, nama, semester").eq("aktif", true).maybeSingle();
-    const [s, p, k, X, XI, XII, tk] = await Promise.all([
+    const hasil = await Promise.all([
       hitung("siswa").eq("status", "aktif"),
       hitung("pegawai").eq("status", "aktif"),
-      ta ? hitung("kelas").eq("tahun_ajaran_id", ta.id) : Promise.resolve({ count: 0 }),
+      ta ? hitung("kelas").eq("tahun_ajaran_id", ta.id) : Promise.resolve({ count: 0, error: null }),
       ...(["X", "XI", "XII"] as const).map((t) =>
         supabase.from("siswa_kelas_aktif").select("id", { count: "exact", head: true }).is("deleted_at", null).eq("status", "aktif").eq("tingkat", t),
       ),
       supabase.from("siswa_kelas_aktif").select("id", { count: "exact", head: true }).is("deleted_at", null).eq("status", "aktif").is("kelas_id", null),
     ]);
+    const [s, p, k, X, XI, XII, tk] = hasil;
     induk = {
-      ta: ta ? `${ta.nama} · semester ${ta.semester}` : null,
+      gagal: hasil.some((h) => h.error),
       siswa: s.count ?? 0,
       pegawai: p.count ?? 0,
       kelas: k.count ?? 0,
@@ -95,110 +60,196 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
     };
   }
 
-  const audit = punya(akses, "audit.baca")
-    ? (await supabase.from("audit_log").select("id, waktu, tabel, aksi").order("waktu", { ascending: false }).limit(8)).data
-    : null;
+  const bolehAudit = punya(akses, "audit.baca");
+  const auditRes = bolehAudit ? await supabase.from("audit_log").select("id, waktu, user_id, tabel, aksi, data_baru").order("waktu", { ascending: false }).limit(5) : null;
+  const audit = auditRes?.data ?? null;
+  const ids = [...new Set((audit ?? []).map((a) => a.user_id).filter(Boolean))];
+  const { data: orang } = ids.length ? await supabase.from("pengguna").select("user_id, nama, email").in("user_id", ids) : { data: [] };
+  const namaPelaku = new Map((orang ?? []).map((o) => [o.user_id, o.nama || o.email]));
 
-  const kolomProfil = ["alamat", "telepon", "email", "npsn", "visi", "misi", "sambutan_isi", "slogan"] as const;
   const profil = konten?.[4].data as Record<string, unknown> | null | undefined;
-  const profilKosong = konten ? kolomProfil.filter((k) => !String(profil?.[k] ?? "").trim()).length : 0;
+  const profilGagal = Boolean(konten?.[4].error);
+  const profilKosong = konten && !profilGagal ? KOLOM_PROFIL.filter(([k]) => !String(profil?.[k] ?? "").trim()) : [];
+  const kontenGagal = konten ? konten.slice(0, 4).some((r) => r.error) : false;
 
   return (
     <>
-      <JudulHalaman judul={`Halo, ${akses.nama || "Bapak/Ibu"}`} deskripsi="Ringkasan sesuai hak akses Anda." />
+      <JudulHalaman
+        judul="Ringkasan"
+        konteks={
+          <>
+            {tanggal}
+            {ta && ` · Tahun ajaran ${ta.nama}, semester ${ta.semester}`}
+          </>
+        }
+        deskripsi={`Halo, ${akses.nama || "Bapak/Ibu"}. Berikut hal yang perlu Anda perhatikan hari ini.`}
+        aksi={
+          berperan(akses, "wali_kelas") ? (
+            <Link href="/admin/kelas-saya" className="inline-flex min-h-10 shrink-0 items-center rounded-lg border border-[#d9dce1] bg-white px-4 text-sm font-semibold hover:border-[#9aa1ab]">
+              Kelas perwalian saya
+            </Link>
+          ) : undefined
+        }
+      />
       {pesan === "tanpa-akses" && (
-        <div role="alert" className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-800 ring-1 ring-red-200">
+        <div role="alert" className="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm font-medium text-red-800 ring-1 ring-red-200">
           Anda tidak memiliki akses ke halaman tersebut.
         </div>
       )}
       <Notifikasi kode={pesan === "tanpa-akses" ? undefined : pesan} />
-      <BagianHariIni supabase={supabase} akses={akses} />
 
-      {induk && (
-        <section className="mb-10">
-          <h2 className="mb-4 font-serif text-3xl">Data induk</h2>
-          {!induk.ta && (
-            <Link href="/admin/tahun-ajaran" className="mb-4 block rounded-2xl bg-amber-50 p-5 text-amber-900 ring-1 ring-amber-200">
-              <strong>Belum ada tahun ajaran aktif.</strong> Buat dan aktifkan tahun ajaran terlebih dahulu →
-            </Link>
-          )}
-          <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <li><Angka nilai={induk.siswa} label="Siswa aktif" href="/admin/siswa" /></li>
-            <li><Angka nilai={induk.pegawai} label="Guru & pegawai aktif" href="/admin/pegawai" /></li>
-            <li><Angka nilai={induk.kelas} label="Kelas tahun ini" href="/admin/kelas" /></li>
-            <li><Angka nilai={induk.ta ?? "—"} label="Tahun ajaran aktif" href="/admin/tahun-ajaran" /></li>
-          </ul>
-          <Kartu className="mt-4">
-            <p className="text-sm font-semibold">Sebaran siswa aktif per tingkat</p>
-            <div className="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm">
-              {Object.entries(induk.tingkat).map(([t, n]) => (
-                <span key={t}>
-                  Kelas {t}: <strong>{n}</strong>
-                </span>
-              ))}
-              <span className={induk.tanpaKelas ? "text-amber-700" : "text-black/50"}>
-                Belum punya kelas: <strong>{induk.tanpaKelas}</strong>
-              </span>
-              <span className="text-black/50">
-                Jumlah: <strong>{Object.values(induk.tingkat).reduce((a, b) => a + b, 0) + induk.tanpaKelas}</strong> (harus sama
-                dengan siswa aktif: {induk.siswa})
-              </span>
-            </div>
-          </Kartu>
-        </section>
-      )}
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        <BagianHariIni supabase={supabase} akses={akses} />
 
-      {berperan(akses, "wali_kelas") && (
-        <Link href="/admin/kelas-saya" className="mb-10 block rounded-2xl bg-brand-900 p-6 text-white">
-          <p className="font-serif text-3xl">Kelas perwalian saya →</p>
-          <p className="mt-1 text-white/70">Lihat daftar siswa dan kontak orang tua.</p>
-        </Link>
-      )}
+        {induk && (
+          <Panel
+            judul="Data induk"
+            aksi={
+              <Link href="/admin/siswa" className="text-sm font-semibold underline underline-offset-2">
+                Data siswa
+              </Link>
+            }
+          >
+            {induk.gagal ? (
+              <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
+                Data induk gagal dimuat.
+              </Keadaan>
+            ) : (
+              <>
+                {!ta && (
+                  <div className="mb-3">
+                    <Keadaan jenis="info" aksi={punya(akses, "data_induk.kelola") ? <Link href="/admin/tahun-ajaran" className="font-semibold underline underline-offset-2">Atur</Link> : undefined}>
+                      Tahun ajaran aktif belum diatur.
+                    </Keadaan>
+                  </div>
+                )}
+                <dl className="grid grid-cols-3 gap-4">
+                  {[
+                    ["Siswa aktif", induk.siswa],
+                    ["Guru & pegawai", induk.pegawai],
+                    ["Kelas", induk.kelas],
+                  ].map(([l, v]) => (
+                    <div key={l}>
+                      <dt className="text-sm text-[#5b6270]">{l}</dt>
+                      <dd className="text-[1.625rem] font-semibold leading-none tabular-nums">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="mt-4 border-t border-[#eceef1] pt-3 text-sm text-[#3b414b]">
+                  {Object.entries(induk.tingkat)
+                    .map(([t, v]) => `Kelas ${t}: ${v}`)
+                    .join(" · ")}
+                  {induk.tanpaKelas > 0 && <span className="font-semibold text-[#8a4b00]"> · Belum punya kelas: {induk.tanpaKelas}</span>}
+                </p>
+              </>
+            )}
+          </Panel>
+        )}
 
-      {konten && (
-        <section className="mb-10">
-          <h2 className="mb-4 font-serif text-3xl">Website</h2>
-          {profilKosong > 0 && (
-            <Link href="/admin/profil" className="mb-4 block rounded-2xl bg-amber-50 p-5 text-amber-900 ring-1 ring-amber-200">
-              <strong>{profilKosong} isian profil sekolah masih kosong</strong>. Klik untuk melengkapi →
-            </Link>
-          )}
-          <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <li><Angka nilai={konten[0].count ?? 0} label="Berita terbit" href="/admin/berita" /></li>
-            <li><Angka nilai={konten[1].count ?? 0} label="Draft berita" href="/admin/berita" /></li>
-            <li><Angka nilai={konten[2].count ?? 0} label="Pengumuman aktif" href="/admin/pengumuman" /></li>
-            <li><Angka nilai={konten[3].count ?? 0} label="Agenda mendatang" href="/admin/agenda" /></li>
-          </ul>
-        </section>
-      )}
+        {konten && (
+          <Panel
+            judul="Kelengkapan website"
+            className="lg:col-span-2"
+            aksi={
+              <Link href="/admin/berita" className="text-sm font-semibold underline underline-offset-2">
+                Kelola berita
+              </Link>
+            }
+          >
+            {profilGagal ? (
+              <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
+                Profil sekolah gagal dimuat.
+              </Keadaan>
+            ) : profilKosong.length > 0 ? (
+              <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg bg-[#fff8e8] px-4 py-3">
+                <div className="min-w-0 text-sm">
+                  <p className="font-semibold text-[#5c3d00]">
+                    {profilKosong.length} dari {KOLOM_PROFIL.length} isian profil sekolah belum diisi
+                  </p>
+                  <p className="mt-0.5 text-[#5c3d00]">{profilKosong.map(([, l]) => l).join(", ")}.</p>
+                </div>
+                <Link href="/admin/profil" className="inline-flex min-h-9 shrink-0 items-center rounded-lg bg-brand-900 px-3 text-sm font-semibold text-white hover:bg-brand-700">
+                  Lengkapi profil sekolah
+                </Link>
+              </div>
+            ) : (
+              <p className="text-sm text-[#3b414b]">Semua isian profil sekolah sudah terisi.</p>
+            )}
+            {kontenGagal ? (
+              <div className="mt-3">
+                <Keadaan jenis="gagal">Ringkasan konten gagal dimuat.</Keadaan>
+              </div>
+            ) : (
+              <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-[#eceef1] pt-4 sm:grid-cols-4">
+                {[
+                  ["Berita terbit", konten[0].count ?? 0, "/admin/berita"],
+                  ["Draf berita", konten[1].count ?? 0, "/admin/berita"],
+                  ["Pengumuman aktif", konten[2].count ?? 0, "/admin/pengumuman"],
+                  ["Agenda mendatang", konten[3].count ?? 0, "/admin/agenda"],
+                ].map(([l, v, href]) => (
+                  <div key={String(l)}>
+                    <dt className="text-sm text-[#5b6270]">
+                      <Link href={String(href)} className="hover:underline">
+                        {l}
+                      </Link>
+                    </dt>
+                    <dd className="text-[1.625rem] font-semibold leading-none tabular-nums">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </Panel>
+        )}
 
-      {audit && (
-        <Kartu>
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-serif text-2xl">Aktivitas terakhir</h2>
-            <Link href="/admin/log" className="text-sm underline-offset-4 hover:underline">
-              Semua log →
-            </Link>
-          </div>
-          {audit.length === 0 ? (
-            <p className="mt-4 text-black/50">Belum ada aktivitas.</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-black/5 text-sm">
-              {audit.map((a) => (
-                <li key={a.id} className="flex justify-between gap-4 py-2">
-                  <span>
-                    {NAMA_TABEL[a.tabel] ?? a.tabel} · <span className="text-black/50">{AKSI[a.aksi] ?? a.aksi}</span>
-                  </span>
-                  <time className="shrink-0 text-black/40">
-                    {formatTanggal(a.waktu.slice(0, 10), { month: "short" })}{" "}
-                    {new Date(a.waktu).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" })}
-                  </time>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Kartu>
-      )}
+        {bolehAudit && (
+          <Panel
+            judul="Aktivitas terbaru"
+            className="lg:col-span-3"
+            aksi={
+              <Link href="/admin/log" className="text-sm font-semibold underline underline-offset-2">
+                Lihat semua aktivitas
+              </Link>
+            }
+          >
+            {auditRes?.error ? (
+              <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
+                Aktivitas gagal dimuat.
+              </Keadaan>
+            ) : !audit?.length ? (
+              <p className="text-sm text-[#3b414b]">Belum ada aktivitas tercatat.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[520px] text-left text-sm">
+                  <thead className="border-b border-[#eceef1] text-[#5b6270]">
+                    <tr>
+                      <th scope="col" className="py-2 pr-4 font-semibold">
+                        Aktivitas
+                      </th>
+                      <th scope="col" className="py-2 pr-4 font-semibold">
+                        Oleh
+                      </th>
+                      <th scope="col" className="py-2 font-semibold">
+                        Waktu (WIB)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#eceef1]">
+                    {audit.map((a) => (
+                      <tr key={a.id}>
+                        <td className="py-2.5 pr-4">{kalimatAktivitas(a)}</td>
+                        <td className="max-w-[220px] truncate py-2.5 pr-4 text-[#3b414b]">{a.user_id ? (namaPelaku.get(a.user_id) ?? "Pengguna") : "Sistem"}</td>
+                        <td className="whitespace-nowrap py-2.5 tabular-nums text-[#3b414b]">
+                          <time dateTime={a.waktu}>{waktuWIB(a.waktu)}</time>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Panel>
+        )}
+      </div>
     </>
   );
 }

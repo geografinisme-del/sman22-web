@@ -35,3 +35,12 @@ export function keInputWaktu(iso?: string | null) {
 export function formatWaktu(iso: string) {
   return new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Jakarta", weekday: "short", day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) + " WIB";
 }
+
+/** Samarkan email untuk tampilan, mis. "rachmat@gmail.com" → "ra•••••@gmail.com". */
+export function samarkanEmail(email: string | null | undefined) {
+  if (!email) return "";
+  const [nama, domain] = email.split("@");
+  if (!domain) return email;
+  const awal = nama.slice(0, Math.min(2, Math.max(1, nama.length - 1)));
+  return `${awal}${"•".repeat(Math.max(3, nama.length - awal.length))}@${domain}`;
+}

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { Reveal } from "@/components/Reveal";
-import { Kosong, PageHeader, Section } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
+import { FOTO_PROGRAM, KEBIASAAN_7KAIH, PANCAWALUYA } from "@/content/program";
 import { programUnggulan } from "@/content/sekolah";
 import { getBerita } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
@@ -25,43 +24,76 @@ export default async function DetailProgram({ params }: { params: Promise<{ slug
   const semua = await getBerita(60);
   const terkait = semua.filter((b) => kunci.some((k) => `${b.judul} ${b.ringkasan} ${b.kategori}`.toLowerCase().includes(k))).slice(0, 6);
   const lain = programUnggulan.filter((x) => x.kode !== p.kode);
+  const foto = FOTO_PROGRAM[p.kode];
 
   return (
     <>
-      <PageHeader label="Program sekolah" judul={p.nama} deskripsi={p.ringkas}>
-        <Link href="/program" className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--tema-utama)] hover:underline">
-          <ArrowLeft size={15} aria-hidden /> Semua program
+      <PageHeader judul={p.nama} deskripsi={p.ringkas} foto={foto ? { src: foto.src, alt: foto.alt } : undefined}>
+        <Link href="/program" className="tautan">
+          Semua program
         </Link>
       </PageHeader>
 
-      <Section judul="Kabar" miring="program ini" label="Berita & kegiatan terkait">
-        {terkait.length ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {terkait.map((b, i) => (
-              <Reveal key={b.slug} delay={(i % 3) * 100}>
-                <Link href={`/berita/${b.slug}`} className="kartu group block h-full p-5 transition hover:-translate-y-1">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--tema-utama)]">{b.kategori || "Berita"}</p>
-                  <p className="mt-1 text-xs text-[#646c7a]">{formatTanggal(b.tanggal)}</p>
-                  <h3 className="mt-2 font-semibold group-hover:text-[var(--tema-utama)]">{b.judul}</h3>
-                  <p className="mt-2 text-sm text-[#5e6074]">{b.ringkasan}</p>
-                </Link>
-              </Reveal>
-            ))}
+      {p.kode === "7KAIH" && (
+        <section className="bagian bagian-putih">
+          <div className="lp-wadah">
+            <h2>Tujuh kebiasaan</h2>
+            <ol className="kebiasaan mt-4 max-w-2xl">
+              {KEBIASAAN_7KAIH.map((k) => (
+                <li key={k}>{k}</li>
+              ))}
+            </ol>
           </div>
-        ) : (
-          <Kosong teks="Belum ada berita untuk program ini." sub={`Tulis berita dengan menyebut "${p.nama}" di judul atau ringkasannya agar tampil di sini.`} />
-        )}
-      </Section>
+        </section>
+      )}
+      {p.kode === "GP" && (
+        <section className="bagian bagian-putih">
+          <div className="lp-wadah">
+            <h2>Lima nilai Pancawaluya</h2>
+            <dl className="nilai-daftar mt-4">
+              {PANCAWALUYA.map((n) => (
+                <div key={n.nilai}>
+                  <dt>{n.nilai}</dt>
+                  <dd>{n.arti}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )}
 
-      <Section judul="Program" miring="lainnya" label="Jelajahi">
-        <div className="flex flex-wrap gap-3">
-          {lain.map((x) => (
-            <Link key={x.kode} href={`/program/${slugProgram(x)}`} className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-[var(--tema-utama)]/25 transition hover:bg-[var(--tema-utama)] hover:text-white">
-              {x.nama} <ArrowUpRight size={14} aria-hidden />
-            </Link>
-          ))}
+      <section className="bagian">
+        <div className="lp-wadah">
+          <h2>Berita dan kegiatan terkait</h2>
+          {terkait.length ? (
+            <ul className="mt-4 divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
+              {terkait.map((b) => (
+                <li key={b.slug}>
+                  <Link href={`/berita/${b.slug}`} className="group block py-3">
+                    <span className="text-sm text-[#5b6270]">
+                      {b.kategori || "Berita"} · {formatTanggal(b.tanggal)}
+                    </span>
+                    <span className="mt-0.5 block font-semibold group-hover:text-[var(--tema-utama)] group-hover:underline">{b.judul}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-3 text-[#3b414b]">Belum ada berita yang diterbitkan untuk program ini.</p>
+          )}
+
+          <h2 className="mt-12">Program lainnya</h2>
+          <ul className="mt-4 grid gap-x-8 sm:grid-cols-2">
+            {lain.map((x) => (
+              <li key={x.kode} className="border-b border-[#e5e1da]">
+                <Link href={`/program/${slugProgram(x)}`} className="block py-3 font-semibold hover:text-[var(--tema-utama)] hover:underline">
+                  {x.nama}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
-      </Section>
+      </section>
     </>
   );
 }

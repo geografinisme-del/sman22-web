@@ -27,8 +27,8 @@ export default async function Alumni() {
             <p className="font-serif text-3xl">Gabung jejaring alumni</p>
             <p className="mt-2 text-white/80">Daftar sekali, data diverifikasi sekolah. Anda mengatur sendiri apa yang terlihat oleh alumni lain.</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link href="/alumni/daftar" className="rounded-full bg-white px-5 py-2.5 font-semibold text-brand-900">Daftar alumni</Link>
-              <Link href="/admin/login" className="rounded-full px-5 py-2.5 font-semibold ring-1 ring-white/40">Masuk area alumni</Link>
+              <Link href="/alumni/daftar" className="rounded-lg bg-white px-5 py-2.5 font-semibold text-brand-900">Daftar alumni</Link>
+              <Link href="/admin/login" className="rounded-lg px-5 py-2.5 font-semibold ring-1 ring-white/40">Masuk area alumni</Link>
             </div>
           </div>
           <div className="kartu p-6 ">

@@ -22,7 +22,7 @@ export default async function LupaSandi({ searchParams }: { searchParams: Promis
         </p>
       )}
       <FormLupaSandi />
-      <p className="mt-6 rounded-xl bg-[#f6f5fc] p-3 text-xs leading-relaxed text-[#555f6b]">
+      <p className="mt-6 rounded-lg bg-[#f4f5f7] p-3 text-sm leading-relaxed text-[#3b414b]">
         <strong>Siswa & orang tua:</strong> akun portal tidak memakai email. Minta wali kelas atau operator mencetak ulang kartu akun (kata sandi baru).
       </p>
     </BingkaiAkun>

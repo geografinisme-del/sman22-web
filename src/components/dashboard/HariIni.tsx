@@ -1,33 +1,73 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { AlertTriangle, ArrowRight, CircleCheck } from "lucide-react";
 import { GrafikTidakHadir } from "@/components/dashboard/GrafikTidakHadir";
 import { awalBulan, geserTanggal, hariIniWIB } from "@/lib/admin/absensi";
 import { JENIS_KEGIATAN, KOLOM_KEGIATAN, rentangTanggal, type Kegiatan } from "@/lib/kalender";
 import { berperan, punya, type Akses } from "@/lib/admin/auth";
 import { trenTidakHadir } from "@/lib/dashboard";
 
-const n = (r: { count: number | null }) => r.count ?? 0;
+const NAMA_HARI = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
-function Kpi({ nilai, label, href, nada }: { nilai: number | string; label: string; href?: string; nada?: "peringatan" }) {
-  const isi = (
-    <>
-      <p className={`font-serif text-4xl leading-none tabular-nums ${nada ? "text-amber-700" : ""}`}>{nilai}</p>
-      <p className="mt-2 text-sm text-black/60">{label}</p>
-    </>
+type HasilHitung = { count: number | null; error?: unknown };
+/** jumlah dari kueri; null bila kueri gagal (jangan tampilkan sebagai nol) */
+const n = (r: HasilHitung) => (r.error ? null : (r.count ?? 0));
+
+/** Panel ringkasan: permukaan putih, judul 18px, tindakan di kanan. */
+export function Panel({ judul, aksi, children, className = "" }: { judul: string; aksi?: ReactNode; children: ReactNode; className?: string }) {
+  return (
+    <section className={`min-w-0 rounded-[10px] border border-[#e3e5e8] bg-white p-5 ${className}`} aria-label={judul}>
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="text-lg font-semibold text-[#1f2328]">{judul}</h2>
+        {aksi}
+      </div>
+      {children}
+    </section>
   );
-  return href ? <Link href={href} className="block rounded-2xl bg-white p-4 ring-1 ring-black/5 hover:ring-brand-600">{isi}</Link> : <div className="rounded-2xl bg-white p-4 ring-1 ring-black/5">{isi}</div>;
 }
 
-/** Bagian atas Ringkasan: hal yang perlu ditindaklanjuti & kondisi hari ini, sesuai peran */
+/** Pesan keadaan (kosong, belum diatur, libur, gagal) — ringkas, tidak setinggi grafik. */
+export function Keadaan({ jenis, children, aksi }: { jenis: "info" | "gagal"; children: ReactNode; aksi?: ReactNode }) {
+  return (
+    <div className={`flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm ${jenis === "gagal" ? "bg-red-50 text-red-900" : "bg-[#f4f5f7] text-[#3b414b]"}`} role={jenis === "gagal" ? "alert" : undefined}>
+      <span className="flex items-start gap-2">
+        {jenis === "gagal" && <AlertTriangle size={16} aria-hidden className="mt-0.5 shrink-0" />}
+        <span>{children}</span>
+      </span>
+      {aksi}
+    </div>
+  );
+}
+
+const cobaLagi = (
+  <a href="/admin" className="font-semibold underline underline-offset-2">
+    Coba lagi
+  </a>
+);
+
+function Angka({ nilai, label, catatan }: { nilai: number; label: string; catatan?: string }) {
+  return (
+    <div>
+      <dt className="text-sm text-[#5b6270]">{label}</dt>
+      <dd className="mt-0.5 text-[1.625rem] font-semibold leading-none tabular-nums text-[#1f2328]">
+        {nilai}
+        {catatan && <span className="ml-2 align-middle text-xs font-semibold text-[#8a4b00]">{catatan}</span>}
+      </dd>
+    </div>
+  );
+}
+
+/** Bagian atas Ringkasan: tindakan yang menunggu, kehadiran hari ini, guru & pegawai, kesiswaan, kalender. */
 export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseClient; akses: Akses }) {
   const hari = hariIniWIB();
   const iso = ((new Date(hari + "T00:00:00Z").getUTCDay() + 6) % 7) + 1;
   const q = (t: string) => supabase.from(t).select("*", { count: "exact", head: true });
-  const kosong = Promise.resolve({ count: 0 });
+  const kosong = Promise.resolve({ count: 0, error: null });
   const wali = berperan(akses, "wali_kelas");
 
   const { data: pid } = await supabase.rpc("pegawai_saya");
-  const [berita, izinPeg, koreksi, izinOrtu, pel, pre, rujukan, gagal, disiplin, jadwalSaya] = await Promise.all([
+  const [berita, izinPeg, koreksi, izinOrtu, pel, pre, rujukan, gagalKirim, disiplin, jadwalSaya] = await Promise.all([
     punya(akses, "konten.terbitkan") ? q("berita").eq("status", "diajukan").is("deleted_at", null) : kosong,
     punya(akses, "izin_pegawai.setujui") ? q("pengajuan_izin_pegawai").eq("status", "menunggu") : kosong,
     punya(akses, "absensi.kelola") ? q("pengajuan_koreksi").eq("status", "menunggu") : kosong,
@@ -36,10 +76,10 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
     punya(akses, "kesiswaan.kelola") ? q("prestasi_siswa").eq("status", "diajukan") : kosong,
     punya(akses, "bk.rujukan") ? q("rujukan_bk").eq("status", "baru") : kosong,
     punya(akses, "pengguna.kelola") ? q("antrian_kirim").eq("status", "gagal") : kosong,
-    punya(akses, "disiplin.kelola") ? supabase.rpc("status_disiplin") : Promise.resolve({ data: [] }),
-    pid ? supabase.from("jadwal_lengkap").select("id").eq("pegawai_id", pid).eq("hari", iso).eq("tahun_aktif", true) : Promise.resolve({ data: [] }),
+    punya(akses, "disiplin.kelola") ? supabase.rpc("status_disiplin") : Promise.resolve({ data: [], error: null }),
+    pid ? supabase.from("jadwal_lengkap").select("id").eq("pegawai_id", pid).eq("hari", iso).eq("tahun_aktif", true) : Promise.resolve({ data: [], error: null }),
   ]);
-  const [tukarMasuk, tukarKur, { data: agenda }, perangkat, supervisi, revisi, perluNilai, pinjam, rusak] = await Promise.all([
+  const [tukarMasuk, tukarKur, kalender, perangkat, supervisi, revisi, perluNilai, pinjam, rusak] = await Promise.all([
     pid ? q("pengajuan_tukar_jadwal").eq("mitra_id", pid).eq("status", "menunggu_mitra") : kosong,
     punya(akses, "jadwal.kelola") ? q("pengajuan_tukar_jadwal").eq("status", "menunggu_kurikulum") : kosong,
     supabase.from("kegiatan_kalender").select(KOLOM_KEGIATAN).is("deleted_at", null).gte("selesai", hari).lte("mulai", geserTanggal(hari, 14)).order("mulai").limit(6),
@@ -67,132 +107,247 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
     punya(akses, "bk.konseling") && pid ? q("sesi_konseling").eq("konselor_id", pid).eq("status", "terjadwal").gte("mulai", awal).lt("mulai", new Date(Date.parse(awal) + 864e5).toISOString()) : kosong,
     punya(akses, "ekskul.kelola") ? q("pengajuan_kegiatan").in("status", ["disetujui_pembina", "lpj_diajukan"]) : kosong,
   ]);
-  const idJadwal = ((jadwalSaya as { data: { id: string }[] | null }).data ?? []).map((j) => j.id);
-  const { count: jurnalAda } = idJadwal.length ? await q("jurnal_jp").eq("tanggal", hari).in("jadwal_id", idJadwal) : { count: 0 };
-  const spBelum = (((disiplin as { data: unknown }).data ?? []) as { dikonfirmasi: boolean }[]).filter((d) => !d.dikonfirmasi).length;
+  const jadwal = jadwalSaya as { data: { id: string }[] | null; error: unknown };
+  const idJadwal = (jadwal.data ?? []).map((j) => j.id);
+  const jurnal = idJadwal.length ? await q("jurnal_jp").eq("tanggal", hari).in("jadwal_id", idJadwal) : { count: 0, error: null };
+  const dis = disiplin as { data: unknown; error: unknown };
+  const spBelum = dis.error ? null : (((dis.data ?? []) as { dikonfirmasi: boolean }[]).filter((d) => !d.dikonfirmasi).length);
+  const jamBelum = jadwal.error || jurnal.error ? null : Math.max(0, idJadwal.length - (jurnal.count ?? 0));
 
-  const tugas = [
-    { n: n(berita), t: "berita menunggu persetujuan", href: "/admin/persetujuan" },
-    { n: n(izinPeg), t: "pengajuan izin/cuti guru", href: "/admin/izin-pegawai" },
-    { n: n(izinOrtu), t: "izin/sakit dari orang tua", href: "/admin/izin-ortu" },
-    { n: n(koreksi), t: "pengajuan koreksi absensi", href: "/admin/absensi/pengajuan" },
-    { n: n(pel) + n(pre), t: "laporan pelanggaran/prestasi perlu verifikasi", href: "/admin/kesiswaan" },
-    { n: n(rujukan), t: "rujukan BK baru", href: "/admin/rujukan-bk" },
-    { n: spBelum, t: "SP/panggilan orang tua belum ditindaklanjuti", href: "/admin/absensi/disiplin" },
-    { n: Math.max(0, idJadwal.length - (jurnalAda ?? 0)), t: "jam mengajar hari ini belum diabsen/dijurnal", href: "/admin/jadwal-saya" },
-    { n: n(tukarMasuk), t: "permintaan tukar jam untuk Anda", href: "/admin/tukar-jam" },
-    { n: n(tukarKur), t: "tukar jam menunggu persetujuan", href: "/admin/jadwal/tukar" },
-    { n: n(perangkat), t: "perangkat ajar menunggu diperiksa", href: "/admin/perangkat-ajar/review" },
-    { n: n(revisi), t: "perangkat ajar Anda perlu revisi", href: "/admin/perangkat-ajar" },
-    { n: n(supervisi), t: "supervisi akademik yang perlu Anda nilai", href: "/admin/supervisi" },
-    { n: n(perluNilai), t: "tugas siswa menunggu dinilai", href: "/admin/lms" },
-    { n: n(pinjam), t: "peminjaman ruang/barang menunggu persetujuan", href: "/admin/sarpras/peminjaman" },
-    { n: n(rusak), t: "laporan kerusakan baru", href: "/admin/sarpras/kerusakan" },
-    { n: n(tamu), t: "tamu menunggu Anda", href: "/admin/buku-tamu" },
-    { n: n(mintaBk), t: "permintaan layanan BK baru", href: "/admin/bk" },
-    { n: n(daftarAlumni), t: "pendaftaran alumni menunggu verifikasi", href: "/admin/alumni/pendaftaran" },
-    { n: n(evalMutu), t: "evaluasi indikator mutu menunggu tinjauan", href: "/admin/mutu" },
-    { n: n(revisiMutu), t: "evaluasi indikator mutu Anda perlu revisi", href: "/admin/mutu" },
-    { n: n(sesiBk), t: "sesi BK Anda hari ini", href: "/admin/bk" },
-    { n: n(ajuEkskul), t: "pengajuan kegiatan/LPJ organisasi siswa menunggu persetujuan", href: "/admin/ekskul/pengajuan" },
-    { n: n(aduanBaru), t: "pengaduan baru", href: "/admin/pengaduan?status=baru" },
-    { n: n(aduanLewat), t: "pengaduan melewati tenggat", href: "/admin/pengaduan" },
-    { n: n(telatPerpus), t: "buku perpustakaan terlambat dikembalikan", href: "/admin/perpus/laporan" },
-    { n: n(gagal), t: "notifikasi WhatsApp/email gagal terkirim", href: "/admin/notifikasi/kanal" },
-  ].filter((x) => x.n > 0);
+  const daftarTugas: { n: number | null; t: string; href: string; tombol: string }[] = [
+    { n: n(berita), t: "Berita menunggu persetujuan", href: "/admin/persetujuan", tombol: "Tinjau" },
+    { n: n(izinPeg), t: "Pengajuan izin/cuti guru", href: "/admin/izin-pegawai", tombol: "Proses" },
+    { n: n(izinOrtu), t: "Izin/sakit dari orang tua", href: "/admin/izin-ortu", tombol: "Proses" },
+    { n: n(koreksi), t: "Pengajuan koreksi absensi", href: "/admin/absensi/pengajuan", tombol: "Periksa" },
+    { n: n(pel) === null || n(pre) === null ? null : (n(pel) ?? 0) + (n(pre) ?? 0), t: "Laporan pelanggaran/prestasi perlu verifikasi", href: "/admin/kesiswaan", tombol: "Verifikasi" },
+    { n: n(rujukan), t: "Rujukan BK baru", href: "/admin/rujukan-bk", tombol: "Buka" },
+    { n: spBelum, t: "SP/panggilan orang tua belum ditindaklanjuti", href: "/admin/absensi/disiplin", tombol: "Tindak lanjuti" },
+    { n: jamBelum, t: "Jam mengajar hari ini belum diabsen/dijurnal", href: "/admin/jadwal-saya", tombol: "Isi jurnal" },
+    { n: n(tukarMasuk), t: "Permintaan tukar jam untuk Anda", href: "/admin/tukar-jam", tombol: "Tanggapi" },
+    { n: n(tukarKur), t: "Tukar jam menunggu persetujuan", href: "/admin/jadwal/tukar", tombol: "Tinjau" },
+    { n: n(perangkat), t: "Perangkat ajar menunggu diperiksa", href: "/admin/perangkat-ajar/review", tombol: "Periksa" },
+    { n: n(revisi), t: "Perangkat ajar Anda perlu revisi", href: "/admin/perangkat-ajar", tombol: "Revisi" },
+    { n: n(supervisi), t: "Supervisi akademik yang perlu Anda nilai", href: "/admin/supervisi", tombol: "Nilai" },
+    { n: n(perluNilai), t: "Tugas siswa menunggu dinilai", href: "/admin/lms", tombol: "Nilai" },
+    { n: n(pinjam), t: "Peminjaman ruang/barang menunggu persetujuan", href: "/admin/sarpras/peminjaman", tombol: "Tinjau" },
+    { n: n(rusak), t: "Laporan kerusakan baru", href: "/admin/sarpras/kerusakan", tombol: "Buka" },
+    { n: n(tamu), t: "Tamu menunggu Anda", href: "/admin/buku-tamu", tombol: "Lihat" },
+    { n: n(mintaBk), t: "Permintaan layanan BK baru", href: "/admin/bk", tombol: "Buka" },
+    { n: n(daftarAlumni), t: "Pendaftaran alumni menunggu verifikasi", href: "/admin/alumni/pendaftaran", tombol: "Verifikasi" },
+    { n: n(evalMutu), t: "Evaluasi indikator mutu menunggu tinjauan", href: "/admin/mutu", tombol: "Tinjau" },
+    { n: n(revisiMutu), t: "Evaluasi indikator mutu Anda perlu revisi", href: "/admin/mutu", tombol: "Revisi" },
+    { n: n(sesiBk), t: "Sesi BK Anda hari ini", href: "/admin/bk", tombol: "Lihat" },
+    { n: n(ajuEkskul), t: "Pengajuan kegiatan/LPJ organisasi siswa menunggu persetujuan", href: "/admin/ekskul/pengajuan", tombol: "Tinjau" },
+    { n: n(aduanBaru), t: "Pengaduan baru", href: "/admin/pengaduan?status=baru", tombol: "Tanggapi" },
+    { n: n(aduanLewat), t: "Pengaduan melewati tenggat", href: "/admin/pengaduan", tombol: "Tanggapi" },
+    { n: n(telatPerpus), t: "Buku perpustakaan terlambat dikembalikan", href: "/admin/perpus/laporan", tombol: "Lihat" },
+    { n: n(gagalKirim), t: "Notifikasi WhatsApp/email gagal terkirim", href: "/admin/notifikasi/kanal", tombol: "Periksa" },
+  ];
+  const tugas = daftarTugas.filter((x) => (x.n ?? 0) > 0);
+  const tugasGagal = daftarTugas.filter((x) => x.n === null).length;
 
-  // kondisi hari ini
+  // ---- status hari ini: hari sekolah, libur, atau belum diatur ----
   const lihatSiswa = punya(akses, "absensi.lihat");
   const lihatGuru = punya(akses, "absensi_pegawai.lihat");
-  const [absHari, kelasDicek, totalKelas, tren, pegHari, totalPeg, kes] = await Promise.all([
-    lihatSiswa ? supabase.from("absensi_siswa").select("status").eq("tanggal", hari) : Promise.resolve({ data: [] }),
+  const [aturRes, liburRes, kbmRes] = await Promise.all([
+    supabase.from("pengaturan_absensi").select("hari_sekolah").eq("id", 1).maybeSingle(),
+    supabase.from("hari_libur").select("keterangan").eq("tanggal", hari).maybeSingle(),
+    supabase.from("kegiatan_kalender").select("judul").is("deleted_at", null).eq("kbm_libur", true).lte("mulai", hari).gte("selesai", hari).limit(1),
+  ]);
+  const hariSekolah = (aturRes.data?.hari_sekolah as number[] | undefined) ?? null;
+  const liburKet = liburRes.data?.keterangan ?? (kbmRes.data ?? [])[0]?.judul ?? null;
+  const statusHari: { jenis: "sekolah" | "libur" | "bukan" | "belum-diatur"; teks: string } = liburKet
+    ? { jenis: "libur", teks: `Hari ini libur: ${liburKet}.` }
+    : aturRes.error || !hariSekolah
+      ? { jenis: "belum-diatur", teks: "Hari sekolah belum diatur di Pengaturan Absensi." }
+      : !hariSekolah.includes(iso)
+        ? { jenis: "bukan", teks: `Hari ini ${NAMA_HARI[iso]}, bukan hari sekolah.` }
+        : { jenis: "sekolah", teks: "" };
+
+  const [taRes, absHari, kelasDicek, tren, pegHari, totalPeg, kes] = await Promise.all([
+    lihatSiswa || lihatGuru ? supabase.from("tahun_ajaran").select("id, nama, semester").eq("aktif", true).maybeSingle() : Promise.resolve({ data: null, error: null }),
+    lihatSiswa ? supabase.from("absensi_siswa").select("status").eq("tanggal", hari) : Promise.resolve({ data: [], error: null }),
     lihatSiswa ? q("absensi_kelas_harian").eq("tanggal", hari) : kosong,
-    lihatSiswa ? supabase.from("tahun_ajaran").select("id").eq("aktif", true).maybeSingle().then(async ({ data }) => (data ? q("kelas").eq("tahun_ajaran_id", data.id).is("deleted_at", null) : { count: 0 })) : kosong,
     lihatSiswa ? trenTidakHadir(supabase) : Promise.resolve([]),
-    lihatGuru ? supabase.from("absensi_pegawai").select("status, jam_masuk").eq("tanggal", hari) : Promise.resolve({ data: [] }),
+    lihatGuru ? supabase.from("absensi_pegawai").select("status, jam_masuk").eq("tanggal", hari) : Promise.resolve({ data: [], error: null }),
     lihatGuru ? q("pegawai").eq("status", "aktif").is("deleted_at", null) : kosong,
     punya(akses, "kesiswaan.lihat")
       ? Promise.all([q("prestasi_siswa").eq("status", "terverifikasi").gte("tanggal", awalBulan(hari)), q("pelanggaran_siswa").eq("status", "terverifikasi").gte("tanggal", awalBulan(hari))])
       : Promise.resolve(null),
   ]);
-  const hit = (list: { status: string }[] | null, s: string) => (list ?? []).filter((x) => x.status === s).length;
-  const a = (absHari as { data: { status: string }[] | null }).data;
-  const p = (pegHari as { data: { status: string; jam_masuk: string | null }[] | null }).data ?? [];
+  const ta = taRes.data as { id: string; nama: string; semester: string } | null;
+  const totalKelas = lihatSiswa && ta ? await q("kelas").eq("tahun_ajaran_id", ta.id).is("deleted_at", null) : { count: 0, error: null };
+  const a = absHari as { data: { status: string }[] | null; error: unknown };
+  const pRes = pegHari as { data: { status: string; jam_masuk: string | null }[] | null; error: unknown };
+  const p = pRes.data ?? [];
+  const hit = (s: string) => (a.data ?? []).filter((x) => x.status === s).length;
+  const siswaGagal = Boolean(taRes.error || a.error || kelasDicek.error || totalKelas.error);
+  const dicek = n(kelasDicek) ?? 0;
+  const jumlahKelas = n(totalKelas) ?? 0;
+  const adaTren = (tren as Awaited<ReturnType<typeof trenTidakHadir>>).some((t) => t.total > 0);
+  const agenda = (kalender.data ?? []) as Kegiatan[];
+  const bolehAturAbsen = punya(akses, "absensi.atur");
+  const bolehInduk = punya(akses, "data_induk.kelola");
 
   return (
-    <div className="mb-10 space-y-8">
-      <section aria-labelledby="tugas">
-        <h2 id="tugas" className="mb-3 font-serif text-3xl">Perlu ditindaklanjuti</h2>
-        {!tugas.length ? (
-          <p className="rounded-2xl bg-emerald-50 px-5 py-4 text-sm text-emerald-900 ring-1 ring-emerald-200">Semua beres. Tidak ada yang menunggu Anda saat ini.</p>
-        ) : (
-          <ul className="grid gap-2 sm:grid-cols-2">
-            {tugas.map((x) => (
-              <li key={x.href}>
-                <Link href={x.href} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 ring-1 ring-black/5 hover:ring-brand-600">
-                  <span className="grid h-9 min-w-9 place-items-center rounded-full bg-amber-100 px-2 font-semibold text-amber-900">{x.n}</span>
-                  <span className="text-sm">{x.t} →</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {(agenda ?? []).length > 0 && (
-        <section aria-labelledby="agenda-dekat">
-          <h2 id="agenda-dekat" className="mb-3 font-serif text-3xl">Kalender 2 minggu ke depan</h2>
-          <ul className="grid gap-2 sm:grid-cols-2">
-            {((agenda ?? []) as Kegiatan[]).map((k) => (
-              <li key={k.id}>
-                <Link href={`/admin/kalender?bulan=${k.mulai.slice(0, 7)}`} className="flex items-start gap-3 rounded-2xl bg-white px-4 py-3 text-sm ring-1 ring-black/5 hover:ring-brand-600">
-                  <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${JENIS_KEGIATAN[k.jenis].titik}`} aria-hidden />
-                  <span><span className="block font-semibold">{k.judul}</span><span className="text-black/60">{rentangTanggal(k.mulai, k.selesai)}{k.kbm_libur && " · tanpa KBM"}</span></span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {lihatSiswa && (
-        <section aria-labelledby="siswa-hari-ini">
-          <h2 id="siswa-hari-ini" className="mb-3 font-serif text-3xl">Kehadiran siswa hari ini</h2>
-          <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <li><Kpi nilai={`${n(kelasDicek)}/${n(totalKelas as { count: number | null })}`} label="kelas sudah diabsen" href="/admin/absensi" nada={n(kelasDicek) < n(totalKelas as { count: number | null }) ? "peringatan" : undefined} /></li>
-              <li><Kpi nilai={hit(a, "S")} label="sakit" /></li>
-              <li><Kpi nilai={hit(a, "I")} label="izin" /></li>
-              <li><Kpi nilai={hit(a, "A")} label="alpa" nada={hit(a, "A") ? "peringatan" : undefined} /></li>
-              <li><Kpi nilai={hit(a, "T")} label="terlambat" /></li>
-              <li><Kpi nilai="→" label="per jam pelajaran" href="/admin/absensi/jp" /></li>
-            </ul>
-            <div className="rounded-2xl bg-white p-5 ring-1 ring-black/5"><GrafikTidakHadir data={tren as Awaited<ReturnType<typeof trenTidakHadir>>} /></div>
+    <>
+      {/* 1. Tindakan yang memerlukan perhatian */}
+      <Panel judul="Perlu ditindaklanjuti" className="lg:col-span-3">
+        {tugasGagal > 0 && (
+          <div className="mb-3">
+            <Keadaan jenis="gagal" aksi={cobaLagi}>
+              {tugasGagal} daftar tindakan gagal dimuat, sehingga daftar di bawah mungkin belum lengkap.
+            </Keadaan>
           </div>
-        </section>
+        )}
+        {tugas.length ? (
+          <ul className="divide-y divide-[#eceef1] border-y border-[#eceef1]">
+            {tugas.map((x) => (
+              <li key={x.href + x.t} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
+                <span className="flex min-w-0 items-center gap-3">
+                  <span className="min-w-9 rounded-md bg-[#fdf1d6] px-2 py-0.5 text-center text-sm font-semibold tabular-nums text-[#7a5300]">{x.n}</span>
+                  <span className="text-[0.9375rem] text-[#1f2328]">{x.t}</span>
+                </span>
+                <Link href={x.href} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[#d9dce1] px-3 text-sm font-semibold hover:border-[#9aa1ab]">
+                  {x.tombol} <ArrowRight size={15} aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : tugasGagal === 0 ? (
+          <p className="flex items-center gap-2 text-[0.9375rem] text-[#3b414b]">
+            <CircleCheck size={18} aria-hidden className="text-emerald-700" /> Tidak ada yang menunggu tindakan Anda saat ini.
+          </p>
+        ) : null}
+      </Panel>
+
+      {/* 2. Kehadiran siswa hari ini */}
+      {lihatSiswa && (
+        <Panel
+          judul="Kehadiran siswa hari ini"
+          className="lg:col-span-2"
+          aksi={
+            <Link href="/admin/absensi/jp" className="text-sm font-semibold underline underline-offset-2">
+              Absensi per jam pelajaran
+            </Link>
+          }
+        >
+          {siswaGagal ? (
+            <Keadaan jenis="gagal" aksi={cobaLagi}>
+              Data kehadiran siswa gagal dimuat.
+            </Keadaan>
+          ) : !ta ? (
+            <Keadaan jenis="info" aksi={bolehInduk ? <Link href="/admin/tahun-ajaran" className="font-semibold underline underline-offset-2">Atur tahun ajaran</Link> : undefined}>
+              Tahun ajaran aktif belum diatur.
+            </Keadaan>
+          ) : jumlahKelas === 0 ? (
+            <Keadaan jenis="info" aksi={bolehInduk ? <Link href="/admin/kelas" className="font-semibold underline underline-offset-2">Tambah kelas</Link> : undefined}>
+              Data kelas belum tersedia untuk tahun ajaran {ta.nama}.
+            </Keadaan>
+          ) : statusHari.jenis !== "sekolah" ? (
+            <Keadaan jenis="info" aksi={statusHari.jenis === "belum-diatur" && bolehAturAbsen ? <Link href="/admin/absensi/pengaturan" className="font-semibold underline underline-offset-2">Atur hari sekolah</Link> : undefined}>
+              {statusHari.teks}
+            </Keadaan>
+          ) : (
+            <>
+              <p className="text-[0.9375rem]">
+                <strong className="tabular-nums">{dicek}</strong> dari <strong className="tabular-nums">{jumlahKelas}</strong> kelas sudah diabsen
+                {dicek < jumlahKelas && <span className="text-[#8a4b00]"> · {jumlahKelas - dicek} kelas belum</span>}
+              </p>
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#eceef1]" aria-hidden>
+                <div className="h-full rounded-full bg-[#4a5677]" style={{ width: `${Math.round((dicek / jumlahKelas) * 100)}%` }} />
+              </div>
+              <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-[#eceef1] pt-4 sm:grid-cols-4">
+                <Angka nilai={hit("S")} label="Sakit" />
+                <Angka nilai={hit("I")} label="Izin" />
+                <Angka nilai={hit("A")} label="Alpa" catatan={hit("A") ? "perlu dicek" : undefined} />
+                <Angka nilai={hit("T")} label="Terlambat" />
+              </dl>
+            </>
+          )}
+          {!siswaGagal && adaTren && (
+            <div className="mt-5 border-t border-[#eceef1] pt-4">
+              <GrafikTidakHadir data={tren as Awaited<ReturnType<typeof trenTidakHadir>>} />
+            </div>
+          )}
+          <Link href="/admin/absensi" className="mt-4 inline-block text-sm font-semibold underline underline-offset-2">
+            Buka absensi siswa
+          </Link>
+        </Panel>
       )}
 
+      {/* 3. Guru & pegawai hari ini */}
       {lihatGuru && (
-        <section aria-labelledby="guru-hari-ini">
-          <h2 id="guru-hari-ini" className="mb-3 font-serif text-3xl">Guru & pegawai hari ini</h2>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <li><Kpi nilai={p.filter((x) => x.jam_masuk && x.status === "H").length} label="hadir tepat waktu" href="/admin/absensi/guru" /></li>
-            <li><Kpi nilai={p.filter((x) => x.status === "T").length} label="terlambat" /></li>
-            <li><Kpi nilai={p.filter((x) => ["S", "I", "DL", "C"].includes(x.status)).length} label="izin/sakit/dinas/cuti" /></li>
-            <li><Kpi nilai={Math.max(0, n(totalPeg) - p.length)} label="belum presensi" nada="peringatan" /></li>
-          </ul>
-        </section>
+        <Panel judul="Guru & pegawai hari ini" className={lihatSiswa ? "" : "lg:col-span-2"}>
+          {pRes.error || totalPeg.error ? (
+            <Keadaan jenis="gagal" aksi={cobaLagi}>
+              Data kehadiran pegawai gagal dimuat.
+            </Keadaan>
+          ) : (n(totalPeg) ?? 0) === 0 ? (
+            <Keadaan jenis="info" aksi={bolehInduk ? <Link href="/admin/pegawai" className="font-semibold underline underline-offset-2">Tambah pegawai</Link> : undefined}>
+              Data guru & pegawai belum tersedia.
+            </Keadaan>
+          ) : statusHari.jenis !== "sekolah" && p.length === 0 ? (
+            <Keadaan jenis="info">{statusHari.teks}</Keadaan>
+          ) : (
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <Angka nilai={p.filter((x) => x.jam_masuk && x.status === "H").length} label="Hadir tepat waktu" />
+              <Angka nilai={p.filter((x) => x.status === "T").length} label="Terlambat" />
+              <Angka nilai={p.filter((x) => ["S", "I", "DL", "C"].includes(x.status)).length} label="Izin/sakit/dinas/cuti" />
+              <Angka nilai={Math.max(0, (n(totalPeg) ?? 0) - p.length)} label="Belum presensi" />
+            </dl>
+          )}
+          <Link href="/admin/absensi/guru" className="mt-4 inline-block text-sm font-semibold underline underline-offset-2">
+            Buka kehadiran guru
+          </Link>
+        </Panel>
       )}
 
+      {/* 4. Kesiswaan bulan ini */}
       {kes && (
-        <section aria-labelledby="kesiswaan-bulan">
-          <h2 id="kesiswaan-bulan" className="mb-3 font-serif text-3xl">Kesiswaan bulan ini</h2>
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <li><Kpi nilai={n(kes[0])} label="prestasi terverifikasi" href="/admin/kesiswaan" /></li>
-            <li><Kpi nilai={n(kes[1])} label="pelanggaran terverifikasi" href="/admin/kesiswaan" /></li>
-          </ul>
-        </section>
+        <Panel judul="Kesiswaan bulan ini">
+          {kes[0].error || kes[1].error ? (
+            <Keadaan jenis="gagal" aksi={cobaLagi}>
+              Data kesiswaan gagal dimuat.
+            </Keadaan>
+          ) : (
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <Angka nilai={n(kes[0]) ?? 0} label="Prestasi terverifikasi" />
+              <Angka nilai={n(kes[1]) ?? 0} label="Pelanggaran terverifikasi" />
+            </dl>
+          )}
+          <Link href="/admin/kesiswaan" className="mt-4 inline-block text-sm font-semibold underline underline-offset-2">
+            Buka kesiswaan
+          </Link>
+        </Panel>
       )}
-    </div>
+
+      {/* kalender dua minggu ke depan (hanya bila ada kegiatan) */}
+      {agenda.length > 0 && (
+        <Panel
+          judul="Kalender 2 minggu ke depan"
+          aksi={
+            <Link href="/admin/kalender" className="text-sm font-semibold underline underline-offset-2">
+              Kalender
+            </Link>
+          }
+        >
+          <ul className="divide-y divide-[#eceef1]">
+            {agenda.map((k) => (
+              <li key={k.id} className="flex items-start gap-2.5 py-2 text-sm">
+                <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${JENIS_KEGIATAN[k.jenis].titik}`} aria-hidden />
+                <span>
+                  <span className="block font-semibold">{k.judul}</span>
+                  <span className="text-[#5b6270]">
+                    {JENIS_KEGIATAN[k.jenis].label} · {rentangTanggal(k.mulai, k.selesai)}
+                    {k.kbm_libur && " · tanpa KBM"}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      )}
+    </>
   );
 }

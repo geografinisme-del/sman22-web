@@ -3,12 +3,14 @@ import type { ReactNode } from "react";
 import { arsipkan } from "@/app/admin/actions";
 import { TombolArsip } from "./form";
 
-export function JudulHalaman({ judul, deskripsi, aksi }: { judul: string; deskripsi?: string; aksi?: ReactNode }) {
+/** Header kerja: judul halaman (24–28px), konteks singkat, dan tindakan yang relevan. */
+export function JudulHalaman({ judul, deskripsi, aksi, konteks }: { judul: string; deskripsi?: string; aksi?: ReactNode; konteks?: ReactNode }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 className="font-serif text-4xl leading-none sm:text-5xl">{judul}</h1>
-        {deskripsi && <p className="mt-2 max-w-2xl text-black/60">{deskripsi}</p>}
+    <div className="mb-6 flex flex-col gap-3 border-b border-[#e3e5e8] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0">
+        {konteks && <p className="mb-1 text-sm text-[#5b6270]">{konteks}</p>}
+        <h1 className="text-[1.625rem] font-semibold leading-tight text-[#1f2328]">{judul}</h1>
+        {deskripsi && <p className="mt-1 max-w-3xl text-[0.9375rem] text-[#5b6270]">{deskripsi}</p>}
       </div>
       {aksi}
     </div>
@@ -19,8 +21,8 @@ export function TombolLink({ href, children, sekunder }: { href: string; childre
   return (
     <Link
       href={href}
-      className={`inline-flex shrink-0 items-center rounded-full px-5 py-2.5 text-sm font-semibold transition ${
-        sekunder ? "border border-black/15 hover:bg-black/5" : "bg-brand-900 text-white hover:bg-brand-700"
+      className={`inline-flex min-h-10 shrink-0 items-center rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150 ${
+        sekunder ? "border border-[#d9dce1] bg-white hover:border-[#9aa1ab]" : "bg-brand-900 text-white hover:bg-brand-700"
       }`}
     >
       {children}
@@ -29,7 +31,7 @@ export function TombolLink({ href, children, sekunder }: { href: string; childre
 }
 
 export function Kartu({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 sm:p-8 ${className}`}>{children}</div>;
+  return <div className={`rounded-[10px] border border-[#e3e5e8] bg-white p-5 sm:p-6 ${className}`}>{children}</div>;
 }
 
 const PESAN: Record<string, { teks: string; ok: boolean }> = {

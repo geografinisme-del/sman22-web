@@ -1,40 +1,41 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { Reveal } from "@/components/Reveal";
-import { PageHeader, Section } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
+import { FOTO_PROGRAM } from "@/content/program";
 import { programUnggulan } from "@/content/sekolah";
 import { slugProgram } from "@/lib/program";
 
-export const metadata: Metadata = { title: "Program Sekolah", description: "Program unggulan SMA Negeri 22 Bandung." };
-
-const NADA = ["#ebe5fa", "#e6ecff", "#f9f3e9", "#e7f6ef", "#fdeaf0"];
+export const metadata: Metadata = { title: "Program Sekolah", description: "Program dan pembiasaan karakter di SMA Negeri 22 Bandung." };
 
 export default function DaftarProgram() {
   return (
     <>
-      <PageHeader label="Program sekolah" judul="Program Unggulan" deskripsi="Kebiasaan baik dan pengalaman belajar yang membentuk karakter warga SMAN 22 Bandung." />
-      <Section>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {programUnggulan.map((p, i) => (
-            <Reveal key={p.kode} delay={(i % 3) * 100}>
-              <Link href={`/program/${slugProgram(p)}`} className="kartu group flex h-full flex-col overflow-hidden transition hover:-translate-y-1">
-                <div className="flex h-36 items-end justify-between p-5" style={{ background: NADA[i % NADA.length] }}>
-                  <span className="font-serif text-5xl leading-none text-[var(--tema-utama)]">{p.kode}</span>
-                  <span className="font-serif text-lg italic text-[#73698f]">{String(i + 1).padStart(2, "0")}</span>
-                </div>
-                <div className="flex flex-1 flex-col p-5">
-                  <h2 className="text-lg font-semibold">{p.nama}</h2>
-                  <p className="mt-2 flex-1 text-sm text-[#5e6074]">{p.ringkas}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[var(--tema-utama)]">
-                    Selengkapnya <ArrowUpRight size={15} aria-hidden className="transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </span>
-                </div>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
+      <PageHeader judul="Program Sekolah" deskripsi="Program dan pembiasaan karakter yang dijalani siswa SMA Negeri 22 Bandung." />
+      <section className="bagian">
+        <ul className="lp-wadah divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
+          {programUnggulan.map((p) => {
+            const foto = FOTO_PROGRAM[p.kode];
+            return (
+              <li key={p.kode}>
+                <Link href={`/program/${slugProgram(p)}`} className="group grid items-center gap-5 py-6 sm:grid-cols-[200px_1fr]">
+                  {foto ? (
+                    <div className="foto relative aspect-[3/2]">
+                      <Image src={foto.src} alt={foto.alt} fill sizes="200px" className="object-cover" />
+                    </div>
+                  ) : (
+                    <div className="hidden aspect-[3/2] items-center justify-center rounded-[10px] bg-[#f3efe9] text-[1.375rem] font-bold text-[#5b6270] sm:flex">{p.kode}</div>
+                  )}
+                  <div>
+                    <h2 className="text-[1.375rem] group-hover:text-[var(--tema-utama)] group-hover:underline">{p.nama}</h2>
+                    <p className="mt-1 max-w-[60ch] text-[#3b414b]">{p.ringkas}</p>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
     </>
   );
 }

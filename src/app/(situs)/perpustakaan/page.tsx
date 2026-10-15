@@ -22,8 +22,8 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
       <PageHeader judul="Perpustakaan" deskripsi="Cari buku di katalog dan cek apakah tersedia sebelum datang ke perpustakaan." />
       <Section>
         <form className="mb-6 flex gap-2" role="search">
-          <input name="q" defaultValue={q} placeholder="Judul, pengarang, kategori, atau ISBN" aria-label="Cari buku" className="flex-1 rounded-full border border-black/15 bg-white px-5 py-3" />
-          <button className="rounded-full bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white">Cari</button>
+          <input name="q" defaultValue={q} placeholder="Judul, pengarang, kategori, atau ISBN" aria-label="Cari buku" className="flex-1 rounded-lg border border-black/15 bg-white px-5 py-3" />
+          <button className="rounded-lg bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white">Cari</button>
         </form>
         <p className="-mt-3 mb-6 text-sm"><Link href="?q=rekomendasi" className="font-semibold text-[var(--tema-utama)] underline">★ Rekomendasi pustakawan</Link></p>
         {list.length === 0 ? <Kosong teks={q ? `Tidak ada buku untuk “${q}”.` : "Katalog belum tersedia."} /> : (
@@ -48,8 +48,8 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
               ))}
             </ul>
             <div className="mt-6 flex justify-between text-sm">
-              {hal > 1 ? <Link href={`?q=${encodeURIComponent(q)}&hal=${hal - 1}`} className="rounded-full px-4 py-2 ring-1 ring-black/15">← Sebelumnya</Link> : <span />}
-              {hal * PER < total && <Link href={`?q=${encodeURIComponent(q)}&hal=${hal + 1}`} className="rounded-full px-4 py-2 ring-1 ring-black/15">Berikutnya →</Link>}
+              {hal > 1 ? <Link href={`?q=${encodeURIComponent(q)}&hal=${hal - 1}`} className="rounded-lg px-4 py-2 ring-1 ring-black/15">← Sebelumnya</Link> : <span />}
+              {hal * PER < total && <Link href={`?q=${encodeURIComponent(q)}&hal=${hal + 1}`} className="rounded-lg px-4 py-2 ring-1 ring-black/15">Berikutnya →</Link>}
             </div>
           </>
         )}
