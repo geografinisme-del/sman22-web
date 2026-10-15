@@ -17,14 +17,14 @@
   --lp-aksen: var(--tema-aksen, #db224c);
   --lp-tint: color-mix(in srgb, var(--lp-utama) 7%, #fff);
   color: var(--lp-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-publik, var(--font-sans));
   font-size: 16px;
   line-height: 1.6;
 }
 .lp h1,
 .lp h2,
 .lp h3 {
-  font-family: var(--font-sans);
+  font-family: var(--font-publik, var(--font-sans));
   color: var(--lp-ink);
   letter-spacing: -0.005em;
   text-wrap: balance;
@@ -1250,5 +1250,83 @@ a.kartu:hover,
   .dialog-info-kaki .btn {
     flex: 1 1 auto;
     white-space: nowrap;
+  }
+}
+
+/* ---------- menu "Layanan" di header ---------- */
+.lp .menu-layanan {
+  position: relative;
+}
+.lp .menu-layanan > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: var(--lp-teks);
+  font-weight: 500;
+  transition:
+    color var(--gerak-cepat) var(--ease-keluar),
+    background-color var(--gerak-cepat) var(--ease-keluar);
+}
+.lp .menu-layanan > button:hover,
+.lp .menu-layanan > button[aria-expanded="true"] {
+  color: var(--lp-ink);
+  background: var(--lp-hangat);
+}
+.lp .menu-layanan-panah {
+  transition: transform var(--gerak-cepat) var(--ease-keluar);
+}
+.lp .menu-layanan > button[aria-expanded="true"] .menu-layanan-panah {
+  transform: rotate(180deg);
+}
+@keyframes layanan-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.lp .menu-layanan-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 50;
+  width: 340px;
+  padding: 8px;
+  border: 1px solid var(--lp-line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 18px 40px -18px rgb(31 35 40 / 0.35);
+  animation: layanan-masuk 200ms var(--ease-keluar);
+}
+.lp .menu-layanan-panel[hidden] {
+  display: none;
+}
+.lp .nav-links .menu-layanan-panel a {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-weight: 400;
+}
+.lp .nav-links .menu-layanan-panel a::after {
+  display: none;
+}
+.lp .nav-links .menu-layanan-panel a:hover,
+.lp .nav-links .menu-layanan-panel a:focus-visible {
+  background: var(--lp-hangat);
+}
+.lp .menu-hp-judul {
+  margin-top: 12px;
+  padding-bottom: 4px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--lp-muted);
+}
+@media (max-width: 1060px) {
+  .lp .menu-hp nav {
+    max-height: calc(100dvh - 72px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 }

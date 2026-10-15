@@ -12,7 +12,7 @@ export function Scan({ token }: { token: string }) {
     sekali.current = true;
     catatScan(token).then(setHasil);
   }, [token]);
-  if (!hasil) return <p className="text-center text-black/60">Mencatat kehadiran…</p>;
+  if (!hasil) return <p className="text-center text-[#5b6270]">Mencatat kehadiran…</p>;
   return (
     <div role={hasil.ok ? "status" : "alert"} className={`rounded-3xl p-8 text-center ${hasil.ok ? "bg-emerald-50 text-emerald-900" : "bg-red-50 text-red-800"}`}>
       <p className="font-serif text-5xl">{hasil.ok ? "✓" : "!"}</p>

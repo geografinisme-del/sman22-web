@@ -16,13 +16,13 @@ export default async function AlumniPortal() {
   const saya = (mg ?? []) as unknown as { id: string; topik: string; status: string; catatan_sekolah: string; mentor_alumni: { bidang: string } | null }[];
   return (
     <div className="space-y-8">
-      <div><h1 className="font-serif text-3xl">Alumni & peluang</h1><p className="text-sm text-black/60">Info beasiswa, kuliah, dan lomba — serta kakak alumni yang siap berbagi pengalaman.</p></div>
+      <div><h1 className="font-serif text-3xl">Alumni & peluang</h1><p className="text-sm text-[#5b6270]">Info beasiswa, kuliah, dan lomba — serta kakak alumni yang siap berbagi pengalaman.</p></div>
       <section className="space-y-3">
         <h2 className="font-serif text-2xl">Peluang</h2>
-        {(pl ?? []).length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-black/50 ring-1 ring-black/5">Belum ada info.</p> : (pl ?? []).map((x) => (
+        {(pl ?? []).length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Belum ada info.</p> : (pl ?? []).map((x) => (
           <div key={x.id} className="rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5">
-            <p className="text-xs uppercase tracking-widest text-black/50">{JENIS_PELUANG[x.jenis]}</p><p className="font-semibold">{x.judul}</p>
-            <p className="text-black/60">{x.penyedia}{x.tenggat && ` · tenggat ${new Date(x.tenggat + "T00:00:00Z").toLocaleDateString("id-ID", { dateStyle: "long", timeZone: "UTC" })}`}</p>
+            <p className="text-xs text-[#5b6270]">{JENIS_PELUANG[x.jenis]}</p><p className="font-semibold">{x.judul}</p>
+            <p className="text-[#5b6270]">{x.penyedia}{x.tenggat && ` · tenggat ${new Date(x.tenggat + "T00:00:00Z").toLocaleDateString("id-ID", { dateStyle: "long", timeZone: "UTC" })}`}</p>
             {x.deskripsi && <p className="mt-1">{x.deskripsi}</p>}
             {x.tautan && <a href={x.tautan} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block font-semibold text-brand-700 underline">Info lengkap ↗</a>}
           </div>))}
@@ -30,11 +30,11 @@ export default async function AlumniPortal() {
       {!ortu && (
         <section className="space-y-3">
           <h2 className="font-serif text-2xl">Mentoring dengan alumni</h2>
-          <p className="text-sm text-black/60">Pertemuan diatur sekolah dan didampingi guru BK. Kontak pribadi tidak dibagikan.</p>
-          {saya.map((m) => <p key={m.id} className="rounded-xl bg-white p-3 text-sm ring-1 ring-black/5">{m.mentor_alumni?.bidang}: “{m.topik}” <Lencana s={m.status} peta={STATUS_MODERASI} />{m.catatan_sekolah && <span className="block text-black/60">{m.catatan_sekolah}</span>}</p>)}
-          {mentor.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-black/50 ring-1 ring-black/5">Belum ada mentor.</p> : mentor.map((m) => (
+          <p className="text-sm text-[#5b6270]">Pertemuan diatur sekolah dan didampingi guru BK. Kontak pribadi tidak dibagikan.</p>
+          {saya.map((m) => <p key={m.id} className="rounded-xl bg-white p-3 text-sm ring-1 ring-black/5">{m.mentor_alumni?.bidang}: “{m.topik}” <Lencana s={m.status} peta={STATUS_MODERASI} />{m.catatan_sekolah && <span className="block text-[#5b6270]">{m.catatan_sekolah}</span>}</p>)}
+          {mentor.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Belum ada mentor.</p> : mentor.map((m) => (
             <details key={m.id} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
-              <summary className="cursor-pointer"><strong>{m.bidang}</strong> <span className="text-sm text-black/50">· Kak {m.nama} (alumni {m.tahun_lulus}){m.sisa <= 0 && " · penuh"}</span></summary>
+              <summary className="cursor-pointer"><strong>{m.bidang}</strong> <span className="text-sm text-[#5b6270]">· Kak {m.nama} (alumni {m.tahun_lulus}){m.sisa <= 0 && " · penuh"}</span></summary>
               {m.deskripsi && <p className="mt-2 text-sm">{m.deskripsi}</p>}
               {m.sisa > 0 && <div className="mt-3"><FormAjukanMentoring mentor={m.id} /></div>}
             </details>))}

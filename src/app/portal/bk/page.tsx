@@ -21,7 +21,7 @@ export default async function LayananBk() {
     <div className="space-y-6">
       <div>
         <h1 className="font-serif text-3xl">Layanan BK</h1>
-        <p className="text-sm text-black/60">{ortu ? "Ajukan konsultasi dengan guru BK tentang anak Anda." : "Butuh teman cerita atau saran? Guru BK siap membantu."} Isi percakapan bersifat rahasia — wali kelas dan guru lain tidak dapat membacanya.</p>
+        <p className="text-sm text-[#5b6270]">{ortu ? "Ajukan konsultasi dengan guru BK tentang anak Anda." : "Butuh teman cerita atau saran? Guru BK siap membantu."} Isi percakapan bersifat rahasia — wali kelas dan guru lain tidak dapat membacanya.</p>
       </div>
       <p className="rounded-2xl bg-violet-50 p-4 text-sm text-violet-900 ring-1 ring-violet-200">Dalam keadaan darurat (misalnya merasa tidak aman), segera temui guru BK, wali kelas, atau guru piket, atau hubungi layanan SAPA 129.</p>
       {akanDatang.length > 0 && (
@@ -43,10 +43,10 @@ export default async function LayananBk() {
       )}
       <section className="space-y-2">
         <h2 className="font-serif text-2xl">Permintaan saya</h2>
-        {permintaan.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-black/50 ring-1 ring-black/5">Belum ada.</p> : permintaan.map((p) => (
+        {permintaan.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Belum ada.</p> : permintaan.map((p) => (
           <div key={p.id} className="rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5">
-            <div className="flex flex-wrap items-center gap-2"><Lencana s={p.status} peta={STATUS_PERMINTAAN} /><span className="text-black/50">{p.kategori} · {waktuWIB(p.dibuat)}</span></div>
-            <p className="mt-1 font-semibold">{p.topik}{ortu && <span className="font-normal text-black/50"> · {p.siswa}</span>}</p>
+            <div className="flex flex-wrap items-center gap-2"><Lencana s={p.status} peta={STATUS_PERMINTAAN} /><span className="text-[#5b6270]">{p.kategori} · {waktuWIB(p.dibuat)}</span></div>
+            <p className="mt-1 font-semibold">{p.topik}{ortu && <span className="font-normal text-[#5b6270]"> · {p.siswa}</span>}</p>
             {p.catatan_untuk_pemohon && <p className="mt-2 rounded-xl bg-krem p-3"><strong>Guru BK:</strong> {p.catatan_untuk_pemohon}</p>}
           </div>
         ))}

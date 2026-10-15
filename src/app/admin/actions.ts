@@ -93,7 +93,7 @@ export async function masuk(_prev: HasilAksi, form: FormData): Promise<HasilAksi
   // peran yang wajib verifikasi dua langkah → minta kode autentikator dulu
   if ((a.peran_tertunda ?? []).length > 0) redirect("/admin/mfa");
   const hanyaPortal = peran.length > 0 && peran.every((p) => p === "siswa" || p === "orang_tua");
-  redirect(hanyaPortal ? "/portal" : "/admin");
+  redirect(hanyaPortal ? "/portal" : "/admin/mulai");
 }
 
 /** Percobaan masuk yang gagal dicatat dengan kunci server (tanpa kata sandi), untuk deteksi tebak-sandi */
@@ -266,19 +266,45 @@ export async function simpanPengumuman(_prev: HasilAksi, form: FormData): Promis
   if (!ctx) return GAGAL_AKSES;
   const id = String(form.get("id") ?? "") || undefined;
   const parsed = pengumumanSchema.safeParse({
-    ...ambil(form, "judul", "isi", "tanggal", "tayang_mulai", "tayang_selesai"),
+    ...ambil(form, "judul", "isi", "tanggal", "tayang_mulai", "tayang_selesai", "poster_alt", "tautan_url", "tautan_label"),
     penting: form.get("penting") === "on",
     aktif: form.get("aktif") === "on",
+    prioritas: form.get("prioritas") === "on",
     id,
   });
   if (!parsed.success) return { ok: false, pesan: "Periksa kembali isian yang ditandai.", errors: pesanError(parsed.error) };
-  const { id: _i, ...baris } = parsed.data;
+  const { id: _i, prioritas, poster_alt, tautan_url, tautan_label, ...dasar } = parsed.data;
   void _i;
+  // kolom popup prioritas hanya dikirim bila dipakai/ada sebelumnya, agar formulir tetap jalan sebelum migrasi Fase 19
+  const baris: Record<string, unknown> = { ...dasar };
+  const poster = form.get("poster") as File | null;
+  const salahPoster = cekGambar(poster);
+  if (salahPoster) return { ok: false, pesan: salahPoster, errors: { poster: salahPoster } };
+  const posterLama = String(form.get("poster_lama") ?? "");
+  const hapusPoster = form.get("hapus_poster") === "on";
+  const adaPosterBaru = Boolean(poster && poster.size > 0);
+  const akanAdaPoster = adaPosterBaru || (Boolean(posterLama) && !hapusPoster);
+  if (akanAdaPoster && poster_alt.length < 5)
+    return { ok: false, pesan: "Poster wajib disertai teks alternatif.", errors: { poster_alt: "Jelaskan isi poster (minimal 5 karakter)" } };
+  if (prioritas || akanAdaPoster || posterLama || tautan_url || form.get("kolom_popup") === "1") {
+    Object.assign(baris, { prioritas, poster_alt: akanAdaPoster ? poster_alt : "", tautan_url, tautan_label: tautan_url ? tautan_label : "" });
+    if (adaPosterBaru) {
+      try {
+        baris.poster_url = await unggahGambar(ctx.supabase, poster!, "pengumuman");
+      } catch (e) {
+        return { ok: false, pesan: (e as Error).message, errors: { poster: (e as Error).message } };
+      }
+    } else if (hapusPoster) baris.poster_url = "";
+  }
 
   const { error } = id
     ? await ctx.supabase.from("pengumuman").update(baris).eq("id", id)
     : await ctx.supabase.from("pengumuman").insert(baris);
-  if (error) return { ok: false, pesan: pesanDb(error) };
+  if (error)
+    return {
+      ok: false,
+      pesan: error.code === "PGRST204" || error.code === "42703" ? "Fitur popup prioritas memerlukan migrasi 20261202000000_tampilan_widget.sql." : pesanDb(error),
+    };
 
   segarkanSitus();
   redirect("/admin/pengumuman?pesan=tersimpan");

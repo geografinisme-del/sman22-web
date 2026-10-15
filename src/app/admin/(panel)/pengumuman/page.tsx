@@ -12,7 +12,8 @@ export default async function AdminPengumuman({ searchParams }: { searchParams: 
   const { supabase } = await wajibIzin("konten.kelola");
   const { data: list } = await supabase
     .from("pengumuman")
-    .select("id, judul, isi, tanggal, penting, aktif, tayang_mulai, tayang_selesai")
+    // "*" agar tetap berjalan sebelum migrasi Fase 19 (kolom popup prioritas)
+    .select("*")
     .is("deleted_at", null)
     .order("tanggal", { ascending: false })
     .limit(200);

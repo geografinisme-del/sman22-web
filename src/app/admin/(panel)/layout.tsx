@@ -3,6 +3,7 @@ import { Sidebar, type GrupMenu } from "@/components/admin/Sidebar";
 import { berperan, NAMA_PERAN, punya, wajibLogin } from "@/lib/admin/auth";
 import { redirect } from "next/navigation";
 import { keluar } from "../actions";
+import { ruangKerjaUntuk } from "@/lib/ruang-kerja";
 
 export const dynamic = "force-dynamic";
 
@@ -238,6 +239,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       <Sidebar
         notif={notif ?? 0}
         grup={grup}
+        ruang={ruangKerjaUntuk(akses)}
         nama={akses.nama}
         email={akses.email}
         peran={akses.peran.map((p) => NAMA_PERAN[p] ?? p).join(", ")}

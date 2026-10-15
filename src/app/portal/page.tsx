@@ -38,7 +38,7 @@ export default async function BerandaPortal() {
         </Link>
       ))}
       {anak.length === 0 && (
-        <p className="rounded-2xl bg-white p-6 text-black/60 ring-1 ring-black/5">
+        <p className="rounded-2xl bg-white p-6 text-[#5b6270] ring-1 ring-black/5">
           Akun Anda belum terhubung dengan data siswa. Silakan hubungi wali kelas atau tata usaha.
         </p>
       )}
@@ -56,7 +56,7 @@ export default async function BerandaPortal() {
               </p>
             </div>
             <div className="p-5">
-              <p className="text-xs font-semibold uppercase tracking-widest text-black/50">Kehadiran bulan ini</p>
+              <p className="text-xs font-semibold text-[#5b6270]">Kehadiran bulan ini</p>
               <div className="mt-3 grid grid-cols-4 gap-2 text-center sm:grid-cols-5">
                 <div className="col-span-4 rounded-2xl bg-emerald-50 p-3 sm:col-span-1">
                   <p className="font-serif text-4xl text-emerald-800">{r?.persen_hadir == null ? "—" : `${r.persen_hadir}%`}</p>
@@ -70,7 +70,7 @@ export default async function BerandaPortal() {
                 ].map(([l, n]) => (
                   <div key={l as string} className="rounded-2xl bg-krem p-3">
                     <p className={`font-serif text-3xl ${l === "Alpa" && Number(n) > 0 ? "text-red-700" : ""}`}>{n ?? 0}</p>
-                    <p className="text-xs text-black/60">{l}</p>
+                    <p className="text-xs text-[#5b6270]">{l}</p>
                   </div>
                 ))}
               </div>
@@ -81,17 +81,17 @@ export default async function BerandaPortal() {
                 </div>
               )}
               {sp.some((d) => d.dikonfirmasi) && (
-                <p className="mt-3 text-sm text-black/60">Sudah ditindaklanjuti: {sp.filter((d) => d.dikonfirmasi).map((d) => d.label).join(", ")}</p>
+                <p className="mt-3 text-sm text-[#5b6270]">Sudah ditindaklanjuti: {sp.filter((d) => d.dikonfirmasi).map((d) => d.label).join(", ")}</p>
               )}
 
-              <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-black/50">Catatan terakhir</p>
+              <p className="mt-6 text-xs font-semibold text-[#5b6270]">Catatan terakhir</p>
               {terakhir.length === 0 ? (
-                <p className="mt-2 text-sm text-black/50">Belum ada catatan ketidakhadiran. Bagus!</p>
+                <p className="mt-2 text-sm text-[#5b6270]">Belum ada catatan ketidakhadiran. Bagus!</p>
               ) : (
                 <ul className="mt-2 divide-y divide-black/5 text-sm">
                   {terakhir.map((t) => (
                     <li key={t.tanggal} className="flex items-center justify-between gap-3 py-2">
-                      <span>{formatTanggal(t.tanggal, { weekday: "short" })}{t.keterangan && <span className="text-black/50"> · {t.keterangan}</span>}</span>
+                      <span>{formatTanggal(t.tanggal, { weekday: "short" })}{t.keterangan && <span className="text-[#5b6270]"> · {t.keterangan}</span>}</span>
                       <span className={`shrink-0 rounded-lg px-2 py-0.5 text-xs font-bold text-white ${STATUS_SISWA_ABSEN[t.status as KodeAbsen].warna}`}>
                         {STATUS_SISWA_ABSEN[t.status as KodeAbsen].label}
                       </span>
@@ -101,11 +101,11 @@ export default async function BerandaPortal() {
               )}
               {jp.length > 0 && (
                 <>
-                  <p className="mt-6 text-xs font-semibold uppercase tracking-widest text-black/50">Catatan per jam pelajaran (bulan ini)</p>
+                  <p className="mt-6 text-xs font-semibold text-[#5b6270]">Catatan per jam pelajaran (bulan ini)</p>
                   <ul className="mt-2 divide-y divide-black/5 text-sm">
                     {jp.map((x, i) => (
                       <li key={i} className="flex justify-between gap-3 py-2">
-                        <span>{formatTanggal(x.tanggal, { weekday: "short" })} · JP {x.jadwal?.jp_ke} {x.jadwal?.penugasan?.mapel?.nama}{x.keterangan && <span className="text-black/50"> · {x.keterangan}</span>}</span>
+                        <span>{formatTanggal(x.tanggal, { weekday: "short" })} · JP {x.jadwal?.jp_ke} {x.jadwal?.penugasan?.mapel?.nama}{x.keterangan && <span className="text-[#5b6270]"> · {x.keterangan}</span>}</span>
                         <span className="shrink-0 font-semibold">{({ S: "Sakit", I: "Izin", A: "Tidak di kelas", T: "Terlambat", D: "Dispensasi" } as Record<string, string>)[x.status]}</span>
                       </li>
                     ))}
@@ -127,7 +127,7 @@ export default async function BerandaPortal() {
             {pengumuman.map((p) => (
               <li key={p.id} className="text-sm">
                 <p className="font-semibold">{p.penting && <span className="mr-2 rounded bg-accent-400 px-1.5 text-xs">PENTING</span>}{p.judul}</p>
-                {p.isi && <p className="text-black/60">{p.isi}</p>}
+                {p.isi && <p className="text-[#5b6270]">{p.isi}</p>}
               </li>
             ))}
           </ul>

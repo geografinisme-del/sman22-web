@@ -101,7 +101,17 @@ export const pengumumanSchema = z.object({
   aktif: z.boolean(),
   tayang_mulai: waktuTayang,
   tayang_selesai: waktuTayang,
-}).refine((d) => !d.tayang_mulai || !d.tayang_selesai || d.tayang_selesai > d.tayang_mulai, { path: ["tayang_selesai"], message: "Harus setelah waktu mulai" });
+  // popup prioritas (Fase 19): poster wajib berteks alternatif; tautan hanya /halaman atau https://
+  prioritas: z.boolean().default(false),
+  poster_alt: teks(300, "Teks alternatif poster"),
+  tautan_url: z
+    .string()
+    .trim()
+    .max(300, "Tautan maksimal 300 karakter")
+    .refine((v) => v === "" || /^\/[^/\s][^\s<>"]*$/.test(v) || /^https:\/\/[^\s<>"]+$/.test(v), "Diawali / (halaman situs) atau https://"),
+  tautan_label: teks(40, "Label tombol"),
+}).refine((d) => !d.tayang_mulai || !d.tayang_selesai || d.tayang_selesai > d.tayang_mulai, { path: ["tayang_selesai"], message: "Harus setelah waktu mulai" })
+  .refine((d) => !d.tautan_url || d.tautan_label.length > 0, { path: ["tautan_label"], message: "Isi label tombol untuk tautan" });
 
 export const fotoSchema = z.object({
   id: uuid.optional(),

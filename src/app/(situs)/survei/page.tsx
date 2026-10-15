@@ -18,8 +18,8 @@ export default async function DaftarSurvei() {
           <ul className="grid gap-4 sm:grid-cols-2">{list.map((s) => (
             <li key={s.id} className="kartu p-5 ">
               <h2 className="font-serif text-2xl">{s.judul}</h2>
-              {s.deskripsi && <p className="mt-1 line-clamp-3 text-sm text-black/60">{s.deskripsi}</p>}
-              <p className="mt-2 text-xs text-black/50">Ditutup {new Date(s.selesai + "T00:00:00Z").toLocaleDateString("id-ID", { dateStyle: "long", timeZone: "UTC" })}</p>
+              {s.deskripsi && <p className="mt-1 line-clamp-3 text-sm text-[#5b6270]">{s.deskripsi}</p>}
+              <p className="mt-2 text-xs text-[#5b6270]">Ditutup {new Date(s.selesai + "T00:00:00Z").toLocaleDateString("id-ID", { dateStyle: "long", timeZone: "UTC" })}</p>
               {s.sudah ? <p className="mt-3 text-sm font-semibold text-emerald-700">✓ Anda sudah mengisi</p> : <Link href={`/survei/${s.id}`} className="mt-3 inline-block rounded-lg bg-[var(--tema-utama)] px-5 py-2.5 text-sm font-semibold text-white">Isi survei</Link>}
             </li>
           ))}</ul>

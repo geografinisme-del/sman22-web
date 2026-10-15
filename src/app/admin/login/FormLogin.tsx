@@ -7,7 +7,7 @@ import { masuk } from "../actions";
 import { FormAksi, Input, Kolom, TombolSimpan, useErrorKolom } from "@/components/admin/form";
 
 const JENIS = [
-  { nilai: "staf", label: "Guru / Staf" },
+  { nilai: "staf", label: "Guru, Tendik & Manajemen" },
   { nilai: "siswa", label: "Siswa" },
   { nilai: "orang_tua", label: "Orang Tua" },
 ] as const;
@@ -51,9 +51,9 @@ export function FormLogin({ awal = "staf" }: { awal?: "staf" | "siswa" | "orang_
     <FormAksi aksi={masuk} className="mt-6 space-y-5">
       <fieldset>
         <legend className="mb-2 text-sm font-semibold">Masuk sebagai</legend>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {JENIS.map((j) => (
-            <label key={j.nilai} className="cursor-pointer">
+            <label key={j.nilai} className={`cursor-pointer ${j.nilai === "staf" ? "col-span-2" : ""}`}>
               <input type="radio" name="jenis" value={j.nilai} checked={jenis === j.nilai} onChange={() => setJenis(j.nilai)} className="peer sr-only" />
               {/* aktif ditandai bentuk (garis tebal), ikon centang, dan huruf tebal — tidak hanya warna */}
               <span className="flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-black/20 bg-white px-2 text-center text-sm font-medium text-[#3b414b] transition hover:border-black/50 peer-checked:border-2 peer-checked:border-[var(--tema-utama)] peer-checked:bg-[color-mix(in_srgb,var(--tema-utama)_6%,#fff)] peer-checked:font-semibold peer-checked:text-[#1f2328] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--tema-utama)]">

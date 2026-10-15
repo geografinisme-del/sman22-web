@@ -18,6 +18,8 @@ export function PengamatMuncul() {
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // tingkat gerak dari tema: "minimal" = tanpa animasi gulir
+    if (document.querySelector("[data-gerak]")?.getAttribute("data-gerak") === "minimal") return;
 
     const target = new Map<Element, HTMLElement[]>();
     const tampilkan = (el: Element) => {

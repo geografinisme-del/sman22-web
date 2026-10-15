@@ -38,7 +38,7 @@ export default async function OrgPortal({ params, searchParams }: { params: Prom
       <div className="h-2 rounded-full" style={{ background: o.warna }} />
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex-1"><h1 className="font-serif text-3xl">{o.nama}</h1>
-          <p className="text-sm text-black/60">{jab ? `Jabatan Anda: ${JABATAN[jab as string]} — hak: ${HAK_JABATAN[jab as string]}` : "Anggota"}{o.jadwal_rutin && ` · ${o.jadwal_rutin}`}</p></div>
+          <p className="text-sm text-[#5b6270]">{jab ? `Jabatan Anda: ${JABATAN[jab as string]} — hak: ${HAK_JABATAN[jab as string]}` : "Anggota"}{o.jadwal_rutin && ` · ${o.jadwal_rutin}`}</p></div>
         <Link href="/portal/ekskul" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">← Ekskul</Link>
       </div>
       {sp.pesan && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">Tersimpan.</p>}
@@ -47,17 +47,17 @@ export default async function OrgPortal({ params, searchParams }: { params: Prom
       {pres && (
         <section className="rounded-2xl bg-white p-5 ring-1 ring-black/5">
           <h2 className="font-serif text-2xl">Presensi: {pres.judul}</h2>
-          <p className="mb-3 text-sm text-black/60">{waktuWIB(pres.mulai, true)}</p>
+          <p className="mb-3 text-sm text-[#5b6270]">{waktuWIB(pres.mulai, true)}</p>
           <FormPresensiOrg org={id} kegiatan={pres.id} anggota={anggota} awal={Object.fromEntries((pr ?? []).map((x) => [x.siswa_id, x.status]))} />
         </section>
       )}
 
       <section className="space-y-2">
         <h2 className="font-serif text-2xl">Kegiatan</h2>
-        {(kg ?? []).length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-black/50 ring-1 ring-black/5">Belum ada kegiatan.</p> : (
+        {(kg ?? []).length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Belum ada kegiatan.</p> : (
           <ul className="divide-y divide-black/5 rounded-2xl bg-white px-4 text-sm ring-1 ring-black/5">{(kg ?? []).map((k) => (
             <li key={k.id} className="flex flex-wrap items-center gap-2 py-2">
-              <span className="flex-1"><strong>{k.judul}</strong> <span className="text-black/50">· {JENIS_KEGIATAN[k.jenis]} · {waktuWIB(k.mulai, true)}{k.tempat && ` · ${k.tempat}`}</span></span>
+              <span className="flex-1"><strong>{k.judul}</strong> <span className="text-[#5b6270]">· {JENIS_KEGIATAN[k.jenis]} · {waktuWIB(k.mulai, true)}{k.tempat && ` · ${k.tempat}`}</span></span>
               {hp && <Link href={`?presensi=${k.id}`} className="text-xs font-semibold text-brand-700 underline">Presensi</Link>}
               {hk && <form action={hapusKegiatanOrg}><input type="hidden" name="id" value={k.id} /><input type="hidden" name="organisasi_id" value={id} /><input type="hidden" name="kembali" value={kembali} /><button className="text-xs font-semibold text-merah underline">Hapus</button></form>}
             </li>))}</ul>
@@ -67,10 +67,10 @@ export default async function OrgPortal({ params, searchParams }: { params: Prom
 
       <section className="space-y-2">
         <h2 className="font-serif text-2xl">Program kerja</h2>
-        {(pk ?? []).length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-black/50 ring-1 ring-black/5">Belum ada.</p> : (pk ?? []).map((p) => (
+        {(pk ?? []).length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Belum ada.</p> : (pk ?? []).map((p) => (
           <div key={p.id} className="rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5">
-            <p><strong>{p.judul}</strong> <span className="text-black/50">· {STATUS_PROKER[p.status]}{p.target_waktu && ` · ${p.target_waktu}`}</span></p>
-            {p.tujuan && <p className="text-black/70">{p.tujuan}</p>}
+            <p><strong>{p.judul}</strong> <span className="text-[#5b6270]">· {STATUS_PROKER[p.status]}{p.target_waktu && ` · ${p.target_waktu}`}</span></p>
+            {p.tujuan && <p className="text-[#3b414b]">{p.tujuan}</p>}
             {hpr && <details className="mt-1"><summary className="cursor-pointer text-xs font-semibold text-brand-700">Perbarui</summary><div className="mt-2"><FormProker org={id} d={{ ...p, anggaran: Number(p.anggaran) }} /></div></details>}
           </div>
         ))}
@@ -82,7 +82,7 @@ export default async function OrgPortal({ params, searchParams }: { params: Prom
           <h2 className="font-serif text-2xl">Pengajuan kegiatan</h2>
           {pengajuan.map((a) => (
             <details key={a.id} className="rounded-2xl bg-white p-4 ring-1 ring-black/5" open={["draf", "revisi"].includes(a.status)}>
-              <summary className="flex cursor-pointer flex-wrap items-center gap-2"><span className="flex-1 font-semibold">{a.judul}</span><span className="text-sm text-black/50">{tgl(a.mulai)} · {rupiah(Number(a.total_anggaran))}</span><Lencana s={a.status} peta={STATUS_PENGAJUAN} /></summary>
+              <summary className="flex cursor-pointer flex-wrap items-center gap-2"><span className="flex-1 font-semibold">{a.judul}</span><span className="text-sm text-[#5b6270]">{tgl(a.mulai)} · {rupiah(Number(a.total_anggaran))}</span><Lencana s={a.status} peta={STATUS_PENGAJUAN} /></summary>
               <div className="mt-3 space-y-3 border-t border-black/5 pt-3">
                 {a.catatan_reviu && <p className="rounded-xl bg-amber-50 p-3 text-sm">Catatan peninjau: {a.catatan_reviu}</p>}
                 {["draf", "revisi"].includes(a.status) && <>
@@ -91,7 +91,7 @@ export default async function OrgPortal({ params, searchParams }: { params: Prom
                     <button name="aksi" value="ajukan" className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">Ajukan ke pembina</button></form>
                 </>}
                 {a.status === "disetujui" && <><p className="text-sm font-semibold">Setelah kegiatan, isi LPJ:</p><FormLpj id={a.id} d={a} /></>}
-                {!["draf", "revisi", "disetujui"].includes(a.status) && <p className="text-sm text-black/60">{STATUS_PENGAJUAN[a.status]?.label}.</p>}
+                {!["draf", "revisi", "disetujui"].includes(a.status) && <p className="text-sm text-[#5b6270]">{STATUS_PENGAJUAN[a.status]?.label}.</p>}
               </div>
             </details>
           ))}
@@ -101,7 +101,7 @@ export default async function OrgPortal({ params, searchParams }: { params: Prom
 
       <section>
         <h2 className="mb-2 font-serif text-2xl">Anggota ({anggota.length})</h2>
-        <ul className="grid gap-1 rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5 sm:grid-cols-2">{anggota.map((a) => <li key={a.siswa_id}>{a.nama} <span className="text-black/50">{a.kelas}{a.jabatan !== "anggota" && ` · ${JABATAN[a.jabatan]}`}</span></li>)}</ul>
+        <ul className="grid gap-1 rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5 sm:grid-cols-2">{anggota.map((a) => <li key={a.siswa_id}>{a.nama} <span className="text-[#5b6270]">{a.kelas}{a.jabatan !== "anggota" && ` · ${JABATAN[a.jabatan]}`}</span></li>)}</ul>
       </section>
     </div>
   );

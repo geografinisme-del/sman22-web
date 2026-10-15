@@ -45,7 +45,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
       <Link href="/portal" className="text-sm text-brand-700">← Beranda</Link>
       <div>
         <h1 className="font-serif text-3xl leading-tight">{a.nama}</h1>
-        <p className="text-sm text-black/50">{a.kelas ? `Kelas ${a.kelas}` : ""}</p>
+        <p className="text-sm text-[#5b6270]">{a.kelas ? `Kelas ${a.kelas}` : ""}</p>
       </div>
 
       <section className="rounded-3xl bg-white p-4 ring-1 ring-black/5 sm:p-6">
@@ -60,7 +60,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-xs" role="grid" aria-label={`Kalender ${BULAN[m - 1]} ${y}`}>
           {["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map((h) => (
-            <div key={h} className="pb-1 font-semibold text-black/40">{h}</div>
+            <div key={h} className="pb-1 font-semibold text-[#5b6270]">{h}</div>
           ))}
           {sel.map((t, i) => {
             if (!t) return <div key={`k${i}`} />;
@@ -91,7 +91,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
             );
           })}
         </div>
-        <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/60">
+        <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#5b6270]">
           <li><span className="mr-1 inline-block h-3 w-3 rounded bg-emerald-50 align-middle ring-1 ring-emerald-200" />Hadir</li>
           {(["T", "S", "I", "A", "PC"] as KodeAbsen[]).map((k) => (
             <li key={k}><span className={`mr-1 inline-block h-3 w-3 rounded align-middle ${STATUS_SISWA_ABSEN[k].warna}`} />{STATUS_SISWA_ABSEN[k].label}</li>
@@ -103,14 +103,14 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
       <section className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
         <h2 className="font-serif text-2xl">Catatan bulan ini</h2>
         {daftar.length === 0 ? (
-          <p className="mt-2 text-sm text-black/50">Tidak ada catatan ketidakhadiran atau keterlambatan.</p>
+          <p className="mt-2 text-sm text-[#5b6270]">Tidak ada catatan ketidakhadiran atau keterlambatan.</p>
         ) : (
           <ul className="mt-2 divide-y divide-black/5 text-sm">
             {daftar.map((r) => (
               <li key={r.tanggal} className="flex justify-between gap-3 py-2">
                 <span>
                   {new Date(r.tanggal + "T00:00:00Z").toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}
-                  {r.keterangan && <span className="block text-xs text-black/50">{r.keterangan}</span>}
+                  {r.keterangan && <span className="block text-xs text-[#5b6270]">{r.keterangan}</span>}
                 </span>
                 <span className="shrink-0 font-semibold">{STATUS_SISWA_ABSEN[r.status as KodeAbsen].label}</span>
               </li>
@@ -118,7 +118,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
           </ul>
         )}
         {libMap.size > 0 && (
-          <p className="mt-3 text-xs text-black/50">Libur: {[...libMap.entries()].map(([t, k]) => `${Number(t.slice(8))} (${k})`).join(", ")}</p>
+          <p className="mt-3 text-xs text-[#5b6270]">Libur: {[...libMap.entries()].map(([t, k]) => `${Number(t.slice(8))} (${k})`).join(", ")}</p>
         )}
       </section>
     </div>

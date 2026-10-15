@@ -37,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <html lang="id">
+    <html lang="id" data-scroll-behavior="smooth">
       <head>
         {/* warna tema dari Admin → Tema & Tampilan (sudah divalidasi berformat #rrggbb) */}
         <style dangerouslySetInnerHTML={{ __html: cssTema(tema) }} />

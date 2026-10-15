@@ -26,11 +26,11 @@ export default async function DaftarEkskul() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={o.logo_url} alt="" className="h-12 w-12 rounded-full bg-white object-contain p-1" referrerPolicy="no-referrer" loading="lazy" />
                     ) : <span className="grid h-12 w-12 place-items-center rounded-full bg-white/20 font-serif text-xl">{(o.singkatan || o.nama).slice(0, 2)}</span>}
-                    <div><p className="text-xs uppercase tracking-widest opacity-80">{JENIS_ORG[o.jenis]} · {BIDANG_ORG[o.bidang]}</p><h2 className="font-serif text-2xl leading-tight">{o.nama}</h2></div>
+                    <div><p className="text-xs opacity-80">{JENIS_ORG[o.jenis]} · {BIDANG_ORG[o.bidang]}</p><h2 className="font-serif text-2xl leading-tight">{o.nama}</h2></div>
                   </div>
                   <div className="p-5">
-                    <p className="line-clamp-3 text-sm text-black/70">{o.deskripsi || "—"}</p>
-                    <p className="mt-3 text-xs text-black/50">{o.jadwal_rutin}{o.jadwal_rutin && " · "}{o.jumlah_anggota} anggota</p>
+                    <p className="line-clamp-3 text-sm text-[#3b414b]">{o.deskripsi || "—"}</p>
+                    <p className="mt-3 text-xs text-[#5b6270]">{o.jadwal_rutin}{o.jadwal_rutin && " · "}{o.jumlah_anggota} anggota</p>
                     {o.pendaftaran_buka && <p className="mt-2 inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800">Pendaftaran dibuka — daftar lewat portal siswa</p>}
                   </div>
                 </Link>

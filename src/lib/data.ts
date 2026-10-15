@@ -4,6 +4,7 @@ import * as statis from "@/content/sekolah";
 import { supabaseAktif } from "@/lib/supabase/config";
 import { supabasePublik } from "@/lib/supabase/public";
 import { bacaTema, TEMA_BAWAAN, type Tema } from "@/lib/tema";
+import { bacaKonfigurasi, KONFIGURASI_BAWAAN, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
 
 /**
  * Satu pintu untuk semua konten situs publik.
@@ -41,7 +42,17 @@ export type BeritaItem = {
   gambar?: string;
 };
 export type AgendaItem = { id: string; judul: string; tanggal: string; waktu?: string; tempat?: string };
-export type PengumumanItem = { id: string; judul: string; tanggal: string; isi: string; penting: boolean };
+export type PengumumanItem = {
+  id: string;
+  judul: string;
+  tanggal: string;
+  isi: string;
+  penting: boolean;
+  /** ditandai untuk modal prioritas (kolom Fase 19; false bila migrasi belum dijalankan) */
+  prioritas: boolean;
+  poster?: { url: string; alt: string };
+  tautan?: { url: string; label: string };
+};
 export type FotoItem = { id: string; judul: string; gambar: string };
 
 /** Teks "[ISI ...]" dianggap kosong supaya tidak tampil di situs */
@@ -206,11 +217,12 @@ export const getAgenda = cache(async (limit?: number): Promise<AgendaItem[]> => 
 
 export const getPengumuman = cache(async (limit?: number): Promise<PengumumanItem[]> => {
   if (!supabaseAktif) {
-    return statis.pengumuman.slice(0, limit).map((p, i) => ({ ...p, id: String(i), penting: Boolean(p.penting) }));
+    return statis.pengumuman.slice(0, limit).map((p, i) => ({ ...p, id: String(i), penting: Boolean(p.penting), prioritas: false }));
   }
   let q = supabasePublik()
     .from("pengumuman")
-    .select("id, judul, isi, tanggal, penting")
+    // "*" agar tetap berjalan sebelum migrasi Fase 19 (kolom prioritas/poster) diterapkan
+    .select("*")
     .is("deleted_at", null)
     .eq("aktif", true)
     .order("penting", { ascending: false })
@@ -221,7 +233,19 @@ export const getPengumuman = cache(async (limit?: number): Promise<PengumumanIte
     logGagal("pengumuman", error);
     return [];
   }
-  return data;
+  return (data as Record<string, unknown>[]).map((p) => {
+    const teks = (k: string) => (typeof p[k] === "string" ? (p[k] as string) : "");
+    return {
+      id: String(p.id),
+      judul: teks("judul"),
+      tanggal: teks("tanggal"),
+      isi: teks("isi"),
+      penting: p.penting === true,
+      prioritas: p.prioritas === true,
+      poster: teks("poster_url") ? { url: teks("poster_url"), alt: teks("poster_alt") } : undefined,
+      tautan: teks("tautan_url") ? { url: teks("tautan_url"), label: teks("tautan_label") || "Selengkapnya" } : undefined,
+    };
+  });
 });
 
 export const getGaleri = cache(async (): Promise<FotoItem[]> => {
@@ -263,6 +287,8 @@ export type Situs = {
   layanan: TautanLayanan[];
   sosialMedia: SosialMedia[];
   footerTeks: string;
+  /** konfigurasi tampilan publik yang SUDAH TERBIT (tema, susunan widget, popup, pemandu) */
+  tampilan: Konfigurasi;
   seo: { judul: string; deskripsi: string; gambar: string };
   tema: Tema;
 };
@@ -284,6 +310,7 @@ const situsStatis = (): Situs => ({
   footerTeks: "",
   seo: { judul: "", deskripsi: statis.sekolah.deskripsi, gambar: "" },
   tema: TEMA_BAWAAN,
+  tampilan: KONFIGURASI_BAWAAN,
 });
 
 const daftarJson = <T,>(v: unknown, kunci: (keyof T)[]): T[] =>
@@ -330,6 +357,8 @@ export const getSitus = cache(async (): Promise<Situs> => {
     seo: { judul: s.seo_judul, deskripsi: s.seo_deskripsi || dasar.seo.deskripsi, gambar: s.seo_gambar_url },
     // kolom tema belum ada (migrasi 20261124000000_tema_tampilan.sql) → tema bawaan
     tema: bacaTema((s as { tema?: unknown }).tema),
+    // hanya konfigurasi terbit (draf ada di tabel tampilan_draf yang tidak bisa dibaca publik)
+    tampilan: bacaKonfigurasi(((s as { tema?: { tampilan?: unknown } }).tema ?? {}).tampilan),
   };
 });
 
@@ -383,4 +412,24 @@ export const getEkskulRingkas = cache(async (): Promise<EkskulRingkas[]> => {
     return [];
   }
   return ((data ?? []) as { nama: string; slug: string; bidang: string | null }[]).map((o) => ({ nama: o.nama, slug: o.slug, bidang: o.bidang ?? "" }));
+});
+
+/* ------------------------------------------------------------------ */
+/* E-Library publik (RPC katalog; hak akses koleksi digital di database) */
+/* ------------------------------------------------------------------ */
+
+export type BukuRingkas = { id: string; judul: string; pengarang: string; kategori: string; sampul: string; tersedia: number; total: number };
+
+/** Buku rekomendasi pustakawan untuk widget beranda (kosong bila modul/katalog belum ada). */
+export const getRekomendasiBuku = cache(async (n: number): Promise<BukuRingkas[]> => {
+  if (!supabaseAktif || n <= 0) return [];
+  const { data, error } = await supabasePublik().rpc("katalog_publik", { p_cari: "rekomendasi", p_batas: 24, p_lewati: 0 });
+  if (error) {
+    logGagal("rekomendasi buku", error);
+    return [];
+  }
+  return ((data ?? []) as { id: string; judul: string; pengarang: string; kategori: string; sampul_url: string; tersedia: number; total: number; rekomendasi: boolean }[])
+    .filter((b) => b.rekomendasi)
+    .slice(0, n)
+    .map((b) => ({ id: b.id, judul: b.judul, pengarang: b.pengarang, kategori: b.kategori, sampul: b.sampul_url, tersedia: b.tersedia, total: b.total }));
 });

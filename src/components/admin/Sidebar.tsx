@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type ComponentType } from "react";
+import { ruangKerjaAktif, type RuangKerja } from "@/lib/ruang-kerja";
 import {
   Award,
   BadgeCheck,
@@ -124,8 +125,11 @@ export function Sidebar({
   peran,
   keluar,
   notif = 0,
+  ruang = [],
 }: {
   grup: GrupMenu[];
+  /** ruang kerja yang boleh dibuka (turunan izin; berpindah ruang kerja tidak menambah kewenangan) */
+  ruang?: RuangKerja[];
   nama: string;
   email: string;
   peran: string;
@@ -250,8 +254,43 @@ export function Sidebar({
     </Link>
   );
 
+  const ruangAktif = ruangKerjaAktif(path, ruang);
+  const pemilihRuang = (asal: "sisi" | "laci") =>
+    ruang.length >= 2 ? (
+      <div className="px-3 pb-3">
+        <label htmlFor={`ruang-kerja-${asal}`} className="mb-1 block px-1 text-xs font-semibold text-[#5b6270]">
+          Ruang kerja
+        </label>
+        <select
+          id={`ruang-kerja-${asal}`}
+          value={ruangAktif?.kunci ?? ""}
+          onChange={(e) => {
+            const r = ruang.find((x) => x.kunci === e.target.value);
+            tutupLaci(false);
+            router.push(r ? r.href : "/admin");
+          }}
+          className="w-full rounded-md border border-[#d9dce1] bg-white px-2.5 py-2 text-sm font-semibold text-[#1f2328] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]"
+        >
+          <option value="">Ringkasan (semua tugas)</option>
+          {ruang.map((r) => (
+            <option key={r.kunci} value={r.kunci}>
+              {r.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    ) : ruang.length === 1 ? (
+      <p className="px-4 pb-3 text-xs text-[#5b6270]">
+        Ruang kerja:{" "}
+        <Link href={ruang[0].href} onClick={() => tutupLaci(false)} className="font-semibold text-[#1f2328] underline underline-offset-2">
+          {ruang[0].label}
+        </Link>
+      </p>
+    ) : null;
+
   const isiNavigasi = (asal: "sisi" | "laci") => (
     <>
+      {pemilihRuang(asal)}
       <div className="relative px-3 pb-3">
         <label htmlFor={`cari-menu-${asal}`} className="sr-only">
           Cari menu

@@ -16,11 +16,11 @@ export default async function LihatMateri({ params }: { params: Promise<{ id: st
   const slide = slidesSchema.safeParse(m.slide);
   return (
     <div className="space-y-4">
-      <Link href="/portal/materi" className="text-sm text-black/50 hover:text-black">← Semua materi</Link>
+      <Link href="/portal/materi" className="text-sm text-[#5b6270] hover:text-black">← Semua materi</Link>
       <div>
-        <p className="text-xs uppercase tracking-[0.15em] text-black/50">{(m.mapel as unknown as { nama: string } | null)?.nama}</p>
+        <p className="text-xs text-[#5b6270]">{(m.mapel as unknown as { nama: string } | null)?.nama}</p>
         <h1 className="font-serif text-3xl">{m.judul}</h1>
-        {m.ringkasan && <p className="text-black/60">{m.ringkasan}</p>}
+        {m.ringkasan && <p className="text-[#5b6270]">{m.ringkasan}</p>}
       </div>
       <PemutarMateri slide={slide.success ? slide.data : []} />
     </div>

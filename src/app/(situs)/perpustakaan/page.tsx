@@ -1,60 +1,219 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Kosong, PageHeader, Section } from "@/components/ui";
+import { ArrowRight, BookOpen, Search } from "lucide-react";
+import { Kosong, PageHeader } from "@/components/ui";
 import { supabaseAktif } from "@/lib/supabase/config";
 import { supabaseServer } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "Perpustakaan", description: "Katalog buku Perpustakaan SMAN 22 Bandung — cari judul dan cek ketersediaan." };
+export const metadata: Metadata = { title: "E-Library", description: "E-Library SMA Negeri 22 Bandung — cari buku di katalog, saring per kategori, dan cek ketersediaan." };
 export const dynamic = "force-dynamic";
 const PER = 24;
+type Aturan = { lama_pinjam: number; maks_pinjam: number; maks_perpanjang: number };
 
-type K = { id: string; judul: string; pengarang: string; penerbit: string; tahun: number | null; kategori: string; rak: string; sampul_url: string; tautan_digital: string; tersedia: number; total: number; jumlah_hasil: number; rekomendasi: boolean; rating: number | null; jumlah_ulasan: number };
+type K = {
+  id: string;
+  judul: string;
+  pengarang: string;
+  tahun: number | null;
+  kategori: string;
+  rak: string;
+  sampul_url: string;
+  tautan_digital: string;
+  tersedia: number;
+  total: number;
+  jumlah_hasil: number;
+  rekomendasi: boolean;
+  rating: number | null;
+  jumlah_ulasan: number;
+  akses_digital: string;
+};
 
-export default async function Perpustakaan({ searchParams }: { searchParams: Promise<{ q?: string; hal?: string }> }) {
+/**
+ * Katalog publik E-Library. Data dari RPC katalog (hanya buku tampil_publik); tautan digital hanya
+ * dikirim database bila koleksinya publik atau pengunjung warga sekolah yang masuk.
+ * Layanan pribadi (pinjaman, reservasi) ada di portal setelah masuk; ruang kerja petugas di Portal Manajemen.
+ */
+export default async function Perpustakaan({ searchParams }: { searchParams: Promise<{ q?: string; hal?: string; kategori?: string }> }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").slice(0, 100);
+  const kategori = (sp.kategori ?? "").slice(0, 60);
   const hal = Math.max(1, Number(sp.hal) || 1);
-  const { data } = supabaseAktif ? await (await supabaseServer()).rpc("katalog_publik", { p_cari: q, p_batas: PER, p_lewati: (hal - 1) * PER }) : { data: [] };
-  const list = (data ?? []) as K[];
+  const sb = supabaseAktif ? await supabaseServer() : null;
+
+  let list: K[] = [];
+  let gagal = false;
+  let kategoriList: { kategori: string; jumlah: number }[] = [];
+  let aturan: Aturan | null = null;
+  if (sb) {
+    const [hasil, kat, at] = await Promise.all([
+      kategori
+        ? sb.rpc("katalog_publik_kategori", { p_kategori: kategori, p_cari: q, p_batas: PER, p_lewati: (hal - 1) * PER })
+        : sb.rpc("katalog_publik", { p_cari: q, p_batas: PER, p_lewati: (hal - 1) * PER }),
+      sb.rpc("kategori_katalog_publik"),
+      sb.rpc("aturan_perpus_publik"),
+    ]);
+    // RPC kategori belum dimigrasikan → saringan kategori tidak tersedia (bukan halaman rusak)
+    gagal = Boolean(hasil.error);
+    list = (hasil.data ?? []) as K[];
+    kategoriList = kat.error ? [] : ((kat.data ?? []) as typeof kategoriList);
+    aturan = at.error ? null : (((at.data ?? []) as Aturan[])[0] ?? null);
+  }
   const total = Number(list[0]?.jumlah_hasil ?? 0);
+  const tautanHal = (h: number) => `?${new URLSearchParams({ ...(q && { q }), ...(kategori && { kategori }), hal: String(h) })}`;
+  const saring = (k: string) => `?${new URLSearchParams({ ...(q && { q }), ...(k && { kategori: k }) })}`;
+
   return (
     <>
-      <PageHeader judul="Perpustakaan" deskripsi="Cari buku di katalog dan cek apakah tersedia sebelum datang ke perpustakaan." />
-      <Section>
-        <form className="mb-6 flex gap-2" role="search">
-          <input name="q" defaultValue={q} placeholder="Judul, pengarang, kategori, atau ISBN" aria-label="Cari buku" className="flex-1 rounded-lg border border-black/15 bg-white px-5 py-3" />
-          <button className="rounded-lg bg-[var(--tema-utama)] px-6 py-3 font-semibold text-white">Cari</button>
-        </form>
-        <p className="-mt-3 mb-6 text-sm"><Link href="?q=rekomendasi" className="font-semibold text-[var(--tema-utama)] underline">★ Rekomendasi pustakawan</Link></p>
-        {list.length === 0 ? <Kosong teks={q ? `Tidak ada buku untuk “${q}”.` : "Katalog belum tersedia."} /> : (
-          <>
-            <p className="mb-3 text-sm text-black/50">{total.toLocaleString("id-ID")} judul</p>
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {list.map((b) => (
-                <li key={b.id} className="flex gap-4 kartu p-4 ">
-                  {b.sampul_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={b.sampul_url} alt="" className="h-28 w-20 shrink-0 rounded object-cover" referrerPolicy="no-referrer" loading="lazy" />
-                  ) : <div className="grid h-28 w-20 shrink-0 place-items-center rounded bg-brand-50 font-serif text-3xl text-[var(--tema-utama)]" aria-hidden>{b.judul.slice(0, 1)}</div>}
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-[0.15em] text-black/50">{b.kategori}</p>
-                    <h2 className="font-semibold leading-snug"><Link href={`/perpustakaan/${b.id}`} className="hover:underline">{b.judul}</Link></h2>
-                    {(b.rekomendasi || b.rating) && <p className="text-xs">{b.rekomendasi && <span className="mr-2 rounded bg-amber-100 px-1.5 font-semibold text-amber-900">Rekomendasi</span>}{b.rating && <span className="text-amber-600">★ {b.rating} <span className="text-black/50">({b.jumlah_ulasan})</span></span>}</p>}
-                    <p className="text-sm text-black/60">{[b.pengarang, b.tahun].filter(Boolean).join(" · ")}</p>
-                    <p className={`mt-2 text-sm font-semibold ${b.tersedia ? "text-emerald-700" : "text-[var(--tema-utama)]"}`}>{b.tersedia ? `${b.tersedia} tersedia` : "Sedang dipinjam semua"}{b.rak && <span className="font-normal text-black/50"> · rak {b.rak}</span>}</p>
-                    {b.tautan_digital && <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-sm font-semibold text-[var(--tema-utama)] underline">Baca versi digital</a>}
-                  </div>
-                </li>
+      <PageHeader judul="E-Library" label="Perpustakaan SMA Negeri 22 Bandung" deskripsi="Cari buku di katalog, saring per kategori, dan cek ketersediaannya sebelum datang ke perpustakaan." />
+
+      <section className="bagian">
+        <div className="lp-wadah grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="min-w-0">
+            <form role="search" className="perpus-cari" data-muncul>
+              <label htmlFor="cari-buku" className="sr-only">
+                Cari buku
+              </label>
+              <Search size={18} aria-hidden className="perpus-cari-ikon" />
+              <input id="cari-buku" name="q" type="search" defaultValue={q} placeholder="Judul, pengarang, atau ISBN" autoComplete="off" />
+              {kategori && <input type="hidden" name="kategori" value={kategori} />}
+              <button type="submit" className="btn btn-primary">
+                Cari
+              </button>
+            </form>
+
+            <nav aria-label="Saring kategori" className="mt-4 flex flex-wrap gap-2">
+              <Link href={saring("")} aria-current={!kategori && q !== "rekomendasi" ? "true" : undefined} className="chip-saring">
+                Semua
+              </Link>
+              <Link href="?q=rekomendasi" aria-current={q === "rekomendasi" ? "true" : undefined} className="chip-saring">
+                Rekomendasi pustakawan
+              </Link>
+              {kategoriList.map((k) => (
+                <Link key={k.kategori} href={saring(k.kategori)} aria-current={kategori === k.kategori ? "true" : undefined} className="chip-saring">
+                  {k.kategori} <span className="tabular-nums text-[#5b6270]">({k.jumlah})</span>
+                </Link>
               ))}
-            </ul>
-            <div className="mt-6 flex justify-between text-sm">
-              {hal > 1 ? <Link href={`?q=${encodeURIComponent(q)}&hal=${hal - 1}`} className="rounded-lg px-4 py-2 ring-1 ring-black/15">← Sebelumnya</Link> : <span />}
-              {hal * PER < total && <Link href={`?q=${encodeURIComponent(q)}&hal=${hal + 1}`} className="rounded-lg px-4 py-2 ring-1 ring-black/15">Berikutnya →</Link>}
+            </nav>
+
+            <div className="mt-6" aria-live="polite">
+              {gagal ? (
+                <Kosong teks="Katalog gagal dimuat." sub="Coba muat ulang halaman beberapa saat lagi." />
+              ) : list.length === 0 ? (
+                <Kosong
+                  teks={q || kategori ? `Tidak ada buku untuk ${q ? `“${q}”` : ""}${q && kategori ? " di " : ""}${kategori ? `kategori ${kategori}` : ""}.` : "Katalog belum tersedia."}
+                  sub={q || kategori ? "Coba kata kunci lain atau pilih Semua." : "Koleksi sedang didata oleh petugas perpustakaan."}
+                />
+              ) : (
+                <>
+                  <p className="mb-3 text-sm text-[#5b6270]">
+                    {total.toLocaleString("id-ID")} judul{kategori && ` · kategori ${kategori}`}
+                  </p>
+                  <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" data-muncul="kelompok">
+                    {list.map((b) => (
+                      <li key={b.id} className="kartu flex gap-4 p-4">
+                        <Link href={`/perpustakaan/${b.id}`} className="group w-20 shrink-0" tabIndex={-1} aria-hidden>
+                          <span className="sampul-buku">
+                            {b.sampul_url ? (
+                              // eslint-disable-next-line @next/next/no-img-element -- sampul dari katalog (domain beragam)
+                              <img src={b.sampul_url} alt="" referrerPolicy="no-referrer" loading="lazy" />
+                            ) : (
+                              <span>{b.judul.match(/[\p{L}\p{N}]/u)?.[0] ?? "?"}</span>
+                            )}
+                          </span>
+                        </Link>
+                        <div className="min-w-0">
+                          {b.kategori && <p className="text-sm text-[#5b6270]">{b.kategori}</p>}
+                          <h2 className="text-[1.0625rem] font-semibold leading-snug">
+                            <Link href={`/perpustakaan/${b.id}`} className="hover:text-[var(--tema-utama)] hover:underline">
+                              {b.judul}
+                            </Link>
+                          </h2>
+                          <p className="text-sm text-[#5b6270]">{[b.pengarang, b.tahun].filter(Boolean).join(" · ")}</p>
+                          {(b.rekomendasi || b.rating) && (
+                            <p className="mt-1 text-sm">
+                              {b.rekomendasi && <span className="label-status mr-2">Rekomendasi</span>}
+                              {b.rating && (
+                                <span className="text-[#3b414b]">
+                                  ★ {b.rating} <span className="text-[#5b6270]">({b.jumlah_ulasan} ulasan)</span>
+                                </span>
+                              )}
+                            </p>
+                          )}
+                          <p className={`mt-2 text-sm font-semibold ${b.tersedia ? "text-emerald-800" : "text-[#8a4b00]"}`}>
+                            {b.total === 0 ? "Belum ada eksemplar" : b.tersedia ? `${b.tersedia} dari ${b.total} tersedia` : "Sedang dipinjam semua"}
+                            {b.rak && <span className="font-normal text-[#5b6270]"> · rak {b.rak}</span>}
+                          </p>
+                          {b.tautan_digital ? (
+                            <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="tautan mt-1 inline-block text-sm">
+                              Baca versi digital<span className="sr-only"> (tab baru)</span>
+                            </a>
+                          ) : (
+                            b.akses_digital === "warga" && <p className="mt-1 text-sm text-[#5b6270]">Versi digital untuk warga sekolah (masuk dulu).</p>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-6 flex justify-between gap-3">
+                    {hal > 1 ? (
+                      <Link href={tautanHal(hal - 1)} className="btn">
+                        ← Sebelumnya
+                      </Link>
+                    ) : (
+                      <span />
+                    )}
+                    {hal * PER < total && (
+                      <Link href={tautanHal(hal + 1)} className="btn">
+                        Berikutnya →
+                      </Link>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
-          </>
-        )}
-        <p className="mt-8 text-sm text-black/50">Siswa & guru dapat memesan buku dari halaman detail buku, lalu melihat & memperpanjang pinjaman di <Link href="/masuk" className="underline">portal</Link>.</p>
-      </Section>
+          </div>
+
+          <aside className="space-y-6" aria-label="Panduan layanan perpustakaan">
+            <div className="kartu p-5" data-muncul>
+              <h2 className="flex items-center gap-2 text-[1.125rem] font-semibold">
+                <BookOpen size={20} aria-hidden className="text-[var(--tema-utama)]" /> Cara meminjam
+              </h2>
+              <ol className="mt-3 space-y-2 text-[0.9375rem] text-[#3b414b]">
+                <li>
+                  <strong>1. Cari</strong> buku dan cek ketersediaannya di katalog.
+                </li>
+                <li>
+                  <strong>2. Pesan</strong> dari halaman detail buku setelah masuk portal (siswa & guru).
+                </li>
+                <li>
+                  <strong>3. Ambil & kembalikan</strong> di perpustakaan; pantau tenggat di portal.
+                </li>
+              </ol>
+              {aturan && (
+                <p className="mt-3 border-t border-[#e5e1da] pt-3 text-[0.9375rem] text-[#3b414b]">
+                  Lama pinjam {aturan.lama_pinjam} hari · maksimal {aturan.maks_pinjam} buku
+                  {aturan.maks_perpanjang > 0 ? ` · dapat diperpanjang ${aturan.maks_perpanjang}×` : ""}.
+                </p>
+              )}
+            </div>
+            <div className="kartu p-5" data-muncul>
+              <h2 className="text-[1.125rem] font-semibold">Layanan pribadi</h2>
+              <p className="mt-1 text-[0.9375rem] text-[#3b414b]">Pinjaman aktif, reservasi, perpanjangan, jurnal baca, dan koleksi digital khusus warga sekolah.</p>
+              <Link href="/admin/login?sebagai=siswa" className="btn btn-primary mt-3 w-full">
+                Masuk Portal Sekolah
+                <ArrowRight size={18} aria-hidden className="ikon-geser" />
+              </Link>
+              <p className="mt-3 text-sm text-[#5b6270]">
+                Petugas perpustakaan mengelola koleksi, anggota, sirkulasi, dan laporan melalui{" "}
+                <Link href="/admin/login?sebagai=staf" className="tautan">
+                  Portal Manajemen
+                </Link>
+                .
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
     </>
   );
 }

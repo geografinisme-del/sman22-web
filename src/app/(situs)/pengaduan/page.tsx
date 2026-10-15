@@ -16,7 +16,7 @@ export default async function Pengaduan() {
       <Section>
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <FormPengaduan login={login} />
-          <aside className="space-y-4 text-sm text-black/70">
+          <aside className="space-y-4 text-sm text-[#3b414b]">
             <div className="kartu p-5 ">
               <h2 className="font-semibold">Sudah pernah melapor?</h2>
               <p className="mt-1">Cek perkembangan dengan nomor tiket & kode akses.</p>

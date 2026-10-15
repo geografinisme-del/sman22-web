@@ -47,7 +47,7 @@ export default async function HalamanMfa() {
         </>
       }
     >
-      {faktor.length > 0 ? <FormTantangan faktor={faktor} /> : <DaftarMfa />}
+      {faktor.length > 0 ? <FormTantangan faktor={faktor} lanjut="/admin/mulai" /> : <DaftarMfa lanjut="/admin/mulai" />}
     </BingkaiAkun>
   );
 }

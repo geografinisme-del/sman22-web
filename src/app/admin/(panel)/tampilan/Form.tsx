@@ -192,7 +192,7 @@ function PilihTujuan({ nilai, ubah }: { nilai: string; ubah: (v: string) => void
 }
 
 export function FormBento({ kartu }: { kartu: KartuBento[] }) {
-  const [daftar, setDaftar] = useState<Baris[]>(() => kartu.map((k) => ({ ...k, id: idBaru() })));
+  const [daftar, setDaftar] = useState<Baris[]>(() => kartu.map((k, i) => ({ ...k, id: `k${i}` })));
   const [pratinjau, setPratinjau] = useState<Record<string, string>>({});
   const ubah = (id: string, p: Partial<Baris>) => setDaftar((d) => d.map((k) => (k.id === id ? { ...k, ...p } : k)));
   const pindah = (i: number, arah: number) =>

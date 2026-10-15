@@ -30,7 +30,7 @@ export default async function KelasPortal() {
           <section key={a.id} className="space-y-6">
             <div>
               <h1 className="font-serif text-3xl">Tugas & kuis{ortu ? ` — ${a.nama}` : ""}</h1>
-              <p className="text-sm text-black/60">Kelas {a.kelas}</p>
+              <p className="text-sm text-[#5b6270]">Kelas {a.kelas}</p>
             </div>
             <div>
               <h2 className="mb-2 font-semibold">Perlu dikerjakan ({aktif.length})</h2>
@@ -41,9 +41,9 @@ export default async function KelasPortal() {
                     return (
                       <li key={t.id}>
                         <Link href={`/portal/tugas/${t.id}`} className={`block rounded-2xl bg-white p-4 ring-1 hover:ring-brand-600 ${lewat ? "ring-red-300" : "ring-black/5"}`}>
-                          <span className="text-xs uppercase tracking-[0.15em] text-black/50">{t.mapel?.nama}</span>
+                          <span className="text-xs text-[#5b6270]">{t.mapel?.nama}</span>
                           <span className="block font-semibold">{t.judul}</span>
-                          <span className={`text-sm ${lewat ? "font-semibold text-merah" : "text-black/60"}`}>Tenggat {waktuWIB(t.tenggat)}{lewat && " — lewat"}</span>
+                          <span className={`text-sm ${lewat ? "font-semibold text-merah" : "text-[#5b6270]"}`}>Tenggat {waktuWIB(t.tenggat)}{lewat && " — lewat"}</span>
                           {k(t.id)?.status === "dikembalikan" && <span className="ml-2"><Lencana s="dikembalikan" peta={STATUS_KUMPUL} /></span>}
                         </Link>
                       </li>
@@ -54,7 +54,7 @@ export default async function KelasPortal() {
             </div>
             <div>
               <h2 className="mb-2 font-semibold">Kuis</h2>
-              {kz.length === 0 ? <p className="text-sm text-black/50">Belum ada kuis.</p> : (
+              {kz.length === 0 ? <p className="text-sm text-[#5b6270]">Belum ada kuis.</p> : (
                 <ul className="space-y-2">
                   {kz.map((q) => {
                     const s = st.get(q.id);
@@ -62,7 +62,7 @@ export default async function KelasPortal() {
                     return (
                       <li key={q.id}>
                         <Link href={`/portal/kuis/${q.id}`} className="flex items-center gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5 hover:ring-brand-600">
-                          <span className="flex-1"><span className="text-xs uppercase tracking-[0.15em] text-black/50">{q.mapel?.nama}</span><span className="block font-semibold">{q.judul}</span></span>
+                          <span className="flex-1"><span className="text-xs text-[#5b6270]">{q.mapel?.nama}</span><span className="block font-semibold">{q.judul}</span></span>
                           <span className="text-sm font-semibold">{status}</span>
                         </Link>
                       </li>

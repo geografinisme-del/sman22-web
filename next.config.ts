@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "5mb" },
   },
+  // alamat mudah diingat untuk E-Library (halaman aslinya tetap /perpustakaan)
+  async redirects() {
+    return [{ source: "/e-library", destination: "/perpustakaan", permanent: false }];
+  },
   async headers() {
     return [
       {
@@ -32,6 +36,7 @@ const nextConfig: NextConfig = {
         ],
       },
       { source: "/admin/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+      { source: "/pratinjau/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }, { key: "Cache-Control", value: "private, no-store" }] },
     ];
   },
 };

@@ -13,7 +13,7 @@ export default async function HalamanAgenda() {
     const kunci = formatTanggal(a.tanggal, { day: undefined, month: "long", year: "numeric" });
     perBulan.set(kunci, [...(perBulan.get(kunci) ?? []), a]);
   }
-  const urutPengumuman = [...listPengumuman].sort((a, b) => Number(b.penting) - Number(a.penting));
+  const urutPengumuman = [...listPengumuman].sort((a, b) => Number(b.prioritas || b.penting) - Number(a.prioritas || a.penting));
 
   return (
     <>
@@ -33,13 +33,25 @@ export default async function HalamanAgenda() {
           ) : (
             <ul className="mt-4 space-y-3">
               {urutPengumuman.map((p) => (
-                <li key={p.id} id={`pengumuman-${p.id}`} className={`target-sorot scroll-mt-24 ${p.penting ? "blok-pengumuman" : "kartu p-5"}`}>
+                <li key={p.id} id={`pengumuman-${p.id}`} className={`target-sorot scroll-mt-24 ${p.penting || p.prioritas ? "blok-pengumuman" : "kartu p-5"}`}>
                   <p className="flex flex-wrap items-center gap-2 text-sm text-[#5b6270]">
-                    {p.penting && <span className="label-status">Penting</span>}
+                    {(p.penting || p.prioritas) && <span className="label-status">Penting</span>}
                     <time dateTime={p.tanggal}>{formatTanggal(p.tanggal)}</time>
                   </p>
                   <h3 className="mt-1">{p.judul}</h3>
                   {p.isi && <p className="mt-1 whitespace-pre-line text-[#3b414b]">{p.isi}</p>}
+                  {p.poster && (
+                    <a href={p.poster.url} target="_blank" rel="noopener noreferrer" className="mt-3 block max-w-sm">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- poster utuh dari CMS */}
+                      <img src={p.poster.url} alt={p.poster.alt} loading="lazy" className="max-h-[420px] w-full rounded-lg border border-[#e5e1da] bg-[#faf8f5] object-contain" />
+                      <span className="sr-only">(buka poster ukuran penuh di tab baru)</span>
+                    </a>
+                  )}
+                  {p.tautan && (
+                    <a href={p.tautan.url} className="btn btn-primary mt-3" {...(p.tautan.url.startsWith("https://") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+                      {p.tautan.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

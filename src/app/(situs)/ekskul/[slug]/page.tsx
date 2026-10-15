@@ -35,21 +35,21 @@ export default async function ProfilEkskul({ params }: { params: Promise<{ slug:
             // eslint-disable-next-line @next/next/no-img-element
             <img src={d.logo_url} alt={`Logo ${d.nama}`} className="h-24 w-24 rounded-full bg-white object-contain p-2" referrerPolicy="no-referrer" />
           ) : <span className="grid h-24 w-24 place-items-center rounded-full bg-white/20 font-serif text-4xl">{(d.singkatan || d.nama).slice(0, 2)}</span>}
-          <div><p className="text-xs uppercase tracking-[0.3em] opacity-80">{JENIS_ORG[d.jenis]} · {BIDANG_ORG[d.bidang]}</p><h1 className="font-serif text-4xl sm:text-5xl">{d.nama}</h1></div>
+          <div><p className="text-xs opacity-80">{JENIS_ORG[d.jenis]} · {BIDANG_ORG[d.bidang]}</p><h1 className="font-serif text-4xl sm:text-5xl">{d.nama}</h1></div>
         </div>
       </header>
       <Section>
         <Link href="/ekskul" className="mb-6 inline-block text-sm underline">← Semua organisasi</Link>
         <div className="grid gap-10 lg:grid-cols-[1fr_340px]">
           <div className="space-y-8">
-            <p className="whitespace-pre-line text-lg leading-relaxed text-black/75">{d.deskripsi || "Profil segera diperbarui."}</p>
+            <p className="whitespace-pre-line text-lg leading-relaxed text-[#3b414b]">{d.deskripsi || "Profil segera diperbarui."}</p>
             {d.agenda.length > 0 && (
               <div><h2 className="mb-3 font-serif text-2xl">Agenda</h2>
-                <ul className="space-y-2">{d.agenda.map((a, i) => <li key={i} className="rounded-xl bg-white p-4 text-sm ring-1 ring-black/5"><strong>{a.judul}</strong> <span className="text-black/50">· {JENIS_KEGIATAN[a.jenis]} · {new Date(a.mulai).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" })}{a.tempat && ` · ${a.tempat}`}</span></li>)}</ul></div>
+                <ul className="space-y-2">{d.agenda.map((a, i) => <li key={i} className="rounded-xl bg-white p-4 text-sm ring-1 ring-black/5"><strong>{a.judul}</strong> <span className="text-[#5b6270]">· {JENIS_KEGIATAN[a.jenis]} · {new Date(a.mulai).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" })}{a.tempat && ` · ${a.tempat}`}</span></li>)}</ul></div>
             )}
             {d.prestasi.length > 0 && (
               <div><h2 className="mb-3 font-serif text-2xl">Prestasi</h2>
-                <ul className="space-y-1">{d.prestasi.map((p, i) => <li key={i} className="text-sm"><span className="font-semibold" style={{ color: d.warna }}>{PERINGKAT[p.peringkat] ?? p.peringkat}</span> {p.nama} <span className="text-black/50">· tingkat {p.tingkat} · {new Date(p.tanggal + "T00:00:00Z").getUTCFullYear()}</span></li>)}</ul></div>
+                <ul className="space-y-1">{d.prestasi.map((p, i) => <li key={i} className="text-sm"><span className="font-semibold" style={{ color: d.warna }}>{PERINGKAT[p.peringkat] ?? p.peringkat}</span> {p.nama} <span className="text-[#5b6270]">· tingkat {p.tingkat} · {new Date(p.tanggal + "T00:00:00Z").getUTCFullYear()}</span></li>)}</ul></div>
             )}
             {d.galeri.length > 0 && (
               <div><h2 className="mb-3 font-serif text-2xl">Galeri</h2>
@@ -59,14 +59,14 @@ export default async function ProfilEkskul({ params }: { params: Promise<{ slug:
             )}
           </div>
           <aside className="space-y-3 self-start kartu p-6 text-sm ">
-            <p><span className="text-black/50">Jadwal:</span> {d.jadwal_rutin || "—"}</p>
-            <p><span className="text-black/50">Tempat:</span> {d.tempat || "—"}</p>
-            <p><span className="text-black/50">Pembina:</span> {d.pembina.join(", ") || "—"}</p>
-            <p><span className="text-black/50">Anggota:</span> {d.jumlah_anggota}</p>
-            <p><span className="text-black/50">Untuk kelas:</span> {d.tingkat_boleh.join(", ")}</p>
-            {d.syarat && <p className="whitespace-pre-line"><span className="text-black/50">Syarat:</span> {d.syarat}</p>}
+            <p><span className="text-[#5b6270]">Jadwal:</span> {d.jadwal_rutin || "—"}</p>
+            <p><span className="text-[#5b6270]">Tempat:</span> {d.tempat || "—"}</p>
+            <p><span className="text-[#5b6270]">Pembina:</span> {d.pembina.join(", ") || "—"}</p>
+            <p><span className="text-[#5b6270]">Anggota:</span> {d.jumlah_anggota}</p>
+            <p><span className="text-[#5b6270]">Untuk kelas:</span> {d.tingkat_boleh.join(", ")}</p>
+            {d.syarat && <p className="whitespace-pre-line"><span className="text-[#5b6270]">Syarat:</span> {d.syarat}</p>}
             {buka ? <Link href="/masuk" className="mt-2 block rounded-lg px-5 py-3 text-center font-semibold text-white" style={{ background: d.warna }}>Daftar lewat portal siswa</Link>
-              : <p className="text-black/50">Pendaftaran sedang ditutup.</p>}
+              : <p className="text-[#5b6270]">Pendaftaran sedang ditutup.</p>}
           </aside>
         </div>
       </Section>

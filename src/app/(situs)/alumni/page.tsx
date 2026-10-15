@@ -32,11 +32,11 @@ export default async function Alumni() {
             </div>
           </div>
           <div className="kartu p-6 ">
-            <p className="text-sm uppercase tracking-widest text-black/50">Tracer study</p>
-            <p className="mt-1 font-serif text-4xl">{ring.alumni.toLocaleString("id-ID")}</p><p className="text-sm text-black/60">alumni terdaftar</p>
+            <p className="text-sm text-[#5b6270]">Tracer study</p>
+            <p className="mt-1 font-serif text-4xl">{ring.alumni.toLocaleString("id-ID")}</p><p className="text-sm text-[#5b6270]">alumni terdaftar</p>
             {ring.cukup ? (
               <p className="mt-3 text-sm">Dari {ring.responden} responden: <strong>{ring.persen_kuliah}%</strong> melanjutkan kuliah, <strong>{ring.persen_bekerja}%</strong> bekerja/berwirausaha.</p>
-            ) : <p className="mt-3 text-sm text-black/50">Statistik tampil setelah cukup banyak alumni mengisi.</p>}
+            ) : <p className="mt-3 text-sm text-[#5b6270]">Statistik tampil setelah cukup banyak alumni mengisi.</p>}
           </div>
         </div>
       </Section>
@@ -47,8 +47,8 @@ export default async function Alumni() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {x.foto_url && <img src={x.foto_url} alt="" className="aspect-[16/9] w-full object-cover" referrerPolicy="no-referrer" loading="lazy" />}
               <div className="p-5"><h3 className="font-serif text-2xl">{x.judul}</h3>
-                <p className="mt-2 line-clamp-5 whitespace-pre-line text-sm text-black/70">{x.isi}</p>
-                <p className="mt-3 text-sm font-semibold">{x.nama} <span className="font-normal text-black/50">· angkatan {x.tahun_lulus}{x.institusi && ` · ${x.institusi}`}</span></p></div>
+                <p className="mt-2 line-clamp-5 whitespace-pre-line text-sm text-[#3b414b]">{x.isi}</p>
+                <p className="mt-3 text-sm font-semibold">{x.nama} <span className="font-normal text-[#5b6270]">· angkatan {x.tahun_lulus}{x.institusi && ` · ${x.institusi}`}</span></p></div>
             </li>))}</ul>
         </Section>
       )}
@@ -56,9 +56,9 @@ export default async function Alumni() {
         <Section className="!pt-0">
           <div className="grid gap-8 lg:grid-cols-2">
             {acara.length > 0 && <div><h2 className="mb-3 font-serif text-3xl">Acara alumni</h2>
-              <ul className="space-y-2">{acara.map((x) => <li key={x.id} className="rounded-xl bg-white p-4 ring-1 ring-black/5"><strong>{x.judul}</strong><p className="text-sm text-black/60">{new Date(x.mulai).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" })}{x.tempat && ` · ${x.tempat}`}</p></li>)}</ul></div>}
+              <ul className="space-y-2">{acara.map((x) => <li key={x.id} className="rounded-xl bg-white p-4 ring-1 ring-black/5"><strong>{x.judul}</strong><p className="text-sm text-[#5b6270]">{new Date(x.mulai).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" })}{x.tempat && ` · ${x.tempat}`}</p></li>)}</ul></div>}
             {kontribusi.length > 0 && <div><h2 className="mb-3 font-serif text-3xl">Terima kasih, alumni</h2>
-              <ul className="space-y-2">{kontribusi.map((x, i) => <li key={i} className="rounded-xl bg-white p-4 text-sm ring-1 ring-black/5"><strong>{x.nama}</strong> · {JENIS_KONTRIBUSI[x.jenis]}<p className="text-black/60">{x.deskripsi}</p></li>)}</ul></div>}
+              <ul className="space-y-2">{kontribusi.map((x, i) => <li key={i} className="rounded-xl bg-white p-4 text-sm ring-1 ring-black/5"><strong>{x.nama}</strong> · {JENIS_KONTRIBUSI[x.jenis]}<p className="text-[#5b6270]">{x.deskripsi}</p></li>)}</ul></div>}
           </div>
         </Section>
       )}
