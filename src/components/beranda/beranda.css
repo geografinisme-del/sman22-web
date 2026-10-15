@@ -1,7 +1,7 @@
 /*
  * Sistem visual situs publik & halaman akun SMAN 22 Bandung — editorial sekolah.
  * Putih & putih hangat, teks arang, satu aksen dari logo (var(--tema-utama)), garis halus,
- * foto dokumenter asli. Animasi hanya untuk hover/fokus/buka-tutup (≤220ms).
+ * foto dokumenter asli. Gerak memakai token bersama di globals.css (lihat bagian GERAK di bawah).
  * Semua aturan dibatasi di bawah .lp agar tidak bertabrakan dengan Tailwind & admin.
  */
 
@@ -766,5 +766,489 @@ a.kartu:hover,
   .akun-form-sisi {
     padding: 24px 16px 32px;
     justify-content: flex-start;
+  }
+}
+
+/* =====================================================================
+ * GERAK — situs publik (token di globals.css; keputusan di HANDOFF.md)
+ * Halaman akun & dasbor tidak memakai gerak ekspresif di bawah ini.
+ * ===================================================================== */
+
+/* ---------- pembuka: identitas/judul → deskripsi/tombol → foto (total ±780ms, CSS saja) ---------- */
+@keyframes pembuka-naik {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes pembuka-bingkai {
+  from {
+    clip-path: inset(6% 5% 6% 5% round 10px);
+  }
+  to {
+    clip-path: inset(0 round 10px);
+  }
+}
+.pembuka-isi > * {
+  animation: pembuka-naik var(--gerak-muncul) var(--ease-keluar) both;
+}
+.pembuka-isi > .pembuka-sub,
+.pembuka-isi > .pembuka-teks,
+.pembuka-isi > .pembuka-aksi {
+  animation-delay: 140ms;
+}
+/* foto utama dimuat dengan prioritas sejak awal; yang dianimasikan hanya bingkainya (foto tetap terlihat) */
+.pembuka-figur .pembuka-foto {
+  animation: pembuka-bingkai 520ms var(--ease-keluar) 260ms both;
+}
+.pembuka-figur .slide-kontrol {
+  animation: pembuka-naik 400ms var(--ease-keluar) 380ms both;
+}
+/* pergantian foto: crossfade di bingkai tetap */
+.pembuka-foto img {
+  opacity: 0;
+  transition: opacity 520ms var(--ease-keluar);
+}
+.pembuka-foto img[data-aktif] {
+  opacity: 1;
+}
+
+/* ---------- microinteraction ---------- */
+.lp .ikon-geser {
+  flex-shrink: 0;
+  transition: transform var(--gerak-cepat) var(--ease-keluar);
+}
+.lp a:hover .ikon-geser,
+.lp a:focus-visible .ikon-geser,
+.lp button:hover .ikon-geser,
+.lp button:focus-visible .ikon-geser {
+  transform: translateX(3px);
+}
+.lp .btn {
+  transition:
+    background-color var(--gerak-cepat) var(--ease-keluar),
+    border-color var(--gerak-cepat) var(--ease-keluar),
+    color var(--gerak-cepat) var(--ease-keluar);
+}
+.lp .btn:focus-visible {
+  border-color: var(--lp-ink);
+}
+.lp .btn-primary:focus-visible {
+  background: color-mix(in srgb, var(--lp-utama) 86%, #000);
+}
+/* tautan: garis tipis selalu ada; garis tebal tumbuh saat disorot/difokus */
+.lp .tautan {
+  text-decoration: none;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(color-mix(in srgb, currentColor 35%, transparent), color-mix(in srgb, currentColor 35%, transparent));
+  background-size:
+    0% 2px,
+    100% 1px;
+  background-position:
+    0 100%,
+    0 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-size 200ms var(--ease-keluar);
+}
+.lp .tautan:hover,
+.lp .tautan:focus-visible {
+  background-size:
+    100% 2px,
+    100% 1px;
+}
+/* menu: indikator tumbuh dari kiri; halaman aktif berindikator penuh */
+.lp .nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 2px;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.35;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--gerak-cepat) var(--ease-keluar);
+}
+.lp .nav-links a:hover::after,
+.lp .nav-links a:focus-visible::after {
+  transform: scaleX(1);
+}
+.lp .nav-links a[aria-current="page"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+/* kartu berita & galeri: gambar membesar maks. 1,025 di dalam bingkai tetap */
+.lp .gambar-zoom img,
+.lp .galeri-kisi button img {
+  transition: transform 400ms var(--ease-keluar);
+}
+.lp .group:hover .gambar-zoom img,
+.lp .group:focus-visible .gambar-zoom img,
+.lp .galeri-kisi button:hover img,
+.lp .galeri-kisi button:focus-visible img {
+  transform: scale(1.025);
+}
+.layanan-kisi > a:focus-visible {
+  background: var(--lp-hangat);
+  outline-offset: -2px;
+}
+.layanan-kisi .ikon-layanan {
+  transition:
+    background-color var(--gerak-cepat) var(--ease-keluar),
+    color var(--gerak-cepat) var(--ease-keluar);
+}
+.layanan-kisi > a:hover .ikon-layanan,
+.layanan-kisi > a:focus-visible .ikon-layanan {
+  background: var(--lp-utama);
+  color: #fff;
+}
+/* galeri: foto & keterangan berganti dengan pudar singkat */
+@keyframes pudar-masuk {
+  from {
+    opacity: 0;
+  }
+}
+.galeri-foto,
+.galeri-teks {
+  animation: pudar-masuk 260ms var(--ease-keluar);
+}
+/* accordion/menu: isi turun singkat, judul (summary) tetap diam */
+@keyframes buka-turun {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.lp details[open] > :not(summary) {
+  animation: buka-turun 200ms var(--ease-keluar);
+}
+/* pengumuman yang dibuka dari tautan (#pengumuman-...) disorot sebentar */
+@keyframes sorot-target {
+  from {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--lp-utama) 30%, transparent);
+  }
+}
+.target-sorot:target {
+  animation: sorot-target 1.6s var(--ease-keluar);
+}
+
+/* ---------- bagian khas: Program dan pembiasaan karakter ---------- */
+.sorot-media {
+  display: none;
+}
+.sorot-daftar {
+  display: grid;
+}
+.sorot-item {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  gap: 16px;
+  padding: 24px 0 24px 20px;
+  border-left: 2px solid var(--lp-line);
+  transition: border-color 260ms var(--ease-keluar);
+}
+.sorot-item + .sorot-item {
+  border-top: 1px solid var(--lp-line);
+}
+.sorot-nomor {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--lp-muted);
+  font-variant-numeric: tabular-nums;
+  transition: color 260ms var(--ease-keluar);
+}
+.sorot-item h3 {
+  font-size: 1.25rem;
+}
+.sorot-item[data-aktif] {
+  border-left-color: var(--lp-utama);
+}
+.sorot-item[data-aktif] .sorot-nomor {
+  color: var(--lp-utama);
+}
+.sorot-foto-hp {
+  margin-top: 16px;
+}
+.sorot .nilai-daftar {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  row-gap: 8px;
+}
+@media (min-width: 1024px) {
+  .sorot {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 56px;
+    align-items: start;
+  }
+  .sorot-media {
+    display: block;
+  }
+  .sorot-bingkai {
+    position: relative;
+    height: min(64vh, 520px);
+  }
+  .sorot-bingkai img {
+    opacity: 0;
+    transition: opacity 500ms var(--ease-keluar);
+  }
+  .sorot-bingkai img[data-aktif] {
+    opacity: 1;
+  }
+  .sorot-foto-hp {
+    display: none;
+  }
+}
+/* sticky hanya bila layar cukup tinggi; menempel di bawah header (72px) dan berhenti di akhir bagian */
+@media (min-width: 1024px) and (min-height: 680px) {
+  .sorot-media {
+    position: sticky;
+    top: 104px;
+  }
+}
+
+/* ---------- kehidupan siswa: satu foto besar + pendamping ---------- */
+.mozaik {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.mozaik-foto {
+  position: relative;
+  aspect-ratio: 4 / 3;
+}
+.mozaik > li:first-child,
+.mozaik > li:nth-child(4) {
+  grid-column: span 2;
+}
+.mozaik > li:first-child .mozaik-foto {
+  aspect-ratio: 16 / 10;
+}
+@media (min-width: 1024px) {
+  .mozaik {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, 230px);
+    gap: 16px;
+  }
+  .mozaik > li:first-child {
+    grid-row: span 2;
+  }
+  .mozaik figure {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
+  .mozaik .mozaik-foto,
+  .mozaik > li:first-child .mozaik-foto {
+    flex: 1;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+}
+
+/* ---------- panel "Informasi sekolah" (nonmodal) ---------- */
+@keyframes panel-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+.info-panel,
+.info-teaser,
+.info-tombol {
+  position: fixed;
+  z-index: 30; /* di bawah header (40) agar navigasi tidak tertutup */
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  background: #fff;
+  border: 1px solid var(--lp-line-kuat);
+  box-shadow: 0 12px 32px -12px rgb(31 35 40 / 0.28);
+  animation: panel-masuk var(--gerak-panel) var(--ease-keluar);
+}
+.info-panel {
+  width: min(344px, calc(100vw - 32px));
+  max-height: calc(100dvh - 120px);
+  overflow-y: auto;
+  padding: 16px 18px 18px;
+  border-radius: 12px;
+}
+.info-teaser {
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 0;
+  border-radius: 12px;
+}
+.info-teaser-buka {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 4px 6px 14px;
+  text-align: left;
+  line-height: 1.35;
+}
+.info-tombol {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--lp-ink);
+  transition: border-color var(--gerak-cepat) var(--ease-keluar);
+}
+.info-tombol:hover {
+  border-color: var(--lp-ink);
+}
+.lp .info-panel h2 {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.lp .info-panel h3 {
+  font-size: 1.0625rem;
+}
+@media (max-width: 767px) {
+  .info-panel {
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+  }
+}
+.info-jumlah {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--lp-utama);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.lp .tombol-tutup {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: var(--lp-teks);
+  transition: background-color var(--gerak-cepat) var(--ease-keluar);
+}
+.lp .tombol-tutup:hover,
+.lp .tombol-tutup:focus-visible {
+  background: var(--lp-lembut);
+}
+.info-lain {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  text-align: left;
+  font-size: 0.9375rem;
+}
+.info-lain:hover span,
+.info-lain:focus-visible span {
+  color: var(--lp-utama);
+  text-decoration: underline;
+}
+
+/* ---------- dialog detail informasi (modal) ---------- */
+@keyframes dialog-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+@keyframes lembar-masuk {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes latar-masuk {
+  from {
+    opacity: 0;
+  }
+}
+.dialog-info {
+  width: min(560px, calc(100vw - 32px));
+  max-width: none;
+  max-height: min(720px, calc(100dvh - 48px));
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--lp-ink);
+  box-shadow: 0 24px 60px -20px rgb(31 35 40 / 0.45);
+  overscroll-behavior: contain;
+}
+.dialog-info[open] {
+  display: flex;
+  animation: dialog-masuk var(--gerak-panel) var(--ease-keluar);
+}
+.dialog-info::backdrop {
+  background: rgb(31 35 40 / 0.45);
+  animation: latar-masuk var(--gerak-panel) var(--ease-keluar);
+}
+.dialog-info-kotak {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  flex-direction: column;
+}
+.dialog-info-kepala {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px 12px 24px;
+  border-bottom: 1px solid var(--lp-line);
+}
+.dialog-info-isi {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+.dialog-info-isi h2 {
+  font-size: 1.375rem;
+}
+.dialog-info-kaki {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--lp-line);
+}
+@media (max-width: 640px) {
+  /* ponsel: bottom sheet, maks. 85dvh, isi bergulir, tombol tutup selalu di kepala */
+  .dialog-info {
+    width: 100%;
+    max-height: 85dvh;
+    margin: auto 0 0;
+    border-radius: 16px 16px 0 0;
+  }
+  .dialog-info[open] {
+    animation: lembar-masuk var(--gerak-panel) var(--ease-keluar);
+  }
+  .dialog-info-kaki .btn {
+    flex: 1 1 auto;
+    white-space: nowrap;
   }
 }

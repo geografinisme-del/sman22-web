@@ -32,7 +32,7 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
 
   return (
     <>
-      <ul className="grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3">
+      <ul className="galeri-kisi grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3" data-muncul="kelompok">
         {foto.map((f, i) => (
           <li key={f.id}>
             <figure>
@@ -57,7 +57,7 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
         {aktif && (
           <div className="flex h-full flex-col">
             <div className="flex items-center justify-between gap-4 px-4 py-3 text-white">
-              <p className="truncate text-sm">
+              <p key={aktif.id} className="galeri-teks truncate text-sm">
                 <span className="mr-3 tabular-nums text-white/60">
                   {String((buka ?? 0) + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
                 </span>
@@ -68,7 +68,7 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
               </button>
             </div>
             <div className="relative flex-1">
-              <Image key={aktif.id} src={aktif.gambar} alt={aktif.judul} fill sizes="100vw" className="object-contain" />
+              <Image key={aktif.id} src={aktif.gambar} alt={aktif.judul} fill sizes="100vw" className="galeri-foto object-contain" />
               {total > 1 && (
                 <>
                   <button type="button" onClick={() => setBuka(((buka ?? 0) - 1 + total) % total)} className="galeri-panah left-3" aria-label="Foto sebelumnya">

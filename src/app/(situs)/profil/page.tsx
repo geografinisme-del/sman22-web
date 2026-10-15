@@ -34,6 +34,9 @@ export default async function Profil() {
   ];
   const terisi = identitas.filter(([, v]) => v);
   const belum = identitas.filter(([, v]) => !v).map(([k]) => k);
+  // visi, misi, dan sejarah yang belum diisi diringkas menjadi satu bidang pendek (bukan tiga bagian kosong)
+  const vmsKosong = !p.visi && p.misi.length === 0 && p.sejarah.length === 0;
+  const sambutanAda = Boolean(p.sambutanKutipan || p.sambutanParagraf.length);
 
   return (
     <div className="lp">
@@ -52,7 +55,7 @@ export default async function Profil() {
       </PageHeader>
 
       <section id="identitas" className="bagian scroll-mt-20">
-        <div className="lp-wadah">
+        <div className="lp-wadah" data-muncul>
           <h2>Identitas sekolah</h2>
           <dl className="mt-5 grid border-t border-[#e5e1da] sm:grid-cols-2">
             {terisi.map(([k, v]) => (
@@ -66,50 +69,71 @@ export default async function Profil() {
         </div>
       </section>
 
-      <section id="visi-misi" className="bagian bagian-putih scroll-mt-20">
-        <div className="lp-wadah grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-          <div>
-            <h2>Visi</h2>
-            {p.visi ? <p className="mt-3 text-[1.1875rem] font-semibold leading-relaxed">{p.visi}</p> : <p className="mt-3 text-[#3b414b]">Visi resmi sekolah sedang dilengkapi.</p>}
+      {vmsKosong ? (
+        <section id="visi-misi" className="bagian bagian-putih scroll-mt-20 py-10!">
+          <div id="sejarah" className="lp-wadah scroll-mt-20" data-muncul>
+            <dl className="grid gap-x-10 gap-y-4 sm:grid-cols-3">
+              {[
+                ["Visi", "Visi resmi sekolah sedang dilengkapi."],
+                ["Misi", "Misi resmi sekolah sedang dilengkapi."],
+                ["Sejarah singkat", `Berdiri pada ${sekolah.tahunBerdiri}; uraian lengkap sedang dilengkapi.`],
+              ].map(([k, v]) => (
+                <div key={k} className="border-t-2 border-[#1f2328] pt-3">
+                  <dt className="text-[1.125rem] font-bold">{k}</dt>
+                  <dd className="mt-1 text-[#3b414b]">{v}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-          <div>
-            <h2>Misi</h2>
-            {p.misi.length > 0 ? (
-              <ol className="mt-3 divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
-                {p.misi.map((m, i) => (
-                  <li key={m} className="flex gap-4 py-3">
-                    <span className="w-6 shrink-0 font-bold tabular-nums text-[var(--tema-utama)]">{i + 1}</span>
-                    <span className="text-[#3b414b]">{m}</span>
-                  </li>
+        </section>
+      ) : (
+        <>
+        <section id="visi-misi" className="bagian bagian-putih scroll-mt-20">
+          <div className="lp-wadah grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" data-muncul>
+            <div>
+              <h2>Visi</h2>
+              {p.visi ? <p className="mt-3 text-[1.1875rem] font-semibold leading-relaxed">{p.visi}</p> : <p className="mt-3 text-[#3b414b]">Visi resmi sekolah sedang dilengkapi.</p>}
+            </div>
+            <div>
+              <h2>Misi</h2>
+              {p.misi.length > 0 ? (
+                <ol className="mt-3 divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
+                  {p.misi.map((m, i) => (
+                    <li key={m} className="flex gap-4 py-3">
+                      <span className="w-6 shrink-0 font-bold tabular-nums text-[var(--tema-utama)]">{i + 1}</span>
+                      <span className="text-[#3b414b]">{m}</span>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="mt-3 text-[#3b414b]">Misi resmi sekolah sedang dilengkapi.</p>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section id="sejarah" className="bagian scroll-mt-20">
+          <div className="lp-wadah" data-muncul>
+            <h2>Sejarah singkat</h2>
+            {p.sejarah.length > 0 ? (
+              <div className="bacaan mt-3 space-y-4 text-[1.0625rem] text-[#3b414b]">
+                {p.sejarah.map((t, i) => (
+                  <p key={i}>{t}</p>
                 ))}
-              </ol>
+              </div>
             ) : (
-              <p className="mt-3 text-[#3b414b]">Misi resmi sekolah sedang dilengkapi.</p>
+              <p className="mt-3 text-[#3b414b]">Sekolah berdiri pada {sekolah.tahunBerdiri}. Uraian sejarah lengkap sedang dilengkapi.</p>
             )}
           </div>
-        </div>
-      </section>
-
-      <section id="sejarah" className="bagian scroll-mt-20">
-        <div className="lp-wadah">
-          <h2>Sejarah singkat</h2>
-          {p.sejarah.length > 0 ? (
-            <div className="bacaan mt-3 space-y-4 text-[1.0625rem] text-[#3b414b]">
-              {p.sejarah.map((t, i) => (
-                <p key={i}>{t}</p>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-3 text-[#3b414b]">Sekolah berdiri pada {sekolah.tahunBerdiri}. Uraian sejarah lengkap sedang dilengkapi.</p>
-          )}
-        </div>
-      </section>
+        </section>
+        </>
+      )}
 
       <section id="sambutan" className="bagian bagian-putih scroll-mt-20">
-        <div className="lp-wadah grid items-start gap-8 sm:grid-cols-[200px_1fr] md:grid-cols-[240px_1fr]">
-          <figure className="max-w-[240px]">
+        <div className={`lp-wadah grid items-start gap-8 ${sambutanAda ? "sm:grid-cols-[200px_1fr] md:grid-cols-[240px_1fr]" : "grid-cols-[96px_1fr] sm:grid-cols-[120px_1fr]"}`} data-muncul>
+          <figure className={sambutanAda ? "max-w-[240px]" : ""}>
             <div className="foto relative aspect-[425/600] border border-[#e5e1da] bg-white">
-              <Image src={p.fotoKepalaSekolah} alt={`Foto ${p.kepalaSekolah}`} fill sizes="240px" className="object-cover object-top" />
+              <Image src={p.fotoKepalaSekolah} alt={`Foto ${p.kepalaSekolah}`} fill sizes={sambutanAda ? "240px" : "120px"} className="object-cover object-top" />
             </div>
             <figcaption className="mt-2">
               <span className="block font-semibold">{p.kepalaSekolah}</span>
@@ -118,7 +142,7 @@ export default async function Profil() {
           </figure>
           <div>
             <h2>Sambutan kepala sekolah</h2>
-            {p.sambutanKutipan || p.sambutanParagraf.length ? (
+            {sambutanAda ? (
               <>
                 {p.sambutanKutipan && <p className="mt-3 border-l-4 border-[var(--tema-utama)] pl-4 text-[1.1875rem] font-semibold leading-relaxed">{p.sambutanKutipan}</p>}
                 {p.sambutanParagraf[0] && <p className="bacaan mt-4 text-[#3b414b]">{p.sambutanParagraf[0]}</p>}

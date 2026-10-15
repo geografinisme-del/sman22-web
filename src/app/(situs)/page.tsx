@@ -2,6 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { FotoPembuka, type Foto } from "@/components/beranda/FotoPembuka";
+import { SorotProgram, type ItemProgram } from "@/components/beranda/SorotProgram";
+import { FotoParalaks } from "@/components/gerak/FotoParalaks";
+import { PanelInformasi } from "@/components/gerak/PanelInformasi";
 import { Gambar } from "@/components/Gambar";
 import { Ikon } from "@/components/Ikon";
 import { FOTO_PROGRAM, KEBIASAAN_7KAIH, PANCAWALUYA } from "@/content/program";
@@ -48,7 +51,45 @@ export default async function Beranda() {
     .filter((f) => !sudahTampil.has(f.src))
     .slice(0, 4);
   const [utama, ...beritaLain] = berita;
-  const [p7kaih, pGerbang, ...programLain] = programUnggulan;
+  const isiProgram: Record<string, React.ReactNode> = {
+    "7KAIH": (
+      <ol className="kebiasaan">
+        {KEBIASAAN_7KAIH.map((k) => (
+          <li key={k}>{k}</li>
+        ))}
+      </ol>
+    ),
+    GP: (
+      <dl className="nilai-daftar">
+        {PANCAWALUYA.map((n) => (
+          <div key={n.nilai}>
+            <dt>{n.nilai}</dt>
+            <dd>{n.arti}</dd>
+          </div>
+        ))}
+      </dl>
+    ),
+  };
+  const program: ItemProgram[] = programUnggulan.map((p) => ({
+    kode: p.kode,
+    nama: p.nama,
+    ringkas: p.ringkas,
+    href: `/program/${slugProgram(p)}`,
+    tautan: p.kode === "7KAIH" ? "Tentang 7KAIH" : `Tentang ${p.nama}`,
+    isi: isiProgram[p.kode],
+    foto: FOTO_PROGRAM[p.kode],
+  }));
+  // program tanpa dokumentasi sendiri memakai foto suasana sekolah (keterangan menyebut isi fotonya)
+  const fotoUmumProgram = { src: "/images/apel-lapangan.jpg", alt: "Siswa mengikuti apel pagi di lapangan sekolah", keterangan: "Apel pagi di lapangan sekolah" };
+  // panel informasi: hanya pengumuman aktif yang sudah tayang (RLS menyaring yang nonaktif & di luar rentang tayang)
+  const informasi = pengumuman.map((p) => ({
+    id: p.id,
+    jenis: p.penting ? "Pengumuman penting" : "Pengumuman",
+    judul: p.judul,
+    tanggal: p.tanggal,
+    isi: p.isi,
+    href: `/agenda#pengumuman-${p.id}`,
+  }));
   const kontak = [
     { label: "Alamat", isi: [profil.alamat, sekolah.kota].filter(Boolean).join(", ") },
     { label: "Telepon", isi: profil.telepon },
@@ -62,7 +103,7 @@ export default async function Beranda() {
       {/* 1. Pembuka */}
       <section className="pembuka" aria-labelledby="judul-sekolah">
         <div className="lp-wadah pembuka-grid">
-          <div>
+          <div className="pembuka-isi">
             <p className="eyebrow">Kota Bandung, Jawa Barat</p>
             <h1 id="judul-sekolah" className="mt-3">
               {sekolah.nama}
@@ -72,6 +113,7 @@ export default async function Beranda() {
             <div className="pembuka-aksi">
               <Link href="/spmb" className="btn btn-primary">
                 Informasi SPMB
+                <ArrowRight size={18} aria-hidden className="ikon-geser" />
               </Link>
               <Link href="/profil" className="btn">
                 Kenali Sekolah
@@ -86,14 +128,14 @@ export default async function Beranda() {
       <section className="bagian" aria-labelledby="judul-info">
         <div className="lp-wadah grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
           <div>
-            <div className="bagian-kepala mb-4">
+            <div className="bagian-kepala mb-4" data-muncul>
               <h2 id="judul-info">Pengumuman</h2>
               <Link href="/agenda" className="tautan">
                 Semua pengumuman
               </Link>
             </div>
             {infoPenting.length ? (
-              <ul className="blok-pengumuman daftar-garis">
+              <ul className="blok-pengumuman daftar-garis" data-muncul>
                 {infoPenting.map((p) => (
                   <li key={p.id} className="py-3 first:pt-0 last:pb-0">
                     <p className="flex flex-wrap items-center gap-2 text-sm text-[#5b6270]">
@@ -106,24 +148,25 @@ export default async function Beranda() {
                 ))}
               </ul>
             ) : (
-              <p className="blok-pengumuman text-[#3b414b]">Belum ada pengumuman terbaru.</p>
+              <p className="blok-pengumuman text-[#3b414b]" data-muncul>Belum ada pengumuman terbaru.</p>
             )}
           </div>
           <div>
-            <div className="mb-4">
+            <div className="mb-4" data-muncul>
               <h2>{situs.tema.beranda.bentoJudul || "Akses layanan"}</h2>
               {situs.tema.beranda.bentoTeks && <p className="mt-1 text-[#5b6270]">{situs.tema.beranda.bentoTeks}</p>}
             </div>
-            <nav aria-label="Akses layanan" className="layanan-kisi">
+            <nav aria-label="Akses layanan" className="layanan-kisi" data-muncul="kelompok">
               {layanan.map((k) => (
                 <Link key={k.tautan + k.judul} href={k.tautan}>
                   <span className="ikon-layanan" aria-hidden>
                     <Ikon nama={k.ikon || "BookOpen"} size={20} />
                   </span>
-                  <span className="min-w-0">
+                  <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{k.judul}</span>
                     {k.teks && <span className="mt-0.5 block text-[0.9375rem] leading-snug text-[#5b6270]">{k.teks}</span>}
                   </span>
+                  <ArrowRight size={18} aria-hidden className="ikon-geser mt-0.5 shrink-0 text-[#5b6270]" />
                 </Link>
               ))}
             </nav>
@@ -135,12 +178,14 @@ export default async function Beranda() {
       <section className="bagian bagian-putih" aria-labelledby="judul-kenal">
         <div className="lp-wadah grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-12">
           <figure>
-            <div className="foto relative aspect-[3/2]">
-              <Image src="/images/gedung.jpg" alt="Gedung utama SMA Negeri 22 Bandung" fill sizes="(min-width: 768px) 45vw, 100vw" className="object-cover" style={{ objectPosition: "50% 60%" }} />
+            <div className="foto relative aspect-[3/2]" data-muncul="foto">
+              <FotoParalaks>
+                <Image src="/images/gedung.jpg" alt="Gedung utama SMA Negeri 22 Bandung" fill sizes="(min-width: 768px) 45vw, 100vw" className="object-cover" style={{ objectPosition: "50% 60%" }} />
+              </FotoParalaks>
             </div>
             <figcaption className="keterangan-foto">Gedung utama SMA Negeri 22 Bandung</figcaption>
           </figure>
-          <div>
+          <div data-muncul>
             <h2 id="judul-kenal">Mengenal sekolah kami</h2>
             {profil.pernyataan && <p className="bacaan mt-3 text-[1.0625rem] text-[#3b414b]">{profil.pernyataan}</p>}
             {fakta.length > 0 && (
@@ -168,7 +213,7 @@ export default async function Beranda() {
       {/* 4. Berita & kegiatan */}
       <section className="bagian" aria-labelledby="judul-berita">
         <div className="lp-wadah">
-          <div className="bagian-kepala">
+          <div className="bagian-kepala" data-muncul>
             <h2 id="judul-berita">Berita dan kegiatan</h2>
             <Link href="/berita" className="tautan">
               Semua berita
@@ -177,12 +222,12 @@ export default async function Beranda() {
           {!utama && agenda.length === 0 ? (
             <p className="rounded-[10px] border border-dashed border-[#cfc8bd] bg-white px-5 py-4 text-[#3b414b]">Belum ada berita dan agenda yang diterbitkan.</p>
           ) : (
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]" data-muncul="kelompok">
             <div>
               {utama ? (
                 <>
                   <Link href={`/berita/${utama.slug}`} className="group grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                    <Gambar src={utama.gambar} alt={utama.judul} sizes="(min-width: 640px) 30vw, 100vw" className="aspect-[3/2] rounded-[10px]" />
+                    <Gambar src={utama.gambar} alt={utama.judul} sizes="(min-width: 640px) 30vw, 100vw" className="gambar-zoom aspect-[3/2] rounded-[10px]" />
                     <div>
                       <p className="text-sm text-[#5b6270]">
                         {utama.kategori} · <time dateTime={utama.tanggal}>{formatTanggal(utama.tanggal)}</time>
@@ -192,14 +237,17 @@ export default async function Beranda() {
                     </div>
                   </Link>
                   {beritaLain.length > 0 && (
-                    <ul className="daftar-garis mt-6 border-t border-[#e5e1da]">
+                    <ul className="mt-6 grid gap-4 border-t border-[#e5e1da] pt-5 sm:grid-cols-3">
                       {beritaLain.map((b) => (
                         <li key={b.slug}>
-                          <Link href={`/berita/${b.slug}`} className="group flex items-baseline justify-between gap-4 py-3">
-                            <span className="font-semibold group-hover:text-[var(--tema-utama)] group-hover:underline">{b.judul}</span>
-                            <time dateTime={b.tanggal} className="shrink-0 text-sm text-[#5b6270]">
-                              {formatTanggal(b.tanggal, { year: undefined })}
-                            </time>
+                          <Link href={`/berita/${b.slug}`} className="group grid grid-cols-[96px_minmax(0,1fr)] gap-3 sm:grid-cols-1">
+                            <Gambar src={b.gambar} alt="" sizes="(min-width: 640px) 18vw, 96px" className="gambar-zoom aspect-[4/3] rounded-lg" />
+                            <span className="min-w-0">
+                              <time dateTime={b.tanggal} className="block text-sm text-[#5b6270]">
+                                {formatTanggal(b.tanggal, { year: undefined })}
+                              </time>
+                              <span className="line-clamp-3 font-semibold leading-snug group-hover:text-[var(--tema-utama)] group-hover:underline">{b.judul}</span>
+                            </span>
                           </Link>
                         </li>
                       ))}
@@ -240,9 +288,9 @@ export default async function Beranda() {
       </section>
 
       {/* 5. Program & pembiasaan karakter */}
-      <section className="bagian bagian-putih" aria-labelledby="judul-program">
+      <section className="bagian bagian-putih bagian-program" aria-labelledby="judul-program">
         <div className="lp-wadah">
-          <div className="bagian-kepala">
+          <div className="bagian-kepala" data-muncul>
             <div>
               <h2 id="judul-program">Program dan pembiasaan karakter</h2>
               <p className="mt-1">Kebiasaan baik yang dijalani siswa setiap hari di sekolah.</p>
@@ -252,77 +300,26 @@ export default async function Beranda() {
             </Link>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            <article className="grid gap-5 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-              <figure>
-                <div className="foto relative aspect-[4/3] sm:aspect-[3/4]">
-                  <Image src={FOTO_PROGRAM["7KAIH"].src} alt={FOTO_PROGRAM["7KAIH"].alt} fill sizes="(min-width: 640px) 22vw, 100vw" className="object-cover" />
-                </div>
-                <figcaption className="keterangan-foto">{FOTO_PROGRAM["7KAIH"].keterangan}</figcaption>
-              </figure>
-              <div>
-                <h3>{p7kaih.nama}</h3>
-                <p className="mt-2 text-[#3b414b]">{p7kaih.ringkas}</p>
-                <ol className="kebiasaan mt-4">
-                  {KEBIASAAN_7KAIH.map((k) => (
-                    <li key={k}>{k}</li>
-                  ))}
-                </ol>
-                <Link href={`/program/${slugProgram(p7kaih)}`} className="tautan mt-4 inline-block">
-                  Tentang 7KAIH
-                </Link>
-              </div>
-            </article>
-
-            <article>
-              <h3>{pGerbang.nama}</h3>
-              <p className="mt-2 text-[#3b414b]">Lima nilai pendidikan karakter Jawa Barat yang diterapkan dalam kegiatan sekolah.</p>
-              <dl className="nilai-daftar mt-4">
-                {PANCAWALUYA.map((n) => (
-                  <div key={n.nilai}>
-                    <dt>{n.nilai}</dt>
-                    <dd>{n.arti}</dd>
-                  </div>
-                ))}
-              </dl>
-              <Link href={`/program/${slugProgram(pGerbang)}`} className="tautan mt-4 inline-block">
-                Tentang Gerbang Pancawaluya
-              </Link>
-
-              <ul className="daftar-garis mt-6 border-y border-[#e5e1da]">
-                {programLain.map((p) => (
-                  <li key={p.nama}>
-                    <Link href={`/program/${slugProgram(p)}`} className="group flex items-start justify-between gap-4 py-3">
-                      <span>
-                        <span className="block font-semibold group-hover:text-[var(--tema-utama)] group-hover:underline">{p.nama}</span>
-                        <span className="block text-[0.9375rem] text-[#5b6270]">{p.ringkas}</span>
-                      </span>
-                      <ArrowRight size={18} aria-hidden className="mt-1 shrink-0 text-[#5b6270]" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          </div>
+          <SorotProgram item={program} fotoUmum={fotoUmumProgram} />
         </div>
       </section>
 
       {/* 6. Kehidupan siswa, ekskul & galeri */}
       <section className="bagian" aria-labelledby="judul-siswa">
         <div className="lp-wadah">
-          <div className="bagian-kepala">
+          <div className="bagian-kepala" data-muncul>
             <h2 id="judul-siswa">Kehidupan siswa</h2>
             <Link href="/galeri" className="tautan">
               Galeri kegiatan
             </Link>
           </div>
           <div className={`grid gap-8 ${ekskul.length ? "lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]" : ""}`}>
-            <ul className={`grid grid-cols-2 gap-3 sm:gap-4 ${ekskul.length ? "" : "lg:grid-cols-4"}`}>
-              {fotoKehidupan.map((f) => (
+            <ul className="mozaik" data-muncul="kelompok">
+              {fotoKehidupan.map((f, i) => (
                 <li key={f.src}>
                   <figure>
-                    <div className="foto relative aspect-[4/3]">
-                      <Image src={f.src} alt={f.judul} fill sizes="(min-width: 1060px) 30vw, 50vw" className="object-cover" />
+                    <div className="foto mozaik-foto">
+                      <Image src={f.src} alt={f.judul} fill sizes={i === 0 ? "(min-width: 1060px) 34vw, 100vw" : "(min-width: 1060px) 20vw, 50vw"} className="object-cover" />
                     </div>
                     <figcaption className="keterangan-foto">{f.judul}</figcaption>
                   </figure>
@@ -354,7 +351,7 @@ export default async function Beranda() {
       {/* 7. Kontak & lokasi */}
       <section className="bagian bagian-putih" aria-labelledby="judul-kontak">
         <div className="lp-wadah grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]">
-          <div>
+          <div data-muncul>
             <h2 id="judul-kontak">Kontak dan lokasi</h2>
             {kontak.length ? (
               <dl className="mt-4 space-y-3">
@@ -388,6 +385,8 @@ export default async function Beranda() {
           </div>
         </div>
       </section>
+
+      {informasi.length > 0 && <PanelInformasi info={informasi} />}
     </div>
   );
 }

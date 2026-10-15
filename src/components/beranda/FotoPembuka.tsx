@@ -8,7 +8,8 @@ export type Foto = { src: string; alt: string; fokus?: string };
 
 /**
  * Foto pembuka beranda. Satu foto → gambar biasa. Lebih dari satu → ganti manual dengan tombol
- * (tanpa putar otomatis, tanpa perubahan tata letak: semua foto menumpuk di bingkai 4:3 yang sama).
+ * (tanpa putar otomatis). Semua foto menumpuk di bingkai 4:3 yang sama dan berganti dengan
+ * crossfade ±520ms (beranda.css), sehingga teks di sampingnya tidak bergeser.
  */
 export function FotoPembuka({ foto }: { foto: Foto[] }) {
   const [idx, setIdx] = useState(0);
@@ -16,7 +17,7 @@ export function FotoPembuka({ foto }: { foto: Foto[] }) {
   const aktif = foto[idx];
 
   return (
-    <figure aria-roledescription={total > 1 ? "carousel" : undefined} aria-label={total > 1 ? "Foto sekolah" : undefined}>
+    <figure className="pembuka-figur" aria-roledescription={total > 1 ? "carousel" : undefined} aria-label={total > 1 ? "Foto sekolah" : undefined}>
       <div className="foto pembuka-foto">
         {foto.map((f, i) => (
           <Image
@@ -28,7 +29,8 @@ export function FotoPembuka({ foto }: { foto: Foto[] }) {
             priority={i === 0}
             sizes="(min-width: 1060px) 52vw, 100vw"
             className="object-cover"
-            style={{ objectPosition: f.fokus ?? "50% 50%", opacity: i === idx ? 1 : 0 }}
+            data-aktif={i === idx || undefined}
+            style={{ objectPosition: f.fokus ?? "50% 50%" }}
           />
         ))}
       </div>

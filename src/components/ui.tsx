@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Reveal } from "@/components/Reveal";
 
 /**
  * Kepala halaman publik: remah roti, judul, deskripsi singkat, dan (opsional) satu foto relevan.
@@ -47,7 +46,7 @@ export function PageHeader({
   );
 }
 
-/** Bagian halaman: judul jelas, tanpa ornamen; muncul sekali saat digulir. */
+/** Bagian halaman: judul jelas, tanpa ornamen; judul & isi muncul sekali saat digulir (lihat PengamatMuncul). */
 export function Section({
   judul,
   miring,
@@ -67,7 +66,7 @@ export function Section({
   return (
     <section className={`lp-wadah py-10 sm:py-12 ${className}`}>
       {(judul || linkSemua) && (
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div data-muncul className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             {label && <p className="eyebrow">{label}</p>}
             {judul && <h2 className={label ? "mt-1" : ""}>{[judul, miring].filter(Boolean).join(" ")}</h2>}
@@ -79,7 +78,7 @@ export function Section({
           )}
         </div>
       )}
-      <Reveal>{children}</Reveal>
+      <div data-muncul>{children}</div>
     </section>
   );
 }

@@ -33,7 +33,7 @@ export default async function HalamanAgenda() {
           ) : (
             <ul className="mt-4 space-y-3">
               {urutPengumuman.map((p) => (
-                <li key={p.id} className={p.penting ? "blok-pengumuman" : "kartu p-5"}>
+                <li key={p.id} id={`pengumuman-${p.id}`} className={`target-sorot scroll-mt-24 ${p.penting ? "blok-pengumuman" : "kartu p-5"}`}>
                   <p className="flex flex-wrap items-center gap-2 text-sm text-[#5b6270]">
                     {p.penting && <span className="label-status">Penting</span>}
                     <time dateTime={p.tanggal}>{formatTanggal(p.tanggal)}</time>

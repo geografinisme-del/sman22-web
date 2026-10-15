@@ -82,13 +82,56 @@ h3 em,
   outline-offset: 2px;
 }
 
-/* Muncul saat di-scroll: konten tetap terbaca sejak awal, hanya bergeser 8px sekali */
-.reveal {
-  transform: translateY(8px);
-  transition: transform 0.3s ease-out;
+/*
+ * Sistem gerak bersama (lihat HANDOFF.md):
+ *  --gerak-cepat  tombol/menu/tautan        150–220ms
+ *  --gerak-panel  panel & dialog            220–320ms
+ *  --gerak-muncul kemunculan bagian scroll  400–550ms
+ *  --gerak-jeda   jeda antaritem (maks. 4)   60–90ms
+ * Easing: perlambatan di akhir, tanpa bounce/elastis.
+ */
+:root {
+  --gerak-cepat: 180ms;
+  --gerak-panel: 280ms;
+  --gerak-muncul: 500ms;
+  --gerak-jeda: 70ms;
+  --ease-keluar: cubic-bezier(0.22, 1, 0.36, 1);
 }
-.reveal.tampil {
+
+/*
+ * Muncul saat di-scroll. Atribut data-muncul hanya penanda; kelas .akan-muncul dipasang oleh
+ * PengamatMuncul (JS) khusus untuk elemen yang masih di bawah layar. Tanpa JS → konten langsung terlihat.
+ *   data-muncul            judul/teks: pudar + naik 16px
+ *   data-muncul="foto"     foto: terbuka dari bingkainya
+ *   data-muncul="kelompok" anak-anaknya muncul bertahap (maks. 4 jeda)
+ */
+.akan-muncul {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.akan-muncul.muncul {
+  opacity: 1;
   transform: none;
+  transition:
+    opacity var(--gerak-muncul) var(--ease-keluar),
+    transform var(--gerak-muncul) var(--ease-keluar);
+  transition-delay: var(--jeda, 0ms);
+}
+[data-muncul="foto"].akan-muncul {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(7% 5% 7% 5% round 10px);
+}
+[data-muncul="foto"].akan-muncul img {
+  transform: scale(1.06);
+}
+[data-muncul="foto"].akan-muncul.muncul {
+  clip-path: inset(0 round 10px);
+  transition: clip-path 550ms var(--ease-keluar);
+}
+[data-muncul="foto"].akan-muncul.muncul img {
+  transform: none;
+  transition: transform 550ms var(--ease-keluar);
 }
 
 /* kompatibilitas kelas lama: tanpa gerak berulang */
@@ -107,7 +150,7 @@ h3 em,
 /* panah tautan bergeser sedikit saat disorot */
 .panah {
   display: inline-block;
-  transition: transform 0.18s ease-out;
+  transition: transform var(--gerak-cepat) var(--ease-keluar);
 }
 a:hover .panah,
 .group:hover .panah {
@@ -125,7 +168,11 @@ a:hover .panah,
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .reveal {
+  .akan-muncul,
+  [data-muncul="foto"].akan-muncul,
+  [data-muncul="foto"].akan-muncul img {
+    opacity: 1;
     transform: none;
+    clip-path: none;
   }
 }

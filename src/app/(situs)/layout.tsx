@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { PengamatMuncul } from "@/components/gerak/PengamatMuncul";
 import "@/components/beranda/beranda.css";
 
 export default function SitusLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export default function SitusLayout({ children }: { children: React.ReactNode })
         {children}
       </main>
       <Footer />
+      <PengamatMuncul />
     </>
   );
 }
