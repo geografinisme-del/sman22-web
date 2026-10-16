@@ -109,7 +109,7 @@ export type Tema = {
 
 export const TEMA_BAWAAN: Tema = {
   // aksen sementara dari merah logo sekolah (lihat globals.css); bisa diganti di Admin → Tema & Tampilan
-  warna: { utama: "#b3123c", aksen: "#db224c", gelap: "#1f2328" },
+  warna: { utama: "#7a1f36", aksen: "#b8892b", gelap: "#1c1a17" },
   beranda: {
     // bidang sinematik lama — tidak dipakai lagi oleh beranda editorial, disimpan agar data lama tetap valid
     efekGulir: false,

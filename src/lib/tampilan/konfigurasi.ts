@@ -28,7 +28,7 @@ export const KONFIGURASI_BAWAAN: Konfigurasi = {
   versi: VERSI_KONFIGURASI,
   tema: "warna",
   palet: "merah",
-  font: "source-sans",
+  font: "jakarta",
   gerak: "standar",
   slideshow: { gaya: "manual", detik: 8 },
   popup: { prioritas: true, rutin: true },

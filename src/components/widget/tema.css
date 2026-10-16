@@ -137,7 +137,7 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 8px;
+  border-radius: var(--radius-2);
   background: var(--lp-tint);
   color: var(--lp-utama);
 }
@@ -148,7 +148,7 @@
   gap: 28px;
   padding: 28px;
   border: 1px solid var(--lp-line);
-  border-radius: 12px;
+  border-radius: var(--radius-2);
   background: #fff;
 }
 @media (min-width: 1024px) {
@@ -168,7 +168,7 @@
   min-height: 48px;
   padding: 0 14px 0 42px;
   border: 1px solid var(--lp-line-kuat);
-  border-radius: 8px;
+  border-radius: var(--radius-2);
   background: #fff;
   font-size: 1rem;
 }
@@ -192,7 +192,7 @@
   overflow: hidden;
   place-items: center;
   border: 1px solid var(--lp-line);
-  border-radius: 6px;
+  border-radius: var(--radius-2);
   background: var(--lp-tint);
   color: var(--lp-utama);
   font-size: 2rem;
@@ -227,7 +227,7 @@ html.kunci-gulir {
   max-height: min(60vh, 560px);
   object-fit: contain; /* poster utuh, tidak dipotong */
   border: 1px solid var(--lp-line);
-  border-radius: 8px;
+  border-radius: var(--radius-2);
   background: var(--lp-hangat);
 }
 .poster-prioritas figcaption {
@@ -252,7 +252,7 @@ html.kunci-gulir {
   background: #fff;
   color: var(--lp-ink);
   font-weight: 600;
-  box-shadow: 0 10px 24px -14px rgb(31 35 40 / 0.4);
+  box-shadow: var(--bayangan);
   transition:
     border-color var(--gerak-cepat) var(--ease-keluar),
     transform var(--gerak-cepat) var(--ease-keluar);
@@ -294,9 +294,9 @@ html.kunci-gulir {
   overflow-y: auto;
   padding: 14px 16px;
   border: 1px solid var(--lp-line-kuat);
-  border-radius: 12px;
+  border-radius: var(--radius-2);
   background: #fff;
-  box-shadow: 0 18px 40px -18px rgb(31 35 40 / 0.4);
+  box-shadow: var(--bayangan);
   animation: panel-masuk var(--gerak-panel) var(--ease-keluar);
 }
 .pemandu-pilihan {
@@ -307,7 +307,7 @@ html.kunci-gulir {
   justify-content: space-between;
   gap: 12px;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-2);
   text-align: left;
   font-weight: 600;
   color: var(--lp-ink);
@@ -338,13 +338,13 @@ html.kunci-gulir {
 [data-tema="modern"] .layanan-kisi,
 [data-tema="modern"] .perpus-widget,
 [data-tema="modern"] .kartu {
-  border-radius: 16px;
+  border-radius: var(--radius-2);
 }
 [data-tema="modern"] .blok-pengumuman {
-  border-radius: 0 16px 16px 0;
+  border-radius: 0 var(--radius-2) var(--radius-2) 0;
 }
 [data-tema="modern"] .lp .btn {
-  border-radius: 10px;
+  border-radius: var(--radius-2);
 }
 [data-tema="modern"] .lp h2 {
   font-size: clamp(1.625rem, 1.3rem + 1.2vw, 2.25rem);
@@ -368,7 +368,7 @@ html.kunci-gulir {
 }
 [data-tema="modern"] .info-panel,
 [data-tema="modern"] .dialog-info {
-  border-radius: 16px;
+  border-radius: var(--radius-2);
 }
 
 /* ---------- saringan kategori (chip) ---------- */
@@ -464,9 +464,9 @@ html.kunci-gulir {
   max-width: min(460px, calc(100% - 32px));
   margin: 0;
   padding: 6px 6px 6px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-2);
   background: rgb(255 255 255 / 0.94);
-  box-shadow: 0 6px 18px -10px rgb(31 35 40 / 0.4);
+  box-shadow: var(--bayangan);
 }
 .pembuka-figur-panel .keterangan-foto {
   overflow: hidden;
@@ -483,9 +483,9 @@ html.kunci-gulir {
   margin-top: -148px;
   padding: 28px 32px 30px;
   border-top: 6px solid var(--lp-utama);
-  border-radius: 4px 4px 12px 12px;
+  border-radius: var(--radius-2);
   background: #fff;
-  box-shadow: 0 22px 44px -26px rgb(31 35 40 / 0.45);
+  box-shadow: var(--bayangan);
 }
 .pembuka-panel-kartu h1 {
   font-size: clamp(2rem, 1.4rem + 2.2vw, 2.875rem);

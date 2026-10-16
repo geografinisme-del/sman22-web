@@ -4,11 +4,12 @@
  * warna bidang hanya pada ikon, garis aksen, label, dan status (token di src/lib/bidang.ts).
  */
 .pd {
-  --pd-ink: #1f2328;
-  --pd-teks: #3b414b;
-  --pd-muted: #5b6270;
-  --pd-garis: #e3e5e8;
-  --pd-latar: #f6f7f9;
+  /* dipetakan ke DESIGN TOKENS (app/globals.css) */
+  --pd-ink: var(--color-ink);
+  --pd-teks: var(--color-ink);
+  --pd-muted: var(--color-ink-muted);
+  --pd-garis: var(--color-rule);
+  --pd-latar: var(--color-paper);
   min-height: 100vh;
   background: var(--pd-latar);
   color: var(--pd-ink);
@@ -20,10 +21,16 @@
   width: min(1180px, calc(100% - 32px));
   margin-inline: auto;
 }
+.pd h1,
+.pd h2,
+.pd h3 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
 .pd :focus-visible {
   outline: 2px solid var(--tema-utama);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: var(--radius-2);
 }
 
 /* ---------- kepala ---------- */
@@ -61,7 +68,7 @@
   gap: 6px;
   padding: 0 12px;
   border: 1px solid #d9dce1;
-  border-radius: 8px;
+  border-radius: var(--radius-2);
   background: #fff;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -129,7 +136,7 @@
   position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: var(--radius-2);
   background: #eceef1;
 }
 .pd-foto figcaption {
@@ -137,7 +144,7 @@
   left: 12px;
   bottom: 12px;
   padding: 4px 10px;
-  border-radius: 6px;
+  border-radius: var(--radius-2);
   background: rgb(255 255 255 / 0.92);
   font-size: 0.8125rem;
   color: var(--pd-teks);
@@ -151,7 +158,7 @@
   padding: 12px 14px;
   border: 1px solid var(--pd-garis);
   border-left: 4px solid var(--tema-utama);
-  border-radius: 10px;
+  border-radius: var(--radius-2);
   background: #fff;
   font-size: 0.9375rem;
 }
@@ -195,7 +202,7 @@
   height: 100%;
   padding: 16px 16px 14px;
   border: 1px solid var(--pd-garis);
-  border-radius: 12px;
+  border-radius: var(--radius-2);
   background: #fff;
   color: var(--pd-ink);
   transition:
@@ -218,7 +225,7 @@
 .pd-pintu:focus-visible {
   transform: translateY(-3px);
   border-color: var(--bidang-garis);
-  box-shadow: 0 10px 24px -16px rgb(31 35 40 / 0.4);
+  box-shadow: var(--bayangan);
 }
 .pd-ikon {
   display: grid;
@@ -226,7 +233,7 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 10px;
+  border-radius: var(--radius-2);
   background: var(--bidang-tint);
   color: var(--bidang);
 }
@@ -288,7 +295,7 @@
   padding: 28px;
   border: 1px solid var(--pd-garis);
   border-top: 6px solid var(--bidang);
-  border-radius: 12px;
+  border-radius: var(--radius-2);
   background: #fff;
 }
 .pd-kotak h1 {

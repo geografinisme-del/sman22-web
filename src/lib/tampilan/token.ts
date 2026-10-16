@@ -7,16 +7,15 @@
 
 /** Palet terkurasi dari warna logo resmi (merah mahkota, biru dongker cincin, biru langit sayap). */
 export const PALET = {
-  merah: { label: "Merah logo", utama: "#b3123c", aksen: "#db224c", gelap: "#1f2328" },
+  merah: { label: "Marun sekolah", utama: "#7a1f36", aksen: "#b8892b", gelap: "#1c1a17" },
   dongker: { label: "Biru dongker logo", utama: "#3b5070", aksen: "#b3123c", gelap: "#1f2328" },
   langit: { label: "Biru langit logo", utama: "#0f6a9c", aksen: "#b3123c", gelap: "#1f2328" },
 } as const;
 export type KunciPalet = keyof typeof PALET;
 
-/** Font terkurasi (sudah terpasang lewat @fontsource; tidak memuat font eksternal). */
+/** Font isi terkurasi (next/font, lihat app/fonts.ts). Judul selalu Newsreader (--font-judul). */
 export const FONT = {
-  "source-sans": { label: "Source Sans 3", css: '"Source Sans 3 Variable", system-ui, sans-serif' },
-  "dm-sans": { label: "DM Sans", css: '"DM Sans Variable", system-ui, sans-serif' },
+  jakarta: { label: "Plus Jakarta Sans", css: "var(--font-isi), system-ui, sans-serif" },
 } as const;
 export type KunciFont = keyof typeof FONT;
 
@@ -52,7 +51,7 @@ export const TEMA: Record<"warna" | "akademik" | "modern" | "editorial", Definis
       program: ["sorot", "daftar"],
       galeri: ["mozaik", "kisi"],
     },
-    bawaan: { palet: "merah", font: "source-sans", gerak: "standar" },
+    bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
   },
   akademik: {
     label: "Akademik",
@@ -66,7 +65,7 @@ export const TEMA: Record<"warna" | "akademik" | "modern" | "editorial", Definis
       program: ["sorot", "daftar"],
       galeri: ["mozaik", "kisi"],
     },
-    bawaan: { palet: "merah", font: "source-sans", gerak: "standar" },
+    bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
   },
   modern: {
     label: "Modern Interaktif",
@@ -80,7 +79,7 @@ export const TEMA: Record<"warna" | "akademik" | "modern" | "editorial", Definis
       program: ["sorot", "daftar"],
       galeri: ["mozaik", "kisi"],
     },
-    bawaan: { palet: "merah", font: "dm-sans", gerak: "dinamis" },
+    bawaan: { palet: "merah", font: "jakarta", gerak: "dinamis" },
   },
   // disiapkan: tema Editorial dapat diaktifkan setelah komponen & CSS-nya selesai
   editorial: {
@@ -88,7 +87,7 @@ export const TEMA: Record<"warna" | "akademik" | "modern" | "editorial", Definis
     keterangan: "Tipografi besar ala majalah sekolah. Belum dapat dipilih.",
     tersedia: false,
     tata: { hero: ["berdampingan"], berita: ["utama-pendamping"] },
-    bawaan: { palet: "dongker", font: "source-sans", gerak: "standar" },
+    bawaan: { palet: "dongker", font: "jakarta", gerak: "standar" },
   },
 };
 export type KunciTema = keyof typeof TEMA;
@@ -96,6 +95,6 @@ export type KunciTema = keyof typeof TEMA;
 /** Variabel CSS publik dari pilihan terkurasi (nilai berasal dari tabel di atas, bukan masukan bebas). */
 export function cssToken(palet: KunciPalet, font: KunciFont) {
   const p = PALET[palet] ?? PALET.merah;
-  const f = FONT[font] ?? FONT["source-sans"];
+  const f = FONT[font] ?? FONT.jakarta;
   return `--tema-utama:${p.utama};--tema-aksen:${p.aksen};--tema-gelap:${p.gelap};--font-publik:${f.css}`;
 }

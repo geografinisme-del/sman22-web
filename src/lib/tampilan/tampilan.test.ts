@@ -19,7 +19,7 @@ test("nilai di luar pilihan terkurasi ditolak (tidak ada warna/font bebas)", () 
   const k = bacaKonfigurasi({ versi: 1, tema: "editorial", palet: "#ff00ff", font: "Comic Sans", gerak: "liar", slideshow: { gaya: "otomatis", detik: 2 } });
   assert.equal(k.tema, "warna", "tema yang belum tersedia tidak bisa dipilih → bawaan");
   assert.equal(k.palet, "merah");
-  assert.equal(k.font, "source-sans");
+  assert.equal(k.font, "jakarta");
   assert.equal(k.gerak, "standar");
   assert.equal(k.slideshow.gaya, "otomatis");
   assert.equal(k.slideshow.detik, 8, "jeda autoplay < 7 detik ditolak");

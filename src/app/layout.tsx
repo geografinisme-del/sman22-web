@@ -4,6 +4,7 @@ import { sekolah } from "@/content/sekolah";
 import { getSitus } from "@/lib/data";
 import { cssTema } from "@/lib/tema";
 import { cssBidang } from "@/lib/bidang";
+import { fontIsi, fontJudul } from "./fonts";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getSitus();
@@ -25,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // colorScheme "light": cegah peramban HP (mode gelap paksa) mengubah warna situs sehingga tampilan HP & laptop seragam
-export const viewport: Viewport = { themeColor: "#121831", colorScheme: "light" };
+export const viewport: Viewport = { themeColor: "#f5f0e6", colorScheme: "light" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { tema } = await getSitus();
@@ -38,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <html lang="id" data-scroll-behavior="smooth">
+    <html lang="id" data-scroll-behavior="smooth" className={`${fontJudul.variable} ${fontIsi.variable}`}>
       <head>
         {/* warna tema dari Admin → Tema & Tampilan (sudah divalidasi berformat #rrggbb) */}
         <style dangerouslySetInnerHTML={{ __html: cssTema(tema) }} />

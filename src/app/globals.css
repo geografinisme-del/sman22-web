@@ -1,5 +1,3 @@
-@import "@fontsource-variable/source-sans-3";
-@import "@fontsource-variable/dm-sans";
 @import "tailwindcss";
 
 /*
@@ -22,10 +20,9 @@
   --color-krem: #faf8f5;
   --color-krem-tua: #efebe5;
   --color-tinta: #1f2328;
-  /* satu keluarga huruf sans-serif humanis untuk situs, portal, dan admin.
-     --font-serif sengaja diarahkan ke huruf yang sama agar kelas lama "font-serif" ikut seragam. */
-  --font-sans: "Source Sans 3 Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
-  --font-serif: "Source Sans 3 Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
+  /* huruf dari next/font (app/fonts.ts): isi & menu = Plus Jakarta Sans, judul = Newsreader */
+  --font-sans: var(--font-isi), "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
+  --font-serif: var(--font-judul), Georgia, "Times New Roman", serif;
   --text-4xl: 2rem;
   --text-4xl--line-height: 1.2;
   --text-5xl: 2.375rem;
@@ -38,11 +35,38 @@
   --text-8xl--line-height: 1.08;
 }
 
-/* Warna tema situs — bawaan; ditimpa dari Admin → Tema & Tampilan (lihat app/layout.tsx) */
+/*
+ * DESIGN TOKENS — "buku tahunan yang hidup" (nama berdasarkan peran).
+ * --color-brand: marun dengan hue merah logo (±345°), kecerahan setara #7A1F2B. Kontras di atas
+ *   --color-paper ±10:1, teks putih di atasnya ±11:1.
+ * --color-accent (emas): SANGAT jarang & hanya dekoratif (kontras 2,6:1 → tidak untuk teks).
+ */
 :root {
-  --tema-utama: #b3123c;
-  --tema-aksen: #db224c;
-  --tema-gelap: #1f2328;
+  --color-brand: #7a1f36;
+  --color-paper: #f5f0e6;
+  --color-ink: #1c1a17;
+  --color-ink-muted: #5b554c;
+  --color-accent: #b8892b;
+  --color-rule: #d9d0bf;
+
+  /* skala tipe (desktop → ponsel lewat clamp) */
+  --text-hero: clamp(2.5rem, 1.6rem + 4vw, 4.5rem); /* 40px → 72px */
+  --text-h2: clamp(1.875rem, 1.5rem + 1.6vw, 2.5rem); /* 30px → 40px */
+  --text-isi: 1.125rem; /* 18px */
+  --leading-isi: 1.6;
+  --lebar-paragraf: 65ch;
+
+  /* bentuk: sudut 0–4px, bayangan hampir nol, pemisah = garis 1px */
+  --radius-0: 0;
+  --radius-1: 2px;
+  --radius-2: 4px;
+  --bayangan: 0 1px 0 rgb(28 26 23 / 0.06);
+  --garis: 1px solid var(--color-rule);
+
+  /* warna tema situs — bawaan = token merek; ditimpa dari Admin → Tema & Tampilan (lihat app/layout.tsx) */
+  --tema-utama: var(--color-brand);
+  --tema-aksen: var(--color-accent);
+  --tema-gelap: var(--color-ink);
   color-scheme: light;
 }
 
@@ -52,8 +76,8 @@ html {
 }
 
 body {
-  background: var(--color-krem);
-  color: var(--color-tinta);
+  background: var(--color-paper);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.6;
