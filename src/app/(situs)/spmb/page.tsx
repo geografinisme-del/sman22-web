@@ -30,7 +30,7 @@ export default async function Spmb() {
   const aktif = Boolean(spmb.tautanResmi && (jalur.length || syarat.length));
 
   return (
-    <>
+    <div className="halaman-bidang" data-bidang="spmb">
       <PageHeader judul={`SPMB ${spmb.tahun}`} deskripsi="Sistem Penerimaan Murid Baru SMA Negeri 22 Bandung.">
         <p className="flex flex-wrap items-center gap-3">
           <span className="label-status">{aktif ? "Pendaftaran dibuka" : "Persiapan — belum diumumkan"}</span>
@@ -114,6 +114,6 @@ export default async function Spmb() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

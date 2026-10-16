@@ -9,7 +9,7 @@ import { PALET } from "./token.ts";
 test("konfigurasi kosong/rusak → bawaan lengkap, tidak melempar", () => {
   for (const raw of [undefined, null, "teks", 42, [], { tema: 5, beranda: "x" }]) {
     const k = bacaKonfigurasi(raw);
-    assert.equal(k.tema, "akademik");
+    assert.equal(k.tema, "warna");
     assert.equal(k.beranda[0].jenis, "hero");
     assert.ok(k.beranda.length >= 5);
   }
@@ -17,7 +17,7 @@ test("konfigurasi kosong/rusak → bawaan lengkap, tidak melempar", () => {
 
 test("nilai di luar pilihan terkurasi ditolak (tidak ada warna/font bebas)", () => {
   const k = bacaKonfigurasi({ versi: 1, tema: "editorial", palet: "#ff00ff", font: "Comic Sans", gerak: "liar", slideshow: { gaya: "otomatis", detik: 2 } });
-  assert.equal(k.tema, "akademik", "tema yang belum tersedia tidak bisa dipilih");
+  assert.equal(k.tema, "warna", "tema yang belum tersedia tidak bisa dipilih → bawaan");
   assert.equal(k.palet, "merah");
   assert.equal(k.font, "source-sans");
   assert.equal(k.gerak, "standar");

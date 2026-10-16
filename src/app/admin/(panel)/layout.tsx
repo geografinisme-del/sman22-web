@@ -4,6 +4,7 @@ import { berperan, NAMA_PERAN, punya, wajibLogin } from "@/lib/admin/auth";
 import { redirect } from "next/navigation";
 import { keluar } from "../actions";
 import { ruangKerjaUntuk } from "@/lib/ruang-kerja";
+import { AksenBidang } from "@/components/admin/AksenBidang";
 
 export const dynamic = "force-dynamic";
 
@@ -246,7 +247,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         keluar={keluar}
       />
       <main className="px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8 lg:py-7 print:m-0 print:p-0">
-        <div className="max-w-[1320px]">{children}</div>
+        <div className="max-w-[1320px]">
+          <AksenBidang ruang={ruangKerjaUntuk(akses)}>{children}</AksenBidang>
+        </div>
       </main>
     </>
   );

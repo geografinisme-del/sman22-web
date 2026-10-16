@@ -42,11 +42,11 @@ export function FotoPembuka({ foto, tata = "berdampingan", otomatis = false, det
     setBerhenti(true); // interaksi pengguna menghentikan putar otomatis
     setIdx((i) => (i + arah + total) % total);
   };
-  const penuh = tata === "penuh";
+  const penuh = tata === "penuh" || tata === "panel";
 
   return (
     <figure
-      className={`pembuka-figur ${penuh ? "pembuka-figur-penuh" : ""}`}
+      className={`pembuka-figur ${tata === "penuh" ? "pembuka-figur-penuh" : tata === "panel" ? "pembuka-figur-panel" : ""}`}
       aria-roledescription={total > 1 ? "carousel" : undefined}
       aria-label={total > 1 ? "Foto sekolah" : undefined}
     >

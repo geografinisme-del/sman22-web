@@ -63,25 +63,26 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
   const saring = (k: string) => `?${new URLSearchParams({ ...(q && { q }), ...(k && { kategori: k }) })}`;
 
   return (
-    <>
-      <PageHeader judul="E-Library" label="Perpustakaan SMA Negeri 22 Bandung" deskripsi="Cari buku di katalog, saring per kategori, dan cek ketersediaannya sebelum datang ke perpustakaan." />
+    <div className="halaman-bidang" data-bidang="elibrary">
+      <PageHeader judul="E-Library" label="Perpustakaan SMA Negeri 22 Bandung" deskripsi="Cari buku di katalog, saring per kategori, dan cek ketersediaannya sebelum datang ke perpustakaan.">
+              <form role="search" className="perpus-cari perpus-cari-besar">
+                <label htmlFor="cari-buku" className="sr-only">
+                  Cari buku
+                </label>
+                <Search size={18} aria-hidden className="perpus-cari-ikon" />
+                <input id="cari-buku" name="q" type="search" defaultValue={q} placeholder="Judul, pengarang, atau ISBN" autoComplete="off" />
+                {kategori && <input type="hidden" name="kategori" value={kategori} />}
+                <button type="submit" className="btn btn-primary">
+                  Cari
+                </button>
+              </form>
+      </PageHeader>
 
       <section className="bagian">
         <div className="lp-wadah grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="min-w-0">
-            <form role="search" className="perpus-cari" data-muncul>
-              <label htmlFor="cari-buku" className="sr-only">
-                Cari buku
-              </label>
-              <Search size={18} aria-hidden className="perpus-cari-ikon" />
-              <input id="cari-buku" name="q" type="search" defaultValue={q} placeholder="Judul, pengarang, atau ISBN" autoComplete="off" />
-              {kategori && <input type="hidden" name="kategori" value={kategori} />}
-              <button type="submit" className="btn btn-primary">
-                Cari
-              </button>
-            </form>
 
-            <nav aria-label="Saring kategori" className="mt-4 flex flex-wrap gap-2">
+            <nav aria-label="Saring kategori" className="flex flex-wrap gap-2">
               <Link href={saring("")} aria-current={!kategori && q !== "rekomendasi" ? "true" : undefined} className="chip-saring">
                 Semua
               </Link>
@@ -214,6 +215,6 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
           </aside>
         </div>
       </section>
-    </>
+    </div>
   );
 }

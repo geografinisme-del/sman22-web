@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
-import { layanan, menu } from "@/content/menu";
+import { ArrowRight, ChevronDown, LayoutGrid, Menu, X } from "lucide-react";
+import { navigasi, type GrupMenu } from "@/content/menu";
 import { sekolah } from "@/content/sekolah";
 
 export function Brand({ sub = "Kota Bandung · Sejak 1989" }: { sub?: string }) {
@@ -20,12 +20,19 @@ export function Brand({ sub = "Kota Bandung · Sejak 1989" }: { sub?: string }) 
   );
 }
 
-/** Menu "Layanan" (disclosure): Esc/klik di luar menutup, fokus kembali ke tombolnya. */
-function MenuLayanan() {
+const cocok = (path: string, href: string) => {
+  const dasar = href.split("?")[0];
+  return dasar === "/" ? path === "/" : path === dasar || path.startsWith(dasar + "/");
+};
+
+/** Satu kelompok menu (disclosure): Esc/klik di luar/Tab keluar menutup; Esc mengembalikan fokus ke tombol. */
+function MenuGrup({ grup, kanan }: { grup: GrupMenu; kanan?: boolean }) {
+  const path = usePathname();
   const [buka, setBuka] = useState(false);
   const tombol = useRef<HTMLButtonElement>(null);
   const wadah = useRef<HTMLDivElement>(null);
   const id = useId();
+  const aktif = grup.anak!.some((a) => cocok(path, a.href));
 
   useEffect(() => {
     if (!buka) return;
@@ -38,7 +45,6 @@ function MenuLayanan() {
     const klik = (e: MouseEvent) => {
       if (!e.composedPath().includes(wadah.current!)) setBuka(false);
     };
-    // fokus berpindah keluar menu (mis. Tab) → tutup
     const fokus = (e: FocusEvent) => {
       if (!wadah.current?.contains(e.target as Node)) setBuka(false);
     };
@@ -54,18 +60,18 @@ function MenuLayanan() {
 
   return (
     <div ref={wadah} className="menu-layanan">
-      <button ref={tombol} type="button" aria-expanded={buka} aria-controls={id} onClick={() => setBuka((b) => !b)}>
-        Layanan
+      <button ref={tombol} type="button" aria-expanded={buka} aria-controls={id} data-aktif={aktif || undefined} onClick={() => setBuka((b) => !b)}>
+        {grup.label}
         <ChevronDown size={16} aria-hidden className="menu-layanan-panah" />
       </button>
-      <div id={id} className="menu-layanan-panel" hidden={!buka}>
+      <div id={id} className={`menu-layanan-panel ${kanan ? "" : "menu-kiri"}`} hidden={!buka}>
         <ul>
-          {layanan.map((l) => (
-            <li key={l.href}>
-              <Link href={l.href} onClick={() => setBuka(false)}>
+          {grup.anak!.map((l) => (
+            <li key={l.href + l.label}>
+              <Link href={l.href} onClick={() => setBuka(false)} aria-current={cocok(path, l.href) ? "page" : undefined}>
                 <span className="min-w-0 flex-1">
                   <span className="block font-semibold text-[#1f2328]">{l.label}</span>
-                  <span className="block text-[0.875rem] leading-snug text-[#5b6270]">{l.teks}</span>
+                  {l.teks && <span className="block text-[0.875rem] leading-snug text-[#5b6270]">{l.teks}</span>}
                 </span>
                 <ArrowRight size={16} aria-hidden className="ikon-geser mt-1 shrink-0 text-[#5b6270]" />
               </Link>
@@ -80,9 +86,7 @@ function MenuLayanan() {
 export function Header() {
   const pathname = usePathname();
   const menuHp = useRef<HTMLDetailsElement>(null);
-  const aktif = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const tutup = () => menuHp.current?.removeAttribute("open");
-  const tautan = menu.filter((m) => m.href !== "/");
 
   // menu ponsel: tutup dengan Esc (fokus kembali ke tombol) atau klik di luar menu
   useEffect(() => {
@@ -110,15 +114,19 @@ export function Header() {
       <div className="lp-wadah lp-header-isi">
         <Brand />
         <nav className="nav-links" aria-label="Menu utama">
-          {tautan.map((m) => (
-            <Link key={m.href} href={m.href} aria-current={aktif(m.href) ? "page" : undefined}>
-              {m.label}
-            </Link>
-          ))}
-          <MenuLayanan />
+          {navigasi.map((g, i) =>
+            g.anak ? (
+              <MenuGrup key={g.label} grup={g} kanan={i >= navigasi.length - 2} />
+            ) : (
+              <Link key={g.label} href={g.href!} aria-current={cocok(pathname, g.href!) ? "page" : undefined} className="nav-spmb" data-bidang="spmb">
+                {g.label}
+              </Link>
+            ),
+          )}
         </nav>
-        <Link className="btn tombol-portal" href="/admin/login">
-          Masuk Portal
+        <Link className="btn tombol-portal" href="/portal-digital">
+          <LayoutGrid size={17} aria-hidden />
+          Portal Digital 22
         </Link>
         <details className="menu-hp" ref={menuHp}>
           <summary aria-label="Menu navigasi">
@@ -127,17 +135,25 @@ export function Header() {
             </span>
           </summary>
           <nav aria-label="Menu ponsel">
-            {tautan.map((m) => (
-              <Link key={m.href} href={m.href} onClick={tutup} aria-current={aktif(m.href) ? "page" : undefined}>
-                {m.label}
-              </Link>
-            ))}
-            <p className="menu-hp-judul">Layanan</p>
-            {layanan.map((l) => (
-              <Link key={l.href} href={l.href} onClick={tutup}>
-                {l.label}
-              </Link>
-            ))}
+            <Link href="/portal-digital" onClick={tutup} className="menu-hp-portal">
+              <LayoutGrid size={18} aria-hidden /> Portal Digital 22
+            </Link>
+            {navigasi.map((g) =>
+              g.anak ? (
+                <div key={g.label} className="contents">
+                  <p className="menu-hp-judul">{g.label}</p>
+                  {g.anak.map((l) => (
+                    <Link key={l.href + l.label} href={l.href} onClick={tutup} aria-current={cocok(pathname, l.href) ? "page" : undefined}>
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link key={g.label} href={g.href!} onClick={tutup} aria-current={cocok(pathname, g.href!) ? "page" : undefined} className="font-semibold">
+                  {g.label} — penerimaan murid baru
+                </Link>
+              ),
+            )}
             <button type="button" onClick={tutup} className="mt-2 flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[#cfc8bd] font-semibold">
               <X size={18} aria-hidden /> Tutup menu
             </button>

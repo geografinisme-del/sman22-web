@@ -177,3 +177,8 @@ a:hover .panah,
     clip-path: none;
   }
 }
+
+/* Aksen bidang di area kerja admin: tombol utama & indikator memakai warna bidang (teks putih ≥ 4,5:1, diuji) */
+.ruang-bidang[data-bidang] {
+  --tema-utama: var(--bidang);
+}

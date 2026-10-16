@@ -123,10 +123,10 @@ export const TEMA_BAWAAN: Tema = {
     // kartu "Akses layanan" di beranda (bagian setelah pembuka)
     bento: [
       { label: "Penerimaan murid baru", judul: "Informasi SPMB", teks: "Jalur, persyaratan, dan jadwal resmi.", tautan: "/spmb", ikon: "GraduationCap", gambar: "", ukuran: "biasa", isi: "" },
-      { label: "Siswa, orang tua, guru", judul: "Portal sekolah", teks: "Kehadiran, jadwal, tugas, dan layanan akun.", tautan: "/masuk", ikon: "LayoutDashboard", gambar: "", ukuran: "biasa", isi: "" },
+      { label: "Guru, siswa, orang tua", judul: "Portal Digital 22", teks: "Pintu masuk layanan & ruang kerja sekolah.", tautan: "/portal-digital", ikon: "LayoutDashboard", gambar: "", ukuran: "biasa", isi: "" },
       { label: "Kalender", judul: "Agenda & pengumuman", teks: "Kegiatan dan informasi resmi sekolah.", tautan: "/agenda", ikon: "CalendarCheck", gambar: "", ukuran: "biasa", isi: "" },
       { label: "Layanan publik", judul: "Pengaduan & aspirasi", teks: "Sampaikan saran atau laporan, pantau dengan nomor tiket.", tautan: "/pengaduan", ikon: "MessageCircle", gambar: "", ukuran: "biasa", isi: "" },
-      { label: "Literasi", judul: "Katalog perpustakaan", teks: "Cari buku dan cek ketersediaannya.", tautan: "/perpustakaan", ikon: "Library", gambar: "", ukuran: "biasa", isi: "" },
+      { label: "Literasi", judul: "E-Library", teks: "Cari buku dan cek ketersediaannya.", tautan: "/perpustakaan", ikon: "Library", gambar: "", ukuran: "biasa", isi: "" },
       { label: "Kesiswaan", judul: "Ekskul & OSIS", teks: "Wadah minat, bakat, dan kepemimpinan siswa.", tautan: "/ekskul", ikon: "Users", gambar: "", ukuran: "biasa", isi: "" },
     ],
   },

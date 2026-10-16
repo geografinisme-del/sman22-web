@@ -3,6 +3,7 @@ import "./globals.css";
 import { sekolah } from "@/content/sekolah";
 import { getSitus } from "@/lib/data";
 import { cssTema } from "@/lib/tema";
+import { cssBidang } from "@/lib/bidang";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getSitus();
@@ -41,6 +42,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         {/* warna tema dari Admin → Tema & Tampilan (sudah divalidasi berformat #rrggbb) */}
         <style dangerouslySetInnerHTML={{ __html: cssTema(tema) }} />
+        {/* warna penanda bidang (src/lib/bidang.ts) — nilai tetap dari kode, bukan masukan pengguna */}
+        <style dangerouslySetInnerHTML={{ __html: cssBidang() }} />
       </head>
       <body className="flex min-h-screen flex-col antialiased">
         {children}

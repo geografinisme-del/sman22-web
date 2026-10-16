@@ -2,7 +2,16 @@ import "server-only";
 import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getPengumuman, getProfil, getRekomendasiBuku, getSitus, getVisualAkun } from "@/lib/data";
 import { susunBagian, tataEfektif, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import type { WidgetInstans } from "@/lib/tampilan/widget";
-import { fotoPembukaDari, IsiAgenda, IsiBerita, IsiLayanan, IsiPengumuman, WGaleri, WHero, WKontak, WPerpus, WProfil, WProgram, type DataBeranda } from "./Widget";
+import { fotoPembukaDari, IsiAgenda, IsiBerita, IsiLayanan, IsiPengumuman, WGaleri, WHero, WKontak, WPerpus, WPrestasi, WProfil, WProgram, type DataBeranda } from "./Widget";
+
+/** Warna penanda bidang per bagian (semantik isi, bukan dekorasi): dipakai tema "Sekolah Berwarna". */
+const BIDANG_BAGIAN: Partial<Record<WidgetInstans["jenis"], string>> = {
+  program: "kurikulum",
+  prestasi: "kesiswaan",
+  galeri: "kesiswaan",
+  perpus: "elibrary",
+  kontak: "humas",
+};
 
 /** Muat hanya data yang dibutuhkan widget yang tampil (data sumber tidak pernah disalin ke konfigurasi). */
 async function muatData(k: Konfigurasi): Promise<DataBeranda> {
@@ -10,7 +19,10 @@ async function muatData(k: Konfigurasi): Promise<DataBeranda> {
   const ada = (j: WidgetInstans["jenis"]) => tampil.some((w) => w.jenis === j);
   const widgetBerita = tampil.filter((w) => w.jenis === "berita");
   // berita berkategori disaring dari daftar yang lebih panjang
-  const nBerita = widgetBerita.length ? Math.max(...widgetBerita.map((w) => (w.pengaturan.kategori ? 40 : Number(w.pengaturan.jumlah) || 4))) : 0;
+  const nBerita = Math.max(
+    widgetBerita.length ? Math.max(...widgetBerita.map((w) => (w.pengaturan.kategori ? 40 : Number(w.pengaturan.jumlah) || 4))) : 0,
+    ada("prestasi") ? 40 : 0, // prestasi disaring dari berita terbit berkategori Prestasi
+  );
   const nAgenda = Number(tampil.find((w) => w.jenis === "agenda")?.pengaturan.jumlah) || 4;
   const nBuku = ada("perpus") ? Number(tampil.find((w) => w.jenis === "perpus")?.pengaturan.rekomendasi) || 0 : 0;
   const [situs, profil, berita, agenda, pengumuman, galeri, visual, ekskul, buku] = await Promise.all([
@@ -100,6 +112,10 @@ export async function SusunanBeranda({ konfig }: { konfig: Konfigurasi }) {
               );
               label = "judul-agenda";
               break;
+            case "prestasi":
+              isi = <WPrestasi d={d} p={a.pengaturan} />;
+              label = "judul-prestasi";
+              break;
             case "program":
               isi = <WProgram p={a.pengaturan} tata={tata(a)} />;
               label = "judul-program";
@@ -121,7 +137,7 @@ export async function SusunanBeranda({ konfig }: { konfig: Konfigurasi }) {
         if (!isi) return null; // widget tanpa data yang memilih disembunyikan (mis. galeri kosong)
         const putih = urutan++ % 2 === 1;
         return (
-          <section key={kelompok.map((w) => w.id).join("+")} className={`bagian ${putih ? "bagian-putih" : ""} bagian-${a.jenis}`} aria-labelledby={label} data-widget={kelompok.map((w) => w.jenis).join("+")}>
+          <section key={kelompok.map((w) => w.id).join("+")} className={`bagian ${putih ? "bagian-putih" : ""} bagian-${a.jenis}`} aria-labelledby={label} data-widget={kelompok.map((w) => w.jenis).join("+")} data-bidang={BIDANG_BAGIAN[a.jenis]}>
             {isi}
           </section>
         );

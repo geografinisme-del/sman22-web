@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { BingkaiAkun } from "@/components/akun/BingkaiAkun";
 import { getAkses, labelPeran } from "@/lib/admin/auth";
+import { lanjutAman } from "@/lib/portal-digital";
 import { samarkanEmail } from "@/lib/format";
 import { DaftarMfa, FormTantangan } from "@/components/keamanan/Mfa";
 import { keluar } from "../actions";
@@ -8,7 +9,8 @@ import { keluar } from "../actions";
 export const metadata = { title: "Verifikasi dua langkah" };
 export const dynamic = "force-dynamic";
 
-export default async function HalamanMfa() {
+export default async function HalamanMfa({ searchParams }: { searchParams: Promise<{ lanjut?: string }> }) {
+  const lanjut = lanjutAman((await searchParams).lanjut) ?? "/admin/mulai";
   const { supabase, user, akses } = await getAkses();
   if (!supabase || !user) redirect("/admin/login");
   const [{ data: aal }, { data: f }] = await Promise.all([supabase.auth.mfa.getAuthenticatorAssuranceLevel(), supabase.auth.mfa.listFactors()]);
@@ -47,7 +49,7 @@ export default async function HalamanMfa() {
         </>
       }
     >
-      {faktor.length > 0 ? <FormTantangan faktor={faktor} lanjut="/admin/mulai" /> : <DaftarMfa lanjut="/admin/mulai" />}
+      {faktor.length > 0 ? <FormTantangan faktor={faktor} lanjut={lanjut} /> : <DaftarMfa lanjut={lanjut} />}
     </BingkaiAkun>
   );
 }

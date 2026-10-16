@@ -38,7 +38,22 @@ export type DefinisiTema = {
   bawaan: { palet: KunciPalet; font: KunciFont; gerak: TingkatGerak };
 };
 
-export const TEMA: Record<"akademik" | "modern" | "editorial", DefinisiTema> = {
+export const TEMA: Record<"warna" | "akademik" | "modern" | "editorial", DefinisiTema> = {
+  // tema utama: foto besar + panel teks putih (tanpa lapisan gelap), warna penanda bidang pada layanan
+  warna: {
+    label: "Sekolah Berwarna",
+    keterangan: "Foto kegiatan besar dengan panel teks putih, warna penanda bidang pada layanan, ritme bagian bervariasi.",
+    tersedia: true,
+    tata: {
+      hero: ["panel", "berdampingan", "penuh"],
+      layanan: ["kisi", "daftar"],
+      profil: ["foto-kiri", "foto-kanan"],
+      berita: ["utama-pendamping", "daftar"],
+      program: ["sorot", "daftar"],
+      galeri: ["mozaik", "kisi"],
+    },
+    bawaan: { palet: "merah", font: "source-sans", gerak: "standar" },
+  },
   akademik: {
     label: "Akademik",
     keterangan: "Dasar terang & informatif: foto berdampingan dengan teks, kartu bergaris tipis, gerak tenang.",

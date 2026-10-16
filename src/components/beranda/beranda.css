@@ -650,7 +650,8 @@ a.kartu:hover,
 }
 
 /* ---------- responsif ---------- */
-@media (max-width: 1060px) {
+/* header: menu ringkas di bawah 1240px (enam kelompok menu + tombol Portal Digital 22) */
+@media (max-width: 1239px) {
   .lp .nav-links,
   .lp .lp-header-isi > .tombol-portal {
     display: none;
@@ -703,6 +704,8 @@ a.kartu:hover,
   .lp .menu-hp nav a:last-child {
     border-bottom: 0;
   }
+}
+@media (max-width: 1060px) {
   .pembuka-grid {
     grid-template-columns: 1fr;
     gap: 28px;
@@ -1323,10 +1326,44 @@ a.kartu:hover,
   font-weight: 700;
   color: var(--lp-muted);
 }
-@media (max-width: 1060px) {
+@media (max-width: 1239px) {
   .lp .menu-hp nav {
     max-height: calc(100dvh - 72px);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
+}
+
+/* ---------- navigasi berkelompok & Portal Digital 22 ---------- */
+.lp .menu-layanan-panel.menu-kiri {
+  left: 0;
+  right: auto;
+}
+.lp .menu-layanan > button[data-aktif] {
+  color: var(--lp-utama);
+  font-weight: 600;
+}
+.lp .nav-links a[aria-current="page"] {
+  background: none;
+}
+/* SPMB: penanda bidang SPMB (merah marun) agar akses penerimaan mudah ditemukan */
+.lp .nav-links .nav-spmb {
+  color: var(--bidang-teks);
+  font-weight: 600;
+}
+.lp .nav-links .nav-spmb::after {
+  background: var(--bidang);
+}
+.lp .tombol-portal {
+  gap: 8px;
+}
+.lp .menu-hp-portal {
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 4px;
+  border: 0 !important;
+  border-radius: 8px;
+  background: var(--lp-utama);
+  color: #fff !important;
+  font-weight: 700;
 }

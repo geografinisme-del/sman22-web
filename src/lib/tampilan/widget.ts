@@ -21,7 +21,7 @@ export const DEFINISI_WIDGET = {
     instans: "satu",
     wajib: true,
     kosong: "Foto bawaan sekolah dipakai bila belum ada slide.",
-    skema: z.object({ tata: pilihan(["berdampingan", "penuh"], "berdampingan") }),
+    skema: z.object({ tata: pilihan(["berdampingan", "penuh", "panel"], "panel") }),
   },
   pengumuman: {
     label: "Pengumuman",
@@ -58,6 +58,15 @@ export const DEFINISI_WIDGET = {
     wajib: false,
     kosong: "Menampilkan “Belum ada berita yang diterbitkan.”",
     skema: z.object({ judul, jumlah: jumlah(1, 7, 4), kategori: z.string().trim().max(40).catch(""), tata: pilihan(["utama-pendamping", "daftar"], "utama-pendamping") }),
+  },
+  prestasi: {
+    label: "Prestasi",
+    sumber: "Berita kategori Prestasi",
+    area: "beranda",
+    instans: "satu",
+    wajib: false,
+    kosong: "Disembunyikan bila belum ada berita prestasi yang terbit.",
+    skema: z.object({ judul, jumlah: jumlah(2, 8, 4) }),
   },
   agenda: {
     label: "Agenda",
@@ -121,7 +130,7 @@ export const pengaturanBawaan = (jenis: JenisWidget) => DEFINISI_WIDGET[jenis].s
 
 /** Susunan beranda bawaan (urutan sesuai panduan isi beranda). */
 export const SUSUNAN_BAWAAN: WidgetInstans[] = (
-  ["hero", "pengumuman", "layanan", "profil", "berita", "agenda", "program", "galeri", "perpus", "kontak"] as JenisWidget[]
+  ["hero", "pengumuman", "layanan", "profil", "berita", "agenda", "prestasi", "program", "galeri", "perpus", "kontak"] as JenisWidget[]
 ).map((jenis) => ({ id: jenis, jenis, tampil: jenis !== "perpus", pengaturan: pengaturanBawaan(jenis) }));
 
 /** Widget berpasangan: bila bersebelahan & keduanya tampil, dirender dalam satu bagian dua kolom. */

@@ -14,6 +14,7 @@ import { Ikon } from "@/components/Ikon";
 import { FOTO_PROGRAM, KEBIASAAN_7KAIH, PANCAWALUYA } from "@/content/program";
 import { kehidupanSekolah, programUnggulan, sekolah } from "@/content/sekolah";
 import type { AgendaItem, BeritaItem, BukuRingkas, EkskulRingkas, FotoItem, PengumumanItem, Profil, Situs, VisualAkunItem } from "@/lib/data";
+import { bidangDariTautan } from "@/lib/bidang";
 import { formatTanggal } from "@/lib/format";
 import { slugProgram } from "@/lib/program";
 
@@ -86,6 +87,17 @@ export function WHero({ d, tata, slideshow }: { d: DataBeranda; tata: string; sl
       </div>
     </div>
   );
+  if (tata === "panel")
+    return (
+      <section className="pembuka pembuka-panel" aria-labelledby="judul-sekolah">
+        <div className="pembuka-panel-foto">
+          <FotoPembuka foto={foto} tata="panel" otomatis={slideshow.gaya === "otomatis"} detik={slideshow.detik} />
+        </div>
+        <div className="lp-wadah">
+          <div className="pembuka-panel-kartu">{isi}</div>
+        </div>
+      </section>
+    );
   if (penuh)
     return (
       <section className="pembuka pembuka-penuh" aria-labelledby="judul-sekolah">
@@ -152,7 +164,7 @@ export function IsiLayanan({ d, p, tata }: { d: DataBeranda; p: P; tata: string 
       </div>
       <nav aria-label="Akses layanan" className={tata === "daftar" ? "layanan-daftar" : "layanan-kisi"} data-muncul="kelompok">
         {daftar.map((k) => (
-          <Link key={k.tautan + k.judul} href={k.tautan}>
+          <Link key={k.tautan + k.judul} href={k.tautan} data-bidang={bidangDariTautan(k.tautan) ?? undefined}>
             <span className="ikon-layanan" aria-hidden>
               <Ikon nama={k.ikon || "BookOpen"} size={20} />
             </span>
@@ -301,6 +313,29 @@ export function IsiAgenda({ d, p, kolom }: { d: DataBeranda; p: P; kolom: boolea
       <Link href="/agenda" className="tautan mt-4 inline-block">
         Kalender kegiatan
       </Link>
+    </div>
+  );
+}
+
+/* ---------------- Prestasi (berita kategori Prestasi) ---------------- */
+
+export function WPrestasi({ d, p }: { d: DataBeranda; p: P }) {
+  const daftar = d.berita.filter((b) => b.kategori.toLowerCase() === "prestasi").slice(0, angka(p.jumlah, 4));
+  if (!daftar.length) return null; // tanpa data: bagian disembunyikan, tidak ada contoh karangan
+  return (
+    <div className="lp-wadah" data-bidang="kesiswaan">
+      <KepalaBagian id="judul-prestasi" judul={teks(p.judul, "Prestasi siswa")} tautan={{ href: "/berita?kategori=Prestasi", label: "Semua prestasi" }} />
+      <ul className="prestasi-kisi" data-muncul="kelompok">
+        {daftar.map((b) => (
+          <li key={b.slug}>
+            <Link href={`/berita/${b.slug}`} className="group prestasi-kartu">
+              <Gambar src={b.gambar} alt="" sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 100vw" className="gambar-zoom aspect-[4/3] rounded-lg" />
+              <span className="prestasi-label">Prestasi · <time dateTime={b.tanggal}>{formatTanggal(b.tanggal)}</time></span>
+              <span className="line-clamp-3 font-semibold leading-snug group-hover:underline">{b.judul}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

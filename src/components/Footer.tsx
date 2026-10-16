@@ -5,7 +5,7 @@ import { menu } from "@/content/menu";
 import { getProfil, getSitus } from "@/lib/data";
 
 const LAYANAN = [
-  { href: "/masuk", label: "Portal siswa, orang tua & guru" },
+  { href: "/portal-digital", label: "Portal Digital 22" },
   { href: "/perpustakaan", label: "Katalog perpustakaan" },
   { href: "/ekskul", label: "Ekskul & OSIS" },
   { href: "/pengaduan", label: "Pengaduan & aspirasi" },

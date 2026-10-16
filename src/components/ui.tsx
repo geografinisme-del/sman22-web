@@ -23,7 +23,7 @@ export function PageHeader({
   return (
     <header className="lp kepala-halaman">
       <div className={`lp-wadah grid items-center gap-8 py-8 sm:py-10 ${foto ? "md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]" : ""}`}>
-        <div>
+        <div className="min-w-0">
           <nav aria-label="Lokasi halaman" className="remah">
             <Link href="/">Beranda</Link>
             <span aria-hidden>/</span>

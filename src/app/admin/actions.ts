@@ -1,5 +1,6 @@
 "use server";
 
+import { lanjutAman } from "@/lib/portal-digital";
 import { revalidatePath } from "next/cache";
 import { kirimSegera } from "@/lib/notif/kirim";
 import { redirect } from "next/navigation";
@@ -90,10 +91,12 @@ export async function masuk(_prev: HasilAksi, form: FormData): Promise<HasilAksi
   ]);
   const a = (akses ?? {}) as { peran?: string[]; peran_tertunda?: string[] };
   const peran = a.peran ?? [];
+  // tujuan kembali (mis. kartu Portal Digital 22) — hanya jalur internal yang aman
+  const lanjut = lanjutAman(form.get("lanjut"));
   // peran yang wajib verifikasi dua langkah → minta kode autentikator dulu
-  if ((a.peran_tertunda ?? []).length > 0) redirect("/admin/mfa");
+  if ((a.peran_tertunda ?? []).length > 0) redirect(lanjut ? `/admin/mfa?lanjut=${encodeURIComponent(lanjut)}` : "/admin/mfa");
   const hanyaPortal = peran.length > 0 && peran.every((p) => p === "siswa" || p === "orang_tua");
-  redirect(hanyaPortal ? "/portal" : "/admin/mulai");
+  redirect(lanjut ?? (hanyaPortal ? "/portal" : "/admin/mulai"));
 }
 
 /** Percobaan masuk yang gagal dicatat dengan kunci server (tanpa kata sandi), untuk deteksi tebak-sandi */

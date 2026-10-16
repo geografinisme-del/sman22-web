@@ -25,7 +25,7 @@ const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: st
     kunci: "siswa",
     label: "Siswa",
     tautan: [
-      { href: "/admin/login?sebagai=siswa", label: "Masuk Portal Sekolah" },
+      { href: "/portal-digital", label: "Portal Digital 22" },
       { href: "/perpustakaan", label: "E-Library" },
       { href: "/agenda", label: "Agenda & kegiatan" },
       { href: "/ekskul", label: "Ekskul & OSIS" },
@@ -43,7 +43,10 @@ const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: st
   {
     kunci: "guru",
     label: "Guru & manajemen",
-    tautan: [{ href: "/admin/login?sebagai=staf", label: "Masuk Portal Manajemen (ruang kerja sesuai tugas)" }],
+    tautan: [
+      { href: "/portal-digital", label: "Portal Digital 22 (pilih bidang)" },
+      { href: "/admin/login?sebagai=staf", label: "Masuk (ruang kerja sesuai tugas)" },
+    ],
   },
   {
     kunci: "tamu",

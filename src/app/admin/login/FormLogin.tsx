@@ -45,10 +45,11 @@ export function InputSandi({ nama = "password", label = "Kata sandi", autoComple
   );
 }
 
-export function FormLogin({ awal = "staf" }: { awal?: "staf" | "siswa" | "orang_tua" }) {
+export function FormLogin({ awal = "staf", lanjut }: { awal?: "staf" | "siswa" | "orang_tua"; lanjut?: string }) {
   const [jenis, setJenis] = useState<(typeof JENIS)[number]["nilai"]>(awal);
   return (
     <FormAksi aksi={masuk} className="mt-6 space-y-5">
+      {lanjut && <input type="hidden" name="lanjut" value={lanjut} />}
       <fieldset>
         <legend className="mb-2 text-sm font-semibold">Masuk sebagai</legend>
         <div className="grid grid-cols-2 gap-2">

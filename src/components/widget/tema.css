@@ -411,3 +411,190 @@ html.kunci-gulir {
     width: 100%;
   }
 }
+
+/* =====================================================================
+ * Tema "Sekolah Berwarna" (bawaan) + komponen bersama
+ * Warna bidang (src/lib/bidang.ts) dipakai pada ikon, garis aksen, label — permukaan tetap putih/netral.
+ * ===================================================================== */
+
+/* ---------- layanan: ikon berwarna bidang (semua tema) ---------- */
+.layanan-kisi > a[data-bidang] .ikon-layanan,
+.layanan-daftar > a[data-bidang] .ikon-layanan {
+  background: var(--bidang-tint);
+  color: var(--bidang);
+}
+.layanan-kisi > a[data-bidang]:hover .ikon-layanan,
+.layanan-kisi > a[data-bidang]:focus-visible .ikon-layanan {
+  background: var(--bidang);
+  color: #fff;
+}
+[data-tema="modern"] .layanan-kisi > a[data-bidang] .ikon-layanan,
+[data-tema="modern"] .layanan-daftar > a[data-bidang] .ikon-layanan {
+  background: var(--bidang);
+  color: #fff;
+}
+
+/* ---------- pembuka "panel": foto besar + panel teks putih (tanpa lapisan gelap) ---------- */
+.pembuka-panel {
+  background: #fff;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--lp-line);
+}
+.pembuka-panel-foto {
+  position: relative;
+  height: clamp(300px, 58vh, 620px);
+  background: var(--lp-lembut);
+}
+.pembuka-figur-panel {
+  position: absolute;
+  inset: 0;
+}
+.pembuka-figur-panel .pembuka-foto {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+  border-radius: 0;
+  animation: none;
+}
+/* keterangan & kontrol foto dalam keping putih di sudut kanan atas: terbaca di atas foto apa pun */
+.pembuka-figur-panel .slide-kontrol {
+  position: absolute;
+  top: 16px;
+  right: max(16px, calc((100vw - 1200px) / 2));
+  max-width: min(460px, calc(100% - 32px));
+  margin: 0;
+  padding: 6px 6px 6px 12px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.94);
+  box-shadow: 0 6px 18px -10px rgb(31 35 40 / 0.4);
+}
+.pembuka-figur-panel .keterangan-foto {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--lp-teks);
+}
+.pembuka-figur-panel .slide-kontrol:not(:has(button)) {
+  padding-right: 12px;
+}
+.pembuka-panel-kartu {
+  position: relative;
+  max-width: 660px;
+  margin-top: -148px;
+  padding: 28px 32px 30px;
+  border-top: 6px solid var(--lp-utama);
+  border-radius: 4px 4px 12px 12px;
+  background: #fff;
+  box-shadow: 0 22px 44px -26px rgb(31 35 40 / 0.45);
+}
+.pembuka-panel-kartu h1 {
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 2.875rem);
+}
+@media (max-width: 767px) {
+  .pembuka-panel-foto {
+    height: 280px;
+  }
+  .pembuka-panel-kartu {
+    margin-top: -56px;
+    padding: 20px 20px 22px;
+  }
+  .pembuka-figur-panel .slide-kontrol {
+    top: 12px;
+    right: 12px;
+  }
+  .pembuka-figur-panel .keterangan-foto {
+    display: none;
+  }
+}
+
+/* ---------- prestasi ---------- */
+.prestasi-kisi {
+  display: grid;
+  gap: 20px 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+}
+.prestasi-kartu {
+  display: grid;
+  gap: 8px;
+}
+.prestasi-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--bidang-teks, var(--lp-utama));
+}
+
+/* ---------- tema Sekolah Berwarna ---------- */
+/* garis aksen bidang di atas judul bagian yang punya bidang (program, prestasi, kehidupan siswa, e-library, kontak) */
+[data-tema="warna"] .bagian[data-bidang] .bagian-kepala h2::before,
+[data-tema="warna"] .bagian[data-bidang] h2:not(.bagian-kepala h2)::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 4px;
+  margin-bottom: 10px;
+  border-radius: 2px;
+  background: var(--bidang);
+}
+[data-tema="warna"] .bagian[data-bidang] .tautan {
+  color: var(--bidang-teks);
+}
+[data-tema="warna"] .bagian[data-bidang] .sorot-item[data-aktif] {
+  border-left-color: var(--bidang);
+}
+[data-tema="warna"] .bagian[data-bidang] .sorot-item[data-aktif] .sorot-nomor,
+[data-tema="warna"] .bagian[data-bidang] .kebiasaan li::before {
+  color: var(--bidang);
+}
+/* pengumuman penting: bidang aksen merah sekolah */
+[data-tema="warna"] .blok-pengumuman {
+  background: var(--lp-tint);
+  border-color: color-mix(in srgb, var(--lp-utama) 22%, #fff);
+  border-left-color: var(--lp-utama);
+}
+[data-tema="warna"] .perpus-widget {
+  border-top: 4px solid var(--bidang);
+}
+[data-tema="warna"] .perpus-widget .btn-primary {
+  background: var(--bidang);
+  border-color: var(--bidang);
+}
+/* kartu: elevasi tipis saat disorot (bukan goyang terus-menerus) */
+[data-tema="warna"] .layanan-kisi > a,
+[data-tema="warna"] .prestasi-kartu {
+  transition:
+    background-color var(--gerak-cepat) var(--ease-keluar),
+    transform 200ms var(--ease-keluar);
+}
+[data-tema="warna"] .prestasi-kartu:hover,
+[data-tema="warna"] .prestasi-kartu:focus-visible {
+  transform: translateY(-3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tema="warna"] .prestasi-kartu:hover,
+  [data-tema="warna"] .prestasi-kartu:focus-visible {
+    transform: none;
+  }
+}
+
+/* halaman milik satu bidang (E-Library hijau, SPMB marun): aksen halaman mengikuti bidang */
+.halaman-bidang[data-bidang] {
+  --tema-utama: var(--bidang);
+  --lp-utama: var(--bidang);
+  --lp-tint: var(--bidang-tint);
+}
+.halaman-bidang[data-bidang] .kepala-halaman {
+  border-top: 4px solid var(--bidang);
+}
+.perpus-cari-besar input {
+  min-height: 56px;
+  font-size: 1.0625rem;
+}
+.perpus-cari-besar .btn {
+  min-height: 56px;
+  padding-inline: 28px;
+}
+@media (max-width: 420px) {
+  .perpus-cari-besar .btn {
+    padding-inline: 16px;
+  }
+}

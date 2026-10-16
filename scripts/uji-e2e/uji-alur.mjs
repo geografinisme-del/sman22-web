@@ -146,7 +146,7 @@ const temaAwal = await (async () => {
   return js(`document.querySelector(".situs-publik").dataset.tema`);
 })();
 await buka("/admin/tampilan", 2500);
-await klik(`[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Pakai dengan gaya bawaannya"))`);
+await klik(`[...document.querySelectorAll("#panel-tema label")].find(l=>l.textContent.includes("Modern Interaktif")).querySelector("button")`);
 await tidur(300);
 await klik(`document.querySelector("#tab-susunan")`);
 await tidur(300);
@@ -186,7 +186,7 @@ cek("riwayat mencatat versi terbit", jmlRiwayat >= 1, jmlRiwayat);
 
 // kembalikan ke Akademik lewat draf + terapkan, lalu pulihkan versi Modern dari riwayat
 await klik(`document.querySelector("#tab-tema")`);
-await klik(`[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Pakai dengan gaya bawaannya"))`);
+await klik(`[...document.querySelectorAll("#panel-tema label")].find(l=>l.textContent.includes("Akademik")).querySelector("button")`);
 await tidur(300);
 await klik(`[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="Terapkan")`);
 await sampai(`document.body.innerText.includes("Tampilan diterapkan")`, 20000);

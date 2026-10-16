@@ -8,7 +8,8 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 | --- | --- | --- |
 | Desain ulang editorial (situs publik, masuk, MFA, dasbor, sidebar) | `desain-editorial-sekolah` | Selesai, di-commit, **belum di-push / belum di-merge ke `main`** |
 | Sistem gerak (motion) situs publik | `desain-editorial-sekolah` | Selesai, di-commit, belum di-push |
-| Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `desain-editorial-sekolah` | Selesai & diuji lokal, di-commit, belum di-push. **Butuh 2 migrasi** (lihat bawah) |
+| Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `main` (sudah di produksi) | Kode tayang; **2 migrasi belum dijalankan di produksi** (lihat bawah) |
+| Portal Digital 22, warna bidang, tema "Sekolah Berwarna", navigasi berkelompok | `portal-digital-22` | Selesai & diuji lokal, di-commit, **belum di-push** |
 
 Detail status per modul: **MODULE_STATUS.md**.
 
@@ -150,3 +151,23 @@ Tanpa migrasi, aplikasi tetap berjalan: tema bawaan Akademik, katalog tanpa sari
 - `npm test` — 24 tes unit (validasi konfigurasi, fallback tema, operasi widget, pemilihan overlay, kontras palet, ruang kerja).
 - `supabase/tests/rls_fase14_test.sql` — RLS draf/riwayat/terbit, katalog publik, batasan poster/tautan.
 - `scripts/uji-e2e/` — uji alur nyata (29/29 LULUS lokal), keyboard ponsel, galat konsol, rekaman gulir.
+
+## Portal Digital 22 & identitas berwarna — keputusan
+
+### Referensi (diamati langsung 16 Okt 2026)
+- sman6bdg.sch.id: hero foto besar berlapis gelap, header melayang berbentuk pil dengan dropdown, strip statistik, berita utama + daftar, prestasi berupa kartu tinggi, kotak hitam "Pojok Digital 6", footer hitam. Dropdown & hover **tidak** dibuka/diamati.
+- pojokdigital6: judul besar di atas foto buram, 9 kartu kaca tinggi dalam satu baris geser horizontal (Guru, SPMB, Kurikulum, Kesiswaan, Humas, Sarpras, BK, Manajemen, Admin), tiap kartu menuju aplikasi terpisah. Teks kartu tertulis ganda di DOM (kemungkinan efek balik saat hover) — efeknya **tidak** diamati.
+- Diadaptasi: foto dokumentasi besar, navigasi berkelompok, akses SPMB jelas, berita utama + daftar, pintu bidang yang terlihat sebelum masuk. Tidak disalin: identitas/teks/foto/statistik SMAN 6, kartu tinggi bergeser horizontal, kaca/blur, kontras samar, aplikasi terpisah per bidang (di sini satu login).
+
+### Keputusan
+- **Warna bidang**: token terpusat `src/lib/bidang.ts` (+ tes kontras), dokumentasi `docs/WARNA-BIDANG.md`. Identitas tetap merah logo.
+- **Navigasi publik**: Profil · Pembelajaran · Kehidupan Siswa · Kabar & Agenda · SPMB · Layanan + tombol "Portal Digital 22" (`src/content/menu.ts`, `Header.tsx`). Menu ringkas di bawah 1240px.
+- **Tema "Sekolah Berwarna"** (`warna`) kini bawaan: pembuka `panel` (foto besar + panel teks putih tanpa lapisan gelap), widget baru `prestasi` (berita kategori Prestasi; disembunyikan bila kosong), garis aksen bidang per bagian sesuai isi. Akademik & Modern tetap bisa dipilih; konfigurasi lama tetap valid.
+- **Portal Digital 22** (`/portal-digital`): kelompok Warga sekolah / Ruang kerja manajemen / Layanan belajar & informasi / Administrasi sistem (hanya bagi `pengguna.kelola`). Kartu → `/portal-digital/buka/<bidang>` yang memutuskan di server (`putuskanPintu` di `src/lib/portal-digital.ts`): belum masuk → login bersama + `lanjut` aman; berwenang → ruang kerja; tidak berwenang → penjelasan. `lanjutAman()` mencegah open redirect; dipakai login & MFA.
+- **Aksen ruang kerja**: `AksenBidang` (pita "Ruang kerja · …" + warna tombol utama), struktur kerja sama, hak tidak berubah.
+- **E-Library**: aksen hijau, pencarian di kepala halaman. **SPMB**: aksen marun.
+- Struktur Kurikulum (`/admin/kurikulum`) memang dapat dibaca semua staf (desain lama); ruang kerja Kurikulum = izin kelola.
+
+### Pengujian tambahan
+- `npm test`: 36 tes (termasuk kontras warna bidang & keputusan pintu/lanjut aman).
+- `scripts/uji-e2e/uji-portal.mjs`: 14/14 lulus lokal. `uji-alur.mjs` (regresi): 29/29 lulus.
