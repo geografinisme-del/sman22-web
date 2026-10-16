@@ -80,7 +80,7 @@ export default async function Spmb() {
         </div>
       </section>
 
-      <section className="bagian bagian-putih">
+      <section id="tahapan" className="bagian bagian-putih scroll-mt-24">
         <div className="lp-wadah">
           <h2>Gambaran umum tahapan</h2>
           <p className="mt-1 text-[#5b6270]">Ketentuan rinci mengikuti pengumuman resmi tahun berjalan.</p>

@@ -1,5 +1,7 @@
 export function formatTanggal(iso: string, opsi?: Intl.DateTimeFormatOptions) {
-  const d = new Date(`${iso}T00:00:00+07:00`);
+  // terima "YYYY-MM-DD", "YYYY-MM-DD HH:MM:SS", atau ISO lengkap → selalu ditampilkan sebagai tanggal Indonesia
+  const tgl = /^\d{4}-\d{2}-\d{2}/.test(iso) ? iso.slice(0, 10) : iso;
+  const d = new Date(`${tgl}T00:00:00+07:00`);
   if (Number.isNaN(d.getTime())) return iso;
   return new Intl.DateTimeFormat("id-ID", {
     day: "numeric",

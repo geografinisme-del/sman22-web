@@ -10,6 +10,7 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 | Sistem gerak (motion) situs publik | `desain-editorial-sekolah` | Selesai, di-commit, belum di-push |
 | Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `main` (sudah di produksi) | Kode tayang; **2 migrasi belum dijalankan di produksi** (lihat bawah) |
 | Portal Digital 22, warna bidang, tema "Sekolah Berwarna", navigasi berkelompok | `portal-digital-22` | Selesai & diuji lokal, di-commit, **belum di-push** |
+| "Buku tahunan yang hidup": token (Tahap 1), beranda majalah (Tahap 2), Portal Digital 22 ala buku (Tahap 3) | `buku-tahunan` | Selesai & diuji lokal, di-commit, **belum di-push**; migrasi 20261210 belum di produksi. Tahap 4 (GSAP/Embla) menunggu persetujuan |
 
 Detail status per modul: **MODULE_STATUS.md**.
 
@@ -171,3 +172,38 @@ Tanpa migrasi, aplikasi tetap berjalan: tema bawaan Akademik, katalog tanpa sari
 ### Pengujian tambahan
 - `npm test`: 36 tes (termasuk kontras warna bidang & keputusan pintu/lanjut aman).
 - `scripts/uji-e2e/uji-portal.mjs`: 14/14 lulus lokal. `uji-alur.mjs` (regresi): 29/29 lulus.
+
+## Buku Tahunan (branch `buku-tahunan`) — keputusan
+
+Konsep: majalah/koran sekolah, bukan SaaS. Mockup acuan: `Beranda.pdf` & `Portal Digital 22.pdf` dari pemilik.
+
+### Token (Tahap 1, `src/app/globals.css`)
+- Newsreader (judul) + Plus Jakarta Sans (isi) via `next/font` (`src/app/fonts.ts`).
+- `--color-brand` #7a1f36 (marun dari rona logo; brief menyarankan #7A1F2B — ganti di satu token bila pemilik memilih itu),
+  `--color-paper` #f5f0e6, `--color-ink` #1c1a17, `--color-ink-muted` #5b554c, `--color-accent` #b8892b (jarang), `--color-rule` #d9d0bf.
+- Sudut 0–4px, tanpa bayangan, paragraf maks. 65ch, isi 18px/1,6. Halaman `/spesimen` (404 di produksi) menampilkan semua token.
+
+### Beranda (Tahap 2) — tema `buku` (bawaan baru), `src/components/buku/`
+- `SusunanBuku.tsx` memetakan widget → bagian: hero foto 80vh (gradasi bawah, 1 tombol + 1 tautan, keterangan kanan bawah),
+  pita angka (dari profil; sembunyi bila < 2 angka), Kabar dari Sekolah (1 utama 3:2 + 4 kecil tanpa kartu),
+  Pengumuman + Agenda (agenda hanya ≥ hari ini WIB), blok SPMB marun (hanya bila `spmb_info.aktif`),
+  Prestasi (tabel `prestasi`, saring tingkat tanpa JS wajib) + alumni PTN, Kehidupan siswa (mozaik 1+4, keterangan unik),
+  Akses cepat (daftar teks) + kontak + peta. Footer marun "Dikelola oleh Tim TIK".
+- Tombol/panel "Informasi" mengambang dimatikan di tema buku; pengumuman terpenting tampil di pita marun di atas header.
+- Bagian tanpa data disembunyikan (tidak ada "Belum ada…"). Berita tanpa foto tampil tanpa kotak gambar.
+- Semua bagian dirender di server; hanya slideshow hero & saringan prestasi yang memakai JS (konten tetap terbaca tanpa JS).
+
+### Media sementara
+- `<MediaSlot>` (`src/components/MediaSlot.tsx`): foto, ilustrasi berlabel "Ilustrasi sementara", atau fallback blok krem bergaris emas + "22".
+- Kolom `is_placeholder` (bawaan **false** — menyimpang dari brief yang meminta true, karena foto lama & unggahan admin adalah foto asli).
+- Ringkasan admin menampilkan jumlah media sementara; tombol "Tandai foto asli" di Berita, Galeri, Prestasi.
+- `public/media/placeholder/MEDIA_PLAN.md` (slot + prompt) & `CREDITS.md`. **Belum ada stok foto yang diunduh** (perlu izin).
+
+### Portal Digital 22 (Tahap 3)
+- 3 kartu foto (Guru, Siswa, Orang Tua), ruang kerja manajemen = daftar 2 kolom satu warna (inisial atau foto PJ bulat),
+  "Terbuka untuk umum" = baris teks. Warna per bidang & pita pelangi tidak dipakai lagi di portal.
+- Penanggung jawab diatur di Admin → Penanggung Jawab Portal (`portal_bidang`).
+
+### Migrasi baru
+3. `supabase/migrations/20261210000000_buku_tahunan.sql` — `prestasi`, `spmb_info`, `portal_bidang`, kolom alumni PTN di `profil_sekolah`,
+   `is_placeholder`. Uji: `supabase/tests/rls_fase20_test.sql`. Tanpa migrasi, beranda tetap jalan (bagian terkait disembunyikan) dan halaman admin menampilkan pesan "jalankan migrasi".

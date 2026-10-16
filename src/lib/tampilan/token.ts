@@ -37,7 +37,15 @@ export type DefinisiTema = {
   bawaan: { palet: KunciPalet; font: KunciFont; gerak: TingkatGerak };
 };
 
-export const TEMA: Record<"warna" | "akademik" | "modern" | "editorial", DefinisiTema> = {
+export const TEMA: Record<"buku" | "warna" | "akademik" | "modern" | "editorial", DefinisiTema> = {
+  // tema utama: "buku tahunan yang hidup" — kertas krem, marun, judul serif, tata letak majalah/koran sekolah
+  buku: {
+    label: "Buku Tahunan",
+    keterangan: "Kertas krem, judul serif, foto penuh berlapis gradasi, kabar bergaya koran, blok SPMB marun, kehidupan siswa berlatar gelap.",
+    tersedia: true,
+    tata: { hero: ["majalah"] },
+    bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
+  },
   // tema utama: foto besar + panel teks putih (tanpa lapisan gelap), warna penanda bidang pada layanan
   warna: {
     label: "Sekolah Berwarna",

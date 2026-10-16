@@ -72,8 +72,11 @@ export function PengaturOverlay({
   aturan,
   prioritas,
   rutin,
+  adaTombolInfo = true,
 }: {
   halamanUtama?: string;
+  /** false = tanpa tombol "Informasi" mengambang (tema Buku Tahunan: pengumuman di pita atas) */
+  adaTombolInfo?: boolean;
   aturan: { prioritas: boolean; rutin: boolean; pemandu: boolean };
   prioritas: InfoPrioritas | null;
   rutin: Informasi[];
@@ -110,7 +113,7 @@ export function PengaturOverlay({
     const s: Sesi = { prioritasTampil: sesi.baca(K.prioritas) === "1", rutinTampil: sesi.baca(K.rutin) === "1", sapaTampil: sesi.baca(K.sapa) === "1" };
     // tombol "Informasi" tersedia setelah ambang gulir (atau setelah panel/modal pernah tampil di sesi ini),
     // tidak bergantung pada overlay otomatis yang sedang berjalan
-    if (diBeranda && daftar.length && (s.rutinTampil || s.prioritasTampil || (lewatPembuka && progres >= AMBANG_RUTIN))) setTombolInfo(true);
+    if (adaTombolInfo && diBeranda && daftar.length && (s.rutinTampil || s.prioritasTampil || (lewatPembuka && progres >= AMBANG_RUTIN))) setTombolInfo(true);
     if (otomatis) return;
     const pilih = pilihOverlay(kandidat, s, {
       pembukaTerlihat: Boolean(pembuka) && performance.now() - mulai.current > 1200,
@@ -125,7 +128,7 @@ export function PengaturOverlay({
     setOtomatis(pilih);
     if (pilih === "rutin") setMode(window.matchMedia(KUERI_LEBAR).matches ? "panel" : "teaser");
     // eslint-disable-next-line react-hooks/exhaustive-deps -- kandidat/daftar dihitung ulang tiap render dari props
-  }, [otomatis, mode, diBeranda, kandidat.prioritas, kandidat.rutin, kandidat.pemandu, daftar.length]);
+  }, [otomatis, mode, diBeranda, adaTombolInfo, kandidat.prioritas, kandidat.rutin, kandidat.pemandu, daftar.length]);
 
   useEffect(() => {
     mulai.current = performance.now();

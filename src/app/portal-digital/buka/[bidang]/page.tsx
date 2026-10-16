@@ -25,11 +25,11 @@ export default async function BukaBidang({ params }: { params: Promise<{ bidang:
   return (
     <div className="pd-wadah">
       <div className="pd-kotak" data-bidang={bidang} role="alert">
-        <p className="flex items-center gap-2 font-semibold text-[var(--bidang-teks)]">
+        <p className="flex items-center gap-2 font-semibold text-[var(--color-brand)]">
           <IkonBidang bidang={bidang as KunciBidang} size={20} /> {b.label}
         </p>
         <h1 className="mt-2 font-bold">{k.judul}</h1>
-        <p className="mt-2 text-[#3b414b]">{k.alasan}</p>
+        <p className="mt-2 text-[var(--color-ink-muted)]">{k.alasan}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/portal-digital" className="pd-tautan">
             Kembali ke Portal Digital 22

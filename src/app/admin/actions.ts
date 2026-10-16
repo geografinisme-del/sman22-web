@@ -218,7 +218,7 @@ export async function simpanBerita(_prev: HasilAksi, form: FormData): Promise<Ha
 /* Arsipkan (soft delete) — berlaku untuk berita/agenda/pengumuman/galeri */
 /* ------------------------------------------------------------------ */
 
-const TABEL_ARSIP = ["berita", "agenda", "pengumuman", "galeri"] as const;
+const TABEL_ARSIP = ["berita", "agenda", "pengumuman", "galeri", "prestasi"] as const;
 
 export async function arsipkan(form: FormData) {
   const ctx = await wajibAdmin();

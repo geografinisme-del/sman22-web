@@ -9,7 +9,7 @@ import { PALET } from "./token.ts";
 test("konfigurasi kosong/rusak → bawaan lengkap, tidak melempar", () => {
   for (const raw of [undefined, null, "teks", 42, [], { tema: 5, beranda: "x" }]) {
     const k = bacaKonfigurasi(raw);
-    assert.equal(k.tema, "warna");
+    assert.equal(k.tema, "buku");
     assert.equal(k.beranda[0].jenis, "hero");
     assert.ok(k.beranda.length >= 5);
   }
@@ -17,7 +17,7 @@ test("konfigurasi kosong/rusak → bawaan lengkap, tidak melempar", () => {
 
 test("nilai di luar pilihan terkurasi ditolak (tidak ada warna/font bebas)", () => {
   const k = bacaKonfigurasi({ versi: 1, tema: "editorial", palet: "#ff00ff", font: "Comic Sans", gerak: "liar", slideshow: { gaya: "otomatis", detik: 2 } });
-  assert.equal(k.tema, "warna", "tema yang belum tersedia tidak bisa dipilih → bawaan");
+  assert.equal(k.tema, "buku", "tema yang belum tersedia tidak bisa dipilih → bawaan");
   assert.equal(k.palet, "merah");
   assert.equal(k.font, "jakarta");
   assert.equal(k.gerak, "standar");
@@ -63,7 +63,8 @@ test("versi lama (tanpa versi & susunan) dimigrasikan ke susunan bawaan", () => 
 
 test("pindah & lepas widget hanya mengubah susunan", () => {
   const awal = KONFIGURASI_BAWAAN.beranda;
-  const pindah = pindahkan(awal, awal.length - 1, 1);
+  const iKontak = awal.findIndex((w) => w.jenis === "kontak");
+  const pindah = pindahkan(awal, iKontak, 1);
   assert.equal(pindah[1].jenis, "kontak");
   assert.equal(pindah.length, awal.length);
   const lepas = lepasWidget(awal, "galeri");

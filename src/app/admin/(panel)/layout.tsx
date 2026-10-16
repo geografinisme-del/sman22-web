@@ -14,6 +14,9 @@ const WEBSITE = [
   { href: "/admin/pengumuman", label: "Pengumuman" },
   { href: "/admin/agenda", label: "Agenda" },
   { href: "/admin/galeri", label: "Galeri" },
+  { href: "/admin/prestasi", label: "Prestasi & Alumni" },
+  { href: "/admin/spmb", label: "SPMB Beranda" },
+  { href: "/admin/portal-bidang", label: "Penanggung Jawab Portal" },
 ];
 
 const PERAN_PANEL = ["super_admin", "kepala_sekolah", "wakasek", "kurikulum", "sarpras", "pustakawan", "literasi", "keuangan", "admin_alumni", "tim_mutu", "auditor", "operator", "humas", "kesiswaan", "piket", "bk", "wali_kelas", "guru"];

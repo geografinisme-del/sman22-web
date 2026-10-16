@@ -1,40 +1,48 @@
 import Link from "next/link";
-import { Brand } from "@/components/Header";
 import { sekolah } from "@/content/sekolah";
-import { menu } from "@/content/menu";
 import { getProfil, getSitus } from "@/lib/data";
 
+const JELAJAHI = [
+  { href: "/profil", label: "Profil" },
+  { href: "/program", label: "Program" },
+  { href: "/berita", label: "Berita" },
+  { href: "/agenda", label: "Agenda" },
+  { href: "/galeri", label: "Galeri" },
+];
 const LAYANAN = [
   { href: "/portal-digital", label: "Portal Digital 22" },
-  { href: "/perpustakaan", label: "Katalog perpustakaan" },
-  { href: "/ekskul", label: "Ekskul & OSIS" },
-  { href: "/pengaduan", label: "Pengaduan & aspirasi" },
+  { href: "/perpustakaan", label: "E-Library" },
+  { href: "/pengaduan", label: "Pengaduan" },
   { href: "/sertifikat", label: "Verifikasi sertifikat" },
   { href: "/alumni", label: "Alumni" },
-  { href: "/survei", label: "Survei layanan" },
+];
+const SPMB = [
+  { href: "/spmb", label: "Jalur dan syarat" },
+  { href: "/spmb#tahapan", label: "Jadwal" },
+  { href: "/kontak", label: "Tanya panitia" },
 ];
 
+/** Footer bergaya buku tahunan: latar marun, judul serif; hanya data resmi yang sudah diisi di CMS. */
 export async function Footer() {
   const [profil, situs] = await Promise.all([getProfil(), getSitus()]);
-  // hanya data kontak resmi yang sudah diisi di CMS — tidak ada isian karangan
-  const kontak = [
-    { label: "Alamat", isi: [profil.alamat, sekolah.kota].filter(Boolean).join(", ") },
-    { label: "Telepon", isi: profil.telepon },
-    { label: "Email", isi: profil.email },
-    { label: "Jam layanan", isi: profil.jamLayanan },
-  ].filter((k) => k.isi);
+  const deskripsi = situs.footerTeks || profil.slogan || `Sekolah menengah atas negeri di ${sekolah.kota} sejak ${sekolah.tahunBerdiri}.`;
+  const kolom: [string, { href: string; label: string }[]][] = [
+    ["Jelajahi", JELAJAHI],
+    ["Layanan", LAYANAN],
+    ["SPMB", SPMB],
+  ];
 
   return (
     <footer className="lp lp-footer">
       <div className="lp-wadah footer-kolom">
         <div>
-          <Brand />
-          {situs.footerTeks && <p className="muted mt-4 max-w-sm whitespace-pre-line">{situs.footerTeks}</p>}
+          <p className="footer-nama">{sekolah.nama}</p>
+          <p className="footer-deskripsi whitespace-pre-line">{deskripsi}</p>
           {situs.sosialMedia.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
               {situs.sosialMedia.map((s) => (
                 <li key={s.nama}>
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="tautan">
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="footer-sosial">
                     {s.nama}
                   </a>
                 </li>
@@ -42,56 +50,25 @@ export async function Footer() {
             </ul>
           )}
         </div>
-
-        <nav aria-label="Jelajahi">
-          <p className="footer-judul">Jelajahi</p>
-          <ul className="footer-daftar">
-            {menu.map((m) => (
-              <li key={m.href}>
-                <Link href={m.href}>{m.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <nav aria-label="Layanan">
-          <p className="footer-judul">Layanan</p>
-          <ul className="footer-daftar">
-            {LAYANAN.map((m) => (
-              <li key={m.href}>
-                <Link href={m.href}>{m.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div>
-          <p className="footer-judul">Kontak</p>
-          {kontak.length ? (
-            <dl className="mt-3 space-y-2">
-              {kontak.map((k) => (
-                <div key={k.label}>
-                  <dt className="text-sm text-[#5b6270]">{k.label}</dt>
-                  <dd className="text-[#3b414b]">{k.isi}</dd>
-                </div>
+        {kolom.map(([judul, daftar]) => (
+          <nav key={judul} aria-label={judul}>
+            <p className="footer-judul">{judul}</p>
+            <ul className="footer-daftar">
+              {daftar.map((m) => (
+                <li key={m.href + m.label}>
+                  <Link href={m.href}>{m.label}</Link>
+                </li>
               ))}
-            </dl>
-          ) : (
-            <p className="muted mt-3">Kontak resmi sedang dilengkapi.</p>
-          )}
-          <Link href="/kontak" className="tautan mt-4 inline-block">
-            Lokasi & kontak
-          </Link>
-        </div>
+            </ul>
+          </nav>
+        ))}
       </div>
 
       <div className="lp-wadah footer-bottom">
         <span>
           © {new Date().getFullYear()} {sekolah.nama}
         </span>
-        <a href="#konten" className="hover:text-[var(--tema-utama)]">
-          Kembali ke atas
-        </a>
+        <span>Dikelola oleh Tim TIK {sekolah.nama}</span>
       </div>
     </footer>
   );

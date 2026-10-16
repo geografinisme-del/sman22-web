@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PengamatMuncul } from "@/components/gerak/PengamatMuncul";
 import { sekolah } from "@/content/sekolah";
+import "@/components/buku/buku.css";
 import "./portal-digital.css";
 
 export const metadata: Metadata = {
@@ -38,7 +39,10 @@ export default function LayoutPortalDigital({ children }: { children: React.Reac
         {children}
       </main>
       <footer className="pd-wadah pd-kaki">
-        Satu akun untuk semua layanan. Hak akses setiap bidang diatur oleh admin sekolah. © {new Date().getFullYear()} {sekolah.nama}.
+        <span>Hak akses setiap bidang diatur oleh admin sekolah. Memilih layanan tidak menambah hak akses.</span>
+        <span>
+          © {new Date().getFullYear()} {sekolah.nama} · Dikelola oleh Tim TIK
+        </span>
       </footer>
       <PengamatMuncul />
     </div>

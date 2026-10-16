@@ -26,7 +26,7 @@ export type Konfigurasi = {
 
 export const KONFIGURASI_BAWAAN: Konfigurasi = {
   versi: VERSI_KONFIGURASI,
-  tema: "warna",
+  tema: "buku",
   palet: "merah",
   font: "jakarta",
   gerak: "standar",

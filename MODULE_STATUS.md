@@ -80,3 +80,13 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 - Belum ada modul SPMB internal (kartu SPMB menuju informasi publik).
 - "Sumber belajar" selain E-Library (materi/kelas digital) hanya dapat diakses dari Pojok Guru/Portal Siswa, belum menjadi kartu tersendiri.
 - Aset karakter pemandu belum ada; uji Safari/iOS & perangkat fisik belum dilakukan.
+
+## Fase Buku Tahunan (branch `buku-tahunan`)
+| Area | Status | Catatan |
+| --- | --- | --- |
+| Token desain (Tahap 1) | Selesai | Newsreader + Plus Jakarta Sans, kertas/tinta/marun, `/spesimen`. |
+| Beranda tema Buku Tahunan (Tahap 2) | Selesai* | Tema bawaan. *Prestasi, SPMB, alumni butuh migrasi 20261210 + data dari admin. |
+| Admin Prestasi & Alumni, SPMB Beranda, Penanggung Jawab Portal | Selesai* | *Butuh migrasi 20261210. |
+| Portal Digital 22 ala buku (Tahap 3) | Selesai | Tanpa warna per bidang. |
+| Media sementara | Sebagian | Komponen, penanda, peringatan admin siap; berkas stok belum diunduh (perlu izin). |
+| Tahap 4 (GSAP, Embla, animasi) | Belum | Menunggu persetujuan Tahap 1–3. |

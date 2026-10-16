@@ -29,6 +29,8 @@ export type Profil = {
   misi: string[];
   sejarah: string[];
   statistik: { label: string; nilai: string }[];
+  /** alumni diterima PTN (Fase 20; kosong bila belum diisi/migrasi belum jalan) */
+  alumniPtn: { jumlah: string; tahun: string; keterangan: string };
 };
 
 export type BeritaItem = {
@@ -40,6 +42,8 @@ export type BeritaItem = {
   ringkasan: string;
   isi: string[];
   gambar?: string;
+  /** foto adalah ilustrasi sementara (Fase 20) */
+  gambarSementara?: boolean;
 };
 export type AgendaItem = { id: string; judul: string; tanggal: string; waktu?: string; tempat?: string };
 export type PengumumanItem = {
@@ -53,7 +57,7 @@ export type PengumumanItem = {
   poster?: { url: string; alt: string };
   tautan?: { url: string; label: string };
 };
-export type FotoItem = { id: string; judul: string; gambar: string };
+export type FotoItem = { id: string; judul: string; gambar: string; sementara?: boolean };
 
 /** Teks "[ISI ...]" dianggap kosong supaya tidak tampil di situs */
 const bersih = (s?: string | null) => {
@@ -94,6 +98,7 @@ export const getProfil = cache(async (): Promise<Profil> => {
     visi: bersih(statis.visi),
     misi: daftarBersih(statis.misi),
     sejarah: daftarBersih(statis.sejarah),
+    alumniPtn: { jumlah: "", tahun: "", keterangan: "" },
     statistik: statis.statistik.map((x) => ({ label: x.label, nilai: bersih(x.nilai) })),
   };
   if (!supabaseAktif) return fallback;
@@ -125,6 +130,11 @@ export const getProfil = cache(async (): Promise<Profil> => {
       { label: "Guru & tendik", nilai: bersih(data.jumlah_guru) },
       { label: "Ekstrakurikuler", nilai: bersih(data.jumlah_ekskul) },
     ],
+    alumniPtn: {
+      jumlah: bersih((data as Record<string, string>).alumni_ptn),
+      tahun: bersih((data as Record<string, string>).alumni_ptn_tahun),
+      keterangan: bersih((data as Record<string, string>).alumni_ptn_keterangan),
+    },
   };
 });
 
@@ -137,6 +147,7 @@ type BarisBerita = {
   ringkasan: string;
   isi: string;
   gambar_url: string;
+  is_placeholder?: boolean;
 };
 const keBerita = (b: BarisBerita): BeritaItem => ({
   id: b.id,
@@ -147,8 +158,10 @@ const keBerita = (b: BarisBerita): BeritaItem => ({
   ringkasan: b.ringkasan,
   isi: paragraf(b.isi),
   gambar: b.gambar_url || undefined,
+  gambarSementara: b.is_placeholder === true,
 });
-const KOLOM_BERITA = "id, slug, judul, tanggal, kategori, ringkasan, isi, gambar_url";
+// "*" agar tetap berjalan sebelum migrasi Fase 20 (kolom is_placeholder)
+const KOLOM_BERITA = "*";
 
 export const getBerita = cache(async (limit?: number): Promise<BeritaItem[]> => {
   if (!supabaseAktif) {
@@ -254,7 +267,7 @@ export const getGaleri = cache(async (): Promise<FotoItem[]> => {
   }
   const { data, error } = await supabasePublik()
     .from("galeri")
-    .select("id, judul, gambar_url, urutan")
+    .select("*")
     .is("deleted_at", null)
     .order("urutan", { ascending: true })
     .order("created_at", { ascending: false });
@@ -262,14 +275,14 @@ export const getGaleri = cache(async (): Promise<FotoItem[]> => {
     logGagal("galeri", error);
     return [];
   }
-  return data.map((g) => ({ id: g.id, judul: g.judul, gambar: g.gambar_url }));
+  return data.map((g) => ({ id: g.id, judul: g.judul, gambar: g.gambar_url, sementara: g.is_placeholder === true }));
 });
 
 /* ------------------------------------------------------------------ */
 /* Pengaturan situs: hero, layanan, footer, SEO                        */
 /* ------------------------------------------------------------------ */
 
-export type SlideHero = { id: string; gambar: string; gambarHp?: string; video?: string; alt: string; fokus: string; skala: number; tautan?: string };
+export type SlideHero = { id: string; gambar: string; gambarHp?: string; video?: string; alt: string; fokus: string; skala: number; tautan?: string; sementara?: boolean };
 export type TautanLayanan = { nama: string; keterangan: string; url: string };
 export type SosialMedia = { nama: string; akun: string; url: string };
 export type Situs = {
@@ -332,6 +345,7 @@ export const getSitus = cache(async (): Promise<Situs> => {
   const slides: SlideHero[] = (slide ?? []).map((x) => ({
     id: x.id,
     gambar: x.gambar_url,
+    sementara: (x as { is_placeholder?: boolean }).is_placeholder === true,
     gambarHp: x.gambar_hp_url || undefined,
     video: (x as { video_url?: string }).video_url || undefined,
     alt: x.alt,
@@ -432,4 +446,56 @@ export const getRekomendasiBuku = cache(async (n: number): Promise<BukuRingkas[]
     .filter((b) => b.rekomendasi)
     .slice(0, n)
     .map((b) => ({ id: b.id, judul: b.judul, pengarang: b.pengarang, kategori: b.kategori, sampul: b.sampul_url, tersedia: b.tersedia, total: b.total }));
+});
+
+/* ------------------------------------------------------------------ */
+/* Buku tahunan (Fase 20): prestasi, SPMB, penanggung jawab bidang     */
+/* Semua toleran bila migrasi belum dijalankan → data kosong, bagian    */
+/* terkait disembunyikan (tidak ada data contoh di produksi).          */
+/* ------------------------------------------------------------------ */
+
+export const TINGKAT_PRESTASI = ["Sekolah", "Kota", "Provinsi", "Nasional", "Internasional"] as const;
+export type Prestasi = { id: string; peringkat: string; namaLomba: string; namaSiswa: string; tingkat: string; tanggal: string; foto?: string; fotoSementara: boolean };
+
+export const getPrestasi = cache(async (batas = 40): Promise<Prestasi[]> => {
+  if (!supabaseAktif) return [];
+  const { data, error } = await supabasePublik().from("prestasi").select("*").is("deleted_at", null).eq("terbit", true).order("tanggal", { ascending: false }).limit(batas);
+  if (error) {
+    if (error.code !== "42P01" && error.code !== "PGRST205") logGagal("prestasi", error);
+    return [];
+  }
+  return (data ?? []).map((p) => ({
+    id: p.id,
+    peringkat: p.peringkat,
+    namaLomba: p.nama_lomba,
+    namaSiswa: p.nama_siswa,
+    tingkat: p.tingkat,
+    tanggal: p.tanggal,
+    foto: p.foto_url || undefined,
+    fotoSementara: p.is_placeholder === true,
+  }));
+});
+
+export type LangkahSpmb = { langkah: string; tanggal: string };
+export type SpmbInfo = { aktif: boolean; tahun: string; judul: string; ringkasan: string; jadwal: LangkahSpmb[]; tautanJalur: string; tautanTanya: string };
+
+export const getSpmbInfo = cache(async (): Promise<SpmbInfo | null> => {
+  if (!supabaseAktif) return null;
+  const { data, error } = await supabasePublik().from("spmb_info").select("*").eq("id", 1).maybeSingle();
+  if (error || !data) return null;
+  const jadwal = Array.isArray(data.jadwal)
+    ? (data.jadwal as unknown[])
+        .map((x) => (x && typeof x === "object" ? (x as Record<string, unknown>) : {}))
+        .map((x) => ({ langkah: typeof x.langkah === "string" ? x.langkah.trim() : "", tanggal: typeof x.tanggal === "string" ? x.tanggal : "" }))
+        .filter((x) => x.langkah)
+    : [];
+  return { aktif: data.aktif === true, tahun: data.tahun, judul: data.judul, ringkasan: data.ringkasan, jadwal, tautanJalur: data.tautan_jalur, tautanTanya: data.tautan_tanya };
+});
+
+export type PenanggungJawab = { penanggungJawab: string; foto?: string; fotoSementara: boolean };
+export const getPortalBidang = cache(async (): Promise<Record<string, PenanggungJawab>> => {
+  if (!supabaseAktif) return {};
+  const { data, error } = await supabasePublik().from("portal_bidang").select("*");
+  if (error) return {};
+  return Object.fromEntries((data ?? []).map((b) => [b.kunci, { penanggungJawab: b.penanggung_jawab, foto: b.foto_url || undefined, fotoSementara: b.is_placeholder === true }]));
 });

@@ -77,9 +77,9 @@ const cek = (n, l, d) => {
 
 // 1. pengunjung
 await keluarAkun();
-const anon = await js(`({kartu:[...document.querySelectorAll(".pd-pintu h3")].map(h=>h.childNodes[0].textContent.trim()), sistem:document.body.innerText.includes("Administrasi Sistem"), surel:/@sman22\\.test|"user_?[iI]d"|"izin":\\[|"peran":\\[/.test(document.documentElement.outerHTML)})`);
+const anon = await js(`({kartu:[...document.querySelectorAll(".pd-peran h3, .pd-daftar strong")].map(h=>h.childNodes[0].textContent.trim()), sistem:document.body.innerText.includes("Administrasi Sistem"), surel:/@sman22\\.test|"user_?[iI]d"|"izin":\\[|"peran":\\[/.test(document.documentElement.outerHTML)})`);
 cek("pengunjung: 13 kartu bidang terlihat, administrasi sistem tersembunyi, tanpa data pribadi di payload", anon.kartu.length === 13 && !anon.sistem && !anon.surel, anon);
-await klik(`[...document.querySelectorAll(".pd-pintu")].find(a=>a.textContent.includes("Kurikulum"))`);
+await klik(`[...document.querySelectorAll(".pd-peran a, .pd-daftar a")].find(a=>a.textContent.includes("Kurikulum"))`);
 await sampai(`location.pathname==="/admin/login"`);
 const u1 = await url();
 cek("kartu Kurikulum (belum masuk) → login bersama sebagai staf dengan tujuan kembali", u1.includes("sebagai=staf") && u1.includes("lanjut=%2Fportal-digital%2Fbuka%2Fkurikulum"), u1);
@@ -99,7 +99,7 @@ cek("humas memilih Humas → ruang kerja Humas", (await url()).startsWith("/admi
 const aksen = await js(`({bidang:document.querySelector(".ruang-bidang")?.dataset.bidang, pita:document.body.innerText.includes("Ruang kerja · Humas")})`);
 cek("aksen bidang di ruang kerja (warna Humas + pita nama), tanpa mengubah hak", aksen.bidang === "humas" && aksen.pita, aksen);
 await buka("/portal-digital");
-const status = await js(`({akun:document.querySelector(".pd-akun")?.innerText, milik:[...document.querySelectorAll(".pd-pintu")].filter(a=>a.querySelector(".pd-status")).map(a=>a.querySelector("h3").childNodes[0].textContent.trim())})`);
+const status = await js(`({akun:document.querySelector(".pd-akun")?.innerText, milik:[...document.querySelectorAll(".pd-peran a, .pd-daftar a")].filter(a=>a.querySelector(".pd-status")).map(a=>a.querySelector("h3, strong").childNodes[0].textContent.trim())})`);
 cek("portal menampilkan status akun & menandai bidang yang menjadi akses pengguna", /Masuk sebagai/.test(status.akun ?? "") && status.milik.includes("Humas") && !status.milik.includes("Kurikulum"), status);
 await kirim("Page.captureScreenshot", { format: "jpeg", quality: 78 }).then((g) => fs.writeFileSync(path.join(keluar, "portal-masuk-humas.jpg"), Buffer.from(g.result.data, "base64")));
 

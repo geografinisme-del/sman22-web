@@ -1,6 +1,7 @@
 import "server-only";
 import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getPengumuman, getProfil, getRekomendasiBuku, getSitus, getVisualAkun } from "@/lib/data";
 import { susunBagian, tataEfektif, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
+import { SusunanBuku } from "@/components/buku/SusunanBuku";
 import type { WidgetInstans } from "@/lib/tampilan/widget";
 import { fotoPembukaDari, IsiAgenda, IsiBerita, IsiLayanan, IsiPengumuman, WGaleri, WHero, WKontak, WPerpus, WPrestasi, WProfil, WProgram, type DataBeranda } from "./Widget";
 
@@ -44,6 +45,8 @@ async function muatData(k: Konfigurasi): Promise<DataBeranda> {
  * Latar bagian berselang-seling otomatis; pasangan widget yang bersebelahan dirender dua kolom.
  */
 export async function SusunanBeranda({ konfig }: { konfig: Konfigurasi }) {
+  // tema Buku Tahunan memakai templat bagian tersendiri dengan konfigurasi widget yang sama
+  if (konfig.tema === "buku") return <SusunanBuku konfig={konfig} />;
   const d = await muatData(konfig);
   const bagian = susunBagian(konfig);
   const sudahTampil = new Set([...fotoPembukaDari(d).map((f) => f.src), "/images/gedung.jpg"]);
