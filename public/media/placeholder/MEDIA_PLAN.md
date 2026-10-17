@@ -1,8 +1,10 @@
 # Rencana media sementara — tema "Buku Tahunan"
 
-Folder ini untuk **ilustrasi sementara** sampai foto asli sekolah tersedia. Status saat ini:
-**belum ada berkas stok yang diunduh** (perlu persetujuan pemilik proyek). Semua slot memakai foto asli
-sekolah yang sudah ada di `public/images/` atau fallback blok krem (#E3D9C6, garis emas tipis, "22" samar).
+Folder ini untuk **ilustrasi sementara** sampai foto asli sekolah tersedia. Status (18 Okt 2026):
+slot hero, berita, dan galeri sudah terisi foto Unsplash (lihat `CREDITS.md`). Foto stok **hanya** dipakai
+oleh data contoh (`scripts/uji-e2e/seed-buku.sql`, semuanya `is_placeholder = true`); situs produksi tetap
+memakai foto asli di `public/images/` dan fallback blok krem (#E3D9C6, garis emas tipis, "22" samar).
+Kartu Portal (guru/siswa/orang tua) memakai foto asli sekolah, jadi slot `portal-*` tidak diisi stok.
 
 ## Aturan
 
@@ -21,14 +23,14 @@ sekolah yang sudah ada di `public/images/` atau fallback blok krem (#E3D9C6, gar
 
 | Berkas | Dipakai di | Rasio / ukuran | Prompt / kata kunci (EN) |
 | --- | --- | --- | --- |
-| `hero-1.jpg` | Beranda — hero | 16:9, 2400 px | Wide shot of an Indonesian public high school courtyard at golden hour, students seen from far behind walking, warm natural light, documentary photography, no readable text, no logos |
+| `hero-1.webp` ✓ | Beranda — hero | 16:9, 2400 px | Wide shot of an Indonesian public high school courtyard at golden hour, students seen from far behind walking, warm natural light, documentary photography, no readable text, no logos |
 | `hero-loop.mp4` | Beranda — video hero (opsional) | 16:9, 1920 px, ≤ 8 s, ≤ 4 MB, tanpa audio | Slow dolly shot across an empty school corridor with sunlight through windows, calm, documentary, seamless loop |
-| `berita-1.jpg` | Kabar utama | 3:2, 1600 px | Students' hands working on a science experiment on a wooden lab bench, shallow depth of field, no faces |
-| `berita-2.jpg` | Kabar kecil | 3:2, 800 px | Stack of textbooks and notebooks on a classroom desk by a window, morning light |
-| `berita-3.jpg` | Kabar kecil | 3:2, 800 px | School flag ceremony seen from behind at a distance, soft morning haze, no identifiable faces |
-| `berita-4.jpg` | Kabar kecil | 3:2, 800 px | Basketball on an outdoor school court with long shadows, late afternoon |
-| `galeri-1.jpg` | Kehidupan siswa (besar) | 4:5, 1600 px | Group of teenagers in a school hall seen from behind during a performance, stage lights, candid |
-| `galeri-2.jpg` … `galeri-5.jpg` | Kehidupan siswa (kecil) | 1:1, 800 px | Candid school-life details: library shelves, art supplies, sports shoes on a field, musical instruments — no faces, no text |
+| `berita-1.webp` ✓ | Kabar utama | 3:2, 1600 px | Students' hands working on a science experiment on a wooden lab bench, shallow depth of field, no faces |
+| `berita-2.webp` ✓ | Kabar kecil | 3:2, 800 px | Stack of textbooks and notebooks on a classroom desk by a window, morning light |
+| `berita-3.webp` ✓ | Kabar kecil | 3:2, 800 px | School flag ceremony seen from behind at a distance, soft morning haze, no identifiable faces |
+| `berita-4.webp` ✓ | Kabar kecil | 3:2, 800 px | Basketball on an outdoor school court with long shadows, late afternoon |
+| `galeri-1.webp` ✓ | Kehidupan siswa (besar) | 4:5, 1600 px | Group of teenagers in a school hall seen from behind during a performance, stage lights, candid |
+| `galeri-2.webp` … `galeri-5.webp` ✓ | Kehidupan siswa (kecil) | 1:1, 800 px | Candid school-life details: library shelves, art supplies, sports shoes on a field, musical instruments — no faces, no text |
 | `portal-guru.jpg` | Portal — kartu Guru | 4:3, 1200 px | Teacher's desk with lesson plans, laptop and coffee, warm light, no faces |
 | `portal-siswa.jpg` | Portal — kartu Siswa | 4:3, 1200 px | Backpacks and notebooks on a school bench, bright daylight |
 | `portal-ortu.jpg` | Portal — kartu Orang Tua | 4:3, 1200 px | School gate in the morning seen from the street, parents' silhouettes far away |
