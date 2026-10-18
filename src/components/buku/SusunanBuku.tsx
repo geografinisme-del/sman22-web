@@ -4,6 +4,7 @@ import path from "node:path";
 import { WPerpus, WProfil } from "@/components/widget/Widget";
 import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getPengumuman, getPrestasi, getProfil, getRekomendasiBuku, getSitus, getSpmbInfo, getVisualAkun } from "@/lib/data";
 import { susunBagian, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
+import { GerakBuku } from "./GerakBuku";
 import { BkAksesKontak, BkAngka, BkHero, BkKabar, BkKehidupan, BkPengumumanAgenda, BkPrestasi, BkSpmb } from "./Buku";
 import type { FotoHero } from "./HeroFoto";
 
@@ -78,7 +79,7 @@ export async function SusunanBuku({ konfig }: { konfig: Konfigurasi }) {
   };
 
   return (
-    <div className="lp lp-buku">
+    <GerakBuku>
       {susunBagian(konfig).map((k) => {
         const kunci = k.map((w) => w.id).join("+");
         const isi = bagian(k);
@@ -89,7 +90,7 @@ export async function SusunanBuku({ konfig }: { konfig: Konfigurasi }) {
           </div>
         ) : null;
       })}
-    </div>
+    </GerakBuku>
   );
 
   function bagian(k: ReturnType<typeof susunBagian>[number]) {

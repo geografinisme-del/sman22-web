@@ -10,7 +10,7 @@ import { sekolah } from "@/content/sekolah";
 
 export function Brand({ sub = "Kota Bandung · Sejak 1989" }: { sub?: string }) {
   return (
-    <Link href="/" className="brand" aria-label={`Beranda ${sekolah.nama}`}>
+    <Link href="/" className="brand" aria-label={`Beranda ${sekolah.nama}`} prefetch={false}>
       <Image src={sekolah.logo} alt="" width={502} height={497} sizes="48px" priority className="brand-logo" />
       <span className="min-w-0">
         <strong>{sekolah.nama}</strong>

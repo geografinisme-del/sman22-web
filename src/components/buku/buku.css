@@ -188,15 +188,15 @@
   border-bottom: 1px solid var(--color-ink);
   position: relative;
 }
-/* satu ruas emas pendek di garis bawah judul bagian (aksen emas yang jarang) */
-.bk-kepala::after {
-  content: "";
+/* satu ruas emas 160px di garis bawah judul bagian (aksen emas yang jarang); digambar oleh GerakBuku */
+.bk-garis-emas {
   position: absolute;
   left: 0;
   bottom: -1px;
-  width: 120px;
+  width: 160px;
   height: 2px;
   background: var(--color-accent);
+  transform-origin: left center;
 }
 .bk-kepala-gelap {
   border-bottom-color: color-mix(in srgb, var(--color-paper) 30%, transparent);
@@ -251,17 +251,36 @@
   overflow: hidden;
   background: var(--color-ink);
 }
-.hb-foto {
+/* lapisan foto (parallax) → viewport Embla → baris slide. Tanpa JS: slide pertama tampil utuh. */
+.hb-lapisan {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
+  will-change: transform;
 }
-.hb-foto img {
-  opacity: 0;
-  transition: opacity 600ms var(--ease-keluar);
+.hb-embla {
+  height: 100%;
+  overflow: hidden;
 }
-.hb-foto img[data-aktif] {
-  opacity: 1;
+.hb-embla-isi {
+  display: flex;
+  height: 100%;
+}
+.hb-slide {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 0;
+  height: 100%;
+}
+/* parallax hero hanya untuk desktop ber-hover: lapisan 160px lebih tinggi (ke atas) agar geser 0→140px
+   tidak pernah memperlihatkan celah. Kondisi sama persis dengan gsap.matchMedia di GerakBuku. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 900px) and (hover: hover) {
+  .hb-lapisan {
+    top: -160px;
+  }
+}
+.hb-label {
+  z-index: 1;
 }
 .hb-video {
   position: absolute;
@@ -270,11 +289,13 @@
   height: 100%;
   object-fit: cover;
 }
-/* gradasi gelap hanya di bawah (tempat teks) — foto tetap terlihat natural */
-.hb-foto::after {
+/* gradasi gelap hanya di bawah (tempat teks) — tidak ikut parallax agar teks selalu terbaca */
+.bk-hero::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: -1;
+  pointer-events: none;
   background: linear-gradient(0deg, rgb(18 16 14 / 0.86) 0%, rgb(18 16 14 / 0.55) 34%, rgb(18 16 14 / 0) 62%);
 }
 .bk-hero-isi {
@@ -940,5 +961,95 @@
   .bk-mozaik > li:first-child > figure > .media-slot {
     min-height: 0;
     aspect-ratio: 3 / 2;
+  }
+}
+
+/* =====================================================================
+ * Tahap 4 — gerak (GSAP). Tidak ada keadaan awal tersembunyi di CSS.
+ * ===================================================================== */
+/* masker baris judul hero: baris naik dari balik masker */
+.bk-masker {
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+  vertical-align: bottom;
+}
+
+/* header mengecil saat digulir (0,3 s) */
+[data-tema="buku"] .lp-header-isi {
+  transition: min-height 300ms var(--ease-keluar);
+}
+[data-tema="buku"] .lp-header[data-kecil] .lp-header-isi {
+  min-height: 52px;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tema="buku"] .lp-header-isi {
+    transition: none;
+  }
+}
+
+/* galeri: slider Embla di bawah 1024px; tanpa JS = gulir-geser CSS */
+@media (max-width: 1023px) {
+  .bk-geser-viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .bk-geser-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .bk-geser-viewport.geser-aktif {
+    overflow: hidden;
+  }
+  .bk-geser .bk-mozaik {
+    display: flex;
+    gap: 0;
+    margin-right: -16px;
+  }
+  .bk-geser .bk-mozaik > li,
+  .bk-geser .bk-mozaik > li:first-child {
+    flex: 0 0 85%;
+    min-width: 0;
+    padding-right: 16px;
+    grid-column: auto;
+    scroll-snap-align: start;
+  }
+  .bk-geser .bk-mozaik > li > figure > .media-slot,
+  .bk-geser .bk-mozaik > li:first-child > figure > .media-slot {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+}
+.bk-geser-kontrol {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--color-paper) 80%, transparent);
+}
+.bk-geser-kontrol button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid color-mix(in srgb, var(--color-paper) 45%, transparent);
+  border-radius: var(--radius-1);
+  color: var(--color-paper);
+  transition: border-color 200ms var(--ease-keluar);
+}
+.bk-geser-kontrol button:hover:not(:disabled),
+.bk-geser-kontrol button:focus-visible {
+  border-color: var(--color-paper);
+}
+.bk-geser-kontrol button:disabled {
+  opacity: 0.35;
+}
+@media (min-width: 1024px) {
+  .bk-geser-kontrol {
+    display: none;
   }
 }

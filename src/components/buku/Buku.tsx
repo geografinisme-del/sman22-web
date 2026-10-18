@@ -13,6 +13,7 @@ import type { AgendaItem, BeritaItem, FotoItem, PengumumanItem, Prestasi, Profil
 import { formatTanggal } from "@/lib/format";
 import { slugProgram } from "@/lib/program";
 import type { KartuBento } from "@/lib/tema";
+import { GeserGaleri } from "./GeserGaleri";
 import { HeroFoto, type FotoHero } from "./HeroFoto";
 import { SaringTingkat } from "./SaringTingkat";
 
@@ -25,6 +26,7 @@ function Kepala({ id, judul, tautan, gelap }: { id: string; judul: string; tauta
   return (
     <div className={`bk-kepala ${gelap ? "bk-kepala-gelap" : ""}`}>
       <h2 id={id}>{judul}</h2>
+      <span className="bk-garis-emas" aria-hidden />
       {tautan && (
         <Link href={tautan.href} className="bk-tautan">
           {tautan.label} <span aria-hidden>→</span>
@@ -42,14 +44,19 @@ export function BkHero({ foto, video, fakta }: { foto: FotoHero[]; video?: strin
       <div className="lp-wadah bk-hero-isi">
         <p className="bk-label bk-label-terang">Kota Bandung · Sejak {sekolah.tahunBerdiri}</p>
         <h1 id="judul-sekolah">
-          <span className="bk-baris">SMA Negeri</span> <span className="bk-baris">22 Bandung</span>
+          <span className="bk-masker">
+            <span className="bk-baris">SMA Negeri</span>
+          </span>{" "}
+          <span className="bk-masker">
+            <span className="bk-baris">22 Bandung</span>
+          </span>
         </h1>
         {fakta && <p className="bk-hero-fakta">{fakta}</p>}
         <div className="bk-hero-aksi">
-          <Link href="/spmb" className="bk-tombol">
+          <Link href="/spmb" className="bk-tombol" prefetch={false}>
             Informasi SPMB
           </Link>
-          <Link href="/profil" className="bk-tautan-terang">
+          <Link href="/profil" className="bk-tautan-terang" prefetch={false}>
             Kenali sekolah kami <span aria-hidden>→</span>
           </Link>
         </div>
@@ -75,7 +82,7 @@ export function BkAngka({ profil }: { profil: Profil }) {
       <dl className="lp-wadah bk-angka-isi">
         {tampil.map((n) => (
           <div key={n.label}>
-            <dd className="bk-angka-nilai" data-angka={n.nilai}>
+            <dd className="bk-angka-nilai" data-angka={n.nilai} data-hitung={n.label === "Tahun berdiri" ? undefined : ""}>
               {n.nilai}
             </dd>
             <dt>{n.label}</dt>
@@ -306,13 +313,13 @@ export function BkKehidupan({ galeri, p, program }: { galeri: FotoItem[]; p: P; 
       <div className="lp-wadah">
         <Kepala id="judul-siswa" judul={teks(p.judul, "Kehidupan Siswa")} tautan={{ href: "/galeri", label: "Galeri kegiatan" }} gelap />
         {foto.length > 0 && (
-          <ul className={`bk-mozaik bk-mozaik-${foto.length}`}>
+          <GeserGaleri jumlah={foto.length}>
             {foto.map((f, n) => (
               <li key={f.src}>
-                <MediaSlot src={f.src} alt={f.judul} caption={f.judul} ratio="isi" isPlaceholder={f.sementara} sizes={n === 0 ? "(min-width: 1024px) 34vw, 100vw" : "(min-width: 1024px) 22vw, 50vw"} />
+                <MediaSlot src={f.src} alt={f.judul} caption={f.judul} ratio="isi" isPlaceholder={f.sementara} sizes={n === 0 ? "(min-width: 1024px) 34vw, 85vw" : "(min-width: 1024px) 22vw, 85vw"} />
               </li>
             ))}
-          </ul>
+          </GeserGaleri>
         )}
         {program && (
           <ol className="bk-program">

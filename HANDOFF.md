@@ -10,7 +10,7 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 | Sistem gerak (motion) situs publik | `desain-editorial-sekolah` | Selesai, di-commit, belum di-push |
 | Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `main` (sudah di produksi) | Kode tayang; **2 migrasi belum dijalankan di produksi** (lihat bawah) |
 | Portal Digital 22, warna bidang, tema "Sekolah Berwarna", navigasi berkelompok | `portal-digital-22` | Selesai & diuji lokal, di-commit, **belum di-push** |
-| "Buku tahunan yang hidup": token (Tahap 1), beranda majalah (Tahap 2), Portal Digital 22 ala buku (Tahap 3) | `buku-tahunan` | Selesai & diuji lokal, di-commit, **belum di-push**; migrasi 20261210 belum di produksi. Tahap 4 (GSAP/Embla) menunggu persetujuan |
+| "Buku tahunan yang hidup": token (Tahap 1), beranda majalah (Tahap 2), Portal Digital 22 (Tahap 3), gerak GSAP/Embla (Tahap 4) | `buku-tahunan` | Selesai & diuji lokal, di-push ke **pratinjau** Vercel (bukan produksi); migrasi 20261210 belum di produksi |
 
 Detail status per modul: **MODULE_STATUS.md**.
 
@@ -197,7 +197,8 @@ Konsep: majalah/koran sekolah, bukan SaaS. Mockup acuan: `Beranda.pdf` & `Portal
 - `<MediaSlot>` (`src/components/MediaSlot.tsx`): foto, ilustrasi berlabel "Ilustrasi sementara", atau fallback blok krem bergaris emas + "22".
 - Kolom `is_placeholder` (bawaan **false** — menyimpang dari brief yang meminta true, karena foto lama & unggahan admin adalah foto asli).
 - Ringkasan admin menampilkan jumlah media sementara; tombol "Tandai foto asli" di Berita, Galeri, Prestasi.
-- `public/media/placeholder/MEDIA_PLAN.md` (slot + prompt) & `CREDITS.md`. **Belum ada stok foto yang diunduh** (perlu izin).
+- `public/media/placeholder/`: 10 foto Unsplash (WebP, hero ≤ 400 KB, lainnya ≤ 200 KB) — sumber & fotografer di `CREDITS.md`.
+  Hanya dipakai data contoh `scripts/uji-e2e/seed-buku.sql` (semua `is_placeholder = true`, menolak jalan di database tanpa data [UJI]).
 
 ### Portal Digital 22 (Tahap 3)
 - 3 kartu foto (Guru, Siswa, Orang Tua), ruang kerja manajemen = daftar 2 kolom satu warna (inisial atau foto PJ bulat),
@@ -207,3 +208,26 @@ Konsep: majalah/koran sekolah, bukan SaaS. Mockup acuan: `Beranda.pdf` & `Portal
 ### Migrasi baru
 3. `supabase/migrations/20261210000000_buku_tahunan.sql` — `prestasi`, `spmb_info`, `portal_bidang`, kolom alumni PTN di `profil_sekolah`,
    `is_placeholder`. Uji: `supabase/tests/rls_fase20_test.sql`. Tanpa migrasi, beranda tetap jalan (bagian terkait disembunyikan) dan halaman admin menampilkan pesan "jalankan migrasi".
+
+### Gerak (Tahap 4) — `src/components/buku/`
+- `GerakBuku.tsx` (pembungkus ringan) memuat `MesinGerak.tsx` (GSAP + ScrollTrigger + CustomEase, `useGSAP`) sebagai
+  potongan terpisah **setelah LCP foto hero tercatat** dan peramban senggang; pengguna reduced-motion tidak mengunduhnya.
+- Easing tunggal `cubic-bezier(0.22, 1, 0.36, 1)` (CustomEase "buku"). Semua keadaan awal diset di dalam `useGSAP`;
+  CSS tidak pernah menyembunyikan konten. `gsap.matchMedia`: animasi hanya `(prefers-reduced-motion: no-preference)`,
+  parallax hanya `(min-width: 900px) and (hover: hover)`; dibersihkan saat unmount.
+- Isi: pembuka hero (foto 1.08→1 1,6 s; baris judul naik dari masker `.bk-masker` 0,8 s stagger 0,12 s), garis emas
+  160px (`.bk-garis-emas`) di Kabar/Prestasi/Kehidupan, buka-klip foto berita & galeri (sekali), hitung naik pita angka
+  (bukan tahun berdiri), garis luar "22" SPMB (stroke-dashoffset, scrub), parallax hero (lapisan 0→140px/700px; lapisan
+  `.hb-lapisan` 160px lebih tinggi lewat media query yang sama) & teks hero (0→-60px, opacity 1→0,25 /600px), parallax
+  "22" SPMB (+90→-90px). Pemicu di bawah lipatan dibuat saat senggang (tanpa long task).
+- Pembuka hero hanya dijalankan bila halaman dibuka di atas dan mesin siap < 4 s (perangkat lambat tidak melihat teks
+  "hilang lalu muncul"). Teks isi, daftar pengumuman, dan footer tidak dianimasikan.
+- `HeaderMengecil.tsx`: atribut `data-kecil` pada header setelah gulir 24px (transisi CSS 0,3 s).
+- Embla: `HeroFoto.tsx` (aktif hanya bila > 1 foto) & `GeserGaleri.tsx` (slider < 1024px, aktif saat mendekati layar;
+  tanpa JS = gulir-geser CSS scroll-snap; ≥ 1024px tetap mozaik).
+- Next 16: `priority` pada `next/image` sudah usang → hero memakai `loading="eager"` + `fetchPriority="high"`.
+  Prefetch dimatikan pada tautan hero/pita & logo (logo = halaman yang sedang dibuka).
+- Uji: `scripts/uji-e2e/uji-gerak.mjs` (tanpa JS, reduced-motion, 390px tanpa parallax) &
+  `scripts/tangkap-gulir.mjs` (tangkapan posisi gulir + cek celah hero / elemen tersembunyi / luber).
+- Lighthouse ponsel (build produksi lokal, 18 Okt 2026): simulasi 89–90 (4 dari 5 putaran), throttling nyata 85–87,
+  CLS 0. Satu putaran 76 karena lukisan pertama Chrome headless lokal tertunda ±1 s (juga terjadi di /kontak; bukan kode).

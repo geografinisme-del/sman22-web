@@ -88,5 +88,5 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 | Beranda tema Buku Tahunan (Tahap 2) | Selesai* | Tema bawaan. *Prestasi, SPMB, alumni butuh migrasi 20261210 + data dari admin. |
 | Admin Prestasi & Alumni, SPMB Beranda, Penanggung Jawab Portal | Selesai* | *Butuh migrasi 20261210. |
 | Portal Digital 22 ala buku (Tahap 3) | Selesai | Tanpa warna per bidang. |
-| Media sementara | Sebagian | Komponen, penanda, peringatan admin siap; berkas stok belum diunduh (perlu izin). |
-| Tahap 4 (GSAP, Embla, animasi) | Belum | Menunggu persetujuan Tahap 1–3. |
+| Media sementara | Selesai | 10 foto Unsplash (CREDITS.md) untuk data contoh; semua is_placeholder = true. |
+| Tahap 4 (GSAP, Embla, animasi) | Selesai | Progressive enhancement, reduced-motion, parallax desktop saja; Lighthouse ponsel 89–90 (simulasi), CLS 0. |

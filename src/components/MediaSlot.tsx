@@ -41,7 +41,7 @@ export function MediaSlot({
     <div className={`media-slot ${isi || ratio === "isi" ? "media-isi" : ""}`} style={isi || ratio === "isi" ? undefined : { aspectRatio: ratio }}>
       {src ? (
         <>
-          <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className="object-cover" style={fokus ? { objectPosition: fokus } : undefined} />
+          <Image src={src} alt={alt} fill sizes={sizes} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} className="object-cover" style={fokus ? { objectPosition: fokus } : undefined} />
           {video && (
             <video className="media-video" src={video} poster={src} muted loop playsInline autoPlay preload="none" aria-hidden data-video-latar>
               {/* video hanya hiasan; isi utama tetap foto poster + teks */}

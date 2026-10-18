@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PengamatMuncul } from "@/components/gerak/PengamatMuncul";
+import { HeaderMengecil } from "@/components/buku/HeaderMengecil";
 import { PengaturOverlay } from "@/components/gerak/PengaturOverlay";
 import type { InfoPrioritas } from "@/components/gerak/ModalPrioritas";
 import type { Informasi } from "@/components/gerak/DialogInformasi";
@@ -64,7 +65,7 @@ export async function KerangkaPublik({ konfig, halamanUtama = "/", pita, childre
           <p className="lp-wadah">
             <span className="pita-label">Pengumuman</span>
             <span className="pita-teks">{pitaPengumuman.judul}</span>
-            <Link href={`/agenda#pengumuman-${pitaPengumuman.id}`} className="pita-tautan">
+            <Link href={`/agenda#pengumuman-${pitaPengumuman.id}`} className="pita-tautan" prefetch={false}>
               Lihat
             </Link>
           </p>
@@ -76,6 +77,7 @@ export async function KerangkaPublik({ konfig, halamanUtama = "/", pita, childre
       </main>
       <Footer />
       <PengamatMuncul />
+      {buku && <HeaderMengecil />}
       {/* lapisan overlay memakai gaya situs publik (.lp) walau berada di luar <main> */}
       <div className="lp">
         <PengaturOverlay
