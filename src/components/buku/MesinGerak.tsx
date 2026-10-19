@@ -47,11 +47,13 @@ export default function MesinGerak({ lingkup }: { lingkup: RefObject<HTMLDivElem
             tl.from(q(".hb-slide:first-child img"), { scale: 1.08, duration: 1.6, clearProps: "transform" }, 0)
               .from(q(".bk-hero .bk-baris"), { yPercent: 110, duration: 0.8, stagger: 0.12 }, 0.1)
               .from(q(".bk-hero .bk-label"), { opacity: 0, y: 12, duration: 0.6 }, 0.2)
-              .from(q(".bk-hero-fakta, .bk-hero-aksi"), { opacity: 0, y: 16, duration: 0.7, stagger: 0.1 }, 0.55);
+              .from(q(".bk-hero-fakta, .bk-hero-aksi"), { opacity: 0, y: 16, duration: 0.7, stagger: 0.1 }, 0.55)
+              // keterangan foto muncul paling akhir
+              .from(q(".hb-keterangan, .hb-label"), { opacity: 0, duration: 0.6 }, 1.0);
           }
 
           const spmb = akar.querySelector<HTMLElement>(".bk-spmb");
-          /* 6. Parallax — hanya 2 titik, hanya desktop dengan hover */
+          /* 6. Parallax — hanya 3 tempat (hero, "22" SPMB, foto dalam bingkai), hanya desktop dengan hover */
           if (paralaks && hero) {
             gsap.to(q(".hb-lapisan"), { y: 140, ease: "none", scrollTrigger: { start: 0, end: 700, scrub: true } });
             gsap.to(q(".bk-hero-isi"), { y: -60, opacity: 0.25, ease: "none", scrollTrigger: { start: 0, end: 600, scrub: true } });
@@ -65,13 +67,21 @@ export default function MesinGerak({ lingkup }: { lingkup: RefObject<HTMLDivElem
                 gsap.from(garis, { scaleX: 0, duration: 0.9, ease: EASE, scrollTrigger: { trigger: garis, start: "top 95%", once: true } });
               });
 
-              /* 3. Foto berita & galeri: buka dari bawah + skala, sekali saja */
+              /* 3. Foto berita & galeri: buka dari bawah + skala 1.06→1, sekali saja.
+                 6c. Parallax foto di dalam bingkai (desktop): foto 1.2x lalu bergeser vertikal selama bingkai
+                     melintasi layar; foto besar pelan (-5%→5%), foto kecil cepat (-9%→9%). Bingkai & keterangan diam.
+                 Hover zoom 1.04 memakai properti CSS `scale` (terpisah dari transform GSAP), jadi tidak bentrok. */
               q(".bk-foto-berita .media-slot, .bk-mozaik .media-slot").forEach((slot) => {
                 const img = slot.querySelector("img");
+                const besar = Boolean(slot.closest(".bk-foto-berita, .bk-mozaik > li:first-child"));
+                const dasar = paralaks && img ? 1.2 : 1;
+                if (paralaks && img) {
+                  gsap.set(img, { scale: dasar });
+                  gsap.fromTo(img, { yPercent: besar ? -5 : -9 }, { yPercent: besar ? 5 : 9, ease: "none", scrollTrigger: { trigger: slot, start: "top bottom", end: "bottom top", scrub: true } });
+                }
                 const tl = gsap.timeline({ scrollTrigger: { trigger: slot, start: "top bottom", once: true }, defaults: { duration: 0.9, ease: EASE } });
                 tl.fromTo(slot, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", clearProps: "clipPath" }, 0);
-                // transform dibersihkan agar efek hover CSS (scale 1.04) tetap bekerja
-                if (img) tl.from(img, { scale: 1.06, clearProps: "transform" }, 0);
+                if (img) tl.fromTo(img, { scale: dasar * 1.06 }, { scale: dasar }, 0);
               });
 
               /* 4. Pita angka: hitung naik sekali (1,2 s) */

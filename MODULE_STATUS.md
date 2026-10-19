@@ -90,3 +90,4 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 | Portal Digital 22 ala buku (Tahap 3) | Selesai | Tanpa warna per bidang. |
 | Media sementara | Selesai | 10 foto Unsplash (CREDITS.md) untuk data contoh; semua is_placeholder = true. |
 | Tahap 4 (GSAP, Embla, animasi) | Selesai | Progressive enhancement, reduced-motion, parallax desktop saja; Lighthouse ponsel 89–90 (simulasi), CLS 0. |
+| Navigasi E-Learning / Layanan | Selesai | Menu, footer, akses cepat selaras; URL E-Learning dari CMS, bawaan /pembelajaran/e-learning. |

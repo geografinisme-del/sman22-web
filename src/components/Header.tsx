@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, ChevronDown, LayoutGrid, Menu, X } from "lucide-react";
-import { navigasi, type GrupMenu } from "@/content/menu";
+import { E_LEARNING_BAWAAN, navigasiDengan, type GrupMenu } from "@/content/menu";
 import { sekolah } from "@/content/sekolah";
 
 export function Brand({ sub = "Kota Bandung · Sejak 1989" }: { sub?: string }) {
@@ -83,8 +83,10 @@ function MenuGrup({ grup, kanan }: { grup: GrupMenu; kanan?: boolean }) {
   );
 }
 
-export function Header() {
+/** `eLearning` = tujuan menu E-Learning dari CMS (lihat `tautanELearning`); bawaan halaman penjelasan. */
+export function Header({ eLearning = E_LEARNING_BAWAAN }: { eLearning?: string }) {
   const pathname = usePathname();
+  const navigasi = navigasiDengan(eLearning);
   const menuHp = useRef<HTMLDetailsElement>(null);
   const tutup = () => menuHp.current?.removeAttribute("open");
 

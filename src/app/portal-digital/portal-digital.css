@@ -139,11 +139,11 @@
   flex-direction: column;
 }
 .pd-peran .media-slot img {
-  transition: transform 600ms var(--ease-keluar);
+  transition: scale 600ms var(--ease-keluar);
 }
 .pd-peran a:hover .media-slot img,
 .pd-peran a:focus-visible .media-slot img {
-  transform: scale(1.04);
+  scale: 1.04;
 }
 .pd-peran h3 {
   margin-top: 16px;
@@ -305,6 +305,6 @@
   }
   .pd-peran a:hover .media-slot img,
   .pd-peran a:focus-visible .media-slot img {
-    transform: none;
+    scale: none;
   }
 }

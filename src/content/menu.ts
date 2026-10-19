@@ -11,6 +11,19 @@ export const menu = [
 ];
 
 export type TautanMenu = { href: string; label: string; teks?: string };
+
+/** Halaman penjelasan E-Learning; dipakai selama URL E-Learning di CMS (Tampilan Website → Layanan) kosong. */
+export const E_LEARNING_BAWAAN = "/pembelajaran/e-learning";
+
+/**
+ * Tujuan menu E-Learning: URL item "E-Learning" pada daftar layanan CMS bila diisi (tautan internal "/…" atau
+ * "https://…"), selain itu halaman penjelasan bawaan. Modul murni agar bisa diuji.
+ */
+export function tautanELearning(layanan: { nama?: string; url?: string }[] | undefined): string {
+  const url = layanan?.find((l) => /^e-?learning$/i.test((l.nama ?? "").trim()))?.url?.trim() ?? "";
+  if (/^\/(?!\/)[\w\-./?=&#%]*$/.test(url) || /^https:\/\/[^\s<>"]+$/.test(url)) return url;
+  return E_LEARNING_BAWAAN;
+}
 export type GrupMenu = { label: string; href?: string; anak?: TautanMenu[] };
 
 /**
@@ -30,7 +43,7 @@ export const navigasi: GrupMenu[] = [
     label: "Pembelajaran",
     anak: [
       { href: "/program", label: "Program & karakter", teks: "7KAIH, Gerbang Pancawaluya, kokurikuler." },
-      { href: "/perpustakaan", label: "E-Library", teks: "Katalog buku & koleksi digital." },
+      { href: E_LEARNING_BAWAAN, label: "E-Learning", teks: "Kelas digital, materi, dan tugas daring." },
     ],
   },
   {
@@ -53,14 +66,19 @@ export const navigasi: GrupMenu[] = [
   {
     label: "Layanan",
     anak: [
-      { href: "/portal-digital", label: "Portal Digital 22", teks: "Pintu masuk guru, siswa, orang tua & manajemen." },
       { href: "/perpustakaan", label: "E-Library", teks: "Cari buku dan cek ketersediaan." },
       { href: "/pengaduan", label: "Pengaduan & aspirasi", teks: "Pantau dengan nomor tiket." },
-      { href: "/sertifikat", label: "Verifikasi sertifikat" },
-      { href: "/survei", label: "Survei layanan" },
+      { href: "/sertifikat", label: "Verifikasi sertifikat", teks: "Cek keaslian sertifikat dan piagam sekolah." },
+      { href: "/survei", label: "Survei layanan", teks: "Beri penilaian untuk layanan sekolah." },
     ],
   },
 ];
+
+/** Navigasi dengan tujuan E-Learning yang sudah diselesaikan dari CMS. */
+export function navigasiDengan(eLearning: string): GrupMenu[] {
+  if (eLearning === E_LEARNING_BAWAAN) return navigasi;
+  return navigasi.map((g) => (g.anak ? { ...g, anak: g.anak.map((a) => (a.href === E_LEARNING_BAWAAN ? { ...a, href: eLearning } : a)) } : g));
+}
 
 /** @deprecated dipertahankan untuk kompatibilitas; gunakan grup "Layanan" di `navigasi`. */
 export const layanan = navigasi.find((g) => g.label === "Layanan")!.anak!;

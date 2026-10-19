@@ -7,7 +7,8 @@ import { HeaderMengecil } from "@/components/buku/HeaderMengecil";
 import { PengaturOverlay } from "@/components/gerak/PengaturOverlay";
 import type { InfoPrioritas } from "@/components/gerak/ModalPrioritas";
 import type { Informasi } from "@/components/gerak/DialogInformasi";
-import { getBerita, getPengumuman } from "@/lib/data";
+import { getBerita, getPengumuman, getSitus } from "@/lib/data";
+import { tautanELearning } from "@/content/menu";
 import type { Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import { FONT, PALET } from "@/lib/tampilan/token";
 import Link from "next/link";
@@ -52,6 +53,8 @@ export async function KerangkaPublik({ konfig, halamanUtama = "/", pita, childre
   // pita pengumuman: satu pengumuman terpenting (prioritas → penting → terbaru); hilang bila tidak ada
   const daftarPengumuman = buku ? await getPengumuman(6) : [];
   const pitaPengumuman = daftarPengumuman.find((x) => x.prioritas) ?? daftarPengumuman[0];
+  // tujuan menu E-Learning: URL dari CMS (Tampilan Website → Layanan) atau halaman penjelasan bawaan
+  const eLearning = tautanELearning((await getSitus()).layanan);
   const p = PALET[konfig.palet];
   const gaya = { "--tema-utama": p.utama, "--tema-aksen": p.aksen, "--tema-gelap": p.gelap, "--font-publik": FONT[konfig.font].css } as CSSProperties;
   return (
@@ -71,7 +74,7 @@ export async function KerangkaPublik({ konfig, halamanUtama = "/", pita, childre
           </p>
         </div>
       )}
-      <Header />
+      <Header eLearning={eLearning} />
       <main id="konten" tabIndex={-1} className="lp halaman-publik flex-1 focus:outline-none">
         {children}
       </main>

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -11,13 +11,26 @@ export type FotoHero = { src: string; alt: string; fokus?: string; sementara?: b
  * Lapisan foto hero Buku Tahunan (slider Embla). Struktur: `.hb-lapisan` (lapisan parallax, digerakkan GSAP)
  * → `.hb-embla` (viewport) → `.hb-embla-isi` (baris slide). Tanpa JavaScript, slide pertama tampil utuh
  * (baris flex dengan overflow tersembunyi). Keterangan foto & kontrol di pojok kanan bawah, tidak ikut bergerak.
- * Video latar (opsional) hanya dipakai bila file tersedia; disembunyikan saat prefers-reduced-motion.
+ * Video latar (opsional) hanya dipakai bila file tersedia: muted, loop, playsinline, poster wajib; diputar lewat JS
+ * hanya bila gerak diizinkan (tanpa atribut autoplay), dan disembunyikan saat prefers-reduced-motion.
  */
 export function HeroFoto({ foto, video }: { foto: FotoHero[]; video?: string }) {
   const total = foto.length;
   // satu foto → Embla tidak diaktifkan (tidak ada kerja inisialisasi di perangkat lambat)
   const [emblaRef, embla] = useEmblaCarousel({ active: total > 1, loop: total > 1, duration: 32 });
   const [i, setI] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // video latar: tidak pernah autoplay saat prefers-reduced-motion (poster tetap tampil)
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const atur = () => (mq.matches ? v.pause() : void v.play().catch(() => {}));
+    atur();
+    mq.addEventListener("change", atur);
+    return () => mq.removeEventListener("change", atur);
+  }, []);
 
   useEffect(() => {
     if (!embla) return;
@@ -48,7 +61,7 @@ export function HeroFoto({ foto, video }: { foto: FotoHero[]; video?: string }) 
             ))}
           </div>
         </div>
-        {video && <video className="hb-video" src={video} poster={foto[0]?.src} muted loop playsInline autoPlay preload="metadata" aria-hidden />}
+        {video && <video ref={videoRef} className="hb-video" src={video} poster={foto[0]?.src} muted loop playsInline preload="metadata" aria-hidden />}
       </div>
       {aktif?.sementara && <span className="media-label hb-label">Ilustrasi sementara</span>}
       <div className="hb-keterangan">

@@ -244,7 +244,7 @@
 }
 .footer-kolom {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr));
   gap: 32px;
 }
 .footer-judul {
@@ -723,6 +723,9 @@ a.kartu:hover,
   }
   .footer-kolom {
     grid-template-columns: 1fr 1fr;
+  }
+  .footer-kolom > :first-child {
+    grid-column: 1 / -1;
   }
   .nilai-daftar {
     grid-template-columns: repeat(3, minmax(0, 1fr));

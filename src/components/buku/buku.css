@@ -15,7 +15,7 @@
   height: 100%;
 }
 .media-slot img {
-  transition: transform 600ms var(--ease-keluar);
+  transition: scale 600ms var(--ease-keluar);
 }
 .media-video {
   position: absolute;
@@ -500,11 +500,11 @@
   background-size: 100% 1px;
 }
 .bk-foto-berita .media-slot img {
-  transition: transform 600ms var(--ease-keluar);
+  transition: scale 600ms var(--ease-keluar);
 }
 .group:hover .bk-foto-berita img,
 .group:focus-visible .bk-foto-berita img {
-  transform: scale(1.04);
+  scale: 1.04;
 }
 .bk-kabar-daftar > li {
   padding: 16px 0;
@@ -1051,5 +1051,36 @@
 @media (min-width: 1024px) {
   .bk-geser-kontrol {
     display: none;
+  }
+}
+
+/* akses cepat berkelompok (Pembelajaran / Layanan) */
+.bk-akses-kelompok + .bk-akses-kelompok {
+  margin-top: 24px;
+}
+.lp .bk-akses-kelompok > h3 {
+  margin-bottom: 4px;
+  font-family: var(--font-sans);
+}
+
+/* tombol terangkat 1px saat hover (0,2 s); tidak bergerak saat reduced-motion */
+.bk-tombol,
+[data-tema="buku"] .lp .tombol-portal {
+  transition:
+    background-color 200ms var(--ease-keluar),
+    translate 200ms var(--ease-keluar);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .bk-tombol:hover,
+  .bk-tombol:focus-visible,
+  [data-tema="buku"] .lp .tombol-portal:hover {
+    translate: 0 -1px;
+  }
+}
+/* zoom hover foto berita: tanpa gerak saat reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .bk-foto-berita img,
+  .group:focus-visible .bk-foto-berita img {
+    scale: none;
   }
 }

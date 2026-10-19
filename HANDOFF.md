@@ -219,7 +219,11 @@ Konsep: majalah/koran sekolah, bukan SaaS. Mockup acuan: `Beranda.pdf` & `Portal
   160px (`.bk-garis-emas`) di Kabar/Prestasi/Kehidupan, buka-klip foto berita & galeri (sekali), hitung naik pita angka
   (bukan tahun berdiri), garis luar "22" SPMB (stroke-dashoffset, scrub), parallax hero (lapisan 0→140px/700px; lapisan
   `.hb-lapisan` 160px lebih tinggi lewat media query yang sama) & teks hero (0→-60px, opacity 1→0,25 /600px), parallax
-  "22" SPMB (+90→-90px). Pemicu di bawah lipatan dibuat saat senggang (tanpa long task).
+  "22" SPMB (+90→-90px), dan foto di dalam bingkai (berita utama & mozaik Kehidupan Siswa: foto 1.2x, geser
+  -5%→5% foto besar / -9%→9% foto kecil; bingkai & keterangan diam). Pemicu di bawah lipatan dibuat saat senggang.
+- Hover: zoom foto 1.04 memakai properti CSS `scale` (bukan `transform`) agar tidak bentrok dengan transform GSAP;
+  tombol terangkat 1px (`translate`, 0,2 s); keduanya mati saat reduced-motion.
+- Video hero tanpa atribut `autoplay`: diputar lewat JS hanya bila gerak diizinkan (poster tetap tampil).
 - Pembuka hero hanya dijalankan bila halaman dibuka di atas dan mesin siap < 4 s (perangkat lambat tidak melihat teks
   "hilang lalu muncul"). Teks isi, daftar pengumuman, dan footer tidak dianimasikan.
 - `HeaderMengecil.tsx`: atribut `data-kecil` pada header setelah gulir 24px (transisi CSS 0,3 s).
@@ -231,3 +235,13 @@ Konsep: majalah/koran sekolah, bukan SaaS. Mockup acuan: `Beranda.pdf` & `Portal
   `scripts/tangkap-gulir.mjs` (tangkapan posisi gulir + cek celah hero / elemen tersembunyi / luber).
 - Lighthouse ponsel (build produksi lokal, 18 Okt 2026): simulasi 89–90 (4 dari 5 putaran), throttling nyata 85–87,
   CLS 0. Satu putaran 76 karena lukisan pertama Chrome headless lokal tertunda ±1 s (juga terjadi di /kontak; bukan kode).
+
+### Navigasi (19 Okt 2026)
+- `src/content/menu.ts`: Layanan = E-Library, Pengaduan & aspirasi, Verifikasi sertifikat, Survei layanan (Portal
+  Digital 22 hanya lewat tombol di kanan header). Pembelajaran = Program & karakter, **E-Learning**.
+- Tujuan E-Learning: item "E-Learning" di daftar Layanan CMS (Admin → Tampilan Website, kolom `pengaturan_situs.layanan`,
+  sudah ada sejak migrasi cms_lanjutan). Bila URL-nya kosong/tidak aman → `/pembelajaran/e-learning` (penjelasan +
+  tombol "Masuk lewat Portal Digital 22"). Diselesaikan di server oleh `tautanELearning()` dan diteruskan ke Header,
+  footer, dan akses cepat beranda (`menu.test.ts`).
+- Footer: kolom Jelajahi, Pembelajaran, Layanan, SPMB. Akses cepat beranda berkelompok Pembelajaran / Layanan;
+  setiap tujuan muncul sekali.

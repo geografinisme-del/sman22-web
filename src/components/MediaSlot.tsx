@@ -7,7 +7,7 @@ export type RasioMedia = "3/2" | "16/9" | "3/1" | "1/1" | "4/3";
  * - `src` ada  → foto asli (atau ilustrasi bila `isPlaceholder`, diberi label "Ilustrasi sementara").
  * - `src` kosong → blok krem gelap bermotif garis emas tipis & angka "22" samar (BUKAN kotak abu/ikon rusak).
  *   Untuk berita tanpa foto, pemanggil sebaiknya TIDAK merender MediaSlot sama sekali.
- * - `video` (opsional) hanya dipakai bila file ada; muted, loop, playsinline, dengan poster wajib (`src`).
+ * - Video latar hanya ada di hero (lihat buku/HeroFoto.tsx), tidak di MediaSlot.
  * Rasio dikunci lewat aspect-ratio sehingga tidak ada layout shift.
  */
 export function MediaSlot({
@@ -18,7 +18,6 @@ export function MediaSlot({
   isPlaceholder = false,
   sizes = "100vw",
   priority,
-  video,
   className = "",
   fokus,
   isi,
@@ -30,7 +29,6 @@ export function MediaSlot({
   isPlaceholder?: boolean;
   sizes?: string;
   priority?: boolean;
-  video?: string;
   className?: string;
   /** object-position, mis. "50% 40%" */
   fokus?: string;
@@ -42,11 +40,6 @@ export function MediaSlot({
       {src ? (
         <>
           <Image src={src} alt={alt} fill sizes={sizes} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} className="object-cover" style={fokus ? { objectPosition: fokus } : undefined} />
-          {video && (
-            <video className="media-video" src={video} poster={src} muted loop playsInline autoPlay preload="none" aria-hidden data-video-latar>
-              {/* video hanya hiasan; isi utama tetap foto poster + teks */}
-            </video>
-          )}
         </>
       ) : (
         <div className="media-kosong" role="img" aria-label={alt}>

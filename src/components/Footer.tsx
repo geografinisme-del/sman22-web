@@ -1,20 +1,22 @@
 import Link from "next/link";
 import { sekolah } from "@/content/sekolah";
+import { tautanELearning } from "@/content/menu";
 import { getProfil, getSitus } from "@/lib/data";
 
 const JELAJAHI = [
   { href: "/profil", label: "Profil" },
-  { href: "/program", label: "Program" },
   { href: "/berita", label: "Berita" },
   { href: "/agenda", label: "Agenda" },
   { href: "/galeri", label: "Galeri" },
+  { href: "/alumni", label: "Alumni" },
 ];
+// selaras dengan menu utama: E-Learning hanya di Pembelajaran, E-Library hanya di Layanan
 const LAYANAN = [
   { href: "/portal-digital", label: "Portal Digital 22" },
   { href: "/perpustakaan", label: "E-Library" },
-  { href: "/pengaduan", label: "Pengaduan" },
+  { href: "/pengaduan", label: "Pengaduan & aspirasi" },
   { href: "/sertifikat", label: "Verifikasi sertifikat" },
-  { href: "/alumni", label: "Alumni" },
+  { href: "/survei", label: "Survei layanan" },
 ];
 const SPMB = [
   { href: "/spmb", label: "Jalur dan syarat" },
@@ -26,8 +28,13 @@ const SPMB = [
 export async function Footer() {
   const [profil, situs] = await Promise.all([getProfil(), getSitus()]);
   const deskripsi = situs.footerTeks || profil.slogan || `Sekolah menengah atas negeri di ${sekolah.kota} sejak ${sekolah.tahunBerdiri}.`;
+  const pembelajaran = [
+    { href: "/program", label: "Program & karakter" },
+    { href: tautanELearning(situs.layanan), label: "E-Learning" },
+  ];
   const kolom: [string, { href: string; label: string }[]][] = [
     ["Jelajahi", JELAJAHI],
+    ["Pembelajaran", pembelajaran],
     ["Layanan", LAYANAN],
     ["SPMB", SPMB],
   ];

@@ -4,6 +4,7 @@ import path from "node:path";
 import { WPerpus, WProfil } from "@/components/widget/Widget";
 import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getPengumuman, getPrestasi, getProfil, getRekomendasiBuku, getSitus, getSpmbInfo, getVisualAkun } from "@/lib/data";
 import { susunBagian, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
+import { tautanELearning } from "@/content/menu";
 import { GerakBuku } from "./GerakBuku";
 import { BkAksesKontak, BkAngka, BkHero, BkKabar, BkKehidupan, BkPengumumanAgenda, BkPrestasi, BkSpmb } from "./Buku";
 import type { FotoHero } from "./HeroFoto";
@@ -116,7 +117,7 @@ export async function SusunanBuku({ konfig }: { konfig: Konfigurasi }) {
         return <BkKehidupan key={kunci} galeri={galeri} p={pasang("galeri") ?? {}} program={pasang("program")} />;
       case "layanan":
       case "kontak":
-        return <BkAksesKontak key={kunci} layanan={situs.tema.beranda.bento} profil={profil} pL={pasang("layanan")} pK={pasang("kontak")} />;
+        return <BkAksesKontak key={kunci} layanan={situs.tema.beranda.bento} profil={profil} pL={pasang("layanan")} pK={pasang("kontak")} eLearning={tautanELearning(situs.layanan)} />;
       case "profil":
         return (
           <section key={kunci} className="bagian" aria-labelledby="judul-kenal">

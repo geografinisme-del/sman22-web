@@ -4,7 +4,7 @@
  * berwarna per item, tanggal selalu "12 Oktober 2026", keterangan foto tidak berulang.
  */
 import Link from "next/link";
-import { ArrowRight, BookOpen, CalendarDays, GraduationCap, LayoutGrid, MessageSquare, Users } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, GraduationCap, LayoutGrid, MessageSquare, MonitorPlay, Sparkles, Users } from "lucide-react";
 import type { ComponentType } from "react";
 import { MediaSlot } from "@/components/MediaSlot";
 import { KEBIASAAN_7KAIH } from "@/content/program";
@@ -344,12 +344,31 @@ const IKON: [RegExp, ComponentType<{ size?: number; "aria-hidden"?: boolean; str
   [/spmb/, GraduationCap],
   [/portal/, LayoutGrid],
   [/perpustakaan|e-library/, BookOpen],
+  [/e-?learning|pembelajaran/, MonitorPlay],
+  [/program/, Sparkles],
   [/pengaduan/, MessageSquare],
   [/ekskul/, Users],
   [/agenda/, CalendarDays],
 ];
-export function BkAksesKontak({ layanan, profil, pL, pK }: { layanan: KartuBento[]; profil: Profil; pL?: P; pK?: P }) {
-  const daftar = pL ? layanan.filter((k) => k.judul && k.tautan).slice(0, angka(pL.jumlah, 6)) : [];
+/**
+ * Akses cepat dikelompokkan seperti menu utama: Pembelajaran (Program & karakter, E-Learning) dan Layanan
+ * (kartu dari CMS). Setiap tujuan hanya muncul sekali; E-Learning tidak pernah masuk kelompok Layanan.
+ */
+export function BkAksesKontak({ layanan, profil, pL, pK, eLearning }: { layanan: KartuBento[]; profil: Profil; pL?: P; pK?: P; eLearning: string }) {
+  const belajar = [
+    { judul: "Program & karakter", tautan: "/program" },
+    { judul: "E-Learning", tautan: eLearning },
+  ];
+  const sudah = new Set(belajar.map((b) => b.tautan));
+  const bukanBelajar = (k: KartuBento) => !/e-?learning/i.test(k.judul) && !sudah.has(k.tautan);
+  const lay = layanan.filter((k) => k.judul && k.tautan && bukanBelajar(k)).filter((k, i, a) => a.findIndex((x) => x.tautan === k.tautan) === i);
+  const kelompok = pL
+    ? [
+        { judul: "Pembelajaran", isi: belajar },
+        { judul: "Layanan", isi: lay.slice(0, angka(pL.jumlah, 6)) },
+      ].filter((g) => g.isi.length)
+    : [];
+  const daftar = kelompok.flatMap((g) => g.isi);
   const kontak = [
     { label: "Alamat", isi: [profil.alamat, sekolah.kota].filter(Boolean).join(", ") },
     { label: "Jam layanan", isi: profil.jamLayanan },
@@ -364,22 +383,27 @@ export function BkAksesKontak({ layanan, profil, pL, pK }: { layanan: KartuBento
         {daftar.length > 0 && (
           <div>
             <h2 className="bk-h2-kecil">{teks(pL?.judul, "Akses cepat")}</h2>
-            <ul className="bk-akses">
-              {daftar.map((k) => {
-                const I = IKON.find(([r]) => r.test(k.tautan))?.[1] ?? ArrowRight;
-                return (
-                  <li key={k.tautan + k.judul}>
-                    <Link href={k.tautan}>
-                      <I size={20} aria-hidden strokeWidth={1.6} />
-                      <span>{k.judul}</span>
-                      <span aria-hidden className="bk-akses-panah">
-                        →
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+            {kelompok.map((g) => (
+              <div key={g.judul} className="bk-akses-kelompok">
+                <h3 className="bk-label">{g.judul}</h3>
+                <ul className="bk-akses">
+                  {g.isi.map((k) => {
+                    const I = IKON.find(([r]) => r.test(k.tautan) || r.test(k.judul.toLowerCase()))?.[1] ?? ArrowRight;
+                    return (
+                      <li key={k.tautan + k.judul}>
+                        <Link href={k.tautan}>
+                          <I size={20} aria-hidden strokeWidth={1.6} />
+                          <span>{k.judul}</span>
+                          <span aria-hidden className="bk-akses-panah">
+                            →
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
           </div>
         )}
         {adaKontak && (
