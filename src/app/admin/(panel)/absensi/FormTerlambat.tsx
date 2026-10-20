@@ -38,7 +38,7 @@ export function FormTerlambat({ siswa, jamSekarang }: { siswa: Siswa[]; jamSekar
           <ul id="hasil-siswa" role="listbox" className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/10">
             {hasil.map((s) => (
               <li key={s.id} role="option" aria-selected={false}>
-                <button type="button" onClick={() => setPilih(s)} className="flex w-full justify-between px-4 py-2.5 text-left text-sm hover:bg-krem">
+                <button type="button" onClick={() => setPilih(s)} className="flex w-full justify-between px-4 py-2.5 text-left text-sm hover:bg-soft">
                   <span>{s.nama}</span>
                   <span className="text-black/50">{s.kelas ?? "—"}</span>
                 </button>

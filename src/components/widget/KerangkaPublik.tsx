@@ -10,9 +10,8 @@ import type { Informasi } from "@/components/gerak/DialogInformasi";
 import { getBerita, getPengumuman } from "@/lib/data";
 import type { Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import { FONT, PALET } from "@/lib/tampilan/token";
-import "@/components/beranda/beranda.css";
-import "./tema.css";
-import "@/components/buku/buku.css";
+import "@/components/langit/halaman.css";
+import "@/components/langit/overlay.css";
 import "@/components/langit/langit.css";
 
 const HARI_BERITA_RUTIN = 14;
@@ -24,14 +23,14 @@ async function muatOverlay(k: Konfigurasi): Promise<{ prioritas: InfoPrioritas |
   const p = pengumuman.find((x) => x.prioritas);
   const prioritas: InfoPrioritas | null =
     k.popup.prioritas && p
-      ? { id: p.id, judul: p.judul, tanggal: p.tanggal, isi: p.isi, kategori: "Pengumuman prioritas", poster: p.poster, tautan: p.tautan, href: `/agenda#pengumuman-${p.id}` }
+      ? { id: p.id, judul: p.judul, tanggal: p.tanggal, isi: p.isi, kategori: "Pengumuman prioritas", poster: p.poster, tautan: p.tautan, href: `/pengumuman#pengumuman-${p.id}` }
       : null;
   const batas = new Date(Date.now() - HARI_BERITA_RUTIN * 864e5).toISOString().slice(0, 10);
   const rutin: Informasi[] = k.popup.rutin
     ? [
         ...pengumuman
           .filter((x) => !x.prioritas)
-          .map((x) => ({ id: x.id, jenis: x.penting ? "Pengumuman penting" : "Pengumuman", judul: x.judul, tanggal: x.tanggal, isi: x.isi, href: `/agenda#pengumuman-${x.id}` })),
+          .map((x) => ({ id: x.id, jenis: x.penting ? "Pengumuman penting" : "Pengumuman", judul: x.judul, tanggal: x.tanggal, isi: x.isi, href: `/pengumuman#pengumuman-${x.id}` })),
         ...berita
           .filter((b) => b.tanggal >= batas)
           .map((b) => ({ id: `berita-${b.slug}`, jenis: b.kategori || "Berita", judul: b.judul, tanggal: b.tanggal, isi: b.ringkasan, href: `/berita/${b.slug}`, gambar: b.gambar })),

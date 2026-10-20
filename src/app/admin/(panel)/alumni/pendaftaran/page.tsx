@@ -52,7 +52,7 @@ export default async function Verifikasi({ searchParams }: { searchParams: Promi
             <form action={tolakAlumni} className="mt-3 flex flex-wrap gap-2 border-t border-black/5 pt-3 text-sm">
               <input type="hidden" name="id" value={r.id} />
               <input name="catatan" maxLength={300} placeholder="Alasan (internal)" aria-label="Alasan penolakan" className="min-w-56 flex-1 rounded-xl border border-black/15 px-3 py-2" />
-              <button className="rounded-full px-4 py-2 font-semibold text-merah ring-1 ring-merah/30">Tolak</button>
+              <button className="rounded-full px-4 py-2 font-semibold text-blue-teks ring-1 ring-blue/30">Tolak</button>
             </form>
           </Kartu>
         );

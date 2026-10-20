@@ -29,9 +29,9 @@ export default async function Lms({ searchParams }: { searchParams: Promise<{ pe
               .filter((x) => x.tugas.mapel_id === p.mapel_id && x.tugas.tugas_kelas.some((k) => k.kelas_id === p.kelas_id)).length;
             return (
               <li key={p.id}>
-                <Link href={`/admin/lms/${p.id}`} className="block rounded-2xl bg-white p-5 ring-1 ring-black/5 hover:ring-brand-600">
+                <Link href={`/admin/lms/${p.id}`} className="block rounded-2xl bg-white p-5 ring-1 ring-black/5 hover:ring-muted">
                   <p className="text-xs uppercase tracking-[0.15em] text-black/50">Kelas {p.kelas}</p>
-                  <p className="font-serif text-2xl">{p.mapel}</p>
+                  <p className="text-2xl">{p.mapel}</p>
                   <p className="mt-2 text-sm text-black/60">{hitung(tugas as never, "tugas_kelas", p)} tugas · {hitung(kuis as never, "kuis_kelas", p)} kuis</p>
                   {perluNilai > 0 && <p className="mt-2 inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">{perluNilai} pengumpulan perlu dinilai</p>}
                 </Link>

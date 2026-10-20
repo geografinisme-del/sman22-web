@@ -40,14 +40,14 @@ export default async function Penugasan({ searchParams }: { searchParams: Promis
       <NavJadwal akses={akses} aktif="/admin/jadwal/penugasan" />
       <Notifikasi kode={sp.pesan} />
       <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/jadwal/penugasan" className={`rounded-full px-4 py-2 ${!beban ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Per kelas</a>
-        <a href="/admin/jadwal/penugasan?lihat=beban" className={`rounded-full px-4 py-2 ${beban ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Beban mengajar guru</a>
+        <a href="/admin/jadwal/penugasan" className={`rounded-full px-4 py-2 ${!beban ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Per kelas</a>
+        <a href="/admin/jadwal/penugasan?lihat=beban" className={`rounded-full px-4 py-2 ${beban ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Beban mengajar guru</a>
       </nav>
 
       {beban ? (
         <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
           <table className="w-full min-w-[560px] text-left text-sm">
-            <thead><tr className="border-b border-black/10 bg-krem text-xs uppercase tracking-wider text-black/50">
+            <thead><tr className="border-b border-black/10 bg-soft text-xs uppercase tracking-wider text-black/50">
               <th className="px-4 py-3">Guru</th><th className="px-4 py-3">Kelas</th><th className="px-4 py-3 text-right">JP target</th><th className="px-4 py-3 text-right">JP terjadwal</th>
             </tr></thead>
             <tbody>
@@ -71,7 +71,7 @@ export default async function Penugasan({ searchParams }: { searchParams: Promis
                 <select name="kelas" defaultValue={pilih?.id} aria-label="Kelas" className="w-48 rounded-xl border border-black/15 bg-white px-3 py-2">
                   {kelas.map((k) => <option key={k.id} value={k.id}>{k.nama}</option>)}
                 </select>
-                <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
+                <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
                 <span className="ml-auto text-sm text-black/60">{baris.length} mapel · {target} JP/minggu</span>
               </form>
               {pilih && <TambahPenugasan kelasId={pilih.id} mapel={(mapel ?? []).filter((m) => !baris.some((b) => b.mapel_id === m.id))} guru={guru ?? []} />}
@@ -83,19 +83,19 @@ export default async function Penugasan({ searchParams }: { searchParams: Promis
                     <span className={`text-xs ${p.jp_terjadwal === p.jp_per_minggu ? "text-emerald-700" : "text-amber-700"}`}>terjadwal {p.jp_terjadwal}/{p.jp_per_minggu}</span>
                     <form action={arsipPenugasan} className="ml-auto">
                       <input type="hidden" name="id" value={p.id} /><input type="hidden" name="kelas_id" value={p.kelas_id} />
-                      <button className="text-xs text-black/50 underline hover:text-merah">arsipkan</button>
+                      <button className="text-xs text-black/50 underline hover:text-blue-teks">arsipkan</button>
                     </form>
                   </li>
                 ))}
               </ul>
               {!baris.length && <p className="mt-4 text-sm text-black/50">Belum ada mapel untuk kelas ini.</p>}
               {pilih && baris.length > 0 && (
-                <Link href={`/admin/jadwal/susun?kelas=${pilih.id}`} className="mt-4 inline-block rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">Susun jadwal {pilih.nama} →</Link>
+                <Link href={`/admin/jadwal/susun?kelas=${pilih.id}`} className="mt-4 inline-block rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">Susun jadwal {pilih.nama} →</Link>
               )}
             </section>
           )}
           <details className="rounded-2xl bg-white p-5 ring-1 ring-black/5" open={list.length === 0}>
-            <summary className="cursor-pointer font-semibold text-brand-700">Isi banyak sekaligus (tempel dari Excel)</summary>
+            <summary className="cursor-pointer font-semibold text-blue-teks">Isi banyak sekaligus (tempel dari Excel)</summary>
             <div className="mt-4"><TempelPenugasan /></div>
           </details>
         </div>

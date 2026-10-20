@@ -31,16 +31,16 @@ export default async function ReviewPerangkat({ searchParams }: { searchParams: 
       <NavKurikulum />
       <Notifikasi kode={sp.pesan} />
       <Kartu className="mb-8">
-        <h2 className="mb-3 font-serif text-2xl">Menunggu diperiksa ({list.length})</h2>
+        <h2 className="mb-3 text-2xl">Menunggu diperiksa ({list.length})</h2>
         {list.length === 0 ? <p className="text-sm text-black/50">Tidak ada yang menunggu.</p> : (
           <ul className="space-y-3">
             {list.map((d) => (
-              <li key={d.id} className="rounded-xl bg-krem p-4 text-sm">
+              <li key={d.id} className="rounded-xl bg-soft p-4 text-sm">
                 <p className="font-semibold">{d.judul}</p>
                 <p className="text-black/60">{nama.get(d.pegawai_id) ?? "Guru"} · {JENIS_PERANGKAT[d.jenis]} · {d.mapel?.nama} {d.tingkat} · smt {d.semester}</p>
                 <div className="mt-1 flex gap-3 text-xs font-semibold">
-                  {d.berkas_path && <a href={`/berkas/perangkat/${d.id}`} target="_blank" rel="noopener" className="text-brand-700 underline">Buka berkas{d.berkas_nama && ` (${d.berkas_nama})`}</a>}
-                  {d.tautan && <a href={d.tautan} target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">Buka tautan</a>}
+                  {d.berkas_path && <a href={`/berkas/perangkat/${d.id}`} target="_blank" rel="noopener" className="text-blue-teks underline">Buka berkas{d.berkas_nama && ` (${d.berkas_nama})`}</a>}
+                  {d.tautan && <a href={d.tautan} target="_blank" rel="noopener noreferrer" className="text-blue-teks underline">Buka tautan</a>}
                 </div>
                 <form action={reviewPerangkat} className="mt-3 flex flex-wrap items-end gap-2">
                   <input type="hidden" name="id" value={d.id} />
@@ -54,13 +54,13 @@ export default async function ReviewPerangkat({ searchParams }: { searchParams: 
         )}
       </Kartu>
       <div className="mb-3 flex flex-wrap items-center gap-3">
-        <h2 className="flex-1 font-serif text-2xl">Rekap kelengkapan semester {semester}</h2>
+        <h2 className="flex-1 text-2xl">Rekap kelengkapan semester {semester}</h2>
         <span className="text-sm text-black/60">{lengkap}/{r.length} penugasan lengkap (prota, promes, ≥1 modul disetujui)</span>
-        {[1, 2].map((s) => <Link key={s} href={`?semester=${s}`} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${s === semester ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Smt {s}</Link>)}
+        {[1, 2].map((s) => <Link key={s} href={`?semester=${s}`} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${s === semester ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Smt {s}</Link>)}
       </div>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead><tr className="bg-krem text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Guru</th><th className="px-4 py-2">Mapel</th><th className="px-4 py-2">Prota</th><th className="px-4 py-2">Promes</th><th className="px-4 py-2">ATP</th><th className="px-4 py-2">Modul ajar</th></tr></thead>
+          <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Guru</th><th className="px-4 py-2">Mapel</th><th className="px-4 py-2">Prota</th><th className="px-4 py-2">Promes</th><th className="px-4 py-2">ATP</th><th className="px-4 py-2">Modul ajar</th></tr></thead>
           <tbody>
             {r.length === 0 ? <tr><td colSpan={6} className="px-4 py-3 text-black/50">Belum ada penugasan.</td></tr> : r.map((x) => (
               <tr key={x.pegawai_id + x.mapel + x.tingkat} className="border-t border-black/5">

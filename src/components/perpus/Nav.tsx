@@ -17,7 +17,7 @@ export function NavPerpus({ kelola }: { kelola: boolean }) {
     <nav aria-label="Menu perpustakaan" className="-mt-4 mb-6 flex gap-2 overflow-x-auto pb-1 text-sm print:hidden">
       {item.map((i) => (
         <Link key={i.href} href={i.href} aria-current={p === i.href ? "page" : undefined}
-          className={`shrink-0 rounded-full px-4 py-2 ${p === i.href ? "bg-brand-900 text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}>{i.label}</Link>
+          className={`shrink-0 rounded-full px-4 py-2 ${p === i.href ? "bg-ink text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}>{i.label}</Link>
       ))}
     </nav>
   );

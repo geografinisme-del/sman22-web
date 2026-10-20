@@ -25,7 +25,7 @@ export default async function Pengguna({ searchParams }: { searchParams: Promise
       <Notifikasi kode={sp.pesan} />
       <Kartu className="mb-8">
         <details open={Boolean(pegawaiAwal)}>
-          <summary className="cursor-pointer font-serif text-2xl">+ Buat akun baru</summary>
+          <summary className="cursor-pointer text-2xl">+ Buat akun baru</summary>
           <div className="mt-6">
             <FormBuatAkun peran={peran ?? []} pegawai={pegawai ?? []} pegawaiAwal={pegawaiAwal} adaKunci={kunciAdminTersedia} />
           </div>
@@ -47,7 +47,7 @@ export default async function Pengguna({ searchParams }: { searchParams: Promise
           </thead>
           <tbody>
             {list?.map((u) => (
-              <tr key={u.user_id} className="hover:bg-krem/50">
+              <tr key={u.user_id} className="hover:bg-soft/50">
                 <td className={kelasTd}>
                   <Link href={`/admin/pengguna/${u.user_id}`} className="font-medium hover:underline">{u.nama || "(tanpa nama)"}</Link>
                 </td>

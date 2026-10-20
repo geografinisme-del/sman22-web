@@ -21,41 +21,41 @@ export default async function Karakter() {
     <div className="space-y-8">
       {data.map(({ a, r }) => (
         <section key={a.id} className="space-y-5">
-          <h1 className="font-serif text-3xl">Prestasi & catatan karakter{anak.length > 1 ? ` — ${a.nama}` : ""}</h1>
+          <h1 className="text-3xl">Prestasi & catatan karakter{anak.length > 1 ? ` — ${a.nama}` : ""}</h1>
           <div className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
-            <h2 className="font-serif text-2xl">🏆 Prestasi</h2>
-            {!r?.prestasi.length ? <p className="mt-2 text-sm text-[#5b6270]">Belum ada prestasi tercatat tahun ini.</p> : (
+            <h2 className="text-2xl">🏆 Prestasi</h2>
+            {!r?.prestasi.length ? <p className="mt-2 text-sm text-[var(--muted)]">Belum ada prestasi tercatat tahun ini.</p> : (
               <ul className="mt-3 divide-y divide-black/5 text-sm">
                 {r.prestasi.map((p, i) => (
                   <li key={i} className="py-2">
                     <p className="font-semibold">{p.nama}</p>
-                    <p className="text-[#5b6270]">{PERINGKAT[p.peringkat]} · {TINGKAT[p.tingkat]} · {BIDANG[p.bidang]} · {formatTanggal(p.tanggal)}{p.status === "diajukan" && " · menunggu verifikasi"}</p>
+                    <p className="text-[var(--muted)]">{PERINGKAT[p.peringkat]} · {TINGKAT[p.tingkat]} · {BIDANG[p.bidang]} · {formatTanggal(p.tanggal)}{p.status === "diajukan" && " · menunggu verifikasi"}</p>
                   </li>
                 ))}
               </ul>
             )}
           </div>
           <div className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
-            <h2 className="font-serif text-2xl">Catatan kedisiplinan</h2>
-            {!r?.pelanggaran.length ? <p className="mt-2 text-sm text-[#5b6270]">Tidak ada catatan pelanggaran. Pertahankan!</p> : (
+            <h2 className="text-2xl">Catatan kedisiplinan</h2>
+            {!r?.pelanggaran.length ? <p className="mt-2 text-sm text-[var(--muted)]">Tidak ada catatan pelanggaran. Pertahankan!</p> : (
               <ul className="mt-3 divide-y divide-black/5 text-sm">
                 {r.pelanggaran.map((p, i) => (
-                  <li key={i} className="flex justify-between gap-3 py-2"><span>{p.nama}<span className="block text-[#5b6270]">{formatTanggal(p.tanggal)}</span></span><span className="shrink-0 font-semibold">{p.poin} poin</span></li>
+                  <li key={i} className="flex justify-between gap-3 py-2"><span>{p.nama}<span className="block text-[var(--muted)]">{formatTanggal(p.tanggal)}</span></span><span className="shrink-0 font-semibold">{p.poin} poin</span></li>
                 ))}
               </ul>
             )}
             {!!r?.pembinaan.length && (
               <>
-                <p className="mt-4 text-xs font-semibold text-[#5b6270]">Pembinaan oleh sekolah</p>
+                <p className="mt-4 text-xs font-semibold text-[var(--muted)]">Pembinaan oleh sekolah</p>
                 <ul className="mt-1 text-sm">{r.pembinaan.map((b, i) => <li key={i}>{JENIS_BINA[b.jenis]} · {formatTanggal(b.tanggal)} · {b.status}</li>)}</ul>
               </>
             )}
-            <p className="mt-4 text-xs text-[#5b6270]">Catatan ini bersifat pribadi dan hanya terlihat oleh siswa, orang tua, wali kelas, dan kesiswaan.</p>
+            <p className="mt-4 text-xs text-[var(--muted)]">Catatan ini bersifat pribadi dan hanya terlihat oleh siswa, orang tua, wali kelas, dan kesiswaan.</p>
           </div>
           {siswa && (
             <div className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
-              <h2 className="mb-1 font-serif text-2xl">Laporkan prestasimu</h2>
-              <p className="mb-4 text-sm text-[#5b6270]">Unggah foto piagam/sertifikat. Kesiswaan akan memverifikasi.</p>
+              <h2 className="mb-1 text-2xl">Laporkan prestasimu</h2>
+              <p className="mb-4 text-sm text-[var(--muted)]">Unggah foto piagam/sertifikat. Kesiswaan akan memverifikasi.</p>
               <FormPrestasi siswa={{ id: a.id, nama: a.nama, kelas: a.kelas }} hariIni={hariIniWIB()} />
             </div>
           )}

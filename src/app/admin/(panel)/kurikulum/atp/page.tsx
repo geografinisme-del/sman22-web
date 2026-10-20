@@ -79,12 +79,12 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
             <option value="E">E (kelas X)</option><option value="F">F (kelas XI–XII)</option>
           </select>
         </label>
-        <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
+        <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
         <span className={`ml-auto rounded-full px-3 py-1 text-xs font-semibold ring-1 ${final ? "bg-emerald-50 text-emerald-800 ring-emerald-200" : "bg-amber-50 text-amber-900 ring-amber-200"}`}>
           ATP {final ? "final (terkunci)" : "draf"}
         </span>
       </form>
-      <h2 className="mb-4 hidden font-serif text-2xl print:block">ATP {namaMapel} — Fase {fase}</h2>
+      <h2 className="mb-4 hidden text-2xl print:block">ATP {namaMapel} — Fase {fase}</h2>
 
       {kelola && (
         <Kartu className="mb-6 print:hidden">
@@ -102,7 +102,7 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
       {!kelola && st?.catatan && <p className="mb-6 rounded-xl bg-sky-50 p-3 text-sm text-sky-900 ring-1 ring-sky-200">Catatan kurikulum: {st.catatan}</p>}
 
       <section id="cp" className="mb-8">
-        <h2 className="mb-3 font-serif text-3xl">Capaian Pembelajaran — {namaMapel}, fase {fase}</h2>
+        <h2 className="mb-3 text-3xl">Capaian Pembelajaran — {namaMapel}, fase {fase}</h2>
         <div className={`grid gap-6 ${boleh ? "xl:grid-cols-[1fr_380px]" : ""}`}>
           <div className="space-y-3">
             {listCp.length === 0 ? <KosongAdmin teks="Belum ada CP. Salin CP resmi dari BSKAP per elemen." /> : listCp.map((c) => (
@@ -111,8 +111,8 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
                   <h3 className="flex-1 font-semibold">{c.elemen}</h3>
                   {boleh && (
                     <span className="flex gap-3 text-xs print:hidden">
-                      <Link href={`${dasar}&ubahCp=${c.id}#cp`} className="font-semibold text-brand-700 underline">Ubah</Link>
-                      <form action={arsipCp}><input type="hidden" name="id" value={c.id} /><input type="hidden" name="kembali" value={dasar} /><button className="font-semibold text-merah underline">Arsip</button></form>
+                      <Link href={`${dasar}&ubahCp=${c.id}#cp`} className="font-semibold text-blue-teks underline">Ubah</Link>
+                      <form action={arsipCp}><input type="hidden" name="id" value={c.id} /><input type="hidden" name="kembali" value={dasar} /><button className="font-semibold text-blue-teks underline">Arsip</button></form>
                     </span>
                   )}
                 </div>
@@ -122,7 +122,7 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
           </div>
           {boleh && (
             <Kartu className="self-start print:hidden">
-              <h3 className="mb-3 font-serif text-xl">{ubahCp ? "Ubah elemen CP" : "Tambah elemen CP"}</h3>
+              <h3 className="mb-3 text-xl">{ubahCp ? "Ubah elemen CP" : "Tambah elemen CP"}</h3>
               <FormCp key={ubahCp?.id ?? "baru"} mapel_id={mapelId} fase={fase} data={ubahCp} />
             </Kartu>
           )}
@@ -130,7 +130,7 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
       </section>
 
       <section id="tp" className="mb-8">
-        <h2 className="mb-3 font-serif text-3xl">Tujuan Pembelajaran & KKTP (alur)</h2>
+        <h2 className="mb-3 text-3xl">Tujuan Pembelajaran & KKTP (alur)</h2>
         {tingkatOpsi.map((t) => {
           const isi = listTp.filter((x) => x.tingkat === t);
           const total = isi.reduce((a, x) => a + x.alokasi_jp, 0);
@@ -144,7 +144,7 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
                 return (
                   <div key={s} className="mb-3 overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
                     <table className="w-full min-w-[640px] text-left text-sm">
-                      <thead><tr className="bg-krem text-xs uppercase tracking-wider text-black/50">
+                      <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50">
                         <th className="w-20 px-3 py-2">Smt {s}</th><th className="px-3 py-2">Tujuan pembelajaran</th><th className="px-3 py-2">KKTP</th><th className="w-14 px-3 py-2 text-right">JP</th>{boleh && <th className="w-24 print:hidden" />}
                       </tr></thead>
                       <tbody>
@@ -156,8 +156,8 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
                             <td className="px-3 py-2 text-right tabular-nums">{x.alokasi_jp}</td>
                             {boleh && (
                               <td className="px-3 py-2 text-right text-xs print:hidden">
-                                <Link href={`${dasar}&ubah=${x.id}#form-tp`} className="font-semibold text-brand-700 underline">Ubah</Link>{" "}
-                                <form action={arsipTp} className="inline"><input type="hidden" name="id" value={x.id} /><input type="hidden" name="kembali" value={dasar} /><button className="font-semibold text-merah underline">Arsip</button></form>
+                                <Link href={`${dasar}&ubah=${x.id}#form-tp`} className="font-semibold text-blue-teks underline">Ubah</Link>{" "}
+                                <form action={arsipTp} className="inline"><input type="hidden" name="id" value={x.id} /><input type="hidden" name="kembali" value={dasar} /><button className="font-semibold text-blue-teks underline">Arsip</button></form>
                               </td>
                             )}
                           </tr>
@@ -175,11 +175,11 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
       {boleh && (
         <div className="grid gap-6 xl:grid-cols-2 print:hidden">
           <Kartu>
-            <h2 id="form-tp" className="mb-4 font-serif text-2xl">{ubahTp ? `Ubah ${ubahTp.kode || "TP"}` : "Tambah TP manual"}</h2>
+            <h2 id="form-tp" className="mb-4 text-2xl">{ubahTp ? `Ubah ${ubahTp.kode || "TP"}` : "Tambah TP manual"}</h2>
             <FormTp key={ubahTp?.id ?? "baru"} mapel_id={mapelId} tingkatOpsi={tingkatOpsi} data={ubahTp} />
           </Kartu>
           <Kartu>
-            <h2 className="mb-1 flex items-center gap-2 font-serif text-2xl">Asisten penyusun ATP <LabelAI /></h2>
+            <h2 className="mb-1 flex items-center gap-2 text-2xl">Asisten penyusun ATP <LabelAI /></h2>
             {aiAktif() ? (
               <>
                 <p className="mb-4 text-sm text-black/60">AI menyusun draf TP berurutan, KKTP, dan alokasi JP dari CP di atas. Pilih yang sesuai, lalu simpan.</p>
@@ -191,7 +191,7 @@ export default async function Atp({ searchParams }: { searchParams: Promise<{ ma
       )}
       {listTp.length > 0 && aiAktif() && saya && (
         <Kartu className="mt-6 print:hidden">
-          <h2 className="mb-1 flex items-center gap-2 font-serif text-2xl">Kerangka modul ajar <LabelAI /></h2>
+          <h2 className="mb-1 flex items-center gap-2 text-2xl">Kerangka modul ajar <LabelAI /></h2>
           <p className="mb-4 text-sm text-black/60">Pilih 1–5 TP; AI menyusun kerangka modul ajar lengkap (kegiatan, asesmen, LKPD) yang bisa diunduh sebagai dokumen Word.</p>
           <AiModul tp={listTp.map((x) => ({ id: x.id, label: `${x.tingkat} smt ${x.semester} · ${x.kode} ${x.deskripsi}` }))} />
         </Kartu>

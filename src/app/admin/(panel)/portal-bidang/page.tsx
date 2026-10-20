@@ -31,7 +31,7 @@ export default async function AdminPortalBidang() {
           const b = per.get(k);
           return (
             <Kartu key={k}>
-              <h2 className="font-serif text-xl">{BIDANG[k].label}</h2>
+              <h2 className="text-xl">{BIDANG[k].label}</h2>
               <p className="mb-4 mt-1 text-sm text-black/60">{BIDANG[k].keterangan}</p>
               <FormAksi aksi={simpanPortalBidang} className="grid gap-5 sm:grid-cols-2">
                 <input type="hidden" name="kunci" value={k} />

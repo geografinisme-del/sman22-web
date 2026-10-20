@@ -21,12 +21,12 @@ export default async function StatusKanal() {
       <div className="grid gap-4 sm:grid-cols-2">
         <Kartu>
           <p className="text-sm uppercase tracking-widest text-black/50">WhatsApp (Fonnte)</p>
-          <p className={`mt-2 font-serif text-3xl ${k.whatsapp ? "text-emerald-700" : "text-black/40"}`}>{k.whatsapp ? "Aktif" : "Belum diatur"}</p>
+          <p className={`mt-2 text-3xl ${k.whatsapp ? "text-emerald-700" : "text-black/40"}`}>{k.whatsapp ? "Aktif" : "Belum diatur"}</p>
           {!k.whatsapp && <p className="mt-1 text-sm text-black/60">Isi <code>FONNTE_TOKEN</code> di Vercel.</p>}
         </Kartu>
         <Kartu>
           <p className="text-sm uppercase tracking-widest text-black/50">Email (Resend)</p>
-          <p className={`mt-2 font-serif text-3xl ${k.email ? "text-emerald-700" : "text-black/40"}`}>{k.email ? "Aktif" : "Belum diatur"}</p>
+          <p className={`mt-2 text-3xl ${k.email ? "text-emerald-700" : "text-black/40"}`}>{k.email ? "Aktif" : "Belum diatur"}</p>
           {!k.email && <p className="mt-1 text-sm text-black/60">Isi <code>RESEND_API_KEY</code> dan <code>EMAIL_PENGIRIM</code>.</p>}
         </Kartu>
       </div>
@@ -34,7 +34,7 @@ export default async function StatusKanal() {
         {statusList.map((s, i) => <span key={s} className="rounded-full bg-white px-4 py-2 text-sm ring-1 ring-black/10">{s}: <strong>{hitung[i].count ?? 0}</strong></span>)}
         <TombolProses />
       </div>
-      <h2 className="mb-3 mt-8 font-serif text-2xl">Pengiriman terakhir</h2>
+      <h2 className="mb-3 mt-8 text-2xl">Pengiriman terakhir</h2>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className={kelasTabel}>
           <thead><tr><th className={kelasTh}>Waktu</th><th className={kelasTh}>Kanal</th><th className={kelasTh}>Tujuan</th><th className={kelasTh}>Judul</th><th className={kelasTh}>Status</th></tr></thead>

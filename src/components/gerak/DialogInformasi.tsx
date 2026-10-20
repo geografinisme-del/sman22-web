@@ -49,7 +49,7 @@ export function DialogInformasi({ info, onTutup }: { info: Informasi | null; onT
       {info && (
         <div className="dialog-info-kotak">
           <div className="dialog-info-kepala">
-            <p className="text-sm text-[#5b6270]">
+            <p className="text-sm text-[var(--muted)]">
               <span className="font-semibold text-[var(--lp-utama)]">{info.jenis}</span> · <time dateTime={info.tanggal}>{formatTanggal(info.tanggal)}</time>
             </p>
             <button type="button" className="tombol-tutup" onClick={() => ref.current?.close()} aria-label="Tutup detail informasi">
@@ -62,7 +62,7 @@ export function DialogInformasi({ info, onTutup }: { info: Informasi | null; onT
               // eslint-disable-next-line @next/next/no-img-element -- ukuran tak diketahui, gambar opsional dari CMS
               <img src={info.gambar} alt="" className="mt-4 aspect-[3/2] w-full rounded-lg object-cover" />
             )}
-            {ringkas && <p className="mt-3 whitespace-pre-line text-[#3b414b]">{ringkas}</p>}
+            {ringkas && <p className="mt-3 whitespace-pre-line text-[var(--muted)]">{ringkas}</p>}
           </div>
           <div className="dialog-info-kaki">
             <Link href={info.href} className="btn btn-primary" onClick={() => ref.current?.close()}>

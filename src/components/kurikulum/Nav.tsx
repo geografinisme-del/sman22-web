@@ -19,7 +19,7 @@ export function NavKurikulum() {
     <nav aria-label="Menu kurikulum" className="-mt-4 mb-6 flex gap-2 overflow-x-auto pb-1 text-sm print:hidden">
       {ITEM.map((i) => (
         <Link key={i.href} href={i.href} aria-current={aktif === i.href ? "page" : undefined}
-          className={`shrink-0 rounded-full px-4 py-2 ${aktif === i.href ? "bg-brand-900 text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}>
+          className={`shrink-0 rounded-full px-4 py-2 ${aktif === i.href ? "bg-ink text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}>
           {i.label}
         </Link>
       ))}

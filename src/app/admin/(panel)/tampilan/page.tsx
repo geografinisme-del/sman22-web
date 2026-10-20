@@ -54,7 +54,7 @@ export default async function TemaTampilan({ searchParams }: { searchParams: Pro
       />
 
       <h2 className="mb-1 mt-10 text-lg font-semibold">Teks & tautan</h2>
-      <p className="mb-4 text-sm text-[#5b6270]">Isi berikut langsung berlaku (bukan bagian dari draf tema).</p>
+      <p className="mb-4 text-sm text-[var(--muted)]">Isi berikut langsung berlaku (bukan bagian dari draf tema).</p>
       <div className="space-y-6">
         <Kartu>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -65,7 +65,7 @@ export default async function TemaTampilan({ searchParams }: { searchParams: Pro
         </Kartu>
         <Kartu>
           <h3 className="font-semibold">Daftar akses layanan</h3>
-          <p className="mb-4 mt-1 text-sm text-[#5b6270]">Tautan layanan yang dipakai widget “Akses layanan”. Atur judul, teks singkat, ikon, dan halaman tujuan.</p>
+          <p className="mb-4 mt-1 text-sm text-[var(--muted)]">Tautan layanan yang dipakai widget “Akses layanan”. Atur judul, teks singkat, ikon, dan halaman tujuan.</p>
           <FormBento key={kunci(t.beranda.bento)} kartu={t.beranda.bento} />
         </Kartu>
         <Kartu>

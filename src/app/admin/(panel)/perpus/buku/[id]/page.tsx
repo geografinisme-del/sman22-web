@@ -33,8 +33,8 @@ export default async function Buku({ params, searchParams }: { params: Promise<{
         <div className="space-y-6">
           <Kartu>
             <div className="mb-3 flex flex-wrap items-center gap-3">
-              <h2 className="flex-1 font-serif text-2xl">Eksemplar ({(eks ?? []).length})</h2>
-              {kelola && <Link href={`/admin/perpus/label?buku=${b.id}`} className="text-sm font-semibold text-brand-700 underline">Cetak label</Link>}
+              <h2 className="flex-1 text-2xl">Eksemplar ({(eks ?? []).length})</h2>
+              {kelola && <Link href={`/admin/perpus/label?buku=${b.id}`} className="text-sm font-semibold text-blue-teks underline">Cetak label</Link>}
             </div>
             <ul className="divide-y divide-black/5 text-sm">
               {(eks ?? []).map((e) => (
@@ -61,9 +61,9 @@ export default async function Buku({ params, searchParams }: { params: Promise<{
             </ul>
             {kelola && <div className="mt-4 border-t border-black/5 pt-4"><FormTambahEksemplar buku_id={b.id} pojok={pojok} /></div>}
           </Kartu>
-          {b.sinopsis && <Kartu><h2 className="mb-2 font-serif text-xl">Sinopsis</h2><p className="whitespace-pre-line text-sm text-black/70">{b.sinopsis}</p></Kartu>}
+          {b.sinopsis && <Kartu><h2 className="mb-2 text-xl">Sinopsis</h2><p className="whitespace-pre-line text-sm text-black/70">{b.sinopsis}</p></Kartu>}
         </div>
-        {kelola && <Kartu className="self-start"><h2 className="mb-4 font-serif text-2xl">Ubah data buku</h2><FormBuku data={b as DataBuku} /></Kartu>}
+        {kelola && <Kartu className="self-start"><h2 className="mb-4 text-2xl">Ubah data buku</h2><FormBuku data={b as DataBuku} /></Kartu>}
       </div>
     </>
   );

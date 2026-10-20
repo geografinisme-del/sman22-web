@@ -140,7 +140,7 @@ for (const [nama, opsi] of [
   await page.goto(BASE + "/", { waitUntil: "load" });
   const k = await page.evaluate(() => ({
     judul: document.querySelector("#judul-hero")?.textContent,
-    kartu: document.querySelectorAll(".lgt-kartu").length,
+    kartu: document.querySelectorAll("[data-hero-langit] .lgt-kartu").length,
     navFooter: !!document.querySelector("#navigasi-situs a"),
     tautanMenu: document.querySelector(".lgt-pil a")?.getAttribute("href"),
   }));

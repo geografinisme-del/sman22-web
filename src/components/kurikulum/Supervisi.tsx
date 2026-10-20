@@ -10,7 +10,7 @@ export function FormInstrumen({ id, skor, kekuatan, perbaikan, rekomendasi }: { 
       <input type="hidden" name="id" value={id} />
       {INSTRUMEN_SUPERVISI.map((b) => (
         <fieldset key={b.bagian}>
-          <legend className="mb-2 font-serif text-xl">{b.bagian}</legend>
+          <legend className="mb-2 text-xl">{b.bagian}</legend>
           <ul className="divide-y divide-black/5 rounded-xl ring-1 ring-black/10">
             {b.butir.map((x) => (
               <li key={x.kode} className="grid gap-2 p-3 text-sm sm:grid-cols-[1fr_auto] sm:items-center">
@@ -19,7 +19,7 @@ export function FormInstrumen({ id, skor, kekuatan, perbaikan, rekomendasi }: { 
                   {Object.entries(SKALA_SKOR).map(([n, l]) => (
                     <label key={n} title={l} className="cursor-pointer">
                       <input type="radio" name={`skor_${x.kode}`} value={n} defaultChecked={skor[x.kode] === n} className="peer sr-only" />
-                      <span className="grid h-9 w-9 place-items-center rounded-full font-semibold ring-1 ring-black/15 peer-checked:bg-brand-900 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-accent-400">{n}</span>
+                      <span className="grid h-9 w-9 place-items-center rounded-full font-semibold ring-1 ring-black/15 peer-checked:bg-ink peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-lime">{n}</span>
                     </label>
                   ))}
                 </span>

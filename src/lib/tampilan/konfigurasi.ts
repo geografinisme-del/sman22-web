@@ -15,7 +15,7 @@ const MAKS_WIDGET = 20;
 
 export type Konfigurasi = {
   versi: number;
-  tema: Exclude<KunciTema, "editorial">;
+  tema: KunciTema;
   palet: keyof typeof PALET;
   font: keyof typeof FONT;
   gerak: keyof typeof GERAK;

@@ -39,19 +39,19 @@ export default async function Inventaris({ searchParams }: { searchParams: Promi
     <>
       <JudulHalaman judul="Sarana & Prasarana" deskripsi="Inventaris barang sekolah: kode otomatis, lokasi, kondisi, nilai aset, dan label QR."
         aksi={<div className="flex gap-2"><a href="/admin/sarpras/ekspor" className="rounded-full px-4 py-2.5 text-sm font-semibold ring-1 ring-black/15">Unduh Excel</a>
-          {kelola && <Link href="?tambah=1#tambah" className="rounded-full bg-brand-900 px-4 py-2.5 text-sm font-semibold text-white">+ Barang</Link>}</div>} />
+          {kelola && <Link href="?tambah=1#tambah" className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white">+ Barang</Link>}</div>} />
       <NavSarpras lihat={lihat} kelola={kelola} />
       <Notifikasi kode={sp.pesan} />
       <ul className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[["Jenis barang", total(() => true, "jenis").toLocaleString("id-ID")], ["Total unit", total(() => true, "unit").toLocaleString("id-ID")],
           ["Nilai aset", rupiah(total(() => true, "nilai"))], ["Unit rusak/hilang", total((x) => x.kondisi !== "baik", "unit").toLocaleString("id-ID")]].map(([l, v]) => (
-          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="font-serif text-3xl tabular-nums">{v}</p><p className="text-sm text-black/60">{l}</p></li>
+          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="text-3xl tabular-nums">{v}</p><p className="text-sm text-black/60">{l}</p></li>
         ))}
       </ul>
       {kat.length > 0 && (
         <div className="mb-6 overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
           <table className="w-full min-w-[560px] text-left text-sm">
-            <thead><tr className="bg-krem text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Kategori</th>{Object.values(KONDISI).map((k) => <th key={k.label} className="px-4 py-2 text-right">{k.label}</th>)}<th className="px-4 py-2 text-right">Nilai</th></tr></thead>
+            <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Kategori</th>{Object.values(KONDISI).map((k) => <th key={k.label} className="px-4 py-2 text-right">{k.label}</th>)}<th className="px-4 py-2 text-right">Nilai</th></tr></thead>
             <tbody>
               {kat.map((k) => (
                 <tr key={k} className="border-t border-black/5">
@@ -65,7 +65,7 @@ export default async function Inventaris({ searchParams }: { searchParams: Promi
         </div>
       )}
       {kelola && sp.tambah && (
-        <Kartu className="mb-6"><h2 id="tambah" className="mb-4 font-serif text-2xl">Barang baru</h2>
+        <Kartu className="mb-6"><h2 id="tambah" className="mb-4 text-2xl">Barang baru</h2>
           <FormBarang kategori={(kategori ?? []) as { id: string; nama: string }[]} ruang={(ruang ?? []) as { id: string; nama: string }[]} /></Kartu>
       )}
       <form className="mb-4 flex flex-wrap gap-2 text-sm">
@@ -73,11 +73,11 @@ export default async function Inventaris({ searchParams }: { searchParams: Promi
         <select name="kategori" defaultValue={sp.kategori ?? ""} className="rounded-full border border-black/15 bg-white px-3 py-2" aria-label="Kategori"><option value="">Semua kategori</option>{(kategori ?? []).map((k) => <option key={k.id} value={k.id}>{k.nama}</option>)}</select>
         <select name="ruang" defaultValue={sp.ruang ?? ""} className="rounded-full border border-black/15 bg-white px-3 py-2" aria-label="Ruang"><option value="">Semua lokasi</option>{(ruang ?? []).map((k) => <option key={k.id} value={k.id}>{k.nama}</option>)}</select>
         <select name="kondisi" defaultValue={sp.kondisi ?? ""} className="rounded-full border border-black/15 bg-white px-3 py-2" aria-label="Kondisi"><option value="">Semua kondisi</option>{Object.entries(KONDISI).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}</select>
-        <button className="rounded-full bg-brand-900 px-4 py-2 font-semibold text-white">Saring</button>
+        <button className="rounded-full bg-ink px-4 py-2 font-semibold text-white">Saring</button>
       </form>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead><tr className="bg-krem text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Kode</th><th className="px-4 py-2">Nama</th><th className="px-4 py-2">Kategori</th><th className="px-4 py-2">Lokasi</th><th className="px-4 py-2 text-right">Jumlah</th><th className="px-4 py-2">Kondisi</th></tr></thead>
+          <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Kode</th><th className="px-4 py-2">Nama</th><th className="px-4 py-2">Kategori</th><th className="px-4 py-2">Lokasi</th><th className="px-4 py-2 text-right">Jumlah</th><th className="px-4 py-2">Kondisi</th></tr></thead>
           <tbody>
             {((barang ?? []) as unknown as B[]).length === 0 ? <tr><td colSpan={6} className="px-4 py-4 text-center text-black/50">Belum ada barang.</td></tr> : ((barang ?? []) as unknown as B[]).map((b) => (
               <tr key={b.id} className="border-t border-black/5">

@@ -37,7 +37,7 @@ export function FormPengumuman({ data }: { data: Data }) {
       <Centang label="Penting" nama="penting" nilai={data.penting} bantuan="Diberi tanda dan ditampilkan paling atas." />
       <Centang label="Tampilkan di website" nama="aktif" nilai={data.aktif} bantuan="Hapus centang untuk menyembunyikan sementara." />
 
-      <fieldset className="grid gap-5 rounded-xl border border-[#e3e5e8] p-4 sm:col-span-2 sm:grid-cols-2">
+      <fieldset className="grid gap-5 rounded-xl border border-[var(--line)] p-4 sm:col-span-2 sm:grid-cols-2">
         <legend className="px-1 font-semibold">Popup prioritas (opsional)</legend>
         <input type="hidden" name="kolom_popup" value={"prioritas" in data ? "1" : ""} />
         <div className="sm:col-span-2">
@@ -51,7 +51,7 @@ export function FormPengumuman({ data }: { data: Data }) {
         <div>
           <input type="hidden" name="poster_lama" value={data.poster_url ?? ""} />
           <InputGambar label="Poster (opsional)" nama="poster" sekarang={data.poster_url || undefined} />
-          <p className="mt-1 text-sm text-[#5b6270]">Ditampilkan utuh tanpa dipotong. Tulis juga informasi pentingnya di kolom Isi.</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">Ditampilkan utuh tanpa dipotong. Tulis juga informasi pentingnya di kolom Isi.</p>
           {data.poster_url && (
             <label className="mt-2 flex items-center gap-2 text-sm">
               <input type="checkbox" name="hapus_poster" className="h-4 w-4" /> Hapus poster saat ini

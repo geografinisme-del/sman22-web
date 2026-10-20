@@ -63,7 +63,7 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
   const saring = (k: string) => `?${new URLSearchParams({ ...(q && { q }), ...(k && { kategori: k }) })}`;
 
   return (
-    <div className="halaman-bidang" data-bidang="elibrary">
+    <>
       <PageHeader judul="E-Library" label="Perpustakaan SMA Negeri 22 Bandung" deskripsi="Cari buku di katalog, saring per kategori, dan cek ketersediaannya sebelum datang ke perpustakaan.">
               <form role="search" className="perpus-cari perpus-cari-besar">
                 <label htmlFor="cari-buku" className="sr-only">
@@ -78,8 +78,8 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
               </form>
       </PageHeader>
 
-      <section className="bagian">
-        <div className="lp-wadah grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <section className="lgt-bagian">
+        <div className="lgt-wadah grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="min-w-0">
 
             <nav aria-label="Saring kategori" className="flex flex-wrap gap-2">
@@ -91,7 +91,7 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
               </Link>
               {kategoriList.map((k) => (
                 <Link key={k.kategori} href={saring(k.kategori)} aria-current={kategori === k.kategori ? "true" : undefined} className="chip-saring">
-                  {k.kategori} <span className="tabular-nums text-[#5b6270]">({k.jumlah})</span>
+                  {k.kategori} <span className="tabular-nums text-[var(--muted)]">({k.jumlah})</span>
                 </Link>
               ))}
             </nav>
@@ -106,7 +106,7 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
                 />
               ) : (
                 <>
-                  <p className="mb-3 text-sm text-[#5b6270]">
+                  <p className="mb-3 text-sm text-[var(--muted)]">
                     {total.toLocaleString("id-ID")} judul{kategori && ` · kategori ${kategori}`}
                   </p>
                   <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" data-muncul="kelompok">
@@ -123,33 +123,33 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
                           </span>
                         </Link>
                         <div className="min-w-0">
-                          {b.kategori && <p className="text-sm text-[#5b6270]">{b.kategori}</p>}
+                          {b.kategori && <p className="text-sm text-[var(--muted)]">{b.kategori}</p>}
                           <h2 className="text-[1.0625rem] font-semibold leading-snug">
                             <Link href={`/perpustakaan/${b.id}`} className="hover:text-[var(--tema-utama)] hover:underline">
                               {b.judul}
                             </Link>
                           </h2>
-                          <p className="text-sm text-[#5b6270]">{[b.pengarang, b.tahun].filter(Boolean).join(" · ")}</p>
+                          <p className="text-sm text-[var(--muted)]">{[b.pengarang, b.tahun].filter(Boolean).join(" · ")}</p>
                           {(b.rekomendasi || b.rating) && (
                             <p className="mt-1 text-sm">
                               {b.rekomendasi && <span className="label-status mr-2">Rekomendasi</span>}
                               {b.rating && (
-                                <span className="text-[#3b414b]">
-                                  ★ {b.rating} <span className="text-[#5b6270]">({b.jumlah_ulasan} ulasan)</span>
+                                <span className="text-[var(--muted)]">
+                                  ★ {b.rating} <span className="text-[var(--muted)]">({b.jumlah_ulasan} ulasan)</span>
                                 </span>
                               )}
                             </p>
                           )}
                           <p className={`mt-2 text-sm font-semibold ${b.tersedia ? "text-emerald-800" : "text-[#8a4b00]"}`}>
                             {b.total === 0 ? "Belum ada eksemplar" : b.tersedia ? `${b.tersedia} dari ${b.total} tersedia` : "Sedang dipinjam semua"}
-                            {b.rak && <span className="font-normal text-[#5b6270]"> · rak {b.rak}</span>}
+                            {b.rak && <span className="font-normal text-[var(--muted)]"> · rak {b.rak}</span>}
                           </p>
                           {b.tautan_digital ? (
                             <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="tautan mt-1 inline-block text-sm">
                               Baca versi digital<span className="sr-only"> (tab baru)</span>
                             </a>
                           ) : (
-                            b.akses_digital === "warga" && <p className="mt-1 text-sm text-[#5b6270]">Versi digital untuk warga sekolah (masuk dulu).</p>
+                            b.akses_digital === "warga" && <p className="mt-1 text-sm text-[var(--muted)]">Versi digital untuk warga sekolah (masuk dulu).</p>
                           )}
                         </div>
                       </li>
@@ -179,7 +179,7 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
               <h2 className="flex items-center gap-2 text-[1.125rem] font-semibold">
                 <BookOpen size={20} aria-hidden className="text-[var(--tema-utama)]" /> Cara meminjam
               </h2>
-              <ol className="mt-3 space-y-2 text-[0.9375rem] text-[#3b414b]">
+              <ol className="mt-3 space-y-2 text-[0.9375rem] text-[var(--muted)]">
                 <li>
                   <strong>1. Cari</strong> buku dan cek ketersediaannya di katalog.
                 </li>
@@ -191,7 +191,7 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
                 </li>
               </ol>
               {aturan && (
-                <p className="mt-3 border-t border-[#e5e1da] pt-3 text-[0.9375rem] text-[#3b414b]">
+                <p className="mt-3 border-t border-[var(--line)] pt-3 text-[0.9375rem] text-[var(--muted)]">
                   Lama pinjam {aturan.lama_pinjam} hari · maksimal {aturan.maks_pinjam} buku
                   {aturan.maks_perpanjang > 0 ? ` · dapat diperpanjang ${aturan.maks_perpanjang}×` : ""}.
                 </p>
@@ -199,12 +199,12 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
             </div>
             <div className="kartu p-5" data-muncul>
               <h2 className="text-[1.125rem] font-semibold">Layanan pribadi</h2>
-              <p className="mt-1 text-[0.9375rem] text-[#3b414b]">Pinjaman aktif, reservasi, perpanjangan, jurnal baca, dan koleksi digital khusus warga sekolah.</p>
+              <p className="mt-1 text-[0.9375rem] text-[var(--muted)]">Pinjaman aktif, reservasi, perpanjangan, jurnal baca, dan koleksi digital khusus warga sekolah.</p>
               <Link href="/admin/login?sebagai=siswa" className="btn btn-primary mt-3 w-full">
                 Masuk Portal Sekolah
                 <ArrowRight size={18} aria-hidden className="ikon-geser" />
               </Link>
-              <p className="mt-3 text-sm text-[#5b6270]">
+              <p className="mt-3 text-sm text-[var(--muted)]">
                 Petugas perpustakaan mengelola koleksi, anggota, sirkulasi, dan laporan melalui{" "}
                 <Link href="/admin/login?sebagai=staf" className="tautan">
                   Portal Manajemen
@@ -215,6 +215,6 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
           </aside>
         </div>
       </section>
-    </div>
+    </>
   );
 }

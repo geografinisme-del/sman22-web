@@ -8,7 +8,7 @@ const kotak = "rounded-xl border border-black/15 bg-white px-3 py-2 text-sm";
 
 function Err({ n }: { n: string }) {
   const e = useErrorKolom(n);
-  return e ? <span className="block text-xs text-merah">{e}</span> : null;
+  return e ? <span className="block text-xs text-blue-teks">{e}</span> : null;
 }
 
 export function TambahPenugasan({ kelasId, mapel, guru }: { kelasId: string; mapel: Opsi[]; guru: Opsi[] }) {

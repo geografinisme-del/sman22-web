@@ -10,7 +10,7 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 | Sistem gerak (motion) situs publik | `desain-editorial-sekolah` | Selesai, di-commit, belum di-push |
 | Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `main` (sudah di produksi) | Kode tayang; **2 migrasi belum dijalankan di produksi** (lihat bawah) |
 | Portal Digital 22, warna bidang, tema "Sekolah Berwarna", navigasi berkelompok | `portal-digital-22` | Selesai & diuji lokal, di-commit, **belum di-push** |
-| "Langit cerah + Tur sekolah" — Tahap A (token, header + menu, hero + kartu putar) & Tahap B (tur sekolah + admin, angka, SPMB, footer) | `langit-cerah` (dari `buku-tahunan`) | Tahap A–B selesai & diuji lokal, di-push ke **pratinjau**; menunggu "lanjut" sebelum Tahap C. Migrasi 20261210, 20261220, 20261221 belum di produksi |
+| "Langit cerah + Tur sekolah" — Tahap A (token, header + menu, hero + kartu putar), B (tur sekolah, angka, SPMB, footer), C (semua halaman, hapus desain lama) | `langit-cerah` (dari `buku-tahunan`) | Tahap A–C selesai & diuji lokal, di-push ke **pratinjau**; menunggu "lanjut" sebelum Tahap D. Migrasi 20261210, 20261220, 20261221, 20261222 belum di produksi |
 | "Buku tahunan yang hidup": token (Tahap 1), beranda majalah (Tahap 2), Portal Digital 22 (Tahap 3), gerak GSAP/Embla (Tahap 4) | `buku-tahunan` | Selesai & diuji lokal, di-push ke **pratinjau** Vercel (bukan produksi); migrasi 20261210 belum di produksi |
 
 Detail status per modul: **MODULE_STATUS.md**.
@@ -296,3 +296,33 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Uji: `scripts/uji-e2e/uji-tur.mjs` (16 cek: unggah foto & kompres, tolak video 20 detik, ganti ke video tanpa deploy,
   tur awan → titik terakhir, video hanya saat aktif, HP daftar, urutan, batas minimal 3; keadaan dikembalikan),
   `scripts/tangkap-tur.mjs`, `supabase/tests/rls_tur_test.sql`. Berkas media uji sintetis dibuat dengan ffmpeg.
+
+### Tahap C
+- **Komponen bersama** (`src/components/langit/Komponen.tsx`): `PageHero` (gradien langit + awan, remah mono, label, judul
+  putih, satu kalimat, foto CMS opsional; `data-hero-langit` membuat header transparan), `SectionHeading`, `InfoCard`
+  (desain sama dengan kartu putar), `StatCard`, `Prose`, `TeksCms`, `CtaBand`, `Kosong`. `components/ui.tsx`
+  (`PageHeader`/`Section`/`Kosong`) sekarang membungkus komponen ini. Gaya: `langit/halaman.css` (basis `.lp`, formulir
+  radius 14 + cincin fokus 3px, tabel header mono, pil tingkat, FAQ, kisi) + `langit/overlay.css` (modal prioritas,
+  pemandu, lightbox). Tipografi dasar `.lp h1–h3, p` ada di `@layer base` agar utilitas Tailwind tetap menang.
+- **Beranda**: `SusunanLangit` (menggantikan `SusunanBuku`/susunan tema lama) + `langit/Bagian.tsx` (kabar, pengumuman &
+  agenda bertanggal besar, prestasi + saringan tingkat `SaringTingkat` (tanpa JS semua baris tampil), kehidupan siswa +
+  program bernomor 01–05, akses cepat & kontak, tentang kami, E-Library).
+- **Halaman baru**: `/profil` (indeks InfoCard), `/profil/visi-misi`, `/profil/sejarah`, `/profil/guru-staf` (saring
+  bidang), `/profil/fasilitas`, `/pembelajaran`, `/pembelajaran/kurikulum` (halaman_cms), `/pembelajaran/kalender`
+  (kegiatan_kalender umum, tahun ajaran berjalan), `/pengumuman`, `/prestasi`, `/cari` (berita, pengumuman, agenda,
+  halaman menu). Tautan `// sementara` di `menu-langit.ts` diganti; kotak cari menu → `/cari`; tautan modal pengumuman →
+  `/pengumuman#pengumuman-<id>`.
+- **Migrasi `20261222000000_halaman_publik.sql`** (belum di produksi): tabel `staf_publik`, `fasilitas`, `halaman_cms`;
+  publik baca baris aktif/terbit, tulis hanya `konten.kelola`, tanpa hapus permanen, tanpa isi awal. Tanpa tabel →
+  halaman menampilkan keadaan kosong. Admin: `/admin/staf-publik` (catatan persetujuan), `/admin/fasilitas`,
+  `/admin/halaman` (aksi di `app/admin/actions-halaman.ts`). Uji: `supabase/tests/rls_halaman_test.sql`.
+- **Portal Digital 22** memakai kerangka publik (SiteHeader/SiteFooter/PageHero); kelas `pd-*` dipertahankan untuk uji.
+  Halaman masuk/akun (`BingkaiAkun`) memakai `components/akun/akun.css` (panel langit). 404 bergaya langit.
+- **Desain lama dihapus**: `components/buku/*`, `components/beranda/*`, `widget/Widget.tsx`, `widget/tema.css`,
+  `components/Header.tsx`, `components/Footer.tsx`; pemetaan token lama di `globals.css`; tema/palet arsip di
+  `lib/tampilan/token.ts` (konfigurasi lama otomatis jatuh ke "langit"/"cerah"); warna tema tersimpan di DB tidak lagi
+  disuntikkan ke `:root`. Kelas Tailwind lama (`brand-*`, `merah`, `krem`, `tinta`, `accent-*`, `font-serif`) dan abu
+  hex lama diganti token di seluruh situs, portal, dan admin.
+- **Verifikasi**: `scripts/uji-e2e/tangkap-semua.mjs` (34 rute × 1440/390; cek header/footer baru, huruf, warna lama,
+  luber — HP dibandingkan dengan lebar layar perangkat), `scripts/uji-e2e/tangkap-admin.mjs` (admin, akun uji lokal).
+

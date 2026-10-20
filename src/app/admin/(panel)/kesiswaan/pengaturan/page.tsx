@@ -20,7 +20,7 @@ export default async function AturanPoin({ searchParams }: { searchParams: Promi
       <Notifikasi kode={pesan} />
       <div className="space-y-8">
         <Kartu>
-          <h2 className="mb-4 font-serif text-3xl">Jenis pelanggaran</h2>
+          <h2 className="mb-4 text-3xl">Jenis pelanggaran</h2>
           {(["ringan", "sedang", "berat"] as const).map((k) => (
             <div key={k} className="mb-6">
               <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-black/50">{KATEGORI_PEL[k]}</p>

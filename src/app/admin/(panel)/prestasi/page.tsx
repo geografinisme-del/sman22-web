@@ -36,7 +36,7 @@ export default async function AdminPrestasi({ searchParams }: { searchParams: Pr
       )}
 
       <Kartu className="mb-8">
-        <h2 className="mb-5 font-serif text-2xl">{diubah ? "Ubah prestasi" : "Tambah prestasi"}</h2>
+        <h2 className="mb-5 text-2xl">{diubah ? "Ubah prestasi" : "Tambah prestasi"}</h2>
         <FormAksi key={diubah?.id ?? "baru"} aksi={simpanPrestasi} className="grid gap-5 sm:grid-cols-2">
           {diubah && <input type="hidden" name="id" value={diubah.id} />}
           <Input label="Peringkat" nama="peringkat" nilai={d.peringkat} wajib maks={40} placeholder="Juara 1, Medali Emas, Finalis…" />
@@ -113,7 +113,7 @@ export default async function AdminPrestasi({ searchParams }: { searchParams: Pr
       )}
 
       <Kartu>
-        <h2 className="font-serif text-2xl">Alumni diterima di perguruan tinggi negeri</h2>
+        <h2 className="text-2xl">Alumni diterima di perguruan tinggi negeri</h2>
         <p className="mb-5 mt-1 text-sm text-black/60">Tampil di samping daftar prestasi. Kosongkan bila belum ada data resmi.</p>
         <FormAksi aksi={simpanAlumniPtn} className="grid gap-5 sm:grid-cols-2">
           <Input label="Jumlah alumni" nama="alumni_ptn" nilai={profil?.alumni_ptn ?? ""} maks={20} placeholder="mis. 180+" />

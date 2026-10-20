@@ -14,11 +14,11 @@ export default async function Notifikasi() {
   const { pref, kontak } = await muatPreferensi(supabase, akses);
   return (
     <>
-      <JudulHalaman judul="Notifikasi" aksi={punya(akses, "pengguna.kelola") ? <Link href="/admin/notifikasi/kanal" className="text-sm text-brand-700 underline">Status WhatsApp & email →</Link> : undefined} />
+      <JudulHalaman judul="Notifikasi" aksi={punya(akses, "pengguna.kelola") ? <Link href="/admin/notifikasi/kanal" className="text-sm text-blue-teks underline">Status WhatsApp & email →</Link> : undefined} />
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <DaftarNotifikasi supabase={supabase} kembali="/admin/notifikasi" />
         <Kartu>
-          <h2 className="mb-4 font-serif text-2xl">Kirim juga ke</h2>
+          <h2 className="mb-4 text-2xl">Kirim juga ke</h2>
           <FormPreferensi p={pref} kontak={kontak} kanal={kanalAktif()} />
         </Kartu>
       </div>

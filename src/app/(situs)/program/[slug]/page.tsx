@@ -35,8 +35,8 @@ export default async function DetailProgram({ params }: { params: Promise<{ slug
       </PageHeader>
 
       {p.kode === "7KAIH" && (
-        <section className="bagian bagian-putih">
-          <div className="lp-wadah">
+        <section className="lgt-bagian">
+          <div className="lgt-wadah">
             <h2>Tujuh kebiasaan</h2>
             <ol className="kebiasaan mt-4 max-w-2xl">
               {KEBIASAAN_7KAIH.map((k) => (
@@ -47,8 +47,8 @@ export default async function DetailProgram({ params }: { params: Promise<{ slug
         </section>
       )}
       {p.kode === "GP" && (
-        <section className="bagian bagian-putih">
-          <div className="lp-wadah">
+        <section className="lgt-bagian">
+          <div className="lgt-wadah">
             <h2>Lima nilai Pancawaluya</h2>
             <dl className="nilai-daftar mt-4">
               {PANCAWALUYA.map((n) => (
@@ -62,15 +62,15 @@ export default async function DetailProgram({ params }: { params: Promise<{ slug
         </section>
       )}
 
-      <section className="bagian">
-        <div className="lp-wadah">
+      <section className="lgt-bagian">
+        <div className="lgt-wadah">
           <h2>Berita dan kegiatan terkait</h2>
           {terkait.length ? (
-            <ul className="mt-4 divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
+            <ul className="mt-4 divide-y divide-[var(--line)] border-y border-[var(--line)]">
               {terkait.map((b) => (
                 <li key={b.slug}>
                   <Link href={`/berita/${b.slug}`} className="group block py-3">
-                    <span className="text-sm text-[#5b6270]">
+                    <span className="text-sm text-[var(--muted)]">
                       {b.kategori || "Berita"} · {formatTanggal(b.tanggal)}
                     </span>
                     <span className="mt-0.5 block font-semibold group-hover:text-[var(--tema-utama)] group-hover:underline">{b.judul}</span>
@@ -79,13 +79,13 @@ export default async function DetailProgram({ params }: { params: Promise<{ slug
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-[#3b414b]">Belum ada berita yang diterbitkan untuk program ini.</p>
+            <p className="mt-3 text-[var(--muted)]">Belum ada berita yang diterbitkan untuk program ini.</p>
           )}
 
           <h2 className="mt-12">Program lainnya</h2>
           <ul className="mt-4 grid gap-x-8 sm:grid-cols-2">
             {lain.map((x) => (
-              <li key={x.kode} className="border-b border-[#e5e1da]">
+              <li key={x.kode} className="border-b border-[var(--line)]">
                 <Link href={`/program/${slugProgram(x)}`} className="block py-3 font-semibold hover:text-[var(--tema-utama)] hover:underline">
                   {x.nama}
                 </Link>

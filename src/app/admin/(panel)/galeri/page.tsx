@@ -25,7 +25,7 @@ export default async function AdminGaleri({ searchParams }: { searchParams: Prom
       <JudulHalaman judul="Galeri" deskripsi="Foto tampil di halaman Galeri sesuai urutan." />
       <Notifikasi kode={pesan} />
       <Kartu className="mb-8">
-        <h2 className="mb-5 font-serif text-2xl">{diubah ? "Ubah foto" : "Unggah foto baru"}</h2>
+        <h2 className="mb-5 text-2xl">{diubah ? "Ubah foto" : "Unggah foto baru"}</h2>
         <FormFoto key={diubah?.id ?? "baru"} data={diubah ?? { judul: "", urutan: urutanBerikut, gambar_url: "" }} />
       </Kartu>
 

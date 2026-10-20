@@ -51,7 +51,7 @@ export default async function RiwayatJadwal({ searchParams }: { searchParams: Pr
           <option value="">Semua</option>
           {Object.entries(TABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Saring</button>
+        <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Saring</button>
       </form>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className={kelasTabel}>

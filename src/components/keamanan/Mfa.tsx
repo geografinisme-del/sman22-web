@@ -34,14 +34,14 @@ export function InputKode({ label = "Kode dari aplikasi autentikator", fokus = t
         }}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? "kode-error" : "kode-bantuan"}
-        className="w-full rounded-lg border border-black/20 bg-white px-4 py-3 font-mono text-2xl tracking-[0.3em] tabular-nums outline-none focus:border-[var(--tema-utama)] focus:ring-[3px] focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)] aria-[invalid=true]:border-merah"
+        className="w-full rounded-lg border border-black/20 bg-white px-4 py-3 font-mono text-2xl tracking-[0.3em] tabular-nums outline-none focus:border-[var(--tema-utama)] focus:ring-[3px] focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)] aria-[invalid=true]:border-blue-teks"
       />
       {error ? (
-        <p id="kode-error" role="alert" className="mt-1.5 text-sm font-medium text-merah">
+        <p id="kode-error" role="alert" className="mt-1.5 text-sm font-medium text-blue-teks">
           {error}
         </p>
       ) : (
-        <p id="kode-bantuan" className="mt-1.5 text-sm text-[#5b6270]">
+        <p id="kode-bantuan" className="mt-1.5 text-sm text-[var(--muted)]">
           6 angka; kode berganti setiap 30 detik.
         </p>
       )}
@@ -103,7 +103,7 @@ export function DaftarMfa({ lanjut = "/admin", teksTombol = "Mulai pasang aplika
         <img src={data.qr} alt="Kode QR untuk aplikasi autentikator" width={200} height={200} className="h-[200px] w-[200px]" />
       </div>
       <div className="text-sm">
-        <button type="button" onClick={() => setLihatKunci((v) => !v)} className="font-semibold text-brand-700 underline underline-offset-2">
+        <button type="button" onClick={() => setLihatKunci((v) => !v)} className="font-semibold text-blue-teks underline underline-offset-2">
           {lihatKunci ? "Sembunyikan kunci" : "Tidak bisa memindai? Ketik kunci manual"}
         </button>
         {lihatKunci && <p className="mt-2 break-all rounded-xl bg-black/5 p-3 font-mono text-sm tracking-wider">{data.rahasia}</p>}

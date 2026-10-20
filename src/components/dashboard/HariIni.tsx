@@ -17,9 +17,9 @@ const n = (r: HasilHitung) => (r.error ? null : (r.count ?? 0));
 /** Panel ringkasan: permukaan putih, judul 18px, tindakan di kanan. */
 export function Panel({ judul, aksi, children, className = "" }: { judul: string; aksi?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={`min-w-0 rounded-[10px] border border-[#e3e5e8] bg-white p-5 ${className}`} aria-label={judul}>
+    <section className={`min-w-0 rounded-[10px] border border-[var(--line)] bg-white p-5 ${className}`} aria-label={judul}>
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="text-lg font-semibold text-[#1f2328]">{judul}</h2>
+        <h2 className="text-lg font-semibold text-[var(--ink)]">{judul}</h2>
         {aksi}
       </div>
       {children}
@@ -30,7 +30,7 @@ export function Panel({ judul, aksi, children, className = "" }: { judul: string
 /** Pesan keadaan (kosong, belum diatur, libur, gagal) — ringkas, tidak setinggi grafik. */
 export function Keadaan({ jenis, children, aksi }: { jenis: "info" | "gagal"; children: ReactNode; aksi?: ReactNode }) {
   return (
-    <div className={`flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm ${jenis === "gagal" ? "bg-red-50 text-red-900" : "bg-[#f4f5f7] text-[#3b414b]"}`} role={jenis === "gagal" ? "alert" : undefined}>
+    <div className={`flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm ${jenis === "gagal" ? "bg-red-50 text-red-900" : "bg-[var(--soft)] text-[var(--muted)]"}`} role={jenis === "gagal" ? "alert" : undefined}>
       <span className="flex items-start gap-2">
         {jenis === "gagal" && <AlertTriangle size={16} aria-hidden className="mt-0.5 shrink-0" />}
         <span>{children}</span>
@@ -49,8 +49,8 @@ const cobaLagi = (
 function Angka({ nilai, label, catatan }: { nilai: number; label: string; catatan?: string }) {
   return (
     <div>
-      <dt className="text-sm text-[#5b6270]">{label}</dt>
-      <dd className="mt-0.5 text-[1.625rem] font-semibold leading-none tabular-nums text-[#1f2328]">
+      <dt className="text-sm text-[var(--muted)]">{label}</dt>
+      <dd className="mt-0.5 text-[1.625rem] font-semibold leading-none tabular-nums text-[var(--ink)]">
         {nilai}
         {catatan && <span className="ml-2 align-middle text-xs font-semibold text-[#8a4b00]">{catatan}</span>}
       </dd>
@@ -201,21 +201,21 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
           </div>
         )}
         {tugas.length ? (
-          <ul className="divide-y divide-[#eceef1] border-y border-[#eceef1]">
+          <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
             {tugas.map((x) => (
               <li key={x.href + x.t} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
                 <span className="flex min-w-0 items-center gap-3">
                   <span className="min-w-9 rounded-md bg-[#fdf1d6] px-2 py-0.5 text-center text-sm font-semibold tabular-nums text-[#7a5300]">{x.n}</span>
-                  <span className="text-[0.9375rem] text-[#1f2328]">{x.t}</span>
+                  <span className="text-[0.9375rem] text-[var(--ink)]">{x.t}</span>
                 </span>
-                <Link href={x.href} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[#d9dce1] px-3 text-sm font-semibold hover:border-[#9aa1ab]">
+                <Link href={x.href} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 text-sm font-semibold hover:border-[var(--muted)]">
                   {x.tombol} <ArrowRight size={15} aria-hidden />
                 </Link>
               </li>
             ))}
           </ul>
         ) : tugasGagal === 0 ? (
-          <p className="flex items-center gap-2 text-[0.9375rem] text-[#3b414b]">
+          <p className="flex items-center gap-2 text-[0.9375rem] text-[var(--muted)]">
             <CircleCheck size={18} aria-hidden className="text-emerald-700" /> Tidak ada yang menunggu tindakan Anda saat ini.
           </p>
         ) : null}
@@ -254,10 +254,10 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
                 <strong className="tabular-nums">{dicek}</strong> dari <strong className="tabular-nums">{jumlahKelas}</strong> kelas sudah diabsen
                 {dicek < jumlahKelas && <span className="text-[#8a4b00]"> · {jumlahKelas - dicek} kelas belum</span>}
               </p>
-              <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#eceef1]" aria-hidden>
-                <div className="h-full rounded-full bg-[#4a5677]" style={{ width: `${Math.round((dicek / jumlahKelas) * 100)}%` }} />
+              <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--line)]" aria-hidden>
+                <div className="h-full rounded-full bg-[var(--muted)]" style={{ width: `${Math.round((dicek / jumlahKelas) * 100)}%` }} />
               </div>
-              <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-[#eceef1] pt-4 sm:grid-cols-4">
+              <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-[var(--line)] pt-4 sm:grid-cols-4">
                 <Angka nilai={hit("S")} label="Sakit" />
                 <Angka nilai={hit("I")} label="Izin" />
                 <Angka nilai={hit("A")} label="Alpa" catatan={hit("A") ? "perlu dicek" : undefined} />
@@ -266,7 +266,7 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
             </>
           )}
           {!siswaGagal && adaTren && (
-            <div className="mt-5 border-t border-[#eceef1] pt-4">
+            <div className="mt-5 border-t border-[var(--line)] pt-4">
               <GrafikTidakHadir data={tren as Awaited<ReturnType<typeof trenTidakHadir>>} />
             </div>
           )}
@@ -332,13 +332,13 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
             </Link>
           }
         >
-          <ul className="divide-y divide-[#eceef1]">
+          <ul className="divide-y divide-[var(--line)]">
             {agenda.map((k) => (
               <li key={k.id} className="flex items-start gap-2.5 py-2 text-sm">
                 <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${JENIS_KEGIATAN[k.jenis].titik}`} aria-hidden />
                 <span>
                   <span className="block font-semibold">{k.judul}</span>
-                  <span className="text-[#5b6270]">
+                  <span className="text-[var(--muted)]">
                     {JENIS_KEGIATAN[k.jenis].label} · {rentangTanggal(k.mulai, k.selesai)}
                     {k.kbm_libur && " · tanpa KBM"}
                   </span>

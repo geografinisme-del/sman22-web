@@ -24,7 +24,7 @@ export default async function IsiSurvei({ params }: { params: Promise<{ id: stri
       <PageHeader judul={s.judul} deskripsi={s.deskripsi || "Jawaban Anda anonim dan hanya dilaporkan dalam bentuk rekap."} />
       <Section><div className="max-w-3xl">
         {s.sudah ? <p className="rounded-2xl bg-emerald-50 p-6 text-emerald-900 ring-1 ring-emerald-200">Anda sudah mengisi survei ini. Terima kasih!</p>
-          : perluMasuk ? <p className="kartu p-6 ">Survei ini untuk warga sekolah. <Link href="/masuk" className="font-semibold underline">Masuk ke portal</Link> lalu buka kembali tautan ini.</p>
+          : perluMasuk ? <p className="kartu p-6">Survei ini untuk warga sekolah. <Link href="/masuk" className="font-semibold underline">Masuk ke portal</Link> lalu buka kembali tautan ini.</p>
           : <FormSurvei id={s.id} pertanyaan={s.pertanyaan} />}
       </div></Section>
     </>

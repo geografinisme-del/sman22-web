@@ -5,6 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import type { FotoItem } from "@/lib/data";
 
+/** Rasio bergiliran agar kisi kolom (masonry) tampak alami tanpa data ukuran foto. */
+const RASIO = ["aspect-[4/5]", "aspect-[4/3]", "aspect-square", "aspect-[3/4]", "aspect-[16/10]"];
+
+/** Galeri masonry + lightbox (dialog bawaan: Esc menutup, panah kiri/kanan berpindah). */
 export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
   const [buka, setBuka] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -32,12 +36,13 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
 
   return (
     <>
-      <ul className="galeri-kisi grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3" data-muncul="kelompok">
+      <ul className="galeri-kisi" data-muncul="kelompok">
         {foto.map((f, i) => (
           <li key={f.id}>
             <figure>
-              <button type="button" onClick={() => setBuka(i)} className="foto relative block aspect-[4/3] w-full" aria-label={`Perbesar foto: ${f.judul}`}>
-                {f.gambar && <Image src={f.gambar} alt={f.judul} fill sizes="(min-width: 768px) 33vw, 50vw" className="object-cover" />}
+              <button type="button" onClick={() => setBuka(i)} className={`foto relative block w-full ${RASIO[i % RASIO.length]}`} aria-label={`Perbesar foto: ${f.judul}`}>
+                {f.gambar && <Image src={f.gambar} alt={f.judul} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover" />}
+                {f.sementara && <span className="media-label">Ilustrasi sementara</span>}
               </button>
               <figcaption className="keterangan-foto">{f.judul}</figcaption>
             </figure>

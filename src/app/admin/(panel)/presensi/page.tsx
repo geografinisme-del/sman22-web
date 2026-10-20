@@ -34,7 +34,7 @@ export default async function PresensiSaya({ searchParams }: { searchParams: Pro
       <JudulHalaman judul="Presensi Saya" deskripsi={`${formatTanggal(hari, { weekday: "long" })}${atur.kelompok ? ` · ${atur.kelompok}` : ""} · batas masuk ${atur.jam_masuk ?? "—"} · pulang mulai ${atur.jam_pulang ?? "—"} WIB`} />
       <Notifikasi kode={sp.pesan} />
       {(atur.wajib_lokasi || atur.wajib_swafoto) && (
-        <p className="mb-6 rounded-xl bg-krem px-4 py-3 text-sm text-black/70 ring-1 ring-black/10">
+        <p className="mb-6 rounded-xl bg-soft px-4 py-3 text-sm text-black/70 ring-1 ring-black/10">
           Sesuai kebijakan sekolah, presensi kelompok Anda memerlukan
           {atur.wajib_lokasi && <> <strong>lokasi</strong> (hanya diperiksa saat menekan tombol; harus dalam radius {atur.radius} m dari sekolah, yang disimpan hanya jaraknya)</>}
           {atur.wajib_lokasi && atur.wajib_swafoto && " dan"}
@@ -45,7 +45,7 @@ export default async function PresensiSaya({ searchParams }: { searchParams: Pro
       <div className="grid gap-4 sm:grid-cols-2">
         <Kartu className="text-center">
           <p className="text-sm uppercase tracking-widest text-black/50">Masuk</p>
-          <p className="mt-2 font-serif text-6xl tabular-nums">{jam(hariIni?.jam_masuk)}</p>
+          <p className="mt-2 text-6xl tabular-nums">{jam(hariIni?.jam_masuk)}</p>
           {hariIni?.status === "T" && <p className="mt-1 text-sm font-semibold text-amber-700">Terlambat</p>}
           {hariIni?.jarak_masuk != null && <p className="mt-1 text-xs text-black/50">±{hariIni.jarak_masuk} m dari sekolah</p>}
           {!hariIni?.jam_masuk && !["S", "I", "DL", "C"].includes(hariIni?.status ?? "") && (
@@ -55,7 +55,7 @@ export default async function PresensiSaya({ searchParams }: { searchParams: Pro
         </Kartu>
         <Kartu className="text-center">
           <p className="text-sm uppercase tracking-widest text-black/50">Pulang</p>
-          <p className="mt-2 font-serif text-6xl tabular-nums">{jam(hariIni?.jam_pulang)}</p>
+          <p className="mt-2 text-6xl tabular-nums">{jam(hariIni?.jam_pulang)}</p>
           {hariIni?.jam_masuk && !hariIni?.jam_pulang && (
             <TombolPresensi jenis="pulang" wajibLokasi={Boolean(atur.wajib_lokasi)} wajibSwafoto={Boolean(atur.wajib_swafoto)} />
           )}
@@ -65,11 +65,11 @@ export default async function PresensiSaya({ searchParams }: { searchParams: Pro
 
       <section id="izin" className="mt-10 grid gap-6 lg:grid-cols-2">
         <Kartu>
-          <h2 className="mb-4 font-serif text-3xl">Ajukan izin / sakit / dinas / cuti</h2>
+          <h2 className="mb-4 text-3xl">Ajukan izin / sakit / dinas / cuti</h2>
           <FormIzinPegawai hariIni={hari} />
         </Kartu>
         <div>
-          <h2 className="mb-3 font-serif text-2xl">Pengajuan saya</h2>
+          <h2 className="mb-3 text-2xl">Pengajuan saya</h2>
           {!pengajuan?.length ? <p className="text-sm text-black/50">Belum ada pengajuan.</p> : (
             <ul className="space-y-2">
               {pengajuan.map((z) => (
@@ -81,7 +81,7 @@ export default async function PresensiSaya({ searchParams }: { searchParams: Pro
                   <p className="mt-1 text-black/60">{z.alasan}</p>
                   {z.catatan && <p className="mt-1 text-xs text-black/50">Catatan: {z.catatan}</p>}
                   {z.status === "menunggu" && (
-                    <form action={batalkanIzinPegawai} className="mt-2"><input type="hidden" name="id" value={z.id} /><button className="text-xs text-merah underline">Batalkan</button></form>
+                    <form action={batalkanIzinPegawai} className="mt-2"><input type="hidden" name="id" value={z.id} /><button className="text-xs text-blue-teks underline">Batalkan</button></form>
                   )}
                 </li>
               ))}
@@ -90,7 +90,7 @@ export default async function PresensiSaya({ searchParams }: { searchParams: Pro
         </div>
       </section>
 
-      <h2 className="mb-3 mt-10 font-serif text-3xl">Bulan ini</h2>
+      <h2 className="mb-3 mt-10 text-3xl">Bulan ini</h2>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className={kelasTabel}>
           <thead><tr><th className={kelasTh}>Tanggal</th><th className={kelasTh}>Status</th><th className={kelasTh}>Masuk</th><th className={kelasTh}>Pulang</th><th className={kelasTh}>Keterangan</th></tr></thead>

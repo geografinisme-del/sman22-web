@@ -1,7 +1,6 @@
 /**
  * Struktur navigasi "Langit cerah": header (pil tengah), menu layar penuh, dan footer memakai data yang sama.
- * Tautan yang halamannya baru dibuat di Tahap C sementara diarahkan ke halaman terdekat yang sudah ada
- * (keputusan pemilik, 20 Okt 2026) — ditandai `// sementara` dan diganti saat halamannya tersedia.
+ * Semua tautan mengarah ke halaman yang tersedia (halaman Tahap C sudah dibuat).
  * E-Learning: URL dari CMS (`tautanELearning`), bawaan /pembelajaran/e-learning. Modul murni (bisa diuji).
  */
 import { E_LEARNING_BAWAAN } from "./menu.ts";
@@ -27,10 +26,10 @@ export const GRUP_LANGIT: GrupLangit[] = [
     foto: { src: "/images/gedung.jpg", alt: "Gedung utama SMA Negeri 22 Bandung" },
     anak: [
       { href: "/sambutan", label: "Sambutan kepala sekolah" },
-      { href: "/profil#visi-misi", label: "Visi dan misi" }, // sementara
-      { href: "/profil#sejarah", label: "Sejarah" }, // sementara
-      { href: "/profil", label: "Guru dan staf" }, // sementara (Tahap C: tabel CMS staf_publik)
-      { href: "/galeri", label: "Fasilitas" }, // sementara
+      { href: "/profil/visi-misi", label: "Visi dan misi" },
+      { href: "/profil/sejarah", label: "Sejarah" },
+      { href: "/profil/guru-staf", label: "Guru dan staf" },
+      { href: "/profil/fasilitas", label: "Fasilitas" },
     ],
   },
   {
@@ -42,8 +41,8 @@ export const GRUP_LANGIT: GrupLangit[] = [
     anak: [
       { href: "/program", label: "Program dan karakter" },
       { href: E_LEARNING_BAWAAN, label: "E-Learning" },
-      { href: "/agenda", label: "Kalender akademik" }, // sementara
-      { href: "/program", label: "Kurikulum" }, // sementara
+      { href: "/pembelajaran/kalender", label: "Kalender akademik" },
+      { href: "/pembelajaran/kurikulum", label: "Kurikulum" },
     ],
   },
   {
@@ -53,7 +52,7 @@ export const GRUP_LANGIT: GrupLangit[] = [
     keterangan: "Prestasi, organisasi siswa, dan dokumentasi kegiatan.",
     foto: { src: "/images/keluarga-besar.jpg", alt: "Keluarga besar SMA Negeri 22 Bandung di halaman sekolah" },
     anak: [
-      { href: "/berita?kategori=Prestasi", label: "Prestasi" }, // sementara
+      { href: "/prestasi", label: "Prestasi" },
       { href: "/ekskul", label: "Ekskul dan OSIS" },
       { href: "/galeri", label: "Galeri kegiatan" },
     ],
@@ -66,7 +65,7 @@ export const GRUP_LANGIT: GrupLangit[] = [
     foto: { src: "/images/upacara-pagi.jpg", alt: "Upacara pagi di lapangan sekolah" },
     anak: [
       { href: "/berita", label: "Berita" },
-      { href: "/agenda#judul-pengumuman", label: "Pengumuman" }, // sementara
+      { href: "/pengumuman", label: "Pengumuman" },
       { href: "/agenda", label: "Agenda dan kalender" },
     ],
   },

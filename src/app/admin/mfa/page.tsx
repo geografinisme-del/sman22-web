@@ -37,7 +37,7 @@ export default async function HalamanMfa({ searchParams }: { searchParams: Promi
       bawah={
         <>
           {faktor.length > 0 && (
-            <p className="text-[#3b414b]">
+            <p className="text-[var(--muted)]">
               HP hilang atau berganti HP? Minta super admin lain mereset verifikasi dua langkah akun Anda melalui menu Pengguna & Peran.
             </p>
           )}

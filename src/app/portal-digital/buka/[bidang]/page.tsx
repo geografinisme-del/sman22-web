@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { IkonBidang } from "@/components/IkonBidang";
+import { PageHero } from "@/components/langit/Komponen";
 import { getAkses } from "@/lib/admin/auth";
 import { BIDANG, type KunciBidang } from "@/lib/bidang";
 import { putuskanPintu } from "@/lib/portal-digital";
@@ -23,13 +24,15 @@ export default async function BukaBidang({ params }: { params: Promise<{ bidang:
   const hanyaPortal = akses ? akses.peran.every((p) => p === "siswa" || p === "orang_tua") : false;
 
   return (
-    <div className="pd-wadah">
+    <>
+      <PageHero judul={k.judul} label={b.label} remah={[{ href: "/portal-digital", label: "Portal Digital 22" }]} />
+      <section className="lgt-bagian">
+      <div className="lgt-wadah">
       <div className="pd-kotak" data-bidang={bidang} role="alert">
-        <p className="flex items-center gap-2 font-semibold text-[var(--color-brand)]">
+        <p className="flex items-center gap-2 font-semibold text-[var(--blue-teks)]">
           <IkonBidang bidang={bidang as KunciBidang} size={20} /> {b.label}
         </p>
-        <h1 className="mt-2 font-bold">{k.judul}</h1>
-        <p className="mt-2 text-[var(--color-ink-muted)]">{k.alasan}</p>
+        <p className="mt-2 text-[var(--muted)]">{k.alasan}</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/portal-digital" className="pd-tautan">
             Kembali ke Portal Digital 22
@@ -46,6 +49,8 @@ export default async function BukaBidang({ params }: { params: Promise<{ bidang:
           </form>
         </div>
       </div>
-    </div>
+      </div>
+      </section>
+    </>
   );
 }

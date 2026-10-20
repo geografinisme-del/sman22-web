@@ -56,7 +56,7 @@ export default async function KelasSaya() {
       <JudulHalaman judul="Kelas Saya" deskripsi="Data ini hanya bisa dilihat oleh Anda sebagai wali kelas. Mohon dijaga kerahasiaannya." />
       {saranBk.length > 0 && (
         <Kartu className="mb-6">
-          <h2 className="mb-1 font-serif text-2xl">Saran pendampingan dari BK</h2>
+          <h2 className="mb-1 text-2xl">Saran pendampingan dari BK</h2>
           <p className="mb-3 text-sm text-black/60">Dibagikan guru BK untuk membantu Anda mendampingi siswa. Isi konseling tetap rahasia — jangan menanyakannya kepada siswa di depan teman.</p>
           <ul className="divide-y divide-black/5 text-sm">{saranBk.map((x) => (
             <li key={x.siswa_id} className="py-2"><strong>{x.siswa}</strong> <span className="text-black/50">· {x.kelas}</span><p className="mt-0.5">{x.saran}</p></li>
@@ -66,11 +66,11 @@ export default async function KelasSaya() {
       {isi.map(({ kelas, siswa }) => (
         <Kartu key={kelas.id} className="mb-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-serif text-3xl">
+            <h2 className="text-3xl">
               {kelas.nama} <span className="text-base text-black/50">· {kelas.tahun_ajaran} · {siswa.length} siswa</span>
             </h2>
             <div className="flex gap-2">
-              <a href={`/admin/absensi/kelas/${kelas.id}`} className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">Isi absensi hari ini</a>
+              <a href={`/admin/absensi/kelas/${kelas.id}`} className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">Isi absensi hari ini</a>
               <a href={`/admin/absensi/rekap?kelas=${kelas.id}`} className="rounded-full px-5 py-2.5 text-sm font-semibold ring-1 ring-black/10">Rekap</a>
             </div>
           </div>

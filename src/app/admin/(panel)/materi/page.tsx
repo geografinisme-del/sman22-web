@@ -29,7 +29,7 @@ export default async function Materi({ searchParams }: { searchParams: Promise<{
       <NavKurikulum />
       <Notifikasi kode={sp.pesan} />
       <Kartu className="mb-6">
-        <h2 className="mb-3 font-serif text-2xl">Materi baru</h2>
+        <h2 className="mb-3 text-2xl">Materi baru</h2>
         {mapel.length ? <FormMateriBaru mapel={mapel} /> : <p className="text-sm text-black/50">Butuh penugasan mengajar di tahun ajaran aktif.</p>}
       </Kartu>
       {list.length === 0 ? <KosongAdmin teks="Belum ada materi." /> : (
@@ -44,7 +44,7 @@ export default async function Materi({ searchParams }: { searchParams: Promise<{
                 </Link>
                 <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${m.terbit ? "bg-emerald-50 text-emerald-800" : "bg-black/5 text-black/60"}`}>{m.terbit ? "Terbit" : "Draf"}</span>
               </div>
-              <Link href={`/papan/${m.id}`} target="_blank" className="mt-3 inline-block rounded-full bg-accent-400 px-4 py-1.5 text-sm font-semibold text-brand-900">▶ Tayangkan</Link>
+              <Link href={`/papan/${m.id}`} target="_blank" className="mt-3 inline-block rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-ink">▶ Tayangkan</Link>
             </li>
           ))}
         </ul>

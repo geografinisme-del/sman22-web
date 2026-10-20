@@ -75,7 +75,7 @@ export function EditorJadwal({
 
       {ruang.length > 0 && (
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={pakaiRuang} onChange={(e) => setPakaiRuang(e.target.checked)} className="h-4 w-4 accent-brand-800" />
+          <input type="checkbox" checked={pakaiRuang} onChange={(e) => setPakaiRuang(e.target.checked)} className="h-4 w-4 accent-ink" />
           Atur ruang (lab, lapangan) per jam
         </label>
       )}
@@ -84,14 +84,14 @@ export function EditorJadwal({
         <table className="w-full min-w-[820px] table-fixed border-collapse text-xs">
           <thead>
             <tr>
-              <th className="w-12 border-b border-black/10 bg-krem px-2 py-2">JP</th>
-              {hari.map((h) => <th key={h} className="border-b border-black/10 bg-krem px-2 py-2 text-left text-sm">{namaHari(h)}</th>)}
+              <th className="w-12 border-b border-black/10 bg-soft px-2 py-2">JP</th>
+              {hari.map((h) => <th key={h} className="border-b border-black/10 bg-soft px-2 py-2 text-left text-sm">{namaHari(h)}</th>)}
             </tr>
           </thead>
           <tbody>
             {Array.from({ length: maksJp }, (_, i) => i + 1).map((jp) => (
               <tr key={jp}>
-                <td className="border-b border-r border-black/5 text-center font-serif text-lg text-black/40">{jp}</td>
+                <td className="border-b border-r border-black/5 text-center text-lg text-black/40">{jp}</td>
                 {hari.map((h) => {
                   const slot = `${h}-${jp}`;
                   const w = waktu.get(slot);
@@ -100,7 +100,7 @@ export function EditorJadwal({
                   const p = v ? pPeta.get(v.penugasan_id) : undefined;
                   const bentrok = p?.pegawai_id ? sibukGuru[slot]?.[p.pegawai_id] : undefined;
                   return (
-                    <td key={h} className={`border-b border-r border-black/5 p-1 align-top ${bentrok ? "bg-red-50" : v ? "bg-brand-50/60" : ""}`}>
+                    <td key={h} className={`border-b border-r border-black/5 p-1 align-top ${bentrok ? "bg-red-50" : v ? "bg-soft/60" : ""}`}>
                       <span className="block px-1 text-[10px] text-black/40">{w}</span>
                       <select
                         value={v?.penugasan_id ?? ""}

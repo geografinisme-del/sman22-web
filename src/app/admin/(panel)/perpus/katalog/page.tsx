@@ -18,20 +18,20 @@ export default async function Katalog({ searchParams }: { searchParams: Promise<
   return (
     <>
       <JudulHalaman judul="Katalog" deskripsi="Semua judul buku dan ketersediaannya."
-        aksi={kelola ? <Link href="?tambah=1#tambah" className="rounded-full bg-brand-900 px-4 py-2.5 text-sm font-semibold text-white">+ Buku</Link> : undefined} />
+        aksi={kelola ? <Link href="?tambah=1#tambah" className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white">+ Buku</Link> : undefined} />
       <NavPerpus kelola={kelola} />
       <Notifikasi kode={sp.pesan} />
-      {kelola && sp.tambah && <Kartu className="mb-6"><h2 id="tambah" className="mb-4 font-serif text-2xl">Buku baru</h2><FormBuku /></Kartu>}
-      <form className="mb-4 flex gap-2"><input name="q" defaultValue={sp.q} placeholder="Cari judul, pengarang, kategori, ISBN" className="flex-1 rounded-full border border-black/15 bg-white px-4 py-2" /><button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Cari</button></form>
+      {kelola && sp.tambah && <Kartu className="mb-6"><h2 id="tambah" className="mb-4 text-2xl">Buku baru</h2><FormBuku /></Kartu>}
+      <form className="mb-4 flex gap-2"><input name="q" defaultValue={sp.q} placeholder="Cari judul, pengarang, kategori, ISBN" className="flex-1 rounded-full border border-black/15 bg-white px-4 py-2" /><button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Cari</button></form>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead><tr className="bg-krem text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Judul</th><th className="px-4 py-2">Kategori</th><th className="px-4 py-2">Rak</th><th className="px-4 py-2 text-right">Tersedia</th></tr></thead>
+          <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Judul</th><th className="px-4 py-2">Kategori</th><th className="px-4 py-2">Rak</th><th className="px-4 py-2 text-right">Tersedia</th></tr></thead>
           <tbody>
             {list.length === 0 ? <tr><td colSpan={4} className="px-4 py-4 text-center text-black/50">Tidak ada buku.</td></tr> : list.map((b) => (
               <tr key={b.id} className="border-t border-black/5">
                 <td className="px-4 py-2"><Link href={`/admin/perpus/buku/${b.id}`} className="font-medium hover:underline">{b.judul}</Link><span className="block text-xs text-black/50">{[b.pengarang, b.penerbit, b.tahun].filter(Boolean).join(" · ")}</span></td>
                 <td className="px-4 py-2">{b.kategori}</td><td className="px-4 py-2">{b.rak}</td>
-                <td className={`px-4 py-2 text-right tabular-nums ${b.tersedia ? "" : "text-merah"}`}>{b.tersedia}/{b.total}</td>
+                <td className={`px-4 py-2 text-right tabular-nums ${b.tersedia ? "" : "text-blue-teks"}`}>{b.tersedia}/{b.total}</td>
               </tr>
             ))}
           </tbody>

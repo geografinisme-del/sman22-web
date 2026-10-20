@@ -29,7 +29,7 @@ export default async function Keamanan({ searchParams }: { searchParams: Promise
       <Notifikasi kode={pesan} />
       <div className="grid gap-6 xl:grid-cols-2">
         <Kartu>
-          <h2 className="font-serif text-2xl">Verifikasi dua langkah</h2>
+          <h2 className="text-2xl">Verifikasi dua langkah</h2>
           <p className="mt-1 text-sm text-black/60">
             Setelah memasukkan kata sandi, Anda diminta kode 6 angka dari aplikasi di HP. Akun tetap aman walau sandi bocor.
             {sayaWajib && <strong className="text-black"> Wajib untuk peran Anda.</strong>}
@@ -45,7 +45,7 @@ export default async function Keamanan({ searchParams }: { searchParams: Promise
                   {!perluVerifikasi && (
                     <form action={hapusFaktorMfa}>
                       <input type="hidden" name="factor_id" value={x.id} />
-                      <button type="submit" className="rounded-full px-3 py-1.5 text-xs font-semibold text-merah ring-1 ring-merah/30 hover:bg-red-50">Hapus</button>
+                      <button type="submit" className="rounded-full px-3 py-1.5 text-xs font-semibold text-blue-teks ring-1 ring-blue/30 hover:bg-red-50">Hapus</button>
                     </form>
                   )}
                 </li>
@@ -68,17 +68,17 @@ export default async function Keamanan({ searchParams }: { searchParams: Promise
         </Kartu>
 
         <Kartu>
-          <h2 className="mb-4 font-serif text-2xl">Ganti kata sandi</h2>
+          <h2 className="mb-4 text-2xl">Ganti kata sandi</h2>
           <FormGantiSandi />
         </Kartu>
 
         <Kartu>
-          <h2 className="font-serif text-2xl">Sesi login</h2>
+          <h2 className="text-2xl">Sesi login</h2>
           <p className="mt-1 text-sm text-black/60">
             Lupa keluar di komputer sekolah/warnet, atau curiga akun dipakai orang lain? Akhiri semua sesi, lalu ganti kata sandi.
           </p>
           <form action={keluarSemuaPerangkat} className="mt-4">
-            <button type="submit" className="rounded-full bg-merah px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90">
+            <button type="submit" className="rounded-full bg-blue-teks px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90">
               Keluar dari semua perangkat
             </button>
           </form>
@@ -86,7 +86,7 @@ export default async function Keamanan({ searchParams }: { searchParams: Promise
 
         {superAdmin && (
           <Kartu>
-            <h2 id="wajib-mfa" className="font-serif text-2xl">Peran yang wajib verifikasi dua langkah</h2>
+            <h2 id="wajib-mfa" className="text-2xl">Peran yang wajib verifikasi dua langkah</h2>
             <p className="mt-1 text-sm text-black/60">
               Selama belum memasukkan kode, izin dari peran ini <strong>ditahan oleh database</strong> (bukan hanya disembunyikan di layar).
               Super admin selalu wajib.

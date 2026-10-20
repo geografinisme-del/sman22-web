@@ -40,9 +40,9 @@ export function JadwalMingguan({
         <table className="w-full min-w-[720px] table-fixed border-collapse text-left text-xs">
           <thead>
             <tr>
-              <th className="w-14 border-b border-black/10 bg-krem px-2 py-2 text-center font-semibold text-black/50">JP</th>
+              <th className="w-14 border-b border-black/10 bg-soft px-2 py-2 text-center font-semibold text-black/50">JP</th>
               {hariAda.map((h) => (
-                <th key={h} className={`border-b border-black/10 px-2 py-2 text-sm font-semibold ${h === hariIni ? "bg-brand-900 text-white print:bg-krem print:text-black" : "bg-krem"}`}>
+                <th key={h} className={`border-b border-black/10 px-2 py-2 text-sm font-semibold ${h === hariIni ? "bg-ink text-white print:bg-soft print:text-black" : "bg-soft"}`}>
                   {namaHari(h)}
                 </th>
               ))}
@@ -51,7 +51,7 @@ export function JadwalMingguan({
           <tbody>
             {Array.from({ length: maksJp }, (_, i) => i + 1).map((jp) => (
               <tr key={jp}>
-                <td className="border-b border-r border-black/5 px-2 py-2 text-center font-serif text-lg text-black/40">{jp}</td>
+                <td className="border-b border-r border-black/5 px-2 py-2 text-center text-lg text-black/40">{jp}</td>
                 {hariAda.map((h) => {
                   const e = peta.get(`${h}-${jp}`);
                   const w = waktu.get(`${h}-${jp}`);
@@ -81,9 +81,9 @@ export function JadwalMingguan({
           <details
             key={h}
             open={h === (hariAda.includes(hariIni ?? 0) ? hariIni : hariAda[0])}
-            className={`group overflow-hidden rounded-2xl bg-white ring-1 ${h === hariIni ? "ring-2 ring-brand-700" : "ring-black/5"}`}
+            className={`group overflow-hidden rounded-2xl bg-white ring-1 ${h === hariIni ? "ring-2 ring-blue" : "ring-black/5"}`}
           >
-            <summary className={`flex cursor-pointer list-none items-center justify-between px-4 py-3 font-semibold ${h === hariIni ? "bg-brand-900 text-white" : "bg-krem"}`}>
+            <summary className={`flex cursor-pointer list-none items-center justify-between px-4 py-3 font-semibold ${h === hariIni ? "bg-ink text-white" : "bg-soft"}`}>
               <span>
                 {namaHari(h)} {h === hariIni && <span className="text-xs font-normal">· hari ini</span>}
                 <span className="ml-2 text-xs font-normal opacity-60">{entri.filter((e) => e.hari === h).length} JP</span>
@@ -140,9 +140,9 @@ export function JadwalSatuHari({ jam, entri, kelas, catatan = {} }: { jam: Jam[]
       <table className="border-collapse text-left text-xs">
         <thead>
           <tr>
-            <th className="sticky left-0 z-10 w-20 border-b border-black/10 bg-krem px-2 py-2">JP</th>
+            <th className="sticky left-0 z-10 w-20 border-b border-black/10 bg-soft px-2 py-2">JP</th>
             {kelas.map((k) => (
-              <th key={k.id} className="min-w-28 border-b border-black/10 bg-krem px-2 py-2 text-sm font-semibold">{k.nama}</th>
+              <th key={k.id} className="min-w-28 border-b border-black/10 bg-soft px-2 py-2 text-sm font-semibold">{k.nama}</th>
             ))}
           </tr>
         </thead>
@@ -150,7 +150,7 @@ export function JadwalSatuHari({ jam, entri, kelas, catatan = {} }: { jam: Jam[]
           {slot.map((j) => (
             <tr key={j.jp_ke}>
               <td className="sticky left-0 z-10 border-b border-r border-black/5 bg-white px-2 py-1.5">
-                <span className="font-serif text-lg text-black/40">{j.jp_ke}</span>
+                <span className="text-lg text-black/40">{j.jp_ke}</span>
                 <span className="block text-[10px] text-black/40">{jamPendek(j.jam_mulai)}</span>
               </td>
               {kelas.map((k) => {

@@ -14,9 +14,9 @@ function Tanggal({ nama, label, nilai, wajib }: { nama: string; label: string; n
         defaultValue={nilai}
         required={wajib}
         aria-invalid={Boolean(err)}
-        className="mt-1.5 block w-full rounded-xl border border-black/15 bg-white px-4 py-3 font-normal aria-[invalid=true]:border-merah"
+        className="mt-1.5 block w-full rounded-xl border border-black/15 bg-white px-4 py-3 font-normal aria-[invalid=true]:border-blue-teks"
       />
-      {err && <span className="mt-1 block text-sm font-normal text-merah">{err}</span>}
+      {err && <span className="mt-1 block text-sm font-normal text-blue-teks">{err}</span>}
     </label>
   );
 }
@@ -43,8 +43,8 @@ export function FormIzin({ anak, hariIni }: { anak: { id: string; nama: string }
             ["S", "Sakit"],
             ["I", "Izin (keperluan keluarga, dll.)"],
           ].map(([v, l]) => (
-            <label key={v} className="flex cursor-pointer items-center gap-2 rounded-xl border border-black/15 bg-white px-4 py-3 text-sm has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50">
-              <input type="radio" name="jenis" value={v} defaultChecked={v === "S"} className="accent-brand-800" /> {l}
+            <label key={v} className="flex cursor-pointer items-center gap-2 rounded-xl border border-black/15 bg-white px-4 py-3 text-sm has-[:checked]:border-blue-teks has-[:checked]:bg-soft">
+              <input type="radio" name="jenis" value={v} defaultChecked={v === "S"} className="accent-ink" /> {l}
             </label>
           ))}
         </div>

@@ -17,7 +17,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
       deskripsi={tema.masuk.deskripsi}
       bawah={
         <>
-          <p className="text-[#3b414b]">
+          <p className="text-[var(--muted)]">
             Belum punya akun? Akun guru & staf dibuat oleh admin sekolah; akun siswa & orang tua dibagikan melalui wali kelas.
           </p>
           <Link href="/" className="inline-block font-semibold underline underline-offset-4">

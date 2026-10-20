@@ -120,12 +120,12 @@ export function FullMenu({ terbuka, grupAwal, onTutup, data }: { terbuka: boolea
         </div>
 
         <div className="lgt-menu-bawah">
-          <form action="/berita" role="search" className="lgt-menu-cari">
+          <form action="/cari" role="search" className="lgt-menu-cari">
             <label htmlFor="lgt-cari" className="sr-only">
               Cari di situs
             </label>
             <Search size={18} aria-hidden />
-            <input id="lgt-cari" name="q" type="search" placeholder="Cari berita & informasi…" maxLength={80} />
+            <input id="lgt-cari" name="q" type="search" placeholder="Cari berita, pengumuman, halaman…" maxLength={80} />
             <button type="submit">Cari</button>
           </form>
           <p className="lgt-menu-alamat">

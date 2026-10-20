@@ -51,7 +51,7 @@ export function EditorMateri({ materi, kelas, aiAktif }: {
           {kelas.length === 0 ? <p className="text-sm text-black/50">Anda belum mengajar mapel ini di kelas mana pun.</p> : (
             <div className="flex flex-wrap gap-3">
               {kelas.map((k) => (
-                <label key={k.id} className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm ring-1 ring-black/10 has-[:checked]:bg-brand-50 has-[:checked]:ring-brand-600">
+                <label key={k.id} className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm ring-1 ring-black/10 has-[:checked]:bg-soft has-[:checked]:ring-muted">
                   <input type="checkbox" name="kelas" value={k.id} defaultChecked={materi.kelas.includes(k.id)} /> {k.nama}
                 </label>
               ))}
@@ -59,10 +59,10 @@ export function EditorMateri({ materi, kelas, aiAktif }: {
           )}
         </fieldset>
         <label className="flex items-center gap-2 text-sm font-semibold">
-          <input type="checkbox" name="terbit" defaultChecked={materi.terbit} className="h-5 w-5 accent-brand-800" /> Terbitkan ke portal siswa kelas terpilih
+          <input type="checkbox" name="terbit" defaultChecked={materi.terbit} className="h-5 w-5 accent-ink" /> Terbitkan ke portal siswa kelas terpilih
         </label>
         <div className="flex flex-wrap items-center justify-end gap-3">
-          <Link href={`/papan/${materi.id}`} target="_blank" className="rounded-full bg-accent-400 px-5 py-3 font-semibold text-brand-900">▶ Tayangkan di papan</Link>
+          <Link href={`/papan/${materi.id}`} target="_blank" className="rounded-full bg-lime px-5 py-3 font-semibold text-ink">▶ Tayangkan di papan</Link>
           <TombolSimpan>Simpan materi</TombolSimpan>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function EditorMateri({ materi, kelas, aiAktif }: {
           <ol className="space-y-1.5">
             {slide.map((x, i) => (
               <li key={i}>
-                <button type="button" onClick={() => setAktif(i)} className={`w-full truncate rounded-xl px-3 py-2 text-left text-sm ${i === aktif ? "bg-brand-900 text-white" : "bg-white ring-1 ring-black/10"}`}>
+                <button type="button" onClick={() => setAktif(i)} className={`w-full truncate rounded-xl px-3 py-2 text-left text-sm ${i === aktif ? "bg-ink text-white" : "bg-white ring-1 ring-black/10"}`}>
                   {i + 1}. {x.judul || (x.jenis === "soal" ? x.pertanyaan : JENIS[x.jenis]) || "(kosong)"}
                 </button>
               </li>
@@ -94,7 +94,7 @@ export function EditorMateri({ materi, kelas, aiAktif }: {
                 <span className="flex-1" />
                 <button type="button" onClick={() => pindah(-1)} className="rounded-full px-2.5 py-1 ring-1 ring-black/15" aria-label="Naikkan">↑</button>
                 <button type="button" onClick={() => pindah(1)} className="rounded-full px-2.5 py-1 ring-1 ring-black/15" aria-label="Turunkan">↓</button>
-                <button type="button" disabled={slide.length <= 1} onClick={() => { setSlide((l) => l.filter((_, i) => i !== aktif)); setAktif(Math.max(0, aktif - 1)); }} className="rounded-full px-2.5 py-1 text-merah ring-1 ring-merah/30">Hapus</button>
+                <button type="button" disabled={slide.length <= 1} onClick={() => { setSlide((l) => l.filter((_, i) => i !== aktif)); setAktif(Math.max(0, aktif - 1)); }} className="rounded-full px-2.5 py-1 text-blue-teks ring-1 ring-blue/30">Hapus</button>
               </div>
               <label className="block text-sm font-semibold">Judul<input value={s.judul} onChange={(e) => ubah({ judul: e.target.value })} maxLength={150} className={`${inp} mt-1 font-normal`} /></label>
               {(s.jenis === "gambar" || s.jenis === "video") && (
@@ -133,7 +133,7 @@ export function EditorMateri({ materi, kelas, aiAktif }: {
       </div>
 
       <div className="rounded-2xl bg-violet-50 p-5 ring-1 ring-violet-200">
-        <h2 className="mb-1 flex items-center gap-2 font-serif text-2xl">Buat slide dengan AI <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-violet-800">AI</span></h2>
+        <h2 className="mb-1 flex items-center gap-2 text-2xl">Buat slide dengan AI <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-violet-800">AI</span></h2>
         {aiAktif ? (
           <>
             <p className="mb-3 text-sm text-black/60">Tulis topik atau tujuan pembelajaran. Slide hasil AI ditambahkan di akhir — periksa & sunting sebelum ditayangkan.</p>

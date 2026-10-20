@@ -41,7 +41,7 @@ export default async function DetailAduan({ params, searchParams }: { params: Pr
             <div className="mt-5 border-t border-black/5 pt-4">
               <h2 className="mb-2 font-semibold">Riwayat tindak lanjut</h2>
               <ol className="space-y-2 text-sm">{riwayat.map((r) => (
-                <li key={r.id} className="border-l-2 border-brand-200 pl-3">
+                <li key={r.id} className="border-l-2 border-line pl-3">
                   <p className="text-xs text-black/50">{new Date(r.waktu).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" })} · {STATUS_ADUAN[r.status]?.label.split(" /")[0] ?? r.status}{r.pic_id && ` · PIC → ${namaGuru.get(r.pic_id) ?? "—"}`}</p>
                   {r.tanggapan && <p><span className="text-black/50">Tanggapan:</span> {r.tanggapan}</p>}
                   {r.internal && <p className="text-black/70"><span className="text-black/50">Internal:</span> {r.internal}</p>}
@@ -50,7 +50,7 @@ export default async function DetailAduan({ params, searchParams }: { params: Pr
           )}
         </Kartu>
         <Kartu className="self-start">
-          <h2 className="mb-4 font-serif text-2xl">Tindak lanjut</h2>
+          <h2 className="mb-4 text-2xl">Tindak lanjut</h2>
           <FormProsesAduan d={a} guru={guru} />
         </Kartu>
       </div>

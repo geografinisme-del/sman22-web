@@ -267,7 +267,7 @@
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: var(--radius-kartu);
-  background: #1a1d24;
+  background: var(--ink);
 }
 .lgt-menu-ket {
   margin: 14px 0 8px;

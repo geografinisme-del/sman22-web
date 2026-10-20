@@ -25,14 +25,14 @@ export default async function Lapor({ searchParams }: { searchParams: Promise<{ 
     <>
       <JudulHalaman judul="Lapor" deskripsi="Semua guru dapat melaporkan pelanggaran maupun prestasi siswa. Poin baru dihitung setelah diverifikasi kesiswaan." />
       <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/kesiswaan/lapor" className={`rounded-full px-4 py-2 ${!prestasi ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Pelanggaran</a>
-        <a href="/admin/kesiswaan/lapor?tab=prestasi" className={`rounded-full px-4 py-2 ${prestasi ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Prestasi</a>
+        <a href="/admin/kesiswaan/lapor" className={`rounded-full px-4 py-2 ${!prestasi ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Pelanggaran</a>
+        <a href="/admin/kesiswaan/lapor?tab=prestasi" className={`rounded-full px-4 py-2 ${prestasi ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Prestasi</a>
       </nav>
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <Kartu>{prestasi ? <FormPrestasi hariIni={hari} /> : <FormPelanggaran jenis={jenis ?? []} hariIni={hari} />}</Kartu>
         <div className="space-y-6">
           <section>
-            <h2 className="mb-3 font-serif text-2xl">Laporan saya</h2>
+            <h2 className="mb-3 text-2xl">Laporan saya</h2>
             {!riwayat.length ? <p className="text-sm text-black/50">Belum ada.</p> : (
               <ul className="space-y-2">
                 {riwayat.map((r) => (
@@ -49,7 +49,7 @@ export default async function Lapor({ searchParams }: { searchParams: Promise<{ 
           </section>
           {!!rujukan?.length && (
             <section>
-              <h2 className="mb-3 font-serif text-2xl">Rujukan BK saya</h2>
+              <h2 className="mb-3 text-2xl">Rujukan BK saya</h2>
               <ul className="space-y-2 text-sm">
                 {(rujukan as { id: string; siswa: string; status: string }[]).map((r) => (
                   <li key={r.id} className="flex justify-between rounded-xl bg-white p-3 ring-1 ring-black/5"><span>{r.siswa}</span><Lencana>{r.status}</Lencana></li>

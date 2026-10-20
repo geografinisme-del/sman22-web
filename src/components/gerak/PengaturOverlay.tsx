@@ -213,22 +213,22 @@ export function PengaturOverlay({
             </button>
           </div>
           <article className="mt-3">
-            <p className="text-sm text-[#5b6270]">
+            <p className="text-sm text-[var(--muted)]">
               <span className="font-semibold text-[var(--lp-utama)]">{utama.jenis}</span> · <time dateTime={utama.tanggal}>{formatTanggal(utama.tanggal)}</time>
             </p>
             <h3 className="mt-1 line-clamp-2 font-semibold leading-snug">{utama.judul}</h3>
-            {utama.isi && <p className="mt-1.5 line-clamp-3 text-[0.9375rem] text-[#3b414b]">{utama.isi}</p>}
+            {utama.isi && <p className="mt-1.5 line-clamp-3 text-[0.9375rem] text-[var(--muted)]">{utama.isi}</p>}
             <button type="button" className="btn btn-primary mt-4 w-full" onClick={() => setDetail(utama)}>
               Baca informasi
             </button>
           </article>
           {lain.length > 0 && (
-            <ul className="mt-4 border-t border-[#e5e1da] pt-2">
+            <ul className="mt-4 border-t border-[var(--line)] pt-2">
               {lain.slice(0, 3).map((i) => (
                 <li key={i.id}>
                   <button type="button" className="info-lain" onClick={() => setDetail(i)}>
                     <span className="line-clamp-1 font-semibold">{i.judul}</span>
-                    <time dateTime={i.tanggal} className="shrink-0 text-sm text-[#5b6270]">
+                    <time dateTime={i.tanggal} className="shrink-0 text-sm text-[var(--muted)]">
                       {formatTanggal(i.tanggal, { year: undefined })}
                     </time>
                   </button>

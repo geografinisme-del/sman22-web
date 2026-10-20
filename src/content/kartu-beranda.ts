@@ -10,7 +10,7 @@ export const KARTU_BAWAAN: KartuBeranda[] = [
   { id: "k2", label: "Pembelajaran", judul: "Program dan karakter", deskripsi: "7KAIH, Gerbang Pancawaluya, dan kokurikuler tematik.", foto: "/images/apel-lapangan.jpg", sementara: false, url: "/program" },
   { id: "k3", label: "Pembelajaran", judul: "E-Learning", deskripsi: "Kelas digital, materi, dan tugas daring.", foto: "/media/placeholder/galeri-3.webp", sementara: true, url: "/pembelajaran/e-learning" },
   { id: "k4", label: "Kehidupan Siswa", judul: "Ekskul dan OSIS", deskripsi: "Wadah minat, bakat, dan kepemimpinan siswa.", foto: "/images/keluarga-besar.jpg", sementara: false, url: "/ekskul" },
-  { id: "k5", label: "Kehidupan Siswa", judul: "Prestasi", deskripsi: "Kabar capaian siswa dari berbagai lomba.", foto: "/media/placeholder/berita-1.webp", sementara: true, url: "/berita?kategori=Prestasi" },
+  { id: "k5", label: "Kehidupan Siswa", judul: "Prestasi", deskripsi: "Kabar capaian siswa dari berbagai lomba.", foto: "/media/placeholder/berita-1.webp", sementara: true, url: "/prestasi" },
   { id: "k6", label: "Kehidupan Siswa", judul: "Galeri kegiatan", deskripsi: "Dokumentasi kegiatan siswa dan sekolah.", foto: "/images/kegiatan-aula.jpg", sementara: false, url: "/galeri" },
   { id: "k7", label: "Kabar & Agenda", judul: "Berita dan pengumuman", deskripsi: "Kabar terbaru dan informasi resmi sekolah.", foto: "/images/upacara-pagi.jpg", sementara: false, url: "/berita" },
   { id: "k8", label: "Kabar & Agenda", judul: "Agenda sekolah", deskripsi: "Kegiatan dan tanggal penting sekolah.", foto: "/images/kajian-masjid.jpg", sementara: false, url: "/agenda" },

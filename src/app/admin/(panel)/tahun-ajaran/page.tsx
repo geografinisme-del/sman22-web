@@ -27,7 +27,7 @@ export default async function TahunAjaran({ searchParams }: { searchParams: Prom
       <Notifikasi kode={pesan} />
       {bisaUbah && (
         <Kartu className="mb-8">
-          <h2 className="mb-5 font-serif text-2xl">{diubah ? `Ubah ${diubah.nama}` : "Tambah tahun ajaran"}</h2>
+          <h2 className="mb-5 text-2xl">{diubah ? `Ubah ${diubah.nama}` : "Tambah tahun ajaran"}</h2>
           <FormTahunAjaran
             key={diubah?.id ?? "baru"}
             data={
@@ -45,7 +45,7 @@ export default async function TahunAjaran({ searchParams }: { searchParams: Prom
           {list.map((t) => (
             <li key={t.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
               <div className="flex-1">
-                <p className="flex items-center gap-2 font-serif text-2xl">
+                <p className="flex items-center gap-2 text-2xl">
                   {t.nama} {t.aktif && <Lencana warna="hijau">Aktif</Lencana>}
                 </p>
                 <p className="text-sm text-black/50">
@@ -65,7 +65,7 @@ export default async function TahunAjaran({ searchParams }: { searchParams: Prom
                 {bisaUbah && !t.aktif && (
                   <form action={aktifkanTahunAjaran}>
                     <input type="hidden" name="id" value={t.id} />
-                    <button type="submit" className="rounded-full bg-brand-900 px-4 py-1.5 text-sm font-semibold text-white hover:bg-brand-700">
+                    <button type="submit" className="rounded-full bg-ink px-4 py-1.5 text-sm font-semibold text-white hover:bg-ink/85">
                       Jadikan aktif
                     </button>
                   </form>

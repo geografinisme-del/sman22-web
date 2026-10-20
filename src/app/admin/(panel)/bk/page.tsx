@@ -39,7 +39,7 @@ export default async function Bk({ searchParams }: { searchParams: Promise<{ pes
       {!bkSiap && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-4 text-sm text-red-800 ring-1 ring-red-200"><strong>BK_KUNCI belum dipasang.</strong> Catatan rahasia (asesmen, catatan sesi, cerita siswa) belum bisa disimpan. Tambahkan BK_KUNCI di Vercel (lihat panduan) lalu Redeploy.</p>}
       <div className="grid gap-6 xl:grid-cols-2">
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Permintaan layanan baru ({permintaan.length})</h2>
+          <h2 className="mb-3 text-2xl">Permintaan layanan baru ({permintaan.length})</h2>
           {permintaan.length === 0 ? <p className="text-sm text-black/50">Tidak ada.</p> : (
             <ul className="divide-y divide-black/5 text-sm">{permintaan.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center gap-2 py-2">
@@ -48,10 +48,10 @@ export default async function Bk({ searchParams }: { searchParams: Promise<{ pes
                 <span className="text-xs text-black/50">{r.sumber === "ortu" ? "dari orang tua" : "dari siswa"} · {waktuWIB(r.created_at)}</span>
               </li>))}</ul>
           )}
-          {(rujukanBaru ?? 0) > 0 && <p className="mt-3 text-sm"><Link href="/admin/rujukan-bk" className="font-semibold text-brand-700 underline">{rujukanBaru} rujukan baru dari guru/wali →</Link></p>}
+          {(rujukanBaru ?? 0) > 0 && <p className="mt-3 text-sm"><Link href="/admin/rujukan-bk" className="font-semibold text-blue-teks underline">{rujukanBaru} rujukan baru dari guru/wali →</Link></p>}
         </Kartu>
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Jadwal 7 hari</h2>
+          <h2 className="mb-3 text-2xl">Jadwal 7 hari</h2>
           {sesi.length === 0 ? <p className="text-sm text-black/50">Belum ada sesi terjadwal.</p> : (
             <ul className="divide-y divide-black/5 text-sm">{sesi.map((x) => (
               <li key={x.id} className="flex gap-3 py-2"><span className="w-36 shrink-0 text-black/60">{waktuWIB(x.mulai)}</span>
@@ -68,7 +68,7 @@ export default async function Bk({ searchParams }: { searchParams: Promise<{ pes
       </div>
       <Kartu className="mt-6">
         <div className="mb-3 flex flex-wrap items-center gap-3">
-          <h2 className="flex-1 font-serif text-2xl">Kasus berjalan ({kasus.length})</h2>
+          <h2 className="flex-1 text-2xl">Kasus berjalan ({kasus.length})</h2>
           <Link href={sp.semua ? "?" : "?semua=1"} className="text-sm underline">{sp.semua ? "Hanya kasus saya" : "Semua konselor"}</Link>
         </div>
         {kasus.length === 0 ? <p className="text-sm text-black/50">Tidak ada.</p> : (

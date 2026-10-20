@@ -33,15 +33,15 @@ export default async function Kerusakan({ searchParams }: { searchParams: Promis
       <div className="grid gap-6 xl:grid-cols-[1fr_400px]">
         <Kartu>
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <h2 className="flex-1 font-serif text-2xl">{!lihat || sp.lihat === "saya" ? "Laporan saya" : sp.lihat === "semua" ? "Semua laporan" : "Perlu ditangani"}</h2>
+            <h2 className="flex-1 text-2xl">{!lihat || sp.lihat === "saya" ? "Laporan saya" : sp.lihat === "semua" ? "Semua laporan" : "Perlu ditangani"}</h2>
             {lihat && ["", "semua", "saya"].map((v) => (
-              <a key={v} href={v ? `?lihat=${v}` : "?"} className={`rounded-full px-3 py-1 text-xs font-semibold ${(sp.lihat ?? "") === v ? "bg-brand-900 text-white" : "ring-1 ring-black/15"}`}>{v === "" ? "Aktif" : v === "semua" ? "Semua" : "Saya"}</a>
+              <a key={v} href={v ? `?lihat=${v}` : "?"} className={`rounded-full px-3 py-1 text-xs font-semibold ${(sp.lihat ?? "") === v ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{v === "" ? "Aktif" : v === "semua" ? "Semua" : "Saya"}</a>
             ))}
           </div>
           {list.length === 0 ? <p className="text-sm text-black/50">Tidak ada laporan.</p> : (
             <ul className="space-y-3">
               {list.map((l) => (
-                <li key={l.id} className={`rounded-xl p-4 text-sm ring-1 ${l.prioritas === "tinggi" && l.status !== "selesai" ? "bg-red-50/50 ring-red-200" : "bg-krem ring-black/5"}`}>
+                <li key={l.id} className={`rounded-xl p-4 text-sm ring-1 ${l.prioritas === "tinggi" && l.status !== "selesai" ? "bg-red-50/50 ring-red-200" : "bg-soft ring-black/5"}`}>
                   <div className="flex flex-wrap items-center gap-2">
                     <Lencana s={l.status} peta={STATUS_RUSAK} />
                     {l.prioritas === "tinggi" && <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800">mendesak</span>}
@@ -50,7 +50,7 @@ export default async function Kerusakan({ searchParams }: { searchParams: Promis
                   </div>
                   <p className="mt-1 text-black/60">{[l.ruang?.nama, l.barang && `${l.barang.nama} (${l.barang.kode})`, `pelapor ${pelapor.get(l.pelapor_id)}`].filter(Boolean).join(" · ")}</p>
                   {l.deskripsi && <p className="mt-1">{l.deskripsi}</p>}
-                  {l.foto_path && <a href={`/berkas/kerusakan/${l.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-xs font-semibold text-brand-700 underline">Lihat foto</a>}
+                  {l.foto_path && <a href={`/berkas/kerusakan/${l.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-xs font-semibold text-blue-teks underline">Lihat foto</a>}
                   {l.penanganan && <p className="mt-2 rounded-lg bg-white p-2">Penanganan: {l.penanganan}{l.biaya != null && ` · ${rupiah(l.biaya)}`}</p>}
                   {kelola && l.status !== "selesai" && l.status !== "ditolak" && (
                     <form action={tanganiKerusakan} className="mt-3 grid gap-2 sm:grid-cols-[1fr_130px]">
@@ -75,7 +75,7 @@ export default async function Kerusakan({ searchParams }: { searchParams: Promis
           )}
         </Kartu>
         <Kartu className="self-start">
-          <h2 id="form" className="mb-4 font-serif text-2xl">Laporkan kerusakan</h2>
+          <h2 id="form" className="mb-4 text-2xl">Laporkan kerusakan</h2>
           <FormLapor ruang={(ruang ?? []) as { id: string; nama: string }[]} barang={((barang ?? []) as { id: string; nama: string; kode: string }[]).map((b) => ({ id: b.id, nama: `${b.nama} — ${b.kode}` }))} awal={sp.objek} />
         </Kartu>
       </div>

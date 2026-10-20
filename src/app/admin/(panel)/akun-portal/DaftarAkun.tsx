@@ -42,7 +42,7 @@ async function unduhExcel(akun: AkunBaru[], kelas: string) {
     type: String,
     fontWeight: "bold" as const,
     color: "#FFFFFF",
-    backgroundColor: "#284FD7",
+    backgroundColor: "var(--blue-teks)",
   }));
   const baris = akun.map((a, i) => [
     { value: i + 1, type: Number },
@@ -66,7 +66,7 @@ function HasilAkunBaru({ hasil, kelas }: { hasil: HasilAkun; kelas: string }) {
             <strong>Kata sandi hanya ditampilkan sekali.</strong> Cetak kartu atau unduh Excel sekarang, lalu bagikan langsung ke siswa/orang tua (jangan lewat grup).
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <button type="button" onClick={() => cetakKartu(hasil.akun!, hasil.kelas || kelas)} className="rounded-full bg-brand-900 px-5 py-2 text-sm font-semibold text-white">
+            <button type="button" onClick={() => cetakKartu(hasil.akun!, hasil.kelas || kelas)} className="rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white">
               Cetak kartu akun
             </button>
             <button type="button" onClick={() => void unduhExcel(hasil.akun!, hasil.kelas || kelas)} className="rounded-full px-5 py-2 text-sm font-semibold ring-1 ring-black/15">
@@ -117,26 +117,26 @@ export function DaftarAkun({ kelasId, kelasNama, baris }: { kelasId: string; kel
             {baris.length} siswa · akun siswa {jumlah.siswa} · akun orang tua {jumlah.ortu}
           </p>
           <label className="flex items-center gap-2 text-sm font-medium">
-            <input type="checkbox" name="jenis" value="orang_tua" defaultChecked className="h-4 w-4 accent-brand-800" /> Akun orang tua
+            <input type="checkbox" name="jenis" value="orang_tua" defaultChecked className="h-4 w-4 accent-ink" /> Akun orang tua
           </label>
           <label className="flex items-center gap-2 text-sm font-medium">
-            <input type="checkbox" name="jenis" value="siswa" defaultChecked className="h-4 w-4 accent-brand-800" /> Akun siswa
+            <input type="checkbox" name="jenis" value="siswa" defaultChecked className="h-4 w-4 accent-ink" /> Akun siswa
           </label>
-          <button disabled={proses || pilih.size === 0} className="ml-auto rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          <button disabled={proses || pilih.size === 0} className="ml-auto rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
             {proses ? "Membuat akun…" : `Buat akun (${pilih.size} siswa)`}
           </button>
         </div>
         <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
           <table className="w-full min-w-[560px] text-left text-sm">
             <thead>
-              <tr className="border-b border-black/10 bg-krem text-xs uppercase tracking-wider text-black/50">
+              <tr className="border-b border-black/10 bg-soft text-xs uppercase tracking-wider text-black/50">
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
                     aria-label="Pilih semua"
                     checked={pilih.size === bisa.length && bisa.length > 0}
                     onChange={(e) => setPilih(e.target.checked ? new Set(bisa.map((b) => b.siswa_id)) : new Set())}
-                    className="h-4 w-4 accent-brand-800"
+                    className="h-4 w-4 accent-ink"
                   />
                 </th>
                 <th className="px-4 py-3">Nama</th>
@@ -152,11 +152,11 @@ export function DaftarAkun({ kelasId, kelasNama, baris }: { kelasId: string; kel
                   <tr key={b.siswa_id} className="border-b border-black/5">
                     <td className="px-4 py-2.5">
                       {b.nisn && !lengkap && (
-                        <input type="checkbox" name="siswa" value={b.siswa_id} checked={pilih.has(b.siswa_id)} onChange={() => ubah(b.siswa_id)} aria-label={`Pilih ${b.nama}`} className="h-4 w-4 accent-brand-800" />
+                        <input type="checkbox" name="siswa" value={b.siswa_id} checked={pilih.has(b.siswa_id)} onChange={() => ubah(b.siswa_id)} aria-label={`Pilih ${b.nama}`} className="h-4 w-4 accent-ink" />
                       )}
                     </td>
                     <td className="px-4 py-2.5 font-medium">{b.nama}</td>
-                    <td className="px-4 py-2.5 font-mono text-xs">{b.nisn ?? <span className="text-merah">belum ada</span>}</td>
+                    <td className="px-4 py-2.5 font-mono text-xs">{b.nisn ?? <span className="text-blue-teks">belum ada</span>}</td>
                     {(["siswa", "orang_tua"] as const).map((j) => {
                       const ada = j === "siswa" ? b.akun_siswa : b.akun_ortu;
                       return (
@@ -174,7 +174,7 @@ export function DaftarAkun({ kelasId, kelasNama, baris }: { kelasId: string; kel
                                   f.set("jenis", j);
                                   mulai(() => reset(f));
                                 }}
-                                className="text-xs text-brand-700 underline"
+                                className="text-xs text-blue-teks underline"
                               >
                                 atur ulang sandi
                               </button>

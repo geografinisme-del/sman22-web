@@ -28,10 +28,10 @@ export default async function Alumni({ searchParams }: { searchParams: Promise<{
       <Notifikasi kode={sp.pesan} />
       <ul className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[["Profil alumni", tot.total], ["Punya akun", tot.berakun], ["Mengisi tracer", tot.mengisi], ["Menunggu verifikasi", menunggu ?? 0]].map(([l, v]) => (
-          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="font-serif text-3xl tabular-nums">{Number(v).toLocaleString("id-ID")}</p><p className="text-sm text-black/60">{l}</p></li>))}
+          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="text-3xl tabular-nums">{Number(v).toLocaleString("id-ID")}</p><p className="text-sm text-black/60">{l}</p></li>))}
       </ul>
       <Kartu>
-        <h2 className="mb-3 font-serif text-2xl">Per angkatan</h2>
+        <h2 className="mb-3 text-2xl">Per angkatan</h2>
         {list.length === 0 ? <p className="text-sm text-black/50">Belum ada data. Buat profil dari data lulusan di bawah, atau tunggu alumni mendaftar.</p> : (
           <div className="overflow-x-auto"><table className="w-full min-w-[720px] text-left text-sm">
             <thead><tr className="text-xs uppercase tracking-wider text-black/50"><th className="py-2">Angkatan</th><th>Profil</th><th>Akun</th><th>Mengisi</th><th>Kuliah</th><th>Bekerja</th><th>Wirausaha</th><th>Kuliah+kerja</th><th>Mencari kerja</th><th>Lainnya</th></tr></thead>
@@ -43,10 +43,10 @@ export default async function Alumni({ searchParams }: { searchParams: Promise<{
       </Kartu>
       {kelola && (
         <div className="mt-6 grid gap-6 xl:grid-cols-2">
-          <Kartu><h2 className="mb-2 font-serif text-2xl">Data lulusan → profil alumni</h2>
+          <Kartu><h2 className="mb-2 text-2xl">Data lulusan → profil alumni</h2>
             <p className="mb-3 text-sm text-black/60">Membuat profil (tanpa akun) untuk siswa berstatus <strong>lulus</strong> yang belum punya profil. Dipakai untuk pencocokan pendaftaran & dasar tracer study.</p>
             <FormImporLulusan tahun={new Date().getFullYear()} /></Kartu>
-          <Kartu><h2 className="mb-3 font-serif text-2xl">Angkatan</h2>
+          <Kartu><h2 className="mb-3 text-2xl">Angkatan</h2>
             <ul className="mb-3 text-sm">{(ak ?? []).map((a) => <li key={a.tahun}><strong>{a.tahun}</strong> {a.nama}{a.koordinator && ` · koordinator ${a.koordinator}`}</li>)}</ul>
             <FormAngkatan /></Kartu>
         </div>

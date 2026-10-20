@@ -98,7 +98,7 @@ export function Papan({ judul, slide, kelas }: { judul: string; slide: Slide[]; 
   const tombol = "grid h-12 min-w-12 place-items-center rounded-full px-3 text-sm font-semibold ring-1 ring-white/20 hover:bg-white/10 disabled:opacity-30";
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-white text-tinta select-none">
+    <div className="fixed inset-0 flex flex-col bg-white text-ink select-none">
       <div
         className="relative flex-1 overflow-hidden"
         onTouchStart={(e) => { if (!pena) sentuh.current = e.touches[0].clientX; }}
@@ -123,30 +123,30 @@ export function Papan({ judul, slide, kelas }: { judul: string; slide: Slide[]; 
         {panel === "acak" && <PilihAcak kelas={kelas} tutup={() => setPanel("")} />}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 bg-brand-900 px-3 py-2 text-white">
-        <span className="mr-2 hidden max-w-64 truncate font-serif text-lg lg:block" title={judul}>{judul}</span>
+      <div className="flex flex-wrap items-center gap-2 bg-ink px-3 py-2 text-white">
+        <span className="mr-2 hidden max-w-64 truncate text-lg lg:block" title={judul}>{judul}</span>
         <button className={tombol} onClick={() => maju(-1)} disabled={kosong || i === 0} aria-label="Slide sebelumnya">◀</button>
         <span className="min-w-16 text-center text-sm tabular-nums">{kosong ? "Papan" : `${i + 1} / ${halaman.length}`}</span>
         <button className={tombol} onClick={() => maju(1)} disabled={kosong ? halaman.length === 0 : i >= halaman.length - 1} aria-label="Slide berikutnya">▶</button>
         <span className="mx-1 h-8 w-px bg-white/20" />
-        <button className={`${tombol} ${pena && !hapus ? "bg-white text-brand-900" : ""}`} onClick={() => { setPena(!pena || hapus); setHapus(false); }} aria-pressed={pena && !hapus}>✎ Pena</button>
+        <button className={`${tombol} ${pena && !hapus ? "bg-white text-ink" : ""}`} onClick={() => { setPena(!pena || hapus); setHapus(false); }} aria-pressed={pena && !hapus}>✎ Pena</button>
         {pena && (
           <>
             {WARNA.map((w) => (
               <button key={w} onClick={() => { setWarna(w); setHapus(false); }} aria-label={`Warna ${w}`}
-                className={`h-8 w-8 rounded-full ring-2 ${warna === w && !hapus ? "ring-accent-400" : "ring-white/30"}`} style={{ background: w }} />
+                className={`h-8 w-8 rounded-full ring-2 ${warna === w && !hapus ? "ring-lime" : "ring-white/30"}`} style={{ background: w }} />
             ))}
             <select value={tebal} onChange={(e) => setTebal(Number(e.target.value))} className="rounded-full bg-white/10 px-2 py-2 text-sm" aria-label="Ketebalan">
               {[2, 4, 8, 14].map((t) => <option key={t} value={t} className="text-black">{t}px</option>)}
             </select>
-            <button className={`${tombol} ${hapus ? "bg-white text-brand-900" : ""}`} onClick={() => setHapus((v) => !v)} aria-pressed={hapus}>⌫ Penghapus</button>
+            <button className={`${tombol} ${hapus ? "bg-white text-ink" : ""}`} onClick={() => setHapus((v) => !v)} aria-pressed={hapus}>⌫ Penghapus</button>
             <button className={tombol} onClick={bersihkan}>Bersihkan</button>
           </>
         )}
         <span className="mx-1 h-8 w-px bg-white/20" />
-        <button className={`${tombol} ${kosong ? "bg-white text-brand-900" : ""}`} onClick={() => setKosong((v) => !v)} aria-pressed={kosong}>Papan tulis</button>
-        <button className={`${tombol} ${panel === "waktu" ? "bg-white text-brand-900" : ""}`} onClick={() => setPanel(panel === "waktu" ? "" : "waktu")}>⏱ Waktu</button>
-        <button className={`${tombol} ${panel === "acak" ? "bg-white text-brand-900" : ""}`} onClick={() => setPanel(panel === "acak" ? "" : "acak")} disabled={!kelas.length}>🎲 Pilih siswa</button>
+        <button className={`${tombol} ${kosong ? "bg-white text-ink" : ""}`} onClick={() => setKosong((v) => !v)} aria-pressed={kosong}>Papan tulis</button>
+        <button className={`${tombol} ${panel === "waktu" ? "bg-white text-ink" : ""}`} onClick={() => setPanel(panel === "waktu" ? "" : "waktu")}>⏱ Waktu</button>
+        <button className={`${tombol} ${panel === "acak" ? "bg-white text-ink" : ""}`} onClick={() => setPanel(panel === "acak" ? "" : "acak")} disabled={!kelas.length}>🎲 Pilih siswa</button>
         <span className="flex-1" />
         <button className={tombol} onClick={layarPenuh} aria-label="Layar penuh">⛶</button>
         <button className={tombol} onClick={() => window.close()} aria-label="Tutup">✕</button>
@@ -180,14 +180,14 @@ function Pewaktu({ tutup }: { tutup: () => void }) {
   }, [jalan]);
   const mm = String(Math.floor(sisa / 60)).padStart(2, "0"), ss = String(sisa % 60).padStart(2, "0");
   return (
-    <div className="absolute right-4 top-4 w-80 rounded-3xl bg-brand-900 p-5 text-white shadow-2xl">
+    <div className="absolute right-4 top-4 w-80 rounded-3xl bg-ink p-5 text-white shadow-2xl">
       <div className="flex items-center"><p className="flex-1 text-sm uppercase tracking-widest text-white/60">Pewaktu</p><button onClick={tutup} aria-label="Tutup pewaktu">✕</button></div>
-      <p className={`my-3 text-center font-mono text-7xl tabular-nums ${sisa > 0 && sisa <= 10 && jalan ? "text-accent-400" : ""}`} aria-live="polite">{mm}:{ss}</p>
+      <p className={`my-3 text-center font-mono text-7xl tabular-nums ${sisa > 0 && sisa <= 10 && jalan ? "text-lime" : ""}`} aria-live="polite">{mm}:{ss}</p>
       <div className="grid grid-cols-4 gap-2 text-sm">
         {[1, 3, 5, 10].map((m) => <button key={m} onClick={() => { setSisa(m * 60); setJalan(true); }} className="rounded-full py-2 ring-1 ring-white/30 hover:bg-white/10">{m} mnt</button>)}
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-        <button onClick={() => setJalan((v) => !v)} disabled={!sisa} className="rounded-full bg-accent-400 py-2 font-semibold text-brand-900 disabled:opacity-40">{jalan ? "Jeda" : "Lanjut"}</button>
+        <button onClick={() => setJalan((v) => !v)} disabled={!sisa} className="rounded-full bg-lime py-2 font-semibold text-ink disabled:opacity-40">{jalan ? "Jeda" : "Lanjut"}</button>
         <button onClick={() => { setJalan(false); setSisa(0); }} className="rounded-full py-2 ring-1 ring-white/30">Ulang</button>
       </div>
     </div>
@@ -219,13 +219,13 @@ function PilihAcak({ kelas, tutup }: { kelas: Kelas[]; tutup: () => void }) {
     }, 70);
   };
   return (
-    <div className="absolute right-4 top-4 w-96 max-w-[calc(100%-2rem)] rounded-3xl bg-brand-900 p-5 text-white shadow-2xl">
+    <div className="absolute right-4 top-4 w-96 max-w-[calc(100%-2rem)] rounded-3xl bg-ink p-5 text-white shadow-2xl">
       <div className="flex items-center"><p className="flex-1 text-sm uppercase tracking-widest text-white/60">Pilih siswa acak</p><button onClick={tutup} aria-label="Tutup">✕</button></div>
       <select value={kid} onChange={(e) => { setKid(e.target.value); setSudah([]); setNama(""); }} className="mt-3 w-full rounded-xl bg-white/10 px-3 py-2" aria-label="Kelas">
         {kelas.map((k) => <option key={k.id} value={k.id} className="text-black">{k.nama} ({k.siswa.length})</option>)}
       </select>
-      <p className={`my-5 min-h-20 text-center font-serif text-5xl leading-tight ${putar ? "opacity-70" : "text-accent-400"}`} aria-live="polite">{nama || "—"}</p>
-      <button onClick={acak} disabled={putar || !daftar.length} className="w-full rounded-full bg-accent-400 py-3 font-semibold text-brand-900 disabled:opacity-40">Acak!</button>
+      <p className={`my-5 min-h-20 text-center text-5xl leading-tight ${putar ? "opacity-70" : "text-lime"}`} aria-live="polite">{nama || "—"}</p>
+      <button onClick={acak} disabled={putar || !daftar.length} className="w-full rounded-full bg-lime py-3 font-semibold text-ink disabled:opacity-40">Acak!</button>
       <p className="mt-2 text-center text-xs text-white/60">Tidak mengulang sampai semua terpanggil · {sudah.length}/{daftar.length}</p>
     </div>
   );

@@ -18,9 +18,9 @@ export default async function Ekskul({ searchParams }: { searchParams: Promise<{
   return (
     <>
       <JudulHalaman judul="Ekskul, OSIS & Kegiatan" deskripsi={kelola ? "Semua organisasi siswa memakai mesin yang sama: pendaftaran, anggota, kegiatan & presensi, program kerja, pengajuan kegiatan, sertifikat." : "Organisasi yang Anda bina."}
-        aksi={<div className="flex gap-2"><Link href="/admin/ekskul/pengajuan" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Pengajuan kegiatan</Link>{kelola && <Link href="?baru=1" className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">+ Organisasi</Link>}</div>} />
+        aksi={<div className="flex gap-2"><Link href="/admin/ekskul/pengajuan" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Pengajuan kegiatan</Link>{kelola && <Link href="?baru=1" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">+ Organisasi</Link>}</div>} />
       <Notifikasi kode={sp.pesan} />
-      {kelola && sp.baru && <Kartu className="mb-6 max-w-3xl"><h2 className="mb-4 font-serif text-2xl">Organisasi baru</h2><FormOrganisasi kelola /></Kartu>}
+      {kelola && sp.baru && <Kartu className="mb-6 max-w-3xl"><h2 className="mb-4 text-2xl">Organisasi baru</h2><FormOrganisasi kelola /></Kartu>}
       {list.length === 0 ? <Kartu><p className="text-black/50">Belum ada organisasi.</p></Kartu> : (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {list.map((o) => (
@@ -29,7 +29,7 @@ export default async function Ekskul({ searchParams }: { searchParams: Promise<{
                 <div className="h-2" style={{ background: o.warna }} />
                 <div className="p-5">
                   <p className="text-xs uppercase tracking-widest text-black/50">{JENIS_ORG[o.jenis]}</p>
-                  <p className="font-serif text-2xl">{o.nama}</p>
+                  <p className="text-2xl">{o.nama}</p>
                   <p className="mt-2 text-sm text-black/70">{o.anggota} anggota · {o.kegiatan} kegiatan · kehadiran {o.kehadiran == null ? "—" : `${o.kehadiran}%`}</p>
                   <p className="mt-1 flex flex-wrap gap-2 text-xs">
                     {o.menunggu > 0 && <span className="rounded bg-amber-100 px-1.5 font-semibold text-amber-900">{o.menunggu} pendaftar menunggu</span>}
@@ -42,7 +42,7 @@ export default async function Ekskul({ searchParams }: { searchParams: Promise<{
           ))}
         </ul>
       )}
-      {kelola && cfg && <Kartu className="mt-6 max-w-2xl"><h2 className="mb-3 font-serif text-xl">Aturan pendaftaran</h2><FormPengaturanEkskul maks={cfg.maks_pilihan} /><p className="mt-2 text-xs text-black/50">Berlaku untuk jenis Ekstrakurikuler; OSIS/MPK/komunitas tidak dihitung.</p></Kartu>}
+      {kelola && cfg && <Kartu className="mt-6 max-w-2xl"><h2 className="mb-3 text-xl">Aturan pendaftaran</h2><FormPengaturanEkskul maks={cfg.maks_pilihan} /><p className="mt-2 text-xs text-black/50">Berlaku untuk jenis Ekstrakurikuler; OSIS/MPK/komunitas tidak dihitung.</p></Kartu>}
     </>
   );
 }

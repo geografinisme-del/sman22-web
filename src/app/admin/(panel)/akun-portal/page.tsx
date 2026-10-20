@@ -40,7 +40,7 @@ export default async function AkunPortal({ searchParams }: { searchParams: Promi
                 ))}
               </select>
             </label>
-            <button className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">Tampilkan</button>
+            <button className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">Tampilkan</button>
           </form>
           {pilih && <DaftarAkun key={pilih.id} kelasId={pilih.id} kelasNama={pilih.nama} baris={baris} />}
         </>

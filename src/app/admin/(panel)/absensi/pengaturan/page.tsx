@@ -33,7 +33,7 @@ export default async function PengaturanAbsensi({ searchParams }: { searchParams
         />
       </Kartu>
       <Kartu>
-        <h2 className="mb-4 font-serif text-2xl">Hari libur</h2>
+        <h2 className="mb-4 text-2xl">Hari libur</h2>
         <FormLibur />
         <ul className="mt-6 divide-y divide-black/5">
           {!libur?.length && <li className="py-3 text-sm text-black/50">Belum ada hari libur tahun ini.</li>}
@@ -42,7 +42,7 @@ export default async function PengaturanAbsensi({ searchParams }: { searchParams
               <span><strong>{formatTanggal(l.tanggal, { weekday: "short" })}</strong> · {l.keterangan}</span>
               <form action={hapusHariLibur}>
                 <input type="hidden" name="tanggal" value={l.tanggal} />
-                <button className="text-merah hover:underline">Hapus</button>
+                <button className="text-blue-teks hover:underline">Hapus</button>
               </form>
             </li>
           ))}

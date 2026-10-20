@@ -96,7 +96,7 @@ export function FormSeo({ d, situs }: { d: DataSitus; situs: string }) {
       </div>
       <label className="block text-sm font-semibold">Gambar saat dibagikan (WhatsApp, Facebook) — 1200×630 disarankan
         <input type="file" name="seo_gambar" accept="image/jpeg,image/png,image/webp" className="mt-1 block text-sm font-normal" />
-        {err && <span className="block text-sm text-merah">{err}</span>}
+        {err && <span className="block text-sm text-blue-teks">{err}</span>}
       </label>
       {d.seo_gambar_url && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -155,7 +155,7 @@ export function FormSlide({ s }: { s: DataSlide }) {
               setFx((v) => Math.min(100, Math.max(0, v + d[0])));
               setFy((v) => Math.min(100, Math.max(0, v + d[1])));
             }}
-            className="relative aspect-[16/7] cursor-crosshair overflow-hidden rounded-xl bg-krem-tua"
+            className="relative aspect-[16/7] cursor-crosshair overflow-hidden rounded-xl bg-line"
           >
             {src ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -163,12 +163,12 @@ export function FormSlide({ s }: { s: DataSlide }) {
             ) : (
               <span className="grid h-full place-items-center text-sm text-black/40">Pilih foto</span>
             )}
-            <span className="pointer-events-none absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-merah/70 shadow" style={{ left: `${fx}%`, top: `${fy}%` }} />
+            <span className="pointer-events-none absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-blue-teks/70 shadow" style={{ left: `${fx}%`, top: `${fy}%` }} />
           </div>
         </div>
         <div>
           <p className="mb-1 text-sm font-semibold">Tampilan HP</p>
-          <div className="relative mx-auto aspect-[9/16] w-28 overflow-hidden rounded-xl bg-krem-tua">
+          <div className="relative mx-auto aspect-[9/16] w-28 overflow-hidden rounded-xl bg-line">
             {(s.gambar_hp_url || src) && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={s.gambar_hp_url || src} alt="" className="h-full w-full object-cover" style={{ objectPosition: `${fx}% ${fy}%`, transform: `scale(${skala / 100})` }} />
@@ -179,7 +179,7 @@ export function FormSlide({ s }: { s: DataSlide }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="text-sm font-semibold">Foto layar lebar {s.id ? "(ganti)" : ""}
           <input type="file" name="gambar" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const f = e.target.files?.[0]; if (f) setSrc(URL.createObjectURL(f)); }} className="mt-1 block text-sm font-normal" />
-          {errG && <span className="block text-sm text-merah">{errG}</span>}
+          {errG && <span className="block text-sm text-blue-teks">{errG}</span>}
         </label>
         <label className="text-sm font-semibold">Foto khusus HP (opsional, tegak)
           <input type="file" name="gambar_hp" accept="image/jpeg,image/png,image/webp" className="mt-1 block text-sm font-normal" />

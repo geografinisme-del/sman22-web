@@ -14,7 +14,7 @@ function PilihPeran({ peran, terpilih }: { peran: Peran[]; terpilih: string[] })
       <legend className="mb-2 text-sm font-semibold">Peran</legend>
       <div className="grid gap-2 sm:grid-cols-2">
         {peran.map((p) => (
-          <label key={p.kode} className="flex cursor-pointer items-start gap-3 rounded-xl border border-black/10 bg-white p-3 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+          <label key={p.kode} className="flex cursor-pointer items-start gap-3 rounded-xl border border-black/10 bg-white p-3 has-[:checked]:border-muted has-[:checked]:bg-soft">
             <input type="checkbox" name="peran" value={p.kode} defaultChecked={terpilih.includes(p.kode)} className="mt-1 h-4 w-4" />
             <span>
               <span className="block text-sm font-semibold">{p.nama}</span>
@@ -23,7 +23,7 @@ function PilihPeran({ peran, terpilih }: { peran: Peran[]; terpilih: string[] })
           </label>
         ))}
       </div>
-      {error && <p className="mt-1.5 text-sm text-merah">{error}</p>}
+      {error && <p className="mt-1.5 text-sm text-blue-teks">{error}</p>}
     </fieldset>
   );
 }

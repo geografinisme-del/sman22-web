@@ -37,7 +37,7 @@ export default async function DetailPengajuan({ params, searchParams }: { params
       <div className="mb-4 flex items-center gap-2"><Lencana s={a.status} peta={STATUS_PENGAJUAN} />{a.catatan_reviu && <span className="text-sm text-black/70">Catatan: {a.catatan_reviu}</span>}</div>
       <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
         <div className="space-y-6">
-          {bisaEdit ? <Kartu><h2 className="mb-4 font-serif text-2xl">Proposal</h2><FormPengajuan org={org.id} d={{ ...a, id, anggaran }} /></Kartu> : (
+          {bisaEdit ? <Kartu><h2 className="mb-4 text-2xl">Proposal</h2><FormPengajuan org={org.id} d={{ ...a, id, anggaran }} /></Kartu> : (
             <Kartu>
               <dl className="grid gap-x-4 gap-y-2 text-sm sm:grid-cols-[180px_1fr]">
                 <dt className="text-black/50">Latar & tujuan</dt><dd className="whitespace-pre-line">{a.tujuan || "—"}</dd>
@@ -50,7 +50,7 @@ export default async function DetailPengajuan({ params, searchParams }: { params
             </Kartu>
           )}
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Anggaran</h2>
+            <h2 className="mb-3 text-2xl">Anggaran</h2>
             {anggaran.length === 0 ? <p className="text-sm text-black/50">Tanpa anggaran.</p> : (
               <table className="w-full text-left text-sm">
                 <thead><tr className="text-xs uppercase tracking-wider text-black/50"><th className="py-1">Uraian</th><th className="text-right">Volume</th><th className="text-right">Harga</th><th className="text-right">Jumlah</th></tr></thead>
@@ -63,11 +63,11 @@ export default async function DetailPengajuan({ params, searchParams }: { params
           </Kartu>
           {(["disetujui", "lpj_diajukan", "selesai"].includes(a.status)) && (
             <Kartu>
-              <h2 className="mb-3 font-serif text-2xl">Laporan pertanggungjawaban (LPJ)</h2>
+              <h2 className="mb-3 text-2xl">Laporan pertanggungjawaban (LPJ)</h2>
               {hak && a.status === "disetujui" ? <FormLpj id={id} d={a} /> : (
                 <div className="text-sm"><p className="whitespace-pre-line">{a.lpj_ringkasan || "Belum ada."}</p>
                   {a.lpj_peserta != null && <p className="mt-1">Peserta: {a.lpj_peserta}</p>}
-                  {a.lpj_tautan && <a href={a.lpj_tautan} target="_blank" rel="noreferrer" className="text-brand-700 underline">Dokumentasi ↗</a>}</div>
+                  {a.lpj_tautan && <a href={a.lpj_tautan} target="_blank" rel="noreferrer" className="text-blue-teks underline">Dokumentasi ↗</a>}</div>
               )}
             </Kartu>
           )}
@@ -75,16 +75,16 @@ export default async function DetailPengajuan({ params, searchParams }: { params
         <div className="space-y-6 self-start">
           {(bisaEdit || bisaReviu || (kel && a.status === "lpj_diajukan")) && (
             <Kartu>
-              <h2 className="mb-3 font-serif text-2xl">Tindakan</h2>
+              <h2 className="mb-3 text-2xl">Tindakan</h2>
               <form action={prosesPengajuan} className="space-y-3">
                 <input type="hidden" name="id" value={id} />
                 {!bisaEdit && <textarea name="catatan" rows={3} maxLength={1000} placeholder="Catatan (wajib untuk revisi/tolak)" aria-label="Catatan" className="w-full rounded-xl border border-black/15 px-3 py-2 text-sm" />}
                 <div className="flex flex-wrap gap-2">
-                  {bisaEdit && <button name="aksi" value="ajukan" className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Ajukan ke pembina</button>}
+                  {bisaEdit && <button name="aksi" value="ajukan" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Ajukan ke pembina</button>}
                   {bisaReviu && <>
                     <button name="aksi" value="setujui" className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Setujui</button>
                     <button name="aksi" value="revisi" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Minta revisi</button>
-                    <button name="aksi" value="tolak" className="rounded-full px-4 py-2 text-sm font-semibold text-merah ring-1 ring-merah/30">Tolak</button></>}
+                    <button name="aksi" value="tolak" className="rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-blue/30">Tolak</button></>}
                   {kel && a.status === "lpj_diajukan" && <>
                     <button name="aksi" value="terima_lpj" className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Terima LPJ</button>
                     <button name="aksi" value="tolak_lpj" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Kembalikan LPJ</button></>}
@@ -95,7 +95,7 @@ export default async function DetailPengajuan({ params, searchParams }: { params
           <Kartu>
             <h2 className="mb-2 font-semibold">Riwayat</h2>
             <ol className="space-y-1 text-sm">{(rw ?? []).length === 0 ? <li className="text-black/50">Masih draf.</li> : (rw ?? []).map((r) => (
-              <li key={r.id} className="border-l-2 border-brand-200 pl-3"><span className="text-xs text-black/50">{waktuWIB(r.waktu)}</span> · {STATUS_PENGAJUAN[r.status]?.label}{r.catatan && <span className="text-black/60"> — {r.catatan}</span>}</li>))}</ol>
+              <li key={r.id} className="border-l-2 border-line pl-3"><span className="text-xs text-black/50">{waktuWIB(r.waktu)}</span> · {STATUS_PENGAJUAN[r.status]?.label}{r.catatan && <span className="text-black/60"> — {r.catatan}</span>}</li>))}</ol>
           </Kartu>
         </div>
       </div>

@@ -45,7 +45,7 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
           />
         </Kartu>
         <Kartu>
-          <h2 className="mb-4 font-serif text-2xl">Kata sandi</h2>
+          <h2 className="mb-4 text-2xl">Kata sandi</h2>
           {kunciAdminTersedia ? (
             <FormSandi userId={u.user_id} />
           ) : (
@@ -54,7 +54,7 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
           {!akunPortal && (
             <form action={kirimTautanReset} className="mt-4 border-t border-black/10 pt-4">
               <input type="hidden" name="user_id" value={u.user_id} />
-              <button type="submit" className="text-sm font-semibold text-brand-700 underline-offset-2 hover:underline">
+              <button type="submit" className="text-sm font-semibold text-blue-teks underline-offset-2 hover:underline">
                 Kirim tautan atur ulang ke {u.email}
               </button>
               <p className="mt-1 text-xs text-black/50">Lebih aman: pemilik akun membuat sandinya sendiri.</p>
@@ -68,7 +68,7 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
               {jumlahMfa > 0 && berperan(akses, "super_admin") && u.user_id !== akses.userId && (
                 <form action={resetMfaPengguna} className="mt-3">
                   <input type="hidden" name="user_id" value={u.user_id} />
-                  <button type="submit" className="rounded-full px-4 py-2 text-xs font-semibold text-merah ring-1 ring-merah/30 hover:bg-red-50">
+                  <button type="submit" className="rounded-full px-4 py-2 text-xs font-semibold text-blue-teks ring-1 ring-blue/30 hover:bg-red-50">
                     Reset verifikasi dua langkah (HP hilang/ganti)
                   </button>
                 </form>

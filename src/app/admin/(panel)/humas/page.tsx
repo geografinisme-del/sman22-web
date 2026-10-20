@@ -45,23 +45,23 @@ export default async function DasborHumas({ searchParams }: { searchParams: Prom
       </form>
       <ul className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kotak.map(([l, v, k]) => (
-          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="font-serif text-3xl tabular-nums">{v}</p><p className="text-sm font-medium">{l}</p>{k && <p className="text-xs text-black/50">{k}</p>}</li>
+          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="text-3xl tabular-nums">{v}</p><p className="text-sm font-medium">{l}</p>{k && <p className="text-xs text-black/50">{k}</p>}</li>
         ))}
       </ul>
       <div className="grid gap-6 xl:grid-cols-2">
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Pengaduan per kategori</h2>
+          <h2 className="mb-3 text-2xl">Pengaduan per kategori</h2>
           {Object.keys(perKat).length === 0 ? <p className="text-sm text-black/50">Belum ada data.</p> : (
             <ul className="space-y-2 text-sm">{Object.entries(perKat).sort((a, b) => b[1] - a[1]).map(([k, v]) => (
               <li key={k}><div className="flex justify-between"><span>{KATEGORI_ADUAN[k as keyof typeof KATEGORI_ADUAN] ?? k}</span><span className="tabular-nums">{v}</span></div>
-                <div className="mt-1 h-2 rounded-full bg-black/5"><div className="h-full rounded-full bg-brand-600" style={{ width: `${(100 * v) / maks}%` }} /></div></li>
+                <div className="mt-1 h-2 rounded-full bg-black/5"><div className="h-full rounded-full bg-muted" style={{ width: `${(100 * v) / maks}%` }} /></div></li>
             ))}</ul>
           )}
           <p className="mt-4 text-sm text-black/60">{Object.entries(perStatus).map(([k, v]) => `${STATUS_ADUAN[k]?.label.split(" /")[0] ?? k}: ${v}`).join(" · ")}</p>
-          <Link href="/admin/pengaduan" className="mt-3 inline-block text-sm font-semibold text-brand-700 underline">Buka daftar pengaduan</Link>
+          <Link href="/admin/pengaduan" className="mt-3 inline-block text-sm font-semibold text-blue-teks underline">Buka daftar pengaduan</Link>
         </Kartu>
         <Kartu>
-          <h2 className="mb-1 font-serif text-2xl">SLA pengaduan</h2>
+          <h2 className="mb-1 text-2xl">SLA pengaduan</h2>
           <p className="mb-4 text-sm text-black/60">Tenggat penyelesaian per kategori. PIC & humas diingatkan lewat dasbor bila lewat tenggat.</p>
           {punya(akses, "humas.kelola") ? <FormSLA sla={Object.fromEntries((sla ?? []).map((x) => [x.kategori, x.hari]))} /> : (
             <ul className="text-sm">{(sla ?? []).map((x) => <li key={x.kategori}>{KATEGORI_ADUAN[x.kategori as keyof typeof KATEGORI_ADUAN]}: {x.hari} hari</li>)}</ul>

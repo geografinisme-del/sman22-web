@@ -23,13 +23,13 @@ export default async function CetakMutu({ searchParams }: { searchParams: Promis
       <style>{`@page { size: A4; margin: 14mm }`}</style>
       <div className="mb-4 flex justify-end print:hidden"><TombolCetak /></div>
       <p className="text-xs uppercase tracking-[0.3em] text-black/60">{sekolah.nama}</p>
-      <h1 className="font-serif text-3xl">Laporan Evaluasi Diri & Bukti Mutu</h1>
+      <h1 className="text-3xl">Laporan Evaluasi Diri & Bukti Mutu</h1>
       <p className="mt-1">{kini.nama} — {kini.kode} versi {kini.versi} · periode {periode}</p>
       <p className="mt-3 rounded-lg bg-black/5 p-3 text-xs">Persentase berikut menunjukkan kelengkapan pengisian dan bukti di sistem, bukan pernyataan kepatuhan. Penilaian mutu dilakukan oleh tim penjaminan mutu dan asesor.</p>
       <p className="mt-3">Indikator: <strong>{n}</strong> · sudah dievaluasi <strong>{ok((b) => b.status !== "belum")}%</strong> · memiliki bukti <strong>{ok((b) => b.jumlah_bukti > 0)}%</strong> · disetujui <strong>{ok((b) => b.persetujuan === "disetujui")}%</strong></p>
       {standar.map(([sid, nama]) => (
         <section key={sid} className="mt-6 break-inside-avoid-page">
-          <h2 className="border-b border-black pb-1 font-serif text-xl">{nama}</h2>
+          <h2 className="border-b border-black pb-1 text-xl">{nama}</h2>
           <table className="mt-2 w-full border-collapse text-xs">
             <thead><tr className="text-left"><th className="w-12 py-1">Kode</th><th>Indikator</th><th>Target</th><th>Capaian</th><th className="w-8">Skor</th><th>Status</th><th>Bukti</th></tr></thead>
             <tbody>{baris.filter((b) => b.standar_id === sid).map((b) => (

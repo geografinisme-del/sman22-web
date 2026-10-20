@@ -35,19 +35,19 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
         {kelola && (
           <>
             <Kartu>
-              <h2 className="mb-4 font-serif text-3xl">Bagian pembuka (hero)</h2>
+              <h2 className="mb-4 text-3xl">Bagian pembuka (hero)</h2>
               <FormHeroTeks d={d} />
             </Kartu>
 
             <Kartu>
-              <h2 id="foto-hero" className="font-serif text-3xl">Foto pembuka</h2>
+              <h2 id="foto-hero" className="text-3xl">Foto pembuka</h2>
               <p className="mt-1 text-sm text-black/60">Foto berganti otomatis. Bila belum ada foto di sini, website memakai foto bawaan.</p>
               <ul className="mt-5 space-y-4">
                 {(slide ?? []).map((x) => {
                   const terjadwal = x.tayang_mulai && new Date(x.tayang_mulai) > sekarang;
                   const berakhir = x.tayang_selesai && new Date(x.tayang_selesai) <= sekarang;
                   return (
-                    <li key={x.id} className="rounded-2xl bg-krem p-4">
+                    <li key={x.id} className="rounded-2xl bg-soft p-4">
                       <details open={sp.ubah === x.id}>
                         <summary className="flex cursor-pointer flex-wrap items-center gap-3">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -60,7 +60,7 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
                           <FormSlide s={{ ...x, tayang_mulai: keInputWaktu(x.tayang_mulai), tayang_selesai: keInputWaktu(x.tayang_selesai) }} />
                           <form action={arsipSlide} className="mt-3">
                             <input type="hidden" name="id" value={x.id} />
-                            <button className="text-sm text-merah underline">Hapus foto dari pembuka</button>
+                            <button className="text-sm text-blue-teks underline">Hapus foto dari pembuka</button>
                           </form>
                         </div>
                       </details>
@@ -69,7 +69,7 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
                 })}
               </ul>
               <details className="mt-5" open={!slide?.length}>
-                <summary className="cursor-pointer font-semibold text-brand-700">+ Tambah foto pembuka</summary>
+                <summary className="cursor-pointer font-semibold text-blue-teks">+ Tambah foto pembuka</summary>
                 <div className="mt-4">
                   <FormSlide s={{ alt: "", fokus_x: 50, fokus_y: 50, skala: 100, tautan: "", urutan: (slide?.length ?? 0) + 1, aktif: true, tayang_mulai: "", tayang_selesai: "" }} />
                 </div>
@@ -77,15 +77,15 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
             </Kartu>
 
             <Kartu>
-              <h2 id="visual-masuk" className="scroll-mt-24 font-serif text-3xl">Visual sinematik (beranda & halaman masuk)</h2>
+              <h2 id="visual-masuk" className="scroll-mt-24 text-3xl">Visual sinematik (beranda & halaman masuk)</h2>
               <p className="mt-1 text-sm text-black/60">
                 Video atau gambar untuk <strong>beranda</strong> (bergerak mengikuti gulir) dan latar <strong>halaman masuk</strong> guru, siswa &amp;
                 orang tua. Bila kosong, memakai visual bawaan.{" "}
-                <a href="/" target="_blank" className="font-medium text-brand-700 underline">
+                <a href="/" target="_blank" className="font-medium text-blue-teks underline">
                   Lihat beranda ↗
                 </a>{" "}
                 ·{" "}
-                <a href="/admin/login" target="_blank" className="font-medium text-brand-700 underline">
+                <a href="/admin/login" target="_blank" className="font-medium text-blue-teks underline">
                   Lihat halaman masuk ↗
                 </a>
               </p>
@@ -97,7 +97,7 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
                 <>
                   <ul className="mt-5 space-y-4">
                     {(visual ?? []).map((x) => (
-                      <li key={x.id} className="rounded-2xl bg-krem p-4">
+                      <li key={x.id} className="rounded-2xl bg-soft p-4">
                         <details open={sp.ubah === x.id}>
                           <summary className="flex cursor-pointer flex-wrap items-center gap-3">
                             {x.jenis === "video" ? (
@@ -118,7 +118,7 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
                             <FormVisual v={x} />
                             <form action={arsipVisual} className="mt-3">
                               <input type="hidden" name="id" value={x.id} />
-                              <button className="text-sm text-merah underline">Hapus visual ini</button>
+                              <button className="text-sm text-blue-teks underline">Hapus visual ini</button>
                             </form>
                           </div>
                         </details>
@@ -126,7 +126,7 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
                     ))}
                   </ul>
                   <details className="mt-5" open={!visual?.length}>
-                    <summary className="cursor-pointer font-semibold text-brand-700">+ Tambah gambar / video</summary>
+                    <summary className="cursor-pointer font-semibold text-blue-teks">+ Tambah gambar / video</summary>
                     <div className="mt-4">
                       <FormVisual
                         v={{ jenis: "video", keterangan: "", judul_tautan: "", tautan: "", urutan: (visual?.length ?? 0) + 1, aktif: true }}
@@ -138,23 +138,23 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
             </Kartu>
 
             <Kartu>
-              <h2 className="mb-4 font-serif text-3xl">Tautan layanan</h2>
+              <h2 className="mb-4 text-3xl">Tautan layanan</h2>
               <FormLayanan d={d} />
             </Kartu>
 
             <Kartu>
-              <h2 className="mb-4 font-serif text-3xl">Footer & media sosial</h2>
+              <h2 className="mb-4 text-3xl">Footer & media sosial</h2>
               <FormFooter d={d} />
             </Kartu>
 
             <Kartu>
-              <h2 className="mb-4 font-serif text-3xl">Tampilan di Google & media sosial (SEO)</h2>
+              <h2 className="mb-4 text-3xl">Tampilan di Google & media sosial (SEO)</h2>
               <FormSeo d={d} situs={sekolah.urlSitus.replace(/^https?:\/\//, "")} />
             </Kartu>
           </>
         )}
         <Kartu>
-          <h2 className="mb-4 font-serif text-3xl">Alur persetujuan berita</h2>
+          <h2 className="mb-4 text-3xl">Alur persetujuan berita</h2>
           <FormPersetujuan d={d} boleh={terbitkan} />
         </Kartu>
       </div>

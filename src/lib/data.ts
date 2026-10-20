@@ -547,3 +547,74 @@ export const getTur = cache(async (): Promise<import("@/content/tur-bawaan").Tit
     sementara: t.is_placeholder === true,
   }));
 });
+
+/* ------------------------------------------------------------------ */
+/* Halaman publik Tahap C: guru & staf, fasilitas, halaman CMS, kalender */
+/* Tabel belum ada (migrasi 20261222 belum dijalankan) → data kosong,    */
+/* halaman menampilkan keadaan kosong yang jujur (tanpa data contoh).    */
+/* ------------------------------------------------------------------ */
+const tabelBelumAda = (e: { code?: string }) => e.code === "42P01" || e.code === "PGRST205";
+
+export type StafPublik = { id: string; nama: string; jabatan: string; bidang: string; foto?: string; sementara: boolean };
+export const getStafPublik = cache(async (): Promise<StafPublik[]> => {
+  if (!supabaseAktif) return [];
+  const { data, error } = await supabasePublik().from("staf_publik").select("*").eq("aktif", true).order("urutan").order("nama");
+  if (error) {
+    if (!tabelBelumAda(error)) logGagal("staf publik", error);
+    return [];
+  }
+  return (data ?? []).map((s) => ({ id: s.id, nama: s.nama, jabatan: s.jabatan ?? "", bidang: s.bidang ?? "", foto: s.foto_url || undefined, sementara: s.is_placeholder === true }));
+});
+
+export type Fasilitas = { id: string; nama: string; deskripsi: string; foto?: string; sementara: boolean };
+export const getFasilitas = cache(async (): Promise<Fasilitas[]> => {
+  if (!supabaseAktif) return [];
+  const { data, error } = await supabasePublik().from("fasilitas").select("*").eq("aktif", true).order("urutan").order("created_at");
+  if (error) {
+    if (!tabelBelumAda(error)) logGagal("fasilitas", error);
+    return [];
+  }
+  return (data ?? []).map((f) => ({ id: f.id, nama: f.nama, deskripsi: f.deskripsi ?? "", foto: f.foto_url || undefined, sementara: f.is_placeholder === true }));
+});
+
+export type HalamanCms = { slug: string; judul: string; ringkasan: string; isi: string; diperbarui: string };
+/** Halaman teks terbit berdasarkan slug (mis. "kurikulum"); null bila belum ada/terbit. */
+export const getHalamanCms = cache(async (slug: string): Promise<HalamanCms | null> => {
+  if (!supabaseAktif) return null;
+  const { data, error } = await supabasePublik().from("halaman_cms").select("*").eq("slug", slug).eq("terbit", true).maybeSingle();
+  if (error) {
+    if (!tabelBelumAda(error)) logGagal("halaman cms", error);
+    return null;
+  }
+  return data ? { slug: data.slug, judul: data.judul, ringkasan: data.ringkasan ?? "", isi: data.isi ?? "", diperbarui: String(data.updated_at ?? "").slice(0, 10) } : null;
+});
+
+export type KegiatanKalender = { id: string; judul: string; jenis: string; mulai: string; selesai: string; jamMulai?: string; jamSelesai?: string; lokasi: string; keterangan: string };
+/** Kalender akademik umum (sasaran 'umum') dalam rentang tanggal [dari, sampai]. */
+export const getKalenderUmum = cache(async (dari: string, sampai: string): Promise<KegiatanKalender[]> => {
+  if (!supabaseAktif) return [];
+  const { data, error } = await supabasePublik()
+    .from("kegiatan_kalender")
+    .select("id, judul, jenis, mulai, selesai, jam_mulai, jam_selesai, lokasi, keterangan")
+    .is("deleted_at", null)
+    .eq("sasaran", "umum")
+    .lte("mulai", sampai)
+    .gte("selesai", dari)
+    .order("mulai")
+    .limit(400);
+  if (error) {
+    if (!tabelBelumAda(error)) logGagal("kalender umum", error);
+    return [];
+  }
+  return (data ?? []).map((k) => ({
+    id: k.id,
+    judul: k.judul,
+    jenis: k.jenis,
+    mulai: k.mulai,
+    selesai: k.selesai,
+    jamMulai: k.jam_mulai?.slice(0, 5) || undefined,
+    jamSelesai: k.jam_selesai?.slice(0, 5) || undefined,
+    lokasi: k.lokasi ?? "",
+    keterangan: k.keterangan ?? "",
+  }));
+});

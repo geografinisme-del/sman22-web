@@ -5,9 +5,9 @@ export type RasioMedia = "3/2" | "16/9" | "3/1" | "1/1" | "4/3";
 /**
  * Satu-satunya komponen foto/video situs publik.
  * - `src` ada  → foto asli (atau ilustrasi bila `isPlaceholder`, diberi label "Ilustrasi sementara").
- * - `src` kosong → blok krem gelap bermotif garis emas tipis & angka "22" samar (BUKAN kotak abu/ikon rusak).
+ * - `src` kosong → blok langit dengan angka "22" samar (BUKAN kotak abu/ikon rusak).
  *   Untuk berita tanpa foto, pemanggil sebaiknya TIDAK merender MediaSlot sama sekali.
- * - Video latar hanya ada di hero (lihat buku/HeroFoto.tsx), tidak di MediaSlot.
+ * - Dipakai kartu peran Portal Digital 22 (gaya di app/portal-digital/portal-digital.css).
  * Rasio dikunci lewat aspect-ratio sehingga tidak ada layout shift.
  */
 export function MediaSlot({

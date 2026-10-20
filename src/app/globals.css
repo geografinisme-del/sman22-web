@@ -2,24 +2,8 @@
 
 @import "../styles/tokens.css";
 
-/*
- * Nama token lama (dipakai komponen yang belum didesain ulang) dipetakan ke token "Langit cerah"
- * di styles/tokens.css — tidak ada lagi nilai warna lama. Hapus pemetaan ini setelah Tahap C.
- */
+/* ukuran judul utilitas (text-4xl…8xl) disetel ke skala "Langit cerah" */
 @theme {
-  --color-brand-50: #f2f4f7;
-  --color-brand-100: #e6eaf0;
-  --color-brand-600: #4a5468;
-  --color-brand-700: #2b3445;
-  --color-brand-800: #182133;
-  --color-brand-900: #0b1220;
-  --color-accent-400: #d7f56a;
-  --color-accent-500: #b9db3c;
-  --color-merah: #1f5fd1;
-  --color-krem: #f2f4f7;
-  --color-krem-tua: #e6eaf0;
-  --color-tinta: #0b1220;
-  --font-serif: var(--font-utama);
   --text-4xl: 2rem;
   --text-4xl--line-height: 1.2;
   --text-5xl: 2.375rem;
@@ -33,18 +17,6 @@
 }
 
 :root {
-  --color-brand: var(--blue-teks);
-  --color-paper: var(--white);
-  --color-ink: var(--ink);
-  --color-ink-muted: var(--muted);
-  --color-accent: var(--blue);
-  --color-rule: var(--line);
-  --radius-0: 0;
-  --radius-1: var(--radius-pil);
-  --radius-2: var(--radius-kartu);
-  --bayangan: var(--bayangan-kartu);
-  --garis: 1px solid var(--line);
-
   /* warna tema situs — ditimpa dari Admin → Tema & Tampilan (lihat app/layout.tsx) */
   --tema-utama: var(--blue);
   --tema-aksen: var(--lime);
@@ -67,8 +39,7 @@ body {
 
 /* judul besar: weight 500, letter-spacing -0.035em */
 h1,
-h2,
-.font-serif {
+h2 {
   font-weight: var(--judul-berat);
   letter-spacing: var(--judul-spasi);
   text-wrap: balance;
@@ -78,8 +49,7 @@ h3 {
 }
 h1 em,
 h2 em,
-h3 em,
-.font-serif em {
+h3 em {
   font-style: normal;
   color: inherit;
 }

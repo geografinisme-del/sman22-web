@@ -52,7 +52,7 @@ export default async function GuruPengganti({ searchParams }: { searchParams: Pr
         <label className="text-sm font-semibold">Tanggal
           <input type="date" name="tanggal" defaultValue={tanggal} className="mt-1 block rounded-xl border border-black/15 bg-white px-3 py-2 font-normal" />
         </label>
-        <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Buka</button>
+        <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Buka</button>
         <span className="ml-2 self-center text-sm text-black/60">{formatTanggal(tanggal, { weekday: "long" })}</span>
       </form>
 
@@ -73,7 +73,7 @@ export default async function GuruPengganti({ searchParams }: { searchParams: Pr
                   const sudah = jp.filter((e) => ubahDi.has(e.id)).length;
                   return (
                     <li key={b.pegawai_id}>
-                      <Link href={url(b.pegawai_id)} className={`inline-block rounded-full px-3 py-1.5 text-sm ring-1 ${guruPilih === b.pegawai_id ? "bg-brand-900 text-white" : sudah < jp.length ? "bg-amber-50 ring-amber-300" : "bg-emerald-50 ring-emerald-200"}`}>
+                      <Link href={url(b.pegawai_id)} className={`inline-block rounded-full px-3 py-1.5 text-sm ring-1 ${guruPilih === b.pegawai_id ? "bg-ink text-white" : sudah < jp.length ? "bg-amber-50 ring-amber-300" : "bg-emerald-50 ring-emerald-200"}`}>
                         {b.nama} · {STATUS_PEGAWAI_ABSEN[b.status]} · {sudah}/{jp.length} JP teratasi
                       </Link>
                     </li>
@@ -93,7 +93,7 @@ export default async function GuruPengganti({ searchParams }: { searchParams: Pr
 
           {guruPilih && (
             <section className="rounded-2xl bg-white p-5 ring-1 ring-black/5">
-              <h2 className="font-serif text-2xl">Jam mengajar {guruHariIni.find(([id]) => id === guruPilih)?.[1]}</h2>
+              <h2 className="text-2xl">Jam mengajar {guruHariIni.find(([id]) => id === guruPilih)?.[1]}</h2>
               <ul className="mt-3 divide-y divide-black/5">
                 {slotGuru.map((e) => {
                   const p = ubahDi.get(e.id);
@@ -114,7 +114,7 @@ export default async function GuruPengganti({ searchParams }: { searchParams: Pr
           )}
 
           <section>
-            <h2 className="mb-3 font-serif text-2xl">Semua perubahan tanggal ini</h2>
+            <h2 className="mb-3 text-2xl">Semua perubahan tanggal ini</h2>
             {perubahan.length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
               <ul className="space-y-2">
                 {perubahan
@@ -130,7 +130,7 @@ export default async function GuruPengganti({ searchParams }: { searchParams: Pr
                       <form action={hapusPerubahan}>
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="kembali" value={url(guruPilih)} />
-                        <button className="text-xs text-merah underline">batalkan</button>
+                        <button className="text-xs text-blue-teks underline">batalkan</button>
                       </form>
                     </li>
                   ))}

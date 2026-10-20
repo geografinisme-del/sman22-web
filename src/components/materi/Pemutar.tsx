@@ -14,7 +14,7 @@ export function PemutarMateri({ slide }: { slide: Slide[] }) {
       <div className="flex items-center gap-3">
         <button type="button" onClick={() => setI((x) => Math.max(0, x - 1))} disabled={i === 0} className="rounded-full px-5 py-2.5 font-semibold ring-1 ring-black/15 disabled:opacity-40">← Sebelumnya</button>
         <span className="flex-1 text-center text-sm tabular-nums text-black/60">{i + 1} / {slide.length}</span>
-        <button type="button" onClick={() => setI((x) => Math.min(slide.length - 1, x + 1))} disabled={i >= slide.length - 1} className="rounded-full bg-brand-900 px-5 py-2.5 font-semibold text-white disabled:opacity-40">Berikutnya →</button>
+        <button type="button" onClick={() => setI((x) => Math.min(slide.length - 1, x + 1))} disabled={i >= slide.length - 1} className="rounded-full bg-ink px-5 py-2.5 font-semibold text-white disabled:opacity-40">Berikutnya →</button>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export type DataProfil = Record<string, string>;
 function Bagian({ judul, children }: { judul: string; children: React.ReactNode }) {
   return (
     <Kartu>
-      <h2 className="mb-6 font-serif text-2xl">{judul}</h2>
+      <h2 className="mb-6 text-2xl">{judul}</h2>
       <div className="grid gap-5 sm:grid-cols-2">{children}</div>
     </Kartu>
   );

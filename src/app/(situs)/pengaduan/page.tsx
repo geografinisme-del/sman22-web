@@ -16,13 +16,13 @@ export default async function Pengaduan() {
       <Section>
         <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
           <FormPengaduan login={login} />
-          <aside className="space-y-4 text-sm text-[#3b414b]">
-            <div className="kartu p-5 ">
+          <aside className="space-y-4 text-sm text-[var(--muted)]">
+            <div className="kartu p-5">
               <h2 className="font-semibold">Sudah pernah melapor?</h2>
               <p className="mt-1">Cek perkembangan dengan nomor tiket & kode akses.</p>
               <Link href="/pengaduan/cek" className="mt-3 inline-block rounded-lg px-4 py-2 font-semibold ring-1 ring-black/15">Cek status pengaduan</Link>
             </div>
-            <div className="kartu p-5 ">
+            <div className="kartu p-5">
               <h2 className="font-semibold">Privasi</h2>
               <p className="mt-1">Identitas boleh dirahasiakan. Alamat IP tidak disimpan — hanya kode samaran (hash) untuk mencegah spam. Laporan perundungan & kekerasan hanya dibaca tim terbatas.</p>
             </div>

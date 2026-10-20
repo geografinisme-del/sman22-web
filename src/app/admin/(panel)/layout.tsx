@@ -15,6 +15,9 @@ const WEBSITE = [
   { href: "/admin/agenda", label: "Agenda" },
   { href: "/admin/galeri", label: "Galeri" },
   { href: "/admin/kartu-beranda", label: "Kartu Beranda" },
+  { href: "/admin/staf-publik", label: "Guru & Staf (publik)" },
+  { href: "/admin/fasilitas", label: "Fasilitas" },
+  { href: "/admin/halaman", label: "Halaman teks" },
   { href: "/admin/tur-sekolah", label: "Tur Sekolah" },
   { href: "/admin/prestasi", label: "Prestasi & Alumni" },
   { href: "/admin/spmb", label: "SPMB Beranda" },
@@ -35,13 +38,13 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     return (
       <main className="grid min-h-screen place-items-center px-5">
         <div className="max-w-md text-center">
-          <h1 className="font-serif text-4xl">Akun belum diberi akses</h1>
+          <h1 className="text-4xl">Akun belum diberi akses</h1>
           <p className="mt-3 text-black/60">
             Anda masuk sebagai <strong>{user.email}</strong>, tetapi akun ini belum diberi peran atau sedang dinonaktifkan.
             Hubungi super admin sekolah.
           </p>
           <form action={keluar}>
-            <button type="submit" className="mt-6 rounded-full bg-brand-900 px-6 py-3 font-semibold text-white">
+            <button type="submit" className="mt-6 rounded-full bg-ink px-6 py-3 font-semibold text-white">
               Keluar
             </button>
           </form>

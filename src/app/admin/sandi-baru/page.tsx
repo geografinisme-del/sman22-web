@@ -24,7 +24,7 @@ export default async function SandiBaru() {
         </>
       }
       bawah={
-        <Link href="/admin" className="text-[#646c7a] hover:text-[var(--tema-utama)]">
+        <Link href="/admin" className="text-[var(--muted)] hover:text-[var(--tema-utama)]">
           Lewati, ke panel →
         </Link>
       }

@@ -108,8 +108,8 @@ export type Tema = {
 };
 
 export const TEMA_BAWAAN: Tema = {
-  // aksen sementara dari merah logo sekolah (lihat globals.css); bisa diganti di Admin → Tema & Tampilan
-  warna: { utama: "#7a1f36", aksen: "#b8892b", gelap: "#1c1a17" },
+  // warna lama (tidak lagi dipakai situs; warna berasal dari styles/tokens.css) — disimpan agar data lama tetap valid
+  warna: { utama: "#1f5fd1", aksen: "#d7f56a", gelap: "#0b1220" },
   beranda: {
     // bidang sinematik lama — tidak dipakai lagi oleh beranda editorial, disimpan agar data lama tetap valid
     efekGulir: false,
@@ -201,9 +201,4 @@ export function bacaTema(raw: unknown): Tema {
         : b.masuk.fitur,
     },
   };
-}
-
-/** Variabel CSS untuk warna tema (nilai sudah dipastikan berformat #rrggbb). */
-export function cssTema(t: Tema) {
-  return `:root{--tema-utama:${t.warna.utama};--tema-aksen:${t.warna.aksen};--tema-gelap:${t.warna.gelap}}`;
 }

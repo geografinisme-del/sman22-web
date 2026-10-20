@@ -58,7 +58,7 @@ export const navigasi: GrupMenu[] = [
     label: "Kabar & Agenda",
     anak: [
       { href: "/berita", label: "Berita" },
-      { href: "/berita?kategori=Prestasi", label: "Prestasi" },
+      { href: "/prestasi", label: "Prestasi" },
       { href: "/agenda", label: "Agenda & pengumuman" },
     ],
   },

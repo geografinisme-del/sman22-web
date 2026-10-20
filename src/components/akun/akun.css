@@ -1,0 +1,138 @@
+/*
+ * Bingkai halaman akun (masuk admin, lupa sandi, verifikasi dua langkah, sandi baru) — "Langit cerah".
+ * Kiri: panel langit dengan identitas sekolah + foto; kanan: formulir (maks. 440px). Nilai dari styles/tokens.css.
+ */
+.akun-halaman {
+  background: var(--soft);
+  color: var(--ink);
+}
+.akun-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+.akun-identitas {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 40px 48px;
+  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 60%, var(--sky-3) 100%);
+  color: var(--white);
+}
+.akun-identitas .keterangan-foto {
+  color: rgb(255 255 255 / 0.85);
+}
+.akun-foto {
+  position: relative;
+  flex: 1;
+  min-height: 280px;
+  overflow: hidden;
+  border-radius: var(--radius-blok);
+  background: var(--haze);
+}
+.akun-form-sisi {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 24px;
+}
+.akun-kartu {
+  width: 100%;
+  max-width: 440px;
+  margin-inline: auto;
+  padding: 32px;
+  border-radius: var(--radius-kartu-besar);
+  background: var(--white);
+  box-shadow: var(--bayangan-kartu);
+}
+.akun-kartu h1 {
+  font-size: 1.75rem;
+  font-weight: var(--judul-berat);
+  letter-spacing: var(--judul-spasi);
+  line-height: 1.2;
+}
+.akun-kartu input:not([type="radio"]):not([type="checkbox"]),
+.akun-kartu select {
+  min-height: 48px;
+  border-radius: var(--radius-input);
+  border-color: var(--line);
+}
+.akun-kartu input:focus,
+.akun-kartu select:focus {
+  border-color: var(--blue);
+  box-shadow: var(--cincin-fokus);
+  outline: none;
+}
+.akun-kartu button[type="submit"] {
+  width: 100%;
+  justify-content: center;
+  min-height: 48px;
+  border-radius: var(--radius-pil);
+  background: var(--ink);
+  color: var(--white);
+}
+.akun-kartu button[type="submit"]:hover {
+  background: color-mix(in srgb, var(--ink) 85%, var(--white));
+}
+.akun-kartu a {
+  color: var(--blue-teks);
+}
+.akun-kartu .akun-bawah button[type="submit"] {
+  width: auto;
+  min-height: 0;
+  padding: 0;
+  background: none;
+  color: var(--blue-teks);
+}
+.akun-kartu .akun-bawah button[type="submit"]:hover {
+  background: none;
+}
+@media (max-width: 1060px) {
+  .akun-grid {
+    grid-template-columns: 1fr;
+  }
+  .akun-identitas {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .akun-form-sisi {
+    padding: 24px 16px 32px;
+    justify-content: flex-start;
+  }
+  .akun-kartu {
+    padding: 24px 20px;
+  }
+}
+.akun-merek {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+.akun-merek-logo {
+  width: 44px;
+  height: auto;
+  flex: none;
+}
+.akun-merek strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.akun-merek small {
+  display: block;
+  font-family: var(--font-kode);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-spasi);
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.akun-kartu h1 {
+  color: var(--ink);
+}

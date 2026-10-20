@@ -89,7 +89,7 @@ export default async function AbsensiHariIni({ searchParams }: { searchParams: P
           ["Pulang cepat", total.PC ?? 0],
         ].map(([l, n]) => (
           <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
-            <p className="font-serif text-4xl leading-none">{n}</p>
+            <p className="text-4xl leading-none">{n}</p>
             <p className="mt-1 text-xs text-black/60">{l}</p>
           </li>
         ))}
@@ -110,7 +110,7 @@ export default async function AbsensiHariIni({ searchParams }: { searchParams: P
               {list.map((k) => {
                 const h = hitung.get(k.id) ?? {};
                 return (
-                  <tr key={k.id} className="hover:bg-krem/50">
+                  <tr key={k.id} className="hover:bg-soft/50">
                     <td className={`${kelasTd} font-semibold`}>
                       <Link href={`/admin/absensi/kelas/${k.id}?tanggal=${tgl}`} className="hover:underline">{k.nama}</Link>
                       <span className="ml-2 text-xs font-normal text-black/40">{k.jumlah_siswa} siswa</span>
@@ -128,7 +128,7 @@ export default async function AbsensiHariIni({ searchParams }: { searchParams: P
         </div>
         {punya(akses, "absensi.kelola") && tgl === hariIni && (
           <Kartu>
-            <h2 className="mb-4 font-serif text-2xl">Catat siswa terlambat</h2>
+            <h2 className="mb-4 text-2xl">Catat siswa terlambat</h2>
             <FormTerlambat siswa={daftarSiswa} jamSekarang={jamSekarangWIB()} />
           </Kartu>
         )}

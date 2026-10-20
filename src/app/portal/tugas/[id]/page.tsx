@@ -19,14 +19,14 @@ export default async function TugasPortal({ params }: { params: Promise<{ id: st
 
   return (
     <div className="space-y-6">
-      <Link href="/portal/kelas" className="text-sm text-[#5b6270] hover:text-black">← Tugas & kuis</Link>
+      <Link href="/portal/kelas" className="text-sm text-[var(--muted)] hover:text-black">← Tugas & kuis</Link>
       <div>
-        <p className="text-xs text-[#5b6270]">{(t.mapel as unknown as { nama: string } | null)?.nama}</p>
-        <h1 className="font-serif text-3xl">{t.judul}</h1>
-        <p className={`text-sm ${lewat ? "font-semibold text-merah" : "text-[#5b6270]"}`}>Tenggat {waktuWIB(t.tenggat, true)} WIB · nilai maks {t.nilai_maks}</p>
+        <p className="text-xs text-[var(--muted)]">{(t.mapel as unknown as { nama: string } | null)?.nama}</p>
+        <h1 className="text-3xl">{t.judul}</h1>
+        <p className={`text-sm ${lewat ? "font-semibold text-blue-teks" : "text-[var(--muted)]"}`}>Tenggat {waktuWIB(t.tenggat, true)} WIB · nilai maks {t.nilai_maks}</p>
       </div>
       {t.instruksi && <div className="whitespace-pre-line rounded-2xl bg-white p-5 ring-1 ring-black/5">{t.instruksi}</div>}
-      {t.tautan && <a href={t.tautan} target="_blank" rel="noopener noreferrer" className="inline-block text-sm font-semibold text-brand-700 underline">Buka tautan dari guru</a>}
+      {t.tautan && <a href={t.tautan} target="_blank" rel="noopener noreferrer" className="inline-block text-sm font-semibold text-blue-teks underline">Buka tautan dari guru</a>}
       {(kumpul ?? []).map((k) => (
         <section key={k.id} className="space-y-2 rounded-2xl bg-white p-5 ring-1 ring-black/5">
           <div className="flex flex-wrap items-center gap-2">
@@ -34,10 +34,10 @@ export default async function TugasPortal({ params }: { params: Promise<{ id: st
             <Lencana s={k.status} peta={STATUS_KUMPUL} />
             {k.terlambat && <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-800">terlambat</span>}
           </div>
-          <p className="text-xs text-[#5b6270]">Dikumpulkan {waktuWIB(k.dikumpul_pada)}</p>
-          {k.nilai != null && <p className="font-serif text-4xl tabular-nums">{Number(k.nilai)}<span className="text-lg text-[#5b6270]">/{t.nilai_maks}</span></p>}
+          <p className="text-xs text-[var(--muted)]">Dikumpulkan {waktuWIB(k.dikumpul_pada)}</p>
+          {k.nilai != null && <p className="text-4xl tabular-nums">{Number(k.nilai)}<span className="text-lg text-[var(--muted)]">/{t.nilai_maks}</span></p>}
           {k.komentar && <p className="rounded-lg bg-amber-50 p-3 text-sm">Catatan guru: {k.komentar}</p>}
-          {k.berkas_path && <a href={`/berkas/tugas/${k.id}`} target="_blank" rel="noopener" className="text-sm font-semibold text-brand-700 underline">Berkas: {k.berkas_nama || "lampiran"}</a>}
+          {k.berkas_path && <a href={`/berkas/tugas/${k.id}`} target="_blank" rel="noopener" className="text-sm font-semibold text-blue-teks underline">Berkas: {k.berkas_nama || "lampiran"}</a>}
         </section>
       ))}
       {bisa && (kumpul ?? [])[0]?.status !== "dinilai" ? (

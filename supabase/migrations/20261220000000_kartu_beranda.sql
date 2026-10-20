@@ -43,7 +43,7 @@ select * from (values
   (2,  'Pembelajaran',    'Program dan karakter',    '7KAIH, Gerbang Pancawaluya, dan kokurikuler tematik.',    '/images/apel-lapangan.jpg',          false, '/program'),
   (3,  'Pembelajaran',    'E-Learning',              'Kelas digital, materi, dan tugas daring.',                '/media/placeholder/galeri-3.webp',   true,  '/pembelajaran/e-learning'),
   (4,  'Kehidupan Siswa', 'Ekskul dan OSIS',         'Wadah minat, bakat, dan kepemimpinan siswa.',             '/images/keluarga-besar.jpg',         false, '/ekskul'),
-  (5,  'Kehidupan Siswa', 'Prestasi',                'Kabar capaian siswa dari berbagai lomba.',                '/media/placeholder/berita-1.webp',   true,  '/berita?kategori=Prestasi'),
+  (5,  'Kehidupan Siswa', 'Prestasi',                'Kabar capaian siswa dari berbagai lomba.',                '/media/placeholder/berita-1.webp',   true,  '/prestasi'),
   (6,  'Kehidupan Siswa', 'Galeri kegiatan',         'Dokumentasi kegiatan siswa dan sekolah.',                 '/images/kegiatan-aula.jpg',          false, '/galeri'),
   (7,  'Kabar & Agenda',  'Berita dan pengumuman',   'Kabar terbaru dan informasi resmi sekolah.',              '/images/upacara-pagi.jpg',           false, '/berita'),
   (8,  'Kabar & Agenda',  'Agenda sekolah',          'Kegiatan dan tanggal penting sekolah.',                   '/images/kajian-masjid.jpg',          false, '/agenda'),

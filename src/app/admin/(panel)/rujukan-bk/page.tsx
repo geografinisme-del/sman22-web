@@ -22,8 +22,8 @@ export default async function RujukanBk() {
                 <p className="font-semibold">{r.siswa?.nama} <Lencana warna={r.status === "baru" ? "kuning" : r.status === "selesai" ? "hijau" : "abu"}>{r.status}</Lencana></p>
                 <p className="mt-1 text-xs text-black/50">Dirujuk {formatWaktu(r.dirujuk_pada)}</p>
                 <p className="mt-2 text-sm text-black/70">“{r.alasan}”</p>
-                <a href={`/admin/kesiswaan/siswa/${r.siswa_id}`} className="mt-2 inline-block text-sm text-brand-700 underline">Rapor perkembangan siswa</a>
-                {konselor && r.status === "baru" && <a href={`/admin/bk/kasus/baru?rujukan=${r.id}`} className="ml-4 mt-2 inline-block text-sm font-semibold text-brand-700 underline">Buka kasus BK →</a>}
+                <a href={`/admin/kesiswaan/siswa/${r.siswa_id}`} className="mt-2 inline-block text-sm text-blue-teks underline">Rapor perkembangan siswa</a>
+                {konselor && r.status === "baru" && <a href={`/admin/bk/kasus/baru?rujukan=${r.id}`} className="ml-4 mt-2 inline-block text-sm font-semibold text-blue-teks underline">Buka kasus BK →</a>}
               </div>
               <FormTangani id={r.id} status={r.status} catatan={r.catatan_bk} />
             </li>

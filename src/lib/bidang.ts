@@ -1,6 +1,6 @@
 /**
  * Warna penanda BIDANG (layanan/ruang kerja) — usulan UI, BUKAN warna resmi sekolah.
- * Identitas sekolah tetap memakai merah logo (token tema); warna bidang hanya untuk navigasi visual:
+ * Identitas sekolah memakai token tema "Langit cerah"; warna bidang hanya untuk navigasi visual:
  * ikon, label, indikator aktif, garis aksen, dan sebagian kepala halaman. Bidang selalu juga dikenali
  * lewat nama & ikon. Warna status (sukses/peringatan/gagal) terpisah dan tidak memakai token ini.
  *

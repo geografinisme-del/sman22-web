@@ -14,11 +14,11 @@ export function FormPreferensi({ p, kontak, kanal }: { p: Pref; kontak: { email:
       <FormAksi aksi={simpanPreferensi} className="space-y-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="flex items-start gap-3 rounded-xl bg-white p-4 ring-1 ring-black/10">
-            <input type="checkbox" name="whatsapp" defaultChecked={p.whatsapp} className="mt-1 h-5 w-5 accent-brand-800" />
+            <input type="checkbox" name="whatsapp" defaultChecked={p.whatsapp} className="mt-1 h-5 w-5 accent-ink" />
             <span><strong>WhatsApp</strong><span className="block text-sm text-black/60">{kontak.wa ? `ke ${kontak.wa}` : "nomor belum ada"}{!kanal.whatsapp && " · belum diaktifkan sekolah"}</span></span>
           </label>
           <label className="flex items-start gap-3 rounded-xl bg-white p-4 ring-1 ring-black/10">
-            <input type="checkbox" name="email" defaultChecked={p.email} className="mt-1 h-5 w-5 accent-brand-800" />
+            <input type="checkbox" name="email" defaultChecked={p.email} className="mt-1 h-5 w-5 accent-ink" />
             <span><strong>Email</strong><span className="block text-sm text-black/60">{kontak.email ? `ke ${kontak.email}` : "email belum ada"}{!kanal.email && " · belum diaktifkan sekolah"}</span></span>
           </label>
         </div>
@@ -28,7 +28,7 @@ export function FormPreferensi({ p, kontak, kanal }: { p: Pref; kontak: { email:
           <div className="grid gap-1 sm:grid-cols-2">
             {Object.entries(KATEGORI_NOTIF).map(([k, l]) => (
               <label key={k} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="mati" value={k} defaultChecked={p.kategori_mati.includes(k)} className="h-4 w-4 accent-brand-800" /> {l}
+                <input type="checkbox" name="mati" value={k} defaultChecked={p.kategori_mati.includes(k)} className="h-4 w-4 accent-ink" /> {l}
               </label>
             ))}
           </div>
@@ -38,7 +38,7 @@ export function FormPreferensi({ p, kontak, kanal }: { p: Pref; kontak: { email:
       </FormAksi>
       <form action={jalankanTes}>
         <button disabled={prosesTes} className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15 disabled:opacity-50">{prosesTes ? "Mengirim…" : "Kirim notifikasi tes ke saya"}</button>
-        {tes.pesan && <span className={`ml-3 text-sm ${tes.ok ? "text-emerald-700" : "text-merah"}`}>{tes.pesan}</span>}
+        {tes.pesan && <span className={`ml-3 text-sm ${tes.ok ? "text-emerald-700" : "text-blue-teks"}`}>{tes.pesan}</span>}
       </form>
     </div>
   );

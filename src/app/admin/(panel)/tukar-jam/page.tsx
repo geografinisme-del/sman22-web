@@ -69,18 +69,18 @@ export default async function TukarJam({ searchParams }: { searchParams: Promise
       {sp.galat && <p role="alert" className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200">{sp.galat}</p>}
 
       {masuk.length > 0 && (
-        <Kartu className="mb-6 ring-2 ring-accent-400">
-          <h2 className="mb-3 font-serif text-2xl">Permintaan untuk Anda</h2>
+        <Kartu className="mb-6 ring-2 ring-lime">
+          <h2 className="mb-3 text-2xl">Permintaan untuk Anda</h2>
           <ul className="space-y-4">
             {masuk.map((t) => (
-              <li key={t.id} className="rounded-xl bg-krem p-4">
+              <li key={t.id} className="rounded-xl bg-soft p-4">
                 <p className="mb-1 font-semibold">{t.pemohon} {t.slotMitra ? "mengajak tukar jam" : "meminta Anda menggantikan"}</p>
                 <Rincian t={t} />
                 <form action={jawabTukar} className="mt-3 flex flex-wrap items-end gap-2">
                   <input type="hidden" name="id" value={t.id} />
                   <input name="catatan" maxLength={300} placeholder="Catatan (opsional)" aria-label="Catatan" className="min-w-48 flex-1 rounded-xl border border-black/15 bg-white px-3 py-2 text-sm" />
-                  <button name="terima" value="1" className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Terima</button>
-                  <button name="terima" value="0" className="rounded-full px-4 py-2 text-sm font-semibold text-merah ring-1 ring-merah/30">Tolak</button>
+                  <button name="terima" value="1" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Terima</button>
+                  <button name="terima" value="0" className="rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-blue/30">Tolak</button>
                 </form>
               </li>
             ))}
@@ -90,7 +90,7 @@ export default async function TukarJam({ searchParams }: { searchParams: Promise
 
       <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
         <Kartu>
-          <h2 className="mb-4 font-serif text-2xl">Ajukan baru</h2>
+          <h2 className="mb-4 text-2xl">Ajukan baru</h2>
           {(slotSaya ?? []).length === 0 ? (
             <p className="text-sm text-black/50">Anda belum punya jam mengajar di jadwal tahun ajaran aktif.</p>
           ) : (
@@ -98,7 +98,7 @@ export default async function TukarJam({ searchParams }: { searchParams: Promise
           )}
         </Kartu>
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Pengajuan saya</h2>
+          <h2 className="mb-3 text-2xl">Pengajuan saya</h2>
           {milikSaya.length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
             <ul className="divide-y divide-black/5">
               {milikSaya.map((t) => (
@@ -108,7 +108,7 @@ export default async function TukarJam({ searchParams }: { searchParams: Promise
                   {(t.status === "menunggu_mitra" || t.status === "menunggu_kurikulum") && (
                     <form action={batalkanTukar}>
                       <input type="hidden" name="id" value={t.id} />
-                      <button className="text-xs font-semibold text-merah underline">Batalkan</button>
+                      <button className="text-xs font-semibold text-blue-teks underline">Batalkan</button>
                     </form>
                   )}
                 </li>

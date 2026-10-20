@@ -36,25 +36,25 @@ export default async function DetailMitra({ params, searchParams }: { params: Pr
       <div className="grid gap-6 xl:grid-cols-[1fr_440px]">
         <div className="space-y-6">
           <Kartu>
-            <div className="mb-3 flex flex-wrap items-baseline gap-3"><h2 className="flex-1 font-serif text-2xl">Kegiatan ({kegiatan.length})</h2>{rata && <span className="text-sm">rata-rata manfaat <strong className="text-amber-600">★ {rata}</strong></span>}</div>
+            <div className="mb-3 flex flex-wrap items-baseline gap-3"><h2 className="flex-1 text-2xl">Kegiatan ({kegiatan.length})</h2>{rata && <span className="text-sm">rata-rata manfaat <strong className="text-amber-600">★ {rata}</strong></span>}</div>
             {kegiatan.length === 0 ? <p className="text-sm text-black/50">Belum ada kegiatan tercatat.</p> : (
               <ul className="divide-y divide-black/5 text-sm">{kegiatan.map((k) => (
                 <li key={k.id} className="py-3">
                   <p><span className="text-black/50">{tgl(k.tanggal)}</span> · <strong>{k.kegiatan}</strong>{k.nilai && <span className="ml-2 text-amber-500">{"★".repeat(k.nilai)}</span>}</p>
                   {k.hasil && <p className="mt-1 whitespace-pre-line text-black/70">{k.hasil}</p>}
-                  {k.tautan_dokumentasi && <a href={k.tautan_dokumentasi} target="_blank" rel="noreferrer" className="text-brand-700 underline">dokumentasi</a>}
+                  {k.tautan_dokumentasi && <a href={k.tautan_dokumentasi} target="_blank" rel="noreferrer" className="text-blue-teks underline">dokumentasi</a>}
                 </li>
               ))}</ul>
             )}
             {bolehCatat && <div className="mt-4 border-t border-black/5 pt-4"><FormKegiatanMitra kemitraan_id={d.id} hari={hariIniWIB()} /></div>}
           </Kartu>
-          {!kelola && d.evaluasi && <Kartu><h2 className="mb-2 font-serif text-xl">Evaluasi</h2><p className="whitespace-pre-line text-sm">{d.evaluasi}</p></Kartu>}
+          {!kelola && d.evaluasi && <Kartu><h2 className="mb-2 text-xl">Evaluasi</h2><p className="whitespace-pre-line text-sm">{d.evaluasi}</p></Kartu>}
         </div>
-        {kelola ? <Kartu className="self-start"><h2 className="mb-4 font-serif text-2xl">Data & evaluasi</h2><FormMitra d={d} guru={guru} /></Kartu> : (
+        {kelola ? <Kartu className="self-start"><h2 className="mb-4 text-2xl">Data & evaluasi</h2><FormMitra d={d} guru={guru} /></Kartu> : (
           <Kartu className="self-start text-sm">
             <p><strong>Ruang lingkup:</strong> {d.ruang_lingkup || "—"}</p>
             <p className="mt-2"><strong>Nomor dokumen:</strong> {d.nomor_dokumen || "—"}</p>
-            {d.tautan_dokumen && <a href={d.tautan_dokumen} target="_blank" rel="noreferrer" className="mt-2 inline-block text-brand-700 underline">Dokumen MoU ↗</a>}
+            {d.tautan_dokumen && <a href={d.tautan_dokumen} target="_blank" rel="noreferrer" className="mt-2 inline-block text-blue-teks underline">Dokumen MoU ↗</a>}
           </Kartu>
         )}
       </div>

@@ -126,7 +126,7 @@ export function FormSurveiAdmin({ d, terkunci, hari, tracer }: { d?: DataSurvei;
       </div>
       {(tracer || d?.sasaran === "alumni") && <Input label="Untuk angkatan (tahun lulus)" nama="angkatan" nilai={(d?.angkatan ?? []).join(", ")} placeholder="mis. 2023, 2024 — kosongkan untuk semua angkatan" />}
       {terkunci ? (
-        <p className="rounded-xl bg-krem p-3 text-sm">Pertanyaan terkunci karena sudah ada jawaban.</p>
+        <p className="rounded-xl bg-soft p-3 text-sm">Pertanyaan terkunci karena sudah ada jawaban.</p>
       ) : (
         <TextArea label="Pertanyaan (satu per baris)" nama="pertanyaan" nilai={d ? tulisPertanyaan(d.pertanyaan) : ""} baris={8}
           placeholder={"S: Seberapa puas Anda dengan pelayanan TU?\nP: Layanan yang digunakan | Legalisir | Mutasi | Surat keterangan\nT?: Saran perbaikan"}

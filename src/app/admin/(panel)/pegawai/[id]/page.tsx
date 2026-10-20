@@ -25,7 +25,7 @@ export default async function DetailPegawai({ params, searchParams }: { params: 
         <FormPegawai data={data} bisaUbah={punya(akses, "data_induk.kelola")} />
         <div className="space-y-6">
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Akun login</h2>
+            <h2 className="mb-3 text-2xl">Akun login</h2>
             {p.user_id ? (
               <p className="text-sm text-black/70">Sudah memiliki akun.</p>
             ) : (
@@ -34,14 +34,14 @@ export default async function DetailPegawai({ params, searchParams }: { params: 
                 {punya(akses, "pengguna.kelola") && (
                   <>
                     {" "}
-                    <Link href={`/admin/pengguna?pegawai=${id}`} className="font-semibold text-brand-700 underline">Buatkan akun</Link>
+                    <Link href={`/admin/pengguna?pegawai=${id}`} className="font-semibold text-blue-teks underline">Buatkan akun</Link>
                   </>
                 )}
               </p>
             )}
           </Kartu>
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Wali kelas</h2>
+            <h2 className="mb-3 text-2xl">Wali kelas</h2>
             {!perwalian?.length ? (
               <p className="text-sm text-black/50">Bukan wali kelas.</p>
             ) : (

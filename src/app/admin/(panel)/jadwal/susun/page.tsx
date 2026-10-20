@@ -48,13 +48,13 @@ export default async function SusunJadwal({ searchParams }: { searchParams: Prom
             <select name="kelas" defaultValue={pilih?.id} aria-label="Kelas" className="w-48 rounded-xl border border-black/15 bg-white px-3 py-2">
               {kelas.map((k) => <option key={k.id} value={k.id}>{k.nama}</option>)}
             </select>
-            <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Buka</button>
-            {pilih && <Link href={`/admin/jadwal?lihat=kelas&id=${pilih.id}`} className="ml-2 text-sm text-brand-700 underline">Lihat hasil</Link>}
+            <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Buka</button>
+            {pilih && <Link href={`/admin/jadwal?lihat=kelas&id=${pilih.id}`} className="ml-2 text-sm text-blue-teks underline">Lihat hasil</Link>}
           </form>
           {!jam.some((j) => j.jp_ke) ? (
-            <KosongAdmin teks="Jam pelajaran belum diatur." aksi={<Link href="/admin/jadwal/pengaturan" className="text-brand-700 underline">Atur jam pelajaran</Link>} />
+            <KosongAdmin teks="Jam pelajaran belum diatur." aksi={<Link href="/admin/jadwal/pengaturan" className="text-blue-teks underline">Atur jam pelajaran</Link>} />
           ) : !penugasan.length ? (
-            <KosongAdmin teks={`Kelas ${pilih?.nama} belum punya penugasan mengajar.`} aksi={<Link href={`/admin/jadwal/penugasan?kelas=${pilih?.id}`} className="text-brand-700 underline">Isi penugasan</Link>} />
+            <KosongAdmin teks={`Kelas ${pilih?.nama} belum punya penugasan mengajar.`} aksi={<Link href={`/admin/jadwal/penugasan?kelas=${pilih?.id}`} className="text-blue-teks underline">Isi penugasan</Link>} />
           ) : (
             pilih && <EditorJadwal key={pilih.id} kelasId={pilih.id} jam={jam} penugasan={penugasan} awal={awal} sibukGuru={sibukGuru} sibukRuang={sibukRuang} ruang={ruang ?? []} />
           )}

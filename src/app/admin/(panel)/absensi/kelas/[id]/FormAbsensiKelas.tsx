@@ -53,8 +53,8 @@ export function FormAbsensiKelas({ kelasId, tanggal, siswa }: { kelasId: string;
                     />
                     <span
                       title={STATUS_SISWA_ABSEN[k].label}
-                      className={`inline-flex h-10 min-w-10 items-center justify-center rounded-xl px-2 text-sm font-semibold ring-1 ring-black/10 transition peer-focus-visible:ring-4 peer-focus-visible:ring-accent-400 ${
-                        nilai[s.id] === k ? `${STATUS_SISWA_ABSEN[k].warna} text-white ring-0` : "bg-white text-black/60 hover:bg-krem"
+                      className={`inline-flex h-10 min-w-10 items-center justify-center rounded-xl px-2 text-sm font-semibold ring-1 ring-black/10 transition peer-focus-visible:ring-4 peer-focus-visible:ring-lime ${
+                        nilai[s.id] === k ? `${STATUS_SISWA_ABSEN[k].warna} text-white ring-0` : "bg-white text-black/60 hover:bg-soft"
                       }`}
                     >
                       {STATUS_SISWA_ABSEN[k].pendek}

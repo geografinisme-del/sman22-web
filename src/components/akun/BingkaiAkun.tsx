@@ -1,8 +1,23 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { Brand } from "@/components/Header";
+import Link from "next/link";
+import { sekolah } from "@/content/sekolah";
 import { getVisualAkun } from "@/lib/data";
-import "@/components/beranda/beranda.css";
+import "@/components/langit/halaman.css";
+import "./akun.css";
+
+/** Logo + nama sekolah (tautan ke beranda). */
+function Merek({ sub }: { sub: string }) {
+  return (
+    <Link href="/" className="akun-merek" aria-label={`Beranda ${sekolah.nama}`} prefetch={false}>
+      <Image src={sekolah.logo} alt="" width={502} height={497} sizes="44px" className="akun-merek-logo" />
+      <span className="min-w-0">
+        <strong>{sekolah.nama}</strong>
+        <small>{sub}</small>
+      </span>
+    </Link>
+  );
+}
 
 /**
  * Bingkai halaman akun (masuk, lupa sandi, verifikasi dua langkah, sandi baru).
@@ -37,11 +52,11 @@ export async function BingkaiAkun({
         {!tanpaFoto && (
           <section aria-label="Identitas sekolah" className="akun-identitas">
             <div>
-              <Brand sub="Portal Sekolah" />
+              <Merek sub="Portal Sekolah" />
             </div>
             <figure className="flex flex-1 flex-col">
               <div className="akun-foto">
-                {foto.src && <Image src={foto.src} alt={foto.alt} fill priority sizes="50vw" className="object-cover" />}
+                {foto.src && <Image src={foto.src} alt={foto.alt} fill loading="eager" fetchPriority="high" sizes="50vw" className="object-cover" />}
               </div>
               <figcaption className="keterangan-foto">{foto.alt}</figcaption>
             </figure>
@@ -51,12 +66,12 @@ export async function BingkaiAkun({
         <section className="akun-form-sisi flex-1">
           <div className="akun-kartu">
             <div className={tanpaFoto ? "mb-8" : "mb-8 min-[1061px]:hidden"}>
-              <Brand sub="Portal Sekolah" />
+              <Merek sub="Portal Sekolah" />
             </div>
             <h1>{judul}</h1>
-            {deskripsi && <div className="mt-2 text-[1rem] leading-relaxed text-[#3b414b]">{deskripsi}</div>}
+            {deskripsi && <div className="mt-2 text-[1rem] leading-relaxed text-[var(--muted)]">{deskripsi}</div>}
             {children}
-            {bawah && <div className="akun-bawah mt-6 space-y-3 border-t border-[#e5e1da] pt-5 text-[0.9375rem]">{bawah}</div>}
+            {bawah && <div className="akun-bawah mt-6 space-y-3 border-t border-[var(--line)] pt-5 text-[0.9375rem]">{bawah}</div>}
           </div>
         </section>
       </div>

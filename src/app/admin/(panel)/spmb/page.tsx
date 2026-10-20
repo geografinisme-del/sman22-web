@@ -37,7 +37,7 @@ export default async function AdminSpmb() {
             <TextArea label="Ringkasan" nama="ringkasan" nilai={data?.ringkasan ?? ""} baris={3} maks={400} />
           </div>
 
-          <fieldset className="grid gap-4 rounded-xl border border-[#e3e5e8] p-4 sm:col-span-2 sm:grid-cols-[1fr_200px]">
+          <fieldset className="grid gap-4 rounded-xl border border-[var(--line)] p-4 sm:col-span-2 sm:grid-cols-[1fr_200px]">
             <legend className="px-1 font-semibold">Jadwal (maksimal 6 langkah, sesuai juknis resmi)</legend>
             {Array.from({ length: 6 }, (_, i) => (
               <div key={i} className="contents">

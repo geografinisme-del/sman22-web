@@ -23,7 +23,7 @@ export type DataVisual = {
 const TUJUAN = [
   { href: "", label: "Tanpa tautan", judul: "" },
   { href: "/profil#sambutan", label: "Sambutan kepala sekolah", judul: "Baca sambutan kepala sekolah" },
-  { href: "/berita?kategori=Prestasi", label: "Prestasi siswa (berita kategori Prestasi)", judul: "Lihat prestasi siswa" },
+  { href: "/prestasi", label: "Prestasi siswa", judul: "Lihat prestasi siswa" },
   { href: "/profil", label: "Profil sekolah", judul: "Kenali sekolah kami" },
   { href: "/berita", label: "Berita terbaru", judul: "Baca berita terbaru" },
   { href: "/galeri", label: "Galeri kegiatan", judul: "Lihat galeri kegiatan" },
@@ -35,7 +35,7 @@ const TUJUAN = [
 ];
 
 const kelas =
-  "w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-base outline-none transition focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10";
+  "w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-base outline-none transition focus:border-muted focus:ring-4 focus:ring-muted/10";
 
 type StatusVideo = { tahap: "kosong" | "unggah" | "siap" | "gagal"; pesan?: string };
 
@@ -89,7 +89,7 @@ export function FormVisual({ v }: { v: DataVisual }) {
               ["beranda", "Beranda — animasi saat digulir"],
             ] as const
           ).map(([k, label]) => (
-            <label key={k} className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold ring-1 ${lokasi === k ? "bg-brand-900 text-white ring-brand-900" : "bg-white ring-black/15"}`}>
+            <label key={k} className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold ring-1 ${lokasi === k ? "bg-ink text-white ring-ink" : "bg-white ring-black/15"}`}>
               <input type="radio" name="lokasi" value={k} checked={lokasi === k} onChange={() => setLokasi(k)} className="sr-only" />
               {label}
             </label>
@@ -106,7 +106,7 @@ export function FormVisual({ v }: { v: DataVisual }) {
         <legend className="mb-2 text-sm font-semibold">Jenis</legend>
         <div className="flex gap-2">
           {(["gambar", "video"] as const).map((j) => (
-            <label key={j} className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold ring-1 ${jenis === j ? "bg-brand-900 text-white ring-brand-900" : "bg-white ring-black/15"}`}>
+            <label key={j} className={`cursor-pointer rounded-full px-4 py-2 text-sm font-semibold ring-1 ${jenis === j ? "bg-ink text-white ring-ink" : "bg-white ring-black/15"}`}>
               <input
                 type="radio"
                 name="jenis"
@@ -163,9 +163,9 @@ export function FormVisual({ v }: { v: DataVisual }) {
                 </span>
               </label>
               <p role="status" className="text-sm">
-                {status.tahap === "unggah" && <span className="inline-flex items-center gap-2 text-brand-700"><span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-700/30 border-t-brand-700" aria-hidden /> Mengunggah video…</span>}
+                {status.tahap === "unggah" && <span className="inline-flex items-center gap-2 text-blue-teks"><span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-teks/30 border-t-blue-teks" aria-hidden /> Mengunggah video…</span>}
                 {status.tahap === "siap" && <span className="text-emerald-700">✓ Video siap — klik Simpan.</span>}
-                {status.tahap === "gagal" && <span className="text-merah">{status.pesan}</span>}
+                {status.tahap === "gagal" && <span className="text-blue-teks">{status.pesan}</span>}
               </p>
               <ErrorKolom nama="video" />
               <label className="block text-sm font-semibold">
@@ -184,7 +184,7 @@ export function FormVisual({ v }: { v: DataVisual }) {
 
         <div>
           <p className="mb-1 text-sm font-semibold">Pratinjau</p>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-krem-tua">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-line">
             {tampilVideo ? (
               <video src={pratinjau} poster={v.poster_url || undefined} muted loop playsInline autoPlay className="h-full w-full object-cover" />
             ) : tampilGambar ? (
@@ -245,7 +245,7 @@ export function FormVisual({ v }: { v: DataVisual }) {
       </div>
 
       {sedangUnggah ? (
-        <button type="button" disabled className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white opacity-60">
+        <button type="button" disabled className="rounded-full bg-ink px-6 py-3 font-semibold text-white opacity-60">
           Tunggu video selesai terunggah…
         </button>
       ) : (
@@ -258,5 +258,5 @@ export function FormVisual({ v }: { v: DataVisual }) {
 /** Pesan error per kolom dari server (harus di dalam FormAksi agar membaca konteks error) */
 function ErrorKolom({ nama }: { nama: string }) {
   const e = useErrorKolom(nama);
-  return e ? <span className="block text-sm font-normal text-merah">{e}</span> : null;
+  return e ? <span className="block text-sm font-normal text-blue-teks">{e}</span> : null;
 }

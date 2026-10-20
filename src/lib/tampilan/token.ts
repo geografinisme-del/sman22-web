@@ -5,12 +5,9 @@
  * Modul murni (tanpa impor server) agar bisa diuji dengan `node --test`.
  */
 
-/** Palet terkurasi dari warna logo resmi (merah mahkota, biru dongker cincin, biru langit sayap). */
+/** Palet tema publik: satu palet "Langit cerah" (nilai sama dengan styles/tokens.css). */
 export const PALET = {
   cerah: { label: "Langit cerah", utama: "#1f5fd1", aksen: "#d7f56a", gelap: "#0b1220" },
-  merah: { label: "Marun sekolah", utama: "#7a1f36", aksen: "#b8892b", gelap: "#1c1a17" },
-  dongker: { label: "Biru dongker logo", utama: "#3b5070", aksen: "#b3123c", gelap: "#1f2328" },
-  langit: { label: "Biru langit logo", utama: "#0f6a9c", aksen: "#b3123c", gelap: "#1f2328" },
 } as const;
 export type KunciPalet = keyof typeof PALET;
 
@@ -38,74 +35,15 @@ export type DefinisiTema = {
   bawaan: { palet: KunciPalet; font: KunciFont; gerak: TingkatGerak };
 };
 
-export const TEMA: Record<"langit" | "buku" | "warna" | "akademik" | "modern" | "editorial", DefinisiTema> = {
-  // satu-satunya tema aktif: "Langit cerah + Tur sekolah" (token di styles/tokens.css). Tema lain diarsipkan agar
-  // tidak ada halaman publik yang kembali ke desain lama; konfigurasi lama otomatis jatuh ke tema ini.
+export const TEMA: Record<"langit", DefinisiTema> = {
+  // satu-satunya tema: "Langit cerah + Tur sekolah" (token di styles/tokens.css). Tema lama sudah dihapus;
+  // konfigurasi lama (buku, warna, akademik, modern, editorial) otomatis jatuh ke tema ini saat dibaca.
   langit: {
     label: "Langit cerah",
     keterangan: "Langit biru bergradasi, kartu putar 3D, tur sekolah, kartu putih membulat, aksen lime.",
     tersedia: true,
     tata: { hero: ["langit"] },
     bawaan: { palet: "cerah", font: "jakarta", gerak: "standar" },
-  },
-  // tema utama: "buku tahunan yang hidup" — kertas krem, marun, judul serif, tata letak majalah/koran sekolah
-  buku: {
-    label: "Buku Tahunan (diarsipkan)",
-    keterangan: "Kertas krem, judul serif, foto penuh berlapis gradasi, kabar bergaya koran, blok SPMB marun, kehidupan siswa berlatar gelap.",
-    tersedia: false,
-    tata: { hero: ["majalah"] },
-    bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
-  },
-  // tema utama: foto besar + panel teks putih (tanpa lapisan gelap), warna penanda bidang pada layanan
-  warna: {
-    label: "Sekolah Berwarna (diarsipkan)",
-    keterangan: "Foto kegiatan besar dengan panel teks putih, warna penanda bidang pada layanan, ritme bagian bervariasi.",
-    tersedia: false,
-    tata: {
-      hero: ["panel", "berdampingan", "penuh"],
-      layanan: ["kisi", "daftar"],
-      profil: ["foto-kiri", "foto-kanan"],
-      berita: ["utama-pendamping", "daftar"],
-      program: ["sorot", "daftar"],
-      galeri: ["mozaik", "kisi"],
-    },
-    bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
-  },
-  akademik: {
-    label: "Akademik (diarsipkan)",
-    keterangan: "Dasar terang & informatif: foto berdampingan dengan teks, kartu bergaris tipis, gerak tenang.",
-    tersedia: false,
-    tata: {
-      hero: ["berdampingan"],
-      layanan: ["kisi", "daftar"],
-      profil: ["foto-kiri", "foto-kanan"],
-      berita: ["utama-pendamping", "daftar"],
-      program: ["sorot", "daftar"],
-      galeri: ["mozaik", "kisi"],
-    },
-    bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
-  },
-  modern: {
-    label: "Modern Interaktif (diarsipkan)",
-    keterangan: "Foto pembuka penuh dengan lapisan teks, bidang warna solid, sudut lebih bulat, gerak lebih ekspresif.",
-    tersedia: false,
-    tata: {
-      hero: ["penuh", "berdampingan"],
-      layanan: ["kisi", "daftar"],
-      profil: ["foto-kanan", "foto-kiri"],
-      berita: ["utama-pendamping", "daftar"],
-      program: ["sorot", "daftar"],
-      galeri: ["mozaik", "kisi"],
-    },
-    bawaan: { palet: "merah", font: "jakarta", gerak: "dinamis" },
-  },
-  // disiapkan: tema Editorial dapat diaktifkan setelah komponen & CSS-nya selesai
-  editorial: {
-    label: "Editorial (segera)",
-    keterangan: "Tipografi besar ala majalah sekolah. Belum dapat dipilih.",
-    tersedia: false,
-    tata: { hero: ["berdampingan"], berita: ["utama-pendamping"] },
-    bawaan: { palet: "dongker", font: "jakarta", gerak: "standar" },
   },
 };
 export type KunciTema = keyof typeof TEMA;

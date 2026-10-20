@@ -38,7 +38,7 @@ const BIDANG: Record<JenisWidget, Bidang[]> = {
   kontak: [JUDUL, { k: "peta", label: "Tampilkan peta", tipe: "centang" }],
 };
 
-const kelasInput = "w-full rounded-lg border border-[#d9dce1] bg-white px-3 py-2 text-[15px] text-[#1f2328] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]";
+const kelasInput = "w-full rounded-lg border border-[var(--line)] bg-white px-3 py-2 text-[15px] text-[var(--ink)] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]";
 const TAB = [
   ["tema", "Tema"],
   ["susunan", "Susunan beranda"],
@@ -51,7 +51,7 @@ function Pilihan({ nama, nilai, aktif, onPilih, children, mati }: { nama: string
   return (
     <label className={`block ${mati ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}>
       <input type="radio" name={nama} value={nilai} checked={aktif} onChange={onPilih} disabled={mati} className="peer sr-only" />
-      <span className="block h-full rounded-[10px] border border-[#d9dce1] bg-white p-3.5 transition-colors duration-150 hover:border-[#9aa1ab] peer-checked:border-2 peer-checked:border-[var(--tema-utama)] peer-checked:p-[13px] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--tema-utama)]">
+      <span className="block h-full rounded-[10px] border border-[var(--line)] bg-white p-3.5 transition-colors duration-150 hover:border-[var(--muted)] peer-checked:border-2 peer-checked:border-[var(--tema-utama)] peer-checked:p-[13px] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[var(--tema-utama)]">
         {children}
       </span>
     </label>
@@ -134,7 +134,7 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
   return (
     <div>
       {/* bilah status & tindakan: Pratinjau → Sesuaikan → Terapkan */}
-      <div className="sticky top-14 z-20 -mx-4 mb-5 border-b border-[#e3e5e8] bg-[#f4f5f7]/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-8 lg:px-8">
+      <div className="sticky top-14 z-20 -mx-4 mb-5 border-b border-[var(--line)] bg-[var(--soft)]/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-8 lg:px-8">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <p className="mr-auto text-sm" role="status">
             {belumDisimpan ? (
@@ -142,17 +142,17 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
             ) : belumTerbit ? (
               <span className="font-semibold text-[#8a4b00]">Draf tersimpan, belum diterapkan ke website</span>
             ) : (
-              <span className="text-[#3b414b]">Draf sama dengan tampilan yang sedang tayang</span>
+              <span className="text-[var(--muted)]">Draf sama dengan tampilan yang sedang tayang</span>
             )}
           </p>
           <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={proses} onClick={() => lihat("desktop")} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[#d9dce1] bg-white px-3 text-sm font-semibold hover:border-[#9aa1ab] disabled:opacity-60">
+            <button type="button" disabled={proses} onClick={() => lihat("desktop")} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[var(--line)] bg-white px-3 text-sm font-semibold hover:border-[var(--muted)] disabled:opacity-60">
               <Monitor size={16} aria-hidden /> Pratinjau desktop
             </button>
-            <button type="button" disabled={proses} onClick={() => lihat("ponsel")} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[#d9dce1] bg-white px-3 text-sm font-semibold hover:border-[#9aa1ab] disabled:opacity-60">
+            <button type="button" disabled={proses} onClick={() => lihat("ponsel")} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[var(--line)] bg-white px-3 text-sm font-semibold hover:border-[var(--muted)] disabled:opacity-60">
               <Smartphone size={16} aria-hidden /> Ponsel
             </button>
-            <button type="button" disabled={proses || !belumDisimpan} onClick={() => simpan()} className="inline-flex min-h-10 items-center rounded-lg border border-[#1f2328] bg-white px-3 text-sm font-semibold disabled:opacity-50">
+            <button type="button" disabled={proses || !belumDisimpan} onClick={() => simpan()} className="inline-flex min-h-10 items-center rounded-lg border border-[var(--ink)] bg-white px-3 text-sm font-semibold disabled:opacity-50">
               {proses ? "Memproses…" : "Simpan draf"}
             </button>
           </div>
@@ -164,7 +164,7 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
         )}
       </div>
 
-      <div role="tablist" aria-label="Bagian pengaturan tampilan" className="mb-5 flex gap-1 overflow-x-auto border-b border-[#e3e5e8]">
+      <div role="tablist" aria-label="Bagian pengaturan tampilan" className="mb-5 flex gap-1 overflow-x-auto border-b border-[var(--line)]">
         {TAB.map(([kunci, label], i) => (
           <button
             key={kunci}
@@ -179,7 +179,7 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
             tabIndex={tab === kunci ? 0 : -1}
             onClick={() => setTab(kunci)}
             onKeyDown={(e) => tombolTab(e, i)}
-            className="relative shrink-0 px-3 py-2.5 text-sm font-semibold text-[#5b6270] hover:text-[#1f2328] aria-selected:text-[#1f2328] aria-selected:after:absolute aria-selected:after:inset-x-3 aria-selected:after:-bottom-px aria-selected:after:h-0.5 aria-selected:after:bg-[var(--tema-utama)]"
+            className="relative shrink-0 px-3 py-2.5 text-sm font-semibold text-[var(--muted)] hover:text-[var(--ink)] aria-selected:text-[var(--ink)] aria-selected:after:absolute aria-selected:after:inset-x-3 aria-selected:after:-bottom-px aria-selected:after:h-0.5 aria-selected:after:bg-[var(--tema-utama)]"
           >
             {label}
           </button>
@@ -205,28 +205,15 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
             {(Object.keys(TEMA) as KunciTema[]).map((t) => (
               <Pilihan key={t} nama="tema" nilai={t} aktif={k.tema === t} mati={!TEMA[t].tersedia} onPilih={() => ubah((x) => ({ ...x, tema: t as Konfigurasi["tema"] }))}>
                 <span className="block font-semibold">{TEMA[t].label}</span>
-                <span className="mt-1 block text-sm text-[#5b6270]">{TEMA[t].keterangan}</span>
-                {TEMA[t].tersedia && k.tema !== t && (
-                  <button
-                    type="button"
-                    className="mt-2 text-sm font-semibold text-[var(--tema-utama)] underline"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const b = TEMA[t].bawaan;
-                      ubah((x) => ({ ...x, tema: t as Konfigurasi["tema"], palet: b.palet, font: b.font, gerak: b.gerak }));
-                    }}
-                  >
-                    Pakai dengan gaya bawaannya
-                  </button>
-                )}
+                <span className="mt-1 block text-sm text-[var(--muted)]">{TEMA[t].keterangan}</span>
               </Pilihan>
             ))}
           </div>
-          <p className="mt-2 text-sm text-[#5b6270]">Susunan widget & isi tetap sama saat berganti tema. Dasbor admin tidak ikut berubah.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">Situs memakai satu desain, &ldquo;Langit cerah&rdquo;. Dasbor admin tidak ikut berubah.</p>
         </fieldset>
 
         <fieldset>
-          <legend className="mb-2 font-semibold">Warna aksen (dari logo sekolah)</legend>
+          <legend className="mb-2 font-semibold">Warna</legend>
           <div className="grid gap-3 sm:grid-cols-3">
             {(Object.keys(PALET) as (keyof typeof PALET)[]).map((p) => (
               <Pilihan key={p} nama="palet" nilai={p} aktif={k.palet === p} onPilih={() => ubah((x) => ({ ...x, palet: p }))}>
@@ -247,7 +234,7 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
                 <span className="block text-lg font-semibold" style={{ fontFamily: FONT[f].css }}>
                   SMA Negeri 22 Bandung
                 </span>
-                <span className="block text-sm text-[#5b6270]">{FONT[f].label}</span>
+                <span className="block text-sm text-[var(--muted)]">{FONT[f].label}</span>
               </Pilihan>
             ))}
           </div>
@@ -259,11 +246,11 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
             {(Object.keys(GERAK) as (keyof typeof GERAK)[]).map((g) => (
               <Pilihan key={g} nama="gerak" nilai={g} aktif={k.gerak === g} onPilih={() => ubah((x) => ({ ...x, gerak: g }))}>
                 <span className="block font-semibold">{GERAK[g].label}</span>
-                <span className="mt-1 block text-sm text-[#5b6270]">{GERAK[g].keterangan}</span>
+                <span className="mt-1 block text-sm text-[var(--muted)]">{GERAK[g].keterangan}</span>
               </Pilihan>
             ))}
           </div>
-          <p className="mt-2 text-sm text-[#5b6270]">Pengunjung yang memilih “kurangi gerak” di perangkatnya selalu melihat versi tanpa animasi.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">Pengunjung yang memilih “kurangi gerak” di perangkatnya selalu melihat versi tanpa animasi.</p>
         </fieldset>
 
         <fieldset>
@@ -271,11 +258,11 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
           <div className="grid gap-3 sm:grid-cols-2">
             <Pilihan nama="slide" nilai="manual" aktif={k.slideshow.gaya === "manual"} onPilih={() => ubah((x) => ({ ...x, slideshow: { ...x.slideshow, gaya: "manual" } }))}>
               <span className="block font-semibold">Manual (disarankan)</span>
-              <span className="mt-1 block text-sm text-[#5b6270]">Foto berganti hanya lewat tombol sebelumnya/berikutnya.</span>
+              <span className="mt-1 block text-sm text-[var(--muted)]">Foto berganti hanya lewat tombol sebelumnya/berikutnya.</span>
             </Pilihan>
             <Pilihan nama="slide" nilai="otomatis" aktif={k.slideshow.gaya === "otomatis"} onPilih={() => ubah((x) => ({ ...x, slideshow: { ...x.slideshow, gaya: "otomatis" } }))}>
               <span className="block font-semibold">Otomatis</span>
-              <span className="mt-1 block text-sm text-[#5b6270]">Ada tombol jeda; berhenti setelah pengunjung menekan kontrol.</span>
+              <span className="mt-1 block text-sm text-[var(--muted)]">Ada tombol jeda; berhenti setelah pengunjung menekan kontrol.</span>
             </Pilihan>
           </div>
           {k.slideshow.gaya === "otomatis" && (
@@ -296,7 +283,7 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
 
       {/* ---------------- SUSUNAN ---------------- */}
       <section role="tabpanel" id="panel-susunan" aria-labelledby="tab-susunan" hidden={tab !== "susunan"}>
-        <p className="mb-3 text-sm text-[#5b6270]">
+        <p className="mb-3 text-sm text-[var(--muted)]">
           Seret untuk mengurutkan, atau gunakan tombol naik/turun. Isi widget selalu diambil dari modul sumber (berita, pengumuman, galeri, katalog…); melepas widget tidak menghapus data apa pun.
         </p>
         <ol className="space-y-2">
@@ -321,47 +308,47 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
                   setSeret(null);
                 }}
                 onDragEnd={() => setSeret(null)}
-                className={`rounded-[10px] border bg-white ${seret === i ? "border-[var(--tema-utama)] opacity-60" : "border-[#e3e5e8]"} ${w.tampil ? "" : "bg-[#f8f9fa]"}`}
+                className={`rounded-[10px] border bg-white ${seret === i ? "border-[var(--tema-utama)] opacity-60" : "border-[var(--line)]"} ${w.tampil ? "" : "bg-[var(--soft)]"}`}
               >
                 <div className="flex flex-wrap items-center gap-2 p-2.5">
-                  <span aria-hidden className={`grid h-9 w-6 place-items-center text-[#9aa1ab] ${def.wajib ? "invisible" : "cursor-grab"}`}>
+                  <span aria-hidden className={`grid h-9 w-6 place-items-center text-[var(--muted)] ${def.wajib ? "invisible" : "cursor-grab"}`}>
                     <GripVertical size={16} />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={`block font-semibold ${w.tampil ? "text-[#1f2328]" : "text-[#5b6270] line-through"}`}>
+                    <span className={`block font-semibold ${w.tampil ? "text-[var(--ink)]" : "text-[var(--muted)] line-through"}`}>
                       {i + 1}. {def.label}
                       {judulKhusus}
                     </span>
-                    <span className="block text-xs text-[#5b6270]">
+                    <span className="block text-xs text-[var(--muted)]">
                       Sumber: {def.sumber}
                       {!w.tampil && " · disembunyikan"}
                     </span>
                   </span>
                   <span className="flex items-center gap-1">
-                    <button type="button" disabled={def.wajib || i <= 1} onClick={() => ubah((x) => ({ ...x, beranda: pindahkan(x.beranda, i, i - 1) }))} aria-label={`Naikkan ${def.label}`} className="grid h-9 w-9 place-items-center rounded-md hover:bg-[#f2f3f5] disabled:opacity-30">
+                    <button type="button" disabled={def.wajib || i <= 1} onClick={() => ubah((x) => ({ ...x, beranda: pindahkan(x.beranda, i, i - 1) }))} aria-label={`Naikkan ${def.label}`} className="grid h-9 w-9 place-items-center rounded-md hover:bg-[var(--soft)] disabled:opacity-30">
                       <ArrowUp size={16} aria-hidden />
                     </button>
-                    <button type="button" disabled={def.wajib || i === k.beranda.length - 1} onClick={() => ubah((x) => ({ ...x, beranda: pindahkan(x.beranda, i, i + 1) }))} aria-label={`Turunkan ${def.label}`} className="grid h-9 w-9 place-items-center rounded-md hover:bg-[#f2f3f5] disabled:opacity-30">
+                    <button type="button" disabled={def.wajib || i === k.beranda.length - 1} onClick={() => ubah((x) => ({ ...x, beranda: pindahkan(x.beranda, i, i + 1) }))} aria-label={`Turunkan ${def.label}`} className="grid h-9 w-9 place-items-center rounded-md hover:bg-[var(--soft)] disabled:opacity-30">
                       <ArrowDown size={16} aria-hidden />
                     </button>
                     {!def.wajib && (
-                      <label className="ml-1 inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-md px-2 text-sm hover:bg-[#f2f3f5]">
+                      <label className="ml-1 inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-md px-2 text-sm hover:bg-[var(--soft)]">
                         <input type="checkbox" checked={w.tampil} onChange={(e) => ubahWidget(w.id, (x) => ({ ...x, tampil: e.target.checked }))} className="h-4 w-4 accent-[var(--tema-utama)]" />
                         Tampil
                       </label>
                     )}
-                    <button type="button" onClick={() => setBuka(terbuka ? null : w.id)} aria-expanded={terbuka} aria-controls={`atur-${w.id}`} className="min-h-9 rounded-md px-2.5 text-sm font-semibold text-[var(--tema-utama)] hover:bg-[#f2f3f5]">
+                    <button type="button" onClick={() => setBuka(terbuka ? null : w.id)} aria-expanded={terbuka} aria-controls={`atur-${w.id}`} className="min-h-9 rounded-md px-2.5 text-sm font-semibold text-[var(--tema-utama)] hover:bg-[var(--soft)]">
                       {terbuka ? "Tutup" : "Atur"}
                     </button>
                     {!def.wajib && (
-                      <button type="button" onClick={() => ubah((x) => ({ ...x, beranda: lepasWidget(x.beranda, w.id) }))} aria-label={`Lepas ${def.label} dari beranda (data tidak dihapus)`} className="grid h-9 w-9 place-items-center rounded-md text-[#5b6270] hover:bg-red-50 hover:text-red-800">
+                      <button type="button" onClick={() => ubah((x) => ({ ...x, beranda: lepasWidget(x.beranda, w.id) }))} aria-label={`Lepas ${def.label} dari beranda (data tidak dihapus)`} className="grid h-9 w-9 place-items-center rounded-md text-[var(--muted)] hover:bg-red-50 hover:text-red-800">
                         <Trash2 size={16} aria-hidden />
                       </button>
                     )}
                   </span>
                 </div>
                 {terbuka && (
-                  <div id={`atur-${w.id}`} className="grid gap-4 border-t border-[#eceef1] p-4 sm:grid-cols-2">
+                  <div id={`atur-${w.id}`} className="grid gap-4 border-t border-[var(--line)] p-4 sm:grid-cols-2">
                     {BIDANG[w.jenis].map((b) => {
                       const id = `${w.id}-${b.k}`;
                       const nilai = w.pengaturan[b.k];
@@ -391,13 +378,13 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
                           ) : (
                             <>
                               <input id={id} type="text" maxLength={b.maks} value={String(nilai ?? "")} onChange={(e) => set(e.target.value)} className={`${kelasInput} mt-1`} />
-                              {b.bantuan && <span className="mt-1 block text-xs font-normal text-[#5b6270]">{b.bantuan}</span>}
+                              {b.bantuan && <span className="mt-1 block text-xs font-normal text-[var(--muted)]">{b.bantuan}</span>}
                             </>
                           )}
                         </label>
                       );
                     })}
-                    <p className="text-xs text-[#5b6270] sm:col-span-2">Bila data kosong: {def.kosong}</p>
+                    <p className="text-xs text-[var(--muted)] sm:col-span-2">Bila data kosong: {def.kosong}</p>
                   </div>
                 )}
               </li>
@@ -429,27 +416,27 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
             set: (v: boolean) => ubah((x) => ({ ...x, pemandu: { aktif: v } })),
           },
         ].map((o) => (
-          <label key={o.label} className="flex cursor-pointer gap-3 rounded-[10px] border border-[#e3e5e8] bg-white p-4">
+          <label key={o.label} className="flex cursor-pointer gap-3 rounded-[10px] border border-[var(--line)] bg-white p-4">
             <input type="checkbox" checked={o.nilai} onChange={(e) => o.set(e.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-[var(--tema-utama)]" />
             <span>
               <span className="block font-semibold">{o.label}</span>
-              <span className="mt-0.5 block text-sm text-[#5b6270]">{o.teks}</span>
+              <span className="mt-0.5 block text-sm text-[var(--muted)]">{o.teks}</span>
             </span>
           </label>
         ))}
-        <p className="text-sm text-[#5b6270]">Ketiganya diatur satu pengatur sehingga tidak pernah tampil bersamaan. Tanpa data, tidak ada popup yang muncul.</p>
+        <p className="text-sm text-[var(--muted)]">Ketiganya diatur satu pengatur sehingga tidak pernah tampil bersamaan. Tanpa data, tidak ada popup yang muncul.</p>
       </section>
 
       {/* ---------------- RIWAYAT ---------------- */}
       <section role="tabpanel" id="panel-riwayat" aria-labelledby="tab-riwayat" hidden={tab !== "riwayat"}>
-        <p className="mb-3 text-sm text-[#5b6270]">
+        <p className="mb-3 text-sm text-[var(--muted)]">
           Setiap kali diterapkan, konfigurasi dicatat di sini. Memulihkan menyalin versi itu ke draf — periksa pratinjau, lalu Terapkan.{" "}
           <a href="/pratinjau/tampilan?versi=terbit" target="_blank" rel="noopener" className="font-semibold underline">
             Lihat versi yang sedang tayang
           </a>
         </p>
         {riwayat.length ? (
-          <ul className="divide-y divide-[#eceef1] rounded-[10px] border border-[#e3e5e8] bg-white">
+          <ul className="divide-y divide-[var(--line)] rounded-[10px] border border-[var(--line)] bg-white">
             {riwayat.map((r, i) => (
               <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
                 <span className="min-w-0">
@@ -457,25 +444,25 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
                     {r.waktu}
                     {i === 0 && <span className="ml-2 rounded bg-emerald-50 px-1.5 text-xs text-emerald-800">sedang tayang</span>}
                   </span>
-                  <span className="block text-sm text-[#5b6270]">
+                  <span className="block text-sm text-[var(--muted)]">
                     {r.catatan || "Tanpa catatan"} · {r.oleh}
                   </span>
                 </span>
-                <button type="button" disabled={proses} onClick={() => pulihkan(r.id)} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[#d9dce1] px-3 text-sm font-semibold hover:border-[#9aa1ab] disabled:opacity-50">
+                <button type="button" disabled={proses} onClick={() => pulihkan(r.id)} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-[var(--line)] px-3 text-sm font-semibold hover:border-[var(--muted)] disabled:opacity-50">
                   <RotateCcw size={15} aria-hidden /> Pulihkan ke draf
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="rounded-[10px] border border-dashed border-[#d9dce1] bg-white px-4 py-3 text-sm text-[#3b414b]">Belum ada versi yang diterapkan. Tampilan saat ini memakai pengaturan bawaan.</p>
+          <p className="rounded-[10px] border border-dashed border-[var(--line)] bg-white px-4 py-3 text-sm text-[var(--muted)]">Belum ada versi yang diterapkan. Tampilan saat ini memakai pengaturan bawaan.</p>
         )}
       </section>
 
       {/* ---------------- TERAPKAN ---------------- */}
-      <div className="mt-8 rounded-[10px] border border-[#e3e5e8] bg-white p-4">
+      <div className="mt-8 rounded-[10px] border border-[var(--line)] bg-white p-4">
         <h2 className="font-semibold">Terapkan ke website</h2>
-        <p className="mt-1 text-sm text-[#5b6270]">Draf disimpan otomatis lalu diterbitkan. Versi sebelumnya tetap bisa dipulihkan dari Riwayat.</p>
+        <p className="mt-1 text-sm text-[var(--muted)]">Draf disimpan otomatis lalu diterbitkan. Versi sebelumnya tetap bisa dipulihkan dari Riwayat.</p>
         <div className="mt-3 flex flex-wrap items-end gap-3">
           <label className="min-w-[220px] flex-1 text-sm font-semibold">
             Catatan perubahan (opsional)
@@ -495,7 +482,7 @@ export function EditorTampilan({ draf, terbit, riwayat, siap }: { draf: Konfigur
 function TambahWidget({ daftar, onTambah }: { daftar: WidgetInstans[]; onTambah: (j: JenisWidget) => void }) {
   const tersedia = JENIS_WIDGET.filter((j) => bolehTambah(daftar, j));
   const [pilih, setPilih] = useState<JenisWidget | "">("");
-  if (!tersedia.length) return <p className="mt-4 text-sm text-[#5b6270]">Semua widget sudah ada di beranda.</p>;
+  if (!tersedia.length) return <p className="mt-4 text-sm text-[var(--muted)]">Semua widget sudah ada di beranda.</p>;
   return (
     <div className="mt-4 flex flex-wrap items-end gap-2">
       <label className="text-sm font-semibold">
@@ -517,7 +504,7 @@ function TambahWidget({ daftar, onTambah }: { daftar: WidgetInstans[]; onTambah:
           if (pilih) onTambah(pilih);
           setPilih("");
         }}
-        className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[#1f2328] bg-white px-3 text-sm font-semibold disabled:opacity-50"
+        className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[var(--ink)] bg-white px-3 text-sm font-semibold disabled:opacity-50"
       >
         <Plus size={16} aria-hidden /> Tambah
       </button>
@@ -544,21 +531,21 @@ function PratinjauPerangkat({ alat, stamp, onAlat, onTutup }: { alat: "desktop" 
     return () => ro.disconnect();
   }, [lebar]);
   return (
-    <dialog ref={ref} onClose={onTutup} aria-label="Pratinjau tampilan" className="m-0 h-dvh max-h-none w-screen max-w-none bg-[#e9ebef] p-0 backdrop:bg-black/40">
+    <dialog ref={ref} onClose={onTutup} aria-label="Pratinjau tampilan" className="m-0 h-dvh max-h-none w-screen max-w-none bg-[var(--line)] p-0 backdrop:bg-black/40">
       <div className="flex h-full flex-col">
-        <div className="flex flex-wrap items-center gap-2 border-b border-[#d9dce1] bg-white px-4 py-2">
-          <Eye size={18} aria-hidden className="text-[#5b6270]" />
+        <div className="flex flex-wrap items-center gap-2 border-b border-[var(--line)] bg-white px-4 py-2">
+          <Eye size={18} aria-hidden className="text-[var(--muted)]" />
           <p className="mr-auto text-sm font-semibold">Pratinjau draf · {alat === "desktop" ? "Desktop 1280px" : "Ponsel 390px"}</p>
-          <button type="button" onClick={() => onAlat("desktop")} aria-pressed={alat === "desktop"} className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold aria-pressed:bg-[#eceef1]">
+          <button type="button" onClick={() => onAlat("desktop")} aria-pressed={alat === "desktop"} className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold aria-pressed:bg-[var(--line)]">
             <Monitor size={16} aria-hidden /> Desktop
           </button>
-          <button type="button" onClick={() => onAlat("ponsel")} aria-pressed={alat === "ponsel"} className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold aria-pressed:bg-[#eceef1]">
+          <button type="button" onClick={() => onAlat("ponsel")} aria-pressed={alat === "ponsel"} className="inline-flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-sm font-semibold aria-pressed:bg-[var(--line)]">
             <Smartphone size={16} aria-hidden /> Ponsel
           </button>
           <a href="/pratinjau/tampilan" target="_blank" rel="noopener" className="min-h-9 rounded-md px-2.5 py-2 text-sm font-semibold underline">
             Buka di tab baru
           </a>
-          <button type="button" onClick={() => ref.current?.close()} aria-label="Tutup pratinjau" className="grid h-9 w-9 place-items-center rounded-md hover:bg-[#f2f3f5]">
+          <button type="button" onClick={() => ref.current?.close()} aria-label="Tutup pratinjau" className="grid h-9 w-9 place-items-center rounded-md hover:bg-[var(--soft)]">
             <X size={18} aria-hidden />
           </button>
         </div>
@@ -569,7 +556,7 @@ function PratinjauPerangkat({ alat, stamp, onAlat, onTutup }: { alat: "desktop" 
               title="Pratinjau beranda (draf)"
               src={`/pratinjau/tampilan?t=${stamp}`}
               style={{ width: lebar, height: `calc((100dvh - 80px) / ${skala})`, transform: `scale(${skala})`, transformOrigin: "0 0" }}
-              className="rounded-md border border-[#d9dce1] bg-white"
+              className="rounded-md border border-[var(--line)] bg-white"
             />
           </div>
         </div>

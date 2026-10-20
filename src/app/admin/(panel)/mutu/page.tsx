@@ -30,10 +30,10 @@ export default async function Mutu({ searchParams }: { searchParams: Promise<{ k
   return (
     <>
       <JudulHalaman judul="Mutu & Akreditasi" deskripsi="Membantu mengumpulkan bukti dan evaluasi diri. Angka di sini adalah kelengkapan data — bukan pernyataan kepatuhan; penilaian tetap oleh tim & asesor."
-        aksi={kelola ? <Link href="?baru=1" className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">+ Kerangka</Link> : undefined} />
+        aksi={kelola ? <Link href="?baru=1" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">+ Kerangka</Link> : undefined} />
       <NavMutu />
       <Notifikasi kode={sp.pesan} />
-      {kelola && sp.baru && <Kartu className="mb-6 max-w-3xl"><h2 className="mb-4 font-serif text-2xl">Kerangka baru</h2><FormKerangka /></Kartu>}
+      {kelola && sp.baru && <Kartu className="mb-6 max-w-3xl"><h2 className="mb-4 text-2xl">Kerangka baru</h2><FormKerangka /></Kartu>}
       {!kini ? <Kartu><p className="text-black/50">Belum ada kerangka mutu. {kelola ? "Buat kerangka (mis. IASP 2024) lalu isi standar & indikatornya." : "Hubungi tim penjaminan mutu."}</p></Kartu> : (
         <>
           <form className="mb-5 flex flex-wrap items-end gap-2 text-sm">
@@ -49,11 +49,11 @@ export default async function Mutu({ searchParams }: { searchParams: Promise<{ k
           <p className="mb-4 text-sm text-black/60"><strong>{kini.nama}</strong> · versi {kini.versi}{kini.sumber_regulasi && ` · ${kini.sumber_regulasi}`}</p>
           <ul className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
             {[["Indikator", String(n)], ["Sudah dievaluasi", `${persen(dinilai, n)}%`], ["Punya bukti", `${persen(berbukti, n)}%`], ["Disetujui", `${persen(setuju, n)}%`], ["Temuan terbuka", String(temuan)]].map(([l, v]) => (
-              <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="font-serif text-3xl tabular-nums">{v}</p><p className="text-sm text-black/60">{l}</p></li>))}
+              <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className="text-3xl tabular-nums">{v}</p><p className="text-sm text-black/60">{l}</p></li>))}
           </ul>
           <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
             <Kartu>
-              <div className="mb-3 flex flex-wrap items-center gap-2"><h2 className="flex-1 font-serif text-2xl">Indikator{sp.celah && ` — ${CELAH[sp.celah]}`}</h2>{sp.celah && <Link href={q({})} className="text-sm underline">Semua</Link>}</div>
+              <div className="mb-3 flex flex-wrap items-center gap-2"><h2 className="flex-1 text-2xl">Indikator{sp.celah && ` — ${CELAH[sp.celah]}`}</h2>{sp.celah && <Link href={q({})} className="text-sm underline">Semua</Link>}</div>
               {standar.map(([sid, s]) => {
                 const isi = tampil.filter((b) => b.standar_id === sid);
                 if (!isi.length) return null;
@@ -75,7 +75,7 @@ export default async function Mutu({ searchParams }: { searchParams: Promise<{ k
               {n === 0 && <p className="text-sm text-black/50">Kerangka ini belum punya indikator.</p>}
             </Kartu>
             <Kartu className="self-start">
-              <h2 className="mb-3 font-serif text-xl">Analisis kesenjangan</h2>
+              <h2 className="mb-3 text-xl">Analisis kesenjangan</h2>
               {hitungCelah.length === 0 ? <p className="text-sm text-emerald-700">Tidak ada celah kelengkapan terdeteksi untuk periode ini.</p> : (
                 <ul className="space-y-1 text-sm">{hitungCelah.map(([c, v]) => (
                   <li key={c}><Link href={q({ celah: c })} className={`flex justify-between rounded-lg px-2 py-1 hover:bg-black/5 ${sp.celah === c ? "bg-black/5 font-semibold" : ""}`}><span>{CELAH[c]}</span><span className="tabular-nums">{v}</span></Link></li>))}</ul>

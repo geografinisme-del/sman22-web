@@ -40,8 +40,8 @@ export default async function Pengajuan({ searchParams }: { searchParams: Promis
       />
       <Notifikasi kode={sp.pesan} />
       <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/absensi/pengajuan" className={`rounded-full px-4 py-2 ${!riwayat ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Menunggu</a>
-        <a href="/admin/absensi/pengajuan?lihat=riwayat" className={`rounded-full px-4 py-2 ${riwayat ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Riwayat (arsip)</a>
+        <a href="/admin/absensi/pengajuan" className={`rounded-full px-4 py-2 ${!riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Menunggu</a>
+        <a href="/admin/absensi/pengajuan?lihat=riwayat" className={`rounded-full px-4 py-2 ${riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Riwayat (arsip)</a>
       </nav>
       {list.length === 0 ? (
         <KosongAdmin teks={riwayat ? "Belum ada riwayat pengajuan." : "Tidak ada pengajuan yang menunggu."} />
@@ -57,7 +57,7 @@ export default async function Pengajuan({ searchParams }: { searchParams: Promis
                   </p>
                   <p className="mt-2 text-sm text-black/70">“{p.alasan}”</p>
                   {p.bukti_path && (
-                    <a href={`/berkas/koreksi/${p.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-brand-700 underline">
+                    <a href={`/berkas/koreksi/${p.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-blue-teks underline">
                       Lihat bukti ↗
                     </a>
                   )}
@@ -73,7 +73,7 @@ export default async function Pengajuan({ searchParams }: { searchParams: Promis
                       <input name="catatan" placeholder="Catatan (opsional)" maxLength={300} aria-label="Catatan keputusan" className="rounded-xl border border-black/15 px-3 py-2 text-sm" />
                       <div className="flex gap-2">
                         <button name="keputusan" value="setuju" className="flex-1 rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800">Setujui</button>
-                        <button name="keputusan" value="tolak" className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-merah ring-1 ring-red-200 hover:bg-red-50">Tolak</button>
+                        <button name="keputusan" value="tolak" className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-red-200 hover:bg-red-50">Tolak</button>
                       </div>
                     </form>
                   ) : (

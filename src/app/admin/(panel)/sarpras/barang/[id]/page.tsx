@@ -54,19 +54,19 @@ export default async function DetailBarang({ params, searchParams }: { params: P
             {b.keterangan && <p className="mt-2 text-sm text-black/60">{b.keterangan}</p>}
             {!b.deleted_at && (
               <div className="mt-4 flex flex-wrap gap-2 border-t border-black/5 pt-4 text-sm font-semibold">
-                {b.bisa_dipinjam && <Link href={`/admin/sarpras/peminjaman?objek=barang:${b.id}#form`} className="rounded-full bg-brand-900 px-4 py-2 text-white">Pinjam</Link>}
+                {b.bisa_dipinjam && <Link href={`/admin/sarpras/peminjaman?objek=barang:${b.id}#form`} className="rounded-full bg-ink px-4 py-2 text-white">Pinjam</Link>}
                 <Link href={`/admin/sarpras/kerusakan?objek=barang:${b.id}#form`} className="rounded-full px-4 py-2 ring-1 ring-black/15">Laporkan kerusakan</Link>
               </div>
             )}
           </Kartu>
           <Kartu>
-            <h2 className="mb-2 font-serif text-xl">Riwayat kerusakan & perbaikan</h2>
+            <h2 className="mb-2 text-xl">Riwayat kerusakan & perbaikan</h2>
             {(rusak ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
               <ul className="divide-y divide-black/5 text-sm">{(rusak ?? []).map((r) => (
                 <li key={r.id} className="flex flex-wrap gap-2 py-2"><Lencana s={r.status} peta={STATUS_RUSAK} /><span className="flex-1">{r.judul}{r.penanganan && <span className="block text-black/60">{r.penanganan}</span>}</span>
                   <span className="text-black/50">{waktuWIB(r.created_at)}{r.biaya != null && ` · ${rupiah(r.biaya)}`}</span></li>))}</ul>
             )}
-            <h2 className="mb-2 mt-6 font-serif text-xl">Riwayat peminjaman</h2>
+            <h2 className="mb-2 mt-6 text-xl">Riwayat peminjaman</h2>
             {(pinjam ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
               <ul className="divide-y divide-black/5 text-sm">{(pinjam ?? []).map((r) => (
                 <li key={r.id} className="flex flex-wrap gap-2 py-2"><Lencana s={r.status} peta={STATUS_PINJAM} /><span className="flex-1">{r.keperluan}</span><span className="text-black/50">{waktuWIB(r.mulai)}</span></li>))}</ul>
@@ -79,13 +79,13 @@ export default async function DetailBarang({ params, searchParams }: { params: P
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={qr} alt={`QR ${b.kode}`} className="mx-auto h-44 w-44" />
               <p className="mt-2 font-mono text-xs">{b.kode}</p>
-              <Link href={`/admin/sarpras/label?id=${b.id}`} className="mt-2 inline-block text-sm font-semibold text-brand-700 underline">Cetak label</Link>
+              <Link href={`/admin/sarpras/label?id=${b.id}`} className="mt-2 inline-block text-sm font-semibold text-blue-teks underline">Cetak label</Link>
             </Kartu>
             {!b.deleted_at && (
               <>
-                <Kartu><h2 className="mb-4 font-serif text-2xl">Ubah data</h2>
+                <Kartu><h2 className="mb-4 text-2xl">Ubah data</h2>
                   <FormBarang data={b as unknown as DataBarang} kategori={(kategori ?? []) as { id: string; nama: string }[]} ruang={(ruang ?? []) as { id: string; nama: string }[]} /></Kartu>
-                <Kartu><h2 className="mb-3 font-serif text-xl">Penghapusan aset</h2><FormHapusBarang id={b.id} /></Kartu>
+                <Kartu><h2 className="mb-3 text-xl">Penghapusan aset</h2><FormHapusBarang id={b.id} /></Kartu>
               </>
             )}
           </div>

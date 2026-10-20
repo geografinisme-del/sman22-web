@@ -35,7 +35,7 @@ export default async function Struktur({ searchParams }: { searchParams: Promise
       <Notifikasi kode={sp.pesan} />
       <div className="mb-4 flex gap-2" role="tablist">
         {TINGKAT.map((t) => (
-          <Link key={t} href={`?tingkat=${t}`} role="tab" aria-selected={t === tingkat} className={`rounded-full px-5 py-2 text-sm font-semibold ${t === tingkat ? "bg-brand-900 text-white" : "bg-white ring-1 ring-black/10"}`}>
+          <Link key={t} href={`?tingkat=${t}`} role="tab" aria-selected={t === tingkat} className={`rounded-full px-5 py-2 text-sm font-semibold ${t === tingkat ? "bg-ink text-white" : "bg-white ring-1 ring-black/10"}`}>
             Kelas {t} <span className="font-normal opacity-70">· fase {faseTingkat(t)}</span>
           </Link>
         ))}
@@ -56,7 +56,7 @@ export default async function Struktur({ searchParams }: { searchParams: Promise
                   {kelola && (
                     <td className={`${kelasTd} text-right`}>
                       <form action={hapusStruktur}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="tingkat" value={tingkat} />
-                        <button className="text-xs font-semibold text-merah underline">Hapus</button></form>
+                        <button className="text-xs font-semibold text-blue-teks underline">Hapus</button></form>
                     </td>
                   )}
                 </tr>
@@ -73,18 +73,18 @@ export default async function Struktur({ searchParams }: { searchParams: Promise
         {kelola && (
           <div className="space-y-6">
             <Kartu>
-              <h2 className="mb-4 font-serif text-2xl">Tambah / ubah mapel kelas {tingkat}</h2>
+              <h2 className="mb-4 text-2xl">Tambah / ubah mapel kelas {tingkat}</h2>
               <FormStruktur key={tingkat} tingkat={tingkat} mapel={(mapel ?? []) as { id: string; nama: string }[]} />
               <p className="mt-3 text-xs text-black/50">Memilih mapel yang sudah ada akan memperbarui JP-nya. Mapel baru ditambahkan di Jadwal → Mapel, jam & piket.</p>
             </Kartu>
             {(semuaTa ?? []).length > 0 && semua.length === 0 && (
               <Kartu>
-                <h2 className="mb-2 font-serif text-xl">Salin dari tahun lalu</h2>
+                <h2 className="mb-2 text-xl">Salin dari tahun lalu</h2>
                 <form action={salinStruktur} className="flex gap-2">
                   <select name="dari" className="flex-1 rounded-xl border border-black/15 bg-white px-3 py-2" aria-label="Tahun ajaran sumber">
                     {(semuaTa ?? []).map((t) => <option key={t.id} value={t.id}>{t.nama}</option>)}
                   </select>
-                  <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Salin</button>
+                  <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Salin</button>
                 </form>
               </Kartu>
             )}
@@ -94,7 +94,7 @@ export default async function Struktur({ searchParams }: { searchParams: Promise
 
       {(kelola || punya(akses, "jadwal.kelola")) && (
         <section className="mt-10">
-          <h2 className="mb-1 font-serif text-3xl">Kesesuaian dengan penugasan mengajar</h2>
+          <h2 className="mb-1 text-3xl">Kesesuaian dengan penugasan mengajar</h2>
           <p className="mb-3 text-sm text-black/60">Membandingkan struktur di atas dengan penugasan guru per kelas (menu Jadwal → Penugasan).</p>
           {masalah.length === 0 ? (
             <p className="rounded-2xl bg-emerald-50 px-5 py-4 text-sm text-emerald-900 ring-1 ring-emerald-200">Semua kelas sudah sesuai struktur kurikulum.</p>

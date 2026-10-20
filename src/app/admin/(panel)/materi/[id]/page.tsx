@@ -26,7 +26,7 @@ export default async function UbahMateri({ params, searchParams }: { params: Pro
     <>
       <JudulHalaman judul={m.judul} deskripsi={(m.mapel as unknown as { nama: string } | null)?.nama}
         aksi={<div className="flex gap-2"><TombolLink href="/admin/materi" sekunder>← Semua materi</TombolLink>
-          <form action={arsipMateri}><input type="hidden" name="id" value={m.id} /><button className="rounded-full px-4 py-2.5 text-sm font-semibold text-merah ring-1 ring-merah/30">Arsipkan</button></form></div>} />
+          <form action={arsipMateri}><input type="hidden" name="id" value={m.id} /><button className="rounded-full px-4 py-2.5 text-sm font-semibold text-blue-teks ring-1 ring-blue/30">Arsipkan</button></form></div>} />
       <Notifikasi kode={sp.pesan} />
       <EditorMateri
         aiAktif={aiAktif()}

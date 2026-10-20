@@ -28,7 +28,7 @@ export default async function Label({ searchParams }: { searchParams: Promise<{ 
         <form className="mb-6 flex flex-wrap gap-2 text-sm">
           <select name="ruang" defaultValue={sp.ruang ?? ""} className="rounded-full border border-black/15 bg-white px-3 py-2" aria-label="Ruang"><option value="">Semua lokasi</option>{(ruang ?? []).map((r) => <option key={r.id} value={r.id}>{r.nama}</option>)}</select>
           <select name="kategori" defaultValue={sp.kategori ?? ""} className="rounded-full border border-black/15 bg-white px-3 py-2" aria-label="Kategori"><option value="">Semua kategori</option>{(kategori ?? []).map((r) => <option key={r.id} value={r.id}>{r.nama}</option>)}</select>
-          <button className="rounded-full bg-brand-900 px-4 py-2 font-semibold text-white">Tampilkan</button>
+          <button className="rounded-full bg-ink px-4 py-2 font-semibold text-white">Tampilkan</button>
           <span className="self-center text-black/50">{label.length} label (maks. 120 per cetak)</span>
         </form>
       </div>

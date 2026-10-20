@@ -35,19 +35,19 @@ export default async function Kemitraan({ searchParams }: { searchParams: Promis
               <Kartu key={m.id} className={segera ? "ring-amber-300" : habis ? "opacity-70" : ""}>
                 <div className="flex flex-wrap items-start gap-3">
                   <div className="flex-1">
-                    <p className="font-semibold"><a href={`/admin/kemitraan/${m.id}`} className="hover:underline">{m.mitra}</a> <span className="ml-1 rounded bg-krem px-1.5 text-xs font-medium">{JENIS_MITRA[m.jenis as keyof typeof JENIS_MITRA]}</span>{m.tampil_publik && <span className="ml-1 rounded bg-emerald-50 px-1.5 text-xs text-emerald-800">di website</span>}</p>
+                    <p className="font-semibold"><a href={`/admin/kemitraan/${m.id}`} className="hover:underline">{m.mitra}</a> <span className="ml-1 rounded bg-soft px-1.5 text-xs font-medium">{JENIS_MITRA[m.jenis as keyof typeof JENIS_MITRA]}</span>{m.tampil_publik && <span className="ml-1 rounded bg-emerald-50 px-1.5 text-xs text-emerald-800">di website</span>}</p>
                     {m.ruang_lingkup && <p className="mt-1 text-sm text-black/70">{m.ruang_lingkup}</p>}
                     <p className="mt-1 text-xs text-black/50">
                       {m.nomor_dokumen || "tanpa nomor"} · {m.mulai ? tgl(m.mulai) : "?"} – {m.berakhir ? tgl(m.berakhir) : "tanpa batas"}
                       {m.pic_id && ` · PIC ${nama.get(m.pic_id) ?? "—"}`}{m.kontak_mitra && ` · ${m.kontak_mitra}`}
                     </p>
                     {segera && <p className="mt-1 text-sm font-semibold text-amber-800">Segera berakhir — siapkan perpanjangan.</p>}
-                    {habis && <p className="mt-1 text-sm font-semibold text-merah">Sudah berakhir.</p>}
+                    {habis && <p className="mt-1 text-sm font-semibold text-blue-teks">Sudah berakhir.</p>}
                   </div>
                   <div className="flex gap-2 text-sm">
                     {m.tautan_dokumen && <a href={m.tautan_dokumen} target="_blank" rel="noreferrer" className="rounded-full px-3 py-1.5 font-semibold ring-1 ring-black/15">Dokumen ↗</a>}
                     <a href={`/admin/kemitraan/${m.id}`} className="rounded-full px-3 py-1.5 font-semibold ring-1 ring-black/15">{kelola ? "Detail & ubah" : "Detail"}</a>
-                    {kelola && <form action={arsipKemitraan}><input type="hidden" name="id" value={m.id} /><button className="rounded-full px-3 py-1.5 font-semibold text-merah ring-1 ring-merah/30">Arsipkan</button></form>}
+                    {kelola && <form action={arsipKemitraan}><input type="hidden" name="id" value={m.id} /><button className="rounded-full px-3 py-1.5 font-semibold text-blue-teks ring-1 ring-blue/30">Arsipkan</button></form>}
                   </div>
                 </div>
               </Kartu>
@@ -56,7 +56,7 @@ export default async function Kemitraan({ searchParams }: { searchParams: Promis
         </div>
         {kelola && (
           <Kartu className="self-start">
-            <h2 className="mb-4 font-serif text-2xl">Tambah kemitraan</h2>
+            <h2 className="mb-4 text-2xl">Tambah kemitraan</h2>
             <FormMitra guru={guru} />
           </Kartu>
         )}

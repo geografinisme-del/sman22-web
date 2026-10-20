@@ -38,8 +38,8 @@ export default async function IzinOrtu({ searchParams }: { searchParams: Promise
       />
       <Notifikasi kode={sp.pesan} />
       <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/izin-ortu" className={`rounded-full px-4 py-2 ${!riwayat ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Menunggu</a>
-        <a href="/admin/izin-ortu?lihat=riwayat" className={`rounded-full px-4 py-2 ${riwayat ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>Riwayat</a>
+        <a href="/admin/izin-ortu" className={`rounded-full px-4 py-2 ${!riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Menunggu</a>
+        <a href="/admin/izin-ortu?lihat=riwayat" className={`rounded-full px-4 py-2 ${riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Riwayat</a>
       </nav>
       {list.length === 0 ? (
         <KosongAdmin teks={riwayat ? "Belum ada riwayat." : "Tidak ada pemberitahuan yang menunggu."} />
@@ -62,7 +62,7 @@ export default async function IzinOrtu({ searchParams }: { searchParams: Promise
                   </p>
                   <p className="mt-2 text-sm text-black/70">“{z.alasan}”</p>
                   {z.bukti_path && (
-                    <a href={`/berkas/izin-ortu/${z.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-brand-700 underline">Lihat surat/bukti ↗</a>
+                    <a href={`/berkas/izin-ortu/${z.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-blue-teks underline">Lihat surat/bukti ↗</a>
                   )}
                   <p className="mt-1 text-xs text-black/40">
                     Dikirim {new Date(z.diajukan_pada).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" })}
@@ -75,7 +75,7 @@ export default async function IzinOrtu({ searchParams }: { searchParams: Promise
                     <input name="catatan" placeholder="Catatan untuk orang tua (opsional)" maxLength={300} aria-label="Catatan" className="rounded-xl border border-black/15 px-3 py-2 text-sm" />
                     <div className="flex gap-2">
                       <button name="keputusan" value="terima" className="flex-1 rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800">Terima</button>
-                      <button name="keputusan" value="tolak" className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-merah ring-1 ring-red-200 hover:bg-red-50">Tolak</button>
+                      <button name="keputusan" value="tolak" className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-red-200 hover:bg-red-50">Tolak</button>
                     </div>
                   </form>
                 ) : (

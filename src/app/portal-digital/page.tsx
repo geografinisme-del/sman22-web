@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, LogOut } from "lucide-react";
 import { MediaSlot } from "@/components/MediaSlot";
+import { PageHero, SectionHeading } from "@/components/langit/Komponen";
 import { getAkses, labelPeran } from "@/lib/admin/auth";
 import { BIDANG, type KunciBidang } from "@/lib/bidang";
 import { getPortalBidang, type PenanggungJawab } from "@/lib/data";
@@ -65,19 +66,17 @@ export default async function PortalDigital() {
 
   return (
     <>
-      <section className="pd-pembuka" aria-labelledby="judul-pd">
-        <div className="pd-wadah">
-          <p className="pd-label">Satu akun untuk semua layanan</p>
-          <h1 id="judul-pd">Portal Digital 22</h1>
-          <p className="pd-ket">Pintu masuk layanan digital SMA Negeri 22 Bandung: ruang kerja guru dan manajemen, portal siswa dan orang tua, serta E-Library.</p>
+      <PageHero judul="Portal Digital 22" label="Satu akun untuk semua layanan" deskripsi="Pintu masuk layanan digital SMA Negeri 22 Bandung: ruang kerja guru dan manajemen, portal siswa dan orang tua, serta E-Library." />
+      <section className="lgt-bagian" aria-labelledby="judul-peran">
+        <div className="lgt-wadah">
           {user && (
             <div className="pd-akun" role="status">
               <span>
                 Masuk sebagai <strong>{akses?.nama || user.email}</strong>
-                {akses?.peran.length ? <span className="text-[var(--color-ink-muted)]"> · {labelPeran(akses.peran)}</span> : null}
+                {akses?.peran.length ? <span className="text-[var(--muted)]"> · {labelPeran(akses.peran)}</span> : null}
               </span>
-              <Link href={hanyaPortal ? "/portal" : "/admin/mulai"} className="font-bold text-[var(--color-brand)] underline underline-offset-4">
-                Ruang kerja saya
+              <Link href={hanyaPortal ? "/portal" : "/admin/mulai"} className="lgt-tautan-panah">
+                Ruang kerja saya <span aria-hidden>→</span>
               </Link>
               <form action={keluar} className="ml-auto">
                 <button type="submit" className="inline-flex min-h-9 items-center gap-1.5 text-sm font-bold hover:underline">
@@ -87,8 +86,8 @@ export default async function PortalDigital() {
             </div>
           )}
 
-          <h2 className="pd-label pd-sub">Masuk sesuai peran Anda</h2>
-          <ul className="pd-peran">
+          <SectionHeading id="judul-peran" label="Masuk sesuai peran" judul="Pilih pintu Anda." />
+          <ul className="pd-peran mt-8">
             {dari("warga").map((p) => {
               const b = BIDANG[p.bidang];
               const f = FOTO_PERAN[p.bidang];
@@ -114,19 +113,18 @@ export default async function PortalDigital() {
       </section>
 
       {manajemen.length > 0 && (
-        <section className="pd-band" aria-labelledby="judul-manajemen">
-          <div className="pd-wadah">
-            <h2 id="judul-manajemen">{GRUP.manajemen.judul}</h2>
-            <p className="pd-band-ket">{GRUP.manajemen.keterangan}</p>
+        <section className="lgt-bagian lgt-bagian-soft" aria-labelledby="judul-manajemen">
+          <div className="lgt-wadah">
+            <SectionHeading id="judul-manajemen" label="Ruang kerja" judul={GRUP.manajemen.judul} teks={GRUP.manajemen.keterangan} />
             <ul className="pd-daftar">{manajemen.map((p) => baris(p, pj[p.bidang]))}</ul>
           </div>
         </section>
       )}
 
       {umum.length > 0 && (
-        <section className="pd-umum" aria-labelledby="judul-umum">
-          <div className="pd-wadah">
-            <h2 id="judul-umum">Terbuka untuk umum</h2>
+        <section className="lgt-bagian" aria-labelledby="judul-umum">
+          <div className="lgt-wadah">
+            <SectionHeading id="judul-umum" label="Layanan publik" judul="Terbuka untuk umum." />
             <ul className="pd-daftar">
               {umum.map((p) => {
                 const b = BIDANG[p.bidang];
@@ -146,6 +144,7 @@ export default async function PortalDigital() {
           </div>
         </section>
       )}
+      <p className="lgt-wadah pb-12 text-sm text-[var(--muted)]">Hak akses setiap bidang diatur oleh admin sekolah. Memilih layanan tidak menambah hak akses.</p>
     </>
   );
 }

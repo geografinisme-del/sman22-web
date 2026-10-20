@@ -22,11 +22,11 @@ export default async function PersetujuanTukar({ searchParams }: { searchParams:
       <Notifikasi kode={sp.pesan} />
       {sp.galat && <p role="alert" className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200">{sp.galat}</p>}
       <Kartu className="mb-6">
-        <h2 className="mb-3 font-serif text-2xl">Menunggu keputusan ({menunggu.length})</h2>
+        <h2 className="mb-3 text-2xl">Menunggu keputusan ({menunggu.length})</h2>
         {menunggu.length === 0 ? <p className="text-sm text-black/50">Tidak ada pengajuan yang menunggu.</p> : (
           <ul className="space-y-4">
             {menunggu.map((t) => (
-              <li key={t.id} className="rounded-xl bg-krem p-4 text-sm">
+              <li key={t.id} className="rounded-xl bg-soft p-4 text-sm">
                 <p className="font-semibold">{t.pemohon} ⇄ {t.mitra} {t.slotMitra ? "(tukar jam)" : "(digantikan)"}</p>
                 <p><span className="text-black/50">{t.mitra} mengisi:</span> {t.slotPemohon}</p>
                 {t.slotMitra && <p><span className="text-black/50">{t.pemohon} mengisi:</span> {t.slotMitra}</p>}
@@ -34,8 +34,8 @@ export default async function PersetujuanTukar({ searchParams }: { searchParams:
                 <form action={putuskanTukar} className="mt-3 flex flex-wrap items-end gap-2">
                   <input type="hidden" name="id" value={t.id} />
                   <input name="catatan" maxLength={300} placeholder="Catatan (wajib bila ditolak)" aria-label="Catatan" className="min-w-48 flex-1 rounded-xl border border-black/15 bg-white px-3 py-2" />
-                  <button name="keputusan" value="setuju" className="rounded-full bg-brand-900 px-4 py-2 font-semibold text-white">Setujui</button>
-                  <button name="keputusan" value="tolak" className="rounded-full px-4 py-2 font-semibold text-merah ring-1 ring-merah/30">Tolak</button>
+                  <button name="keputusan" value="setuju" className="rounded-full bg-ink px-4 py-2 font-semibold text-white">Setujui</button>
+                  <button name="keputusan" value="tolak" className="rounded-full px-4 py-2 font-semibold text-blue-teks ring-1 ring-blue/30">Tolak</button>
                 </form>
               </li>
             ))}
@@ -43,7 +43,7 @@ export default async function PersetujuanTukar({ searchParams }: { searchParams:
         )}
       </Kartu>
       <Kartu>
-        <h2 className="mb-3 font-serif text-2xl">Riwayat pengajuan</h2>
+        <h2 className="mb-3 text-2xl">Riwayat pengajuan</h2>
         {lain.length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
           <ul className="divide-y divide-black/5 text-sm">
             {lain.map((t) => (

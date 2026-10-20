@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { CtaBand, SectionHeading } from "@/components/langit/Komponen";
 import { PageHeader } from "@/components/ui";
 import { spmb } from "@/content/sekolah";
-import { getProfil } from "@/lib/data";
+import { getProfil, getSpmbInfo } from "@/lib/data";
+import { formatTanggal } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "SPMB",
@@ -12,51 +13,57 @@ export const metadata: Metadata = {
 /** Teks bertanda "[ISI ...]" belum diisi — jangan ditampilkan ke publik */
 const terisi = (daftar: string[]) => daftar.filter((t) => t.trim() && !/^\[ISI/i.test(t.trim()));
 
-/** Gambaran umum tahapan SPMB (ketentuan rinci mengikuti pengumuman resmi Dinas Pendidikan Jawa Barat) */
+/** Gambaran umum tahapan bila jadwal resmi belum diisi di CMS (ketentuan rinci mengikuti Dinas Pendidikan Jawa Barat) */
 const ALUR = [
   { judul: "Cek informasi resmi", teks: "Pelajari jalur, kuota, dan jadwal dari Dinas Pendidikan Provinsi Jawa Barat." },
   { judul: "Daftar daring", teks: "Isi formulir dan unggah berkas di situs SPMB resmi provinsi." },
   { judul: "Verifikasi berkas", teks: "Panitia memeriksa berkas; pantau status pendaftaran secara berkala." },
-  { judul: "Pengumuman", teks: "Hasil seleksi diumumkan sesuai jadwal resmi." },
-  { judul: "Daftar ulang", teks: "Calon murid yang diterima melakukan daftar ulang di sekolah." },
+  { judul: "Pengumuman & daftar ulang", teks: "Hasil seleksi diumumkan sesuai jadwal resmi; yang diterima melakukan daftar ulang di sekolah." },
 ];
 
 export default async function Spmb() {
-  const profil = await getProfil();
+  const [profil, info] = await Promise.all([getProfil(), getSpmbInfo()]);
   const kontak = [profil.telepon, profil.email].filter(Boolean);
   const jalur = terisi(spmb.jalur);
   const syarat = terisi(spmb.persyaratan);
-  // status berdasarkan data yang tersedia: aktif bila tautan resmi & rincian sudah diisi
-  const aktif = Boolean(spmb.tautanResmi && (jalur.length || syarat.length));
+  const tautanResmi = info?.tautanJalur || spmb.tautanResmi;
+  const tahun = info?.tahun || spmb.tahun;
+  // status: aktif menurut CMS SPMB; bila belum ada, aktif bila tautan resmi & rincian sudah diisi
+  const aktif = info ? info.aktif : Boolean(spmb.tautanResmi && (jalur.length || syarat.length));
+  const langkah = info?.jadwal.length ? info.jadwal.map((j) => ({ judul: j.langkah, teks: j.tanggal ? formatTanggal(j.tanggal) : "" })) : ALUR;
+  const bantuan = kontak.length
+    ? `Hubungi panitia SPMB melalui ${kontak.join(" atau ")}${profil.jamLayanan ? ` (${profil.jamLayanan})` : ""}.`
+    : "Hubungi tata usaha sekolah pada jam layanan, atau kirim pertanyaan melalui formulir pengaduan.";
+  const faq = [
+    { t: "Di mana pendaftaran dilakukan?", j: "Pendaftaran dilakukan daring melalui situs SPMB resmi Dinas Pendidikan Provinsi Jawa Barat, bukan melalui situs sekolah." },
+    { t: "Kapan jadwal SPMB dimulai?", j: aktif ? "Lihat jadwal pada tahapan di atas dan situs SPMB resmi." : "Jadwal mengikuti pengumuman resmi tahun berjalan dan akan dicantumkan di halaman ini setelah diumumkan." },
+    { t: "Siapa yang bisa saya hubungi?", j: bantuan },
+  ];
 
   return (
-    <div className="halaman-bidang" data-bidang="spmb">
-      <PageHeader judul={`SPMB ${spmb.tahun}`} deskripsi="Sistem Penerimaan Murid Baru SMA Negeri 22 Bandung.">
-        <p className="flex flex-wrap items-center gap-3">
-          <span className="label-status">{aktif ? "Pendaftaran dibuka" : "Persiapan — belum diumumkan"}</span>
-          {spmb.tautanResmi && (
-            <a href={spmb.tautanResmi} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-              Buka situs SPMB resmi
-            </a>
-          )}
-        </p>
+    <>
+      <PageHeader judul={`SPMB ${tahun}`} label={aktif ? "Pendaftaran dibuka" : "Persiapan — belum diumumkan"} deskripsi={info?.ringkasan || "Sistem Penerimaan Murid Baru SMA Negeri 22 Bandung."}>
+        {tautanResmi && (
+          <a href={tautanResmi} target="_blank" rel="noopener noreferrer" className="lgt-pil-tombol lgt-pil-lime">
+            Buka situs SPMB resmi
+          </a>
+        )}
       </PageHeader>
 
-      <section className="bagian">
-        <div className="lp-wadah">
-          <div className="blok-pengumuman bacaan">
-            <p className="font-semibold">{aktif ? `Informasi SPMB ${spmb.tahun}` : `Jadwal dan ketentuan SPMB ${spmb.tahun} belum diumumkan`}</p>
-            <p className="mt-1 text-[#3b414b]">{spmb.catatan}</p>
+      <section className="lgt-bagian">
+        <div className="lgt-wadah">
+          <div className="blok-pengumuman max-w-[860px]">
+            <p className="font-semibold">{aktif ? `Informasi SPMB ${tahun}` : `Jadwal dan ketentuan SPMB ${tahun} belum diumumkan`}</p>
+            <p className="mt-1 text-[var(--muted)]">{spmb.catatan}</p>
           </div>
-
           {(jalur.length > 0 || syarat.length > 0) && (
-            <div className="mt-10 grid gap-10 md:grid-cols-2">
+            <div className="lgt-kisi-2 lgt-kisi-renggang mt-14">
               {jalur.length > 0 && (
                 <div>
-                  <h2>Jalur pendaftaran</h2>
-                  <ul className="mt-3 divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
+                  <SectionHeading label="Jalur" judul="Jalur pendaftaran." />
+                  <ul className="lgt-akses mt-6">
                     {jalur.map((j) => (
-                      <li key={j} className="py-3">
+                      <li key={j} className="border-b border-[var(--line)] py-3 font-semibold">
                         {j}
                       </li>
                     ))}
@@ -65,10 +72,10 @@ export default async function Spmb() {
               )}
               {syarat.length > 0 && (
                 <div>
-                  <h2>Persyaratan</h2>
-                  <ul className="mt-3 divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
+                  <SectionHeading label="Syarat" judul="Persyaratan." />
+                  <ul className="lgt-akses mt-6">
                     {syarat.map((p) => (
-                      <li key={p} className="py-3">
+                      <li key={p} className="border-b border-[var(--line)] py-3">
                         {p}
                       </li>
                     ))}
@@ -80,40 +87,35 @@ export default async function Spmb() {
         </div>
       </section>
 
-      <section id="tahapan" className="bagian bagian-putih scroll-mt-24">
-        <div className="lp-wadah">
-          <h2>Gambaran umum tahapan</h2>
-          <p className="mt-1 text-[#5b6270]">Ketentuan rinci mengikuti pengumuman resmi tahun berjalan.</p>
-          <ol className="mt-5 grid gap-x-6 border-t-2 border-[#1f2328] sm:grid-cols-2 lg:grid-cols-5">
-            {ALUR.map((a, i) => (
-              <li key={a.judul} className="border-b border-[#e5e1da] py-4 lg:border-b-0 lg:pr-2">
-                <span className="text-sm font-bold tabular-nums text-[var(--tema-utama)]">Langkah {i + 1}</span>
-                <h3 className="mt-1">{a.judul}</h3>
-                <p className="mt-1 text-[0.9375rem] text-[#3b414b]">{a.teks}</p>
+      <section id="tahapan" className="lgt-bagian lgt-bagian-soft scroll-mt-24">
+        <div className="lgt-wadah">
+          <SectionHeading label="Tahapan" judul={info?.jadwal.length ? "Jadwal resmi." : "Gambaran umum tahapan."} teks="Ketentuan rinci mengikuti pengumuman resmi tahun berjalan." />
+          <ol className="lgt-nomor-kisi mt-8">
+            {langkah.map((a) => (
+              <li key={a.judul} className="lgt-nomor">
+                <strong>{a.judul}</strong>
+                {a.teks && <span>{a.teks}</span>}
               </li>
             ))}
           </ol>
         </div>
       </section>
 
-      <section className="bagian">
-        <div className="lp-wadah">
-          <h2>Butuh bantuan?</h2>
-          <p className="bacaan mt-2 text-[#3b414b]">
-            {kontak.length
-              ? `Hubungi panitia SPMB melalui ${kontak.join(" atau ")}${profil.jamLayanan ? ` (${profil.jamLayanan})` : ""}.`
-              : "Hubungi tata usaha sekolah pada jam layanan, atau kirim pertanyaan melalui formulir pengaduan."}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link href="/kontak" className="btn">
-              Kontak sekolah
-            </Link>
-            <Link href="/pengaduan" className="btn">
-              Kirim pertanyaan
-            </Link>
+      <section className="lgt-bagian" aria-labelledby="judul-faq">
+        <div className="lgt-wadah lgt-kisi-2 lgt-kisi-renggang">
+          <SectionHeading id="judul-faq" label="Tanya jawab" judul="Pertanyaan yang sering diajukan." />
+          <div className="lgt-faq">
+            {faq.map((f) => (
+              <details key={f.t}>
+                <summary>{f.t}</summary>
+                <p>{f.j}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>
-    </div>
+
+      <CtaBand label="Butuh bantuan?" judul="Tanya panitia SPMB." lanjutan="Kami siap membantu." tombol={{ href: "/kontak", teks: "Kontak sekolah" }} />
+    </>
   );
 }

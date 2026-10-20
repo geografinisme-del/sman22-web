@@ -134,10 +134,10 @@ export function AiModul({ tp }: { tp: { id: string; label: string }[] }) {
       {pesan && <p role="status" className="text-sm text-black/70">{pesan}</p>}
       <Peringatan />
       {hasil && (
-        <div className="rounded-xl bg-krem p-4 text-sm">
+        <div className="rounded-xl bg-soft p-4 text-sm">
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <h3 className="flex-1 font-serif text-xl">{hasil.judul}</h3>
-            <button type="button" onClick={unduh} className="rounded-full bg-brand-900 px-4 py-2 text-xs font-semibold text-white">Unduh (Word)</button>
+            <h3 className="flex-1 text-xl">{hasil.judul}</h3>
+            <button type="button" onClick={unduh} className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-white">Unduh (Word)</button>
           </div>
           {hasil.bagian.map((b, i) => (
             <details key={i} open={i < 2} className="border-t border-black/10 py-2">

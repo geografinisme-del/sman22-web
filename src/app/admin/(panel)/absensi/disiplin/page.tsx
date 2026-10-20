@@ -33,10 +33,10 @@ export default async function Disiplin({ searchParams }: { searchParams: Promise
         </ul>
       </details>
       <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/absensi/disiplin" className={`rounded-full px-4 py-2 ${!selesai ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>
+        <a href="/admin/absensi/disiplin" className={`rounded-full px-4 py-2 ${!selesai ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>
           Perlu tindakan ({semua.filter((d) => !d.dikonfirmasi).length})
         </a>
-        <a href="/admin/absensi/disiplin?lihat=selesai" className={`rounded-full px-4 py-2 ${selesai ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}>
+        <a href="/admin/absensi/disiplin?lihat=selesai" className={`rounded-full px-4 py-2 ${selesai ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>
           Sudah ditindaklanjuti ({semua.filter((d) => d.dikonfirmasi).length})
         </a>
       </nav>
