@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import sharp from "sharp";
 import { z } from "zod";
 import { aksesAksi } from "@/lib/admin/auth";
 import { pesanError, uuid } from "@/lib/admin/schema";
@@ -66,6 +65,13 @@ const urlPublik = (supabase: Supa, jalur: string) => supabase.storage.from(BUCKE
 /** Foto/poster → WebP (sisi terpanjang ≤ lebarMaks), simpan di foto/, hapus berkas asli. */
 async function prosesFoto(supabase: Supa, jalur: string, lebarMaks: number) {
   const isi = await unduh(supabase, jalur);
+  // dimuat saat dipakai saja: modul native tidak ikut dievaluasi saat build/merender halaman admin
+  const sharp = await import("sharp")
+    .then((m) => m.default)
+    .catch((e) => {
+      console.error("[admin] sharp tidak dapat dimuat:", (e as Error).message);
+      throw new Error("Pemrosesan foto sedang tidak tersedia di server. Coba lagi nanti atau hubungi Tim TIK.");
+    });
   let webp: Buffer;
   try {
     webp = await sharp(isi).rotate().resize({ width: lebarMaks, height: lebarMaks, fit: "inside", withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
