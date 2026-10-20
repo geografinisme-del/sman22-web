@@ -269,6 +269,10 @@
   border-radius: var(--radius-kartu);
   background: var(--ink);
 }
+.lgt-menu-foto > .media-slot {
+  position: absolute;
+  inset: 0;
+}
 .lgt-menu-ket {
   margin: 14px 0 8px;
   color: rgb(255 255 255 / 0.68);
@@ -583,6 +587,11 @@
     animation: lgt-awan-geser-balik 55s var(--ease) infinite alternate;
   }
 }
+/* awan dijeda saat hero di luar layar (atribut dipasang MesinLangit) */
+[data-diam] .lgt-awan-1,
+[data-diam] .lgt-awan-2 {
+  animation-play-state: paused;
+}
 @keyframes lgt-awan-geser {
   to {
     translate: 8% 0;
@@ -855,7 +864,7 @@
   background: linear-gradient(160deg, var(--sky-1), var(--sky-2) 45%, var(--sky-3));
   color: var(--white);
 }
-.tur-kosong span {
+.tur-kosong > span:first-child {
   font-size: clamp(5rem, 3rem + 8vw, 11rem);
   font-weight: 800;
   line-height: 0.9;
@@ -891,7 +900,8 @@
   padding-right: 18px;
 }
 .tur-awan-isi .label-mono {
-  color: var(--blue-teks);
+  /* biru teks sedikit digelapkan: ≥ 4,5:1 di atas --haze */
+  color: color-mix(in srgb, var(--blue-teks) 82%, var(--ink));
 }
 .lp .tur-awan h2,
 .tur-awan h2 {
@@ -1072,7 +1082,9 @@
   background: var(--sky-1);
 }
 .lgt-bento-foto {
-  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  background: none;
   mix-blend-mode: luminosity;
   opacity: 0.55;
 }
@@ -1122,6 +1134,9 @@
 
 /* ===================== ajakan SPMB ===================== */
 .lgt-cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: grid;
   justify-items: start;
   gap: 18px;
@@ -1151,4 +1166,22 @@
 .tur[data-mode="sticky"] .media-label {
   top: 88px;
   left: max(24px, calc((100vw - 1240px) / 2));
+}
+
+/* kontras teks putih: lapisan biru tua tipis di belakang teks hero beranda & kotak ajakan (≥ 4,5:1) */
+.lgt-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 70% 42% at 50% 24%, rgb(10 30 90 / 0.3), rgb(10 30 90 / 0) 100%);
+}
+.lgt-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(10 30 90 / 0.28), rgb(10 30 90 / 0.08) 70%, rgb(10 30 90 / 0) 100%);
 }

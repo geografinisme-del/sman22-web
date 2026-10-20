@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { MediaSlot } from "@/components/MediaSlot";
 import { sekolah } from "@/content/sekolah";
 import { getVisualAkun } from "@/lib/data";
 import "@/components/langit/halaman.css";
@@ -9,11 +10,12 @@ import "./akun.css";
 /** Logo + nama sekolah (tautan ke beranda). */
 function Merek({ sub }: { sub: string }) {
   return (
-    <Link href="/" className="akun-merek" aria-label={`Beranda ${sekolah.nama}`} prefetch={false}>
+    <Link href="/" className="akun-merek" prefetch={false}>
       <Image src={sekolah.logo} alt="" width={502} height={497} sizes="44px" className="akun-merek-logo" />
       <span className="min-w-0">
         <strong>{sekolah.nama}</strong>
         <small>{sub}</small>
+        <span className="sr-only">, ke beranda</span>
       </span>
     </Link>
   );
@@ -55,9 +57,7 @@ export async function BingkaiAkun({
               <Merek sub="Portal Sekolah" />
             </div>
             <figure className="flex flex-1 flex-col">
-              <div className="akun-foto">
-                {foto.src && <Image src={foto.src} alt={foto.alt} fill loading="eager" fetchPriority="high" sizes="50vw" className="object-cover" />}
-              </div>
+              <MediaSlot src={foto.src || undefined} alt={foto.alt} ratio="isi" priority sizes="50vw" className="akun-foto" />
               <figcaption className="keterangan-foto">{foto.alt}</figcaption>
             </figure>
           </section>

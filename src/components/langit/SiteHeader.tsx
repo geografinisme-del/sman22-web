@@ -76,9 +76,11 @@ export function SiteHeader({ data }: { data: DataMenu }) {
     <>
       <header ref={ref} className="lgt-header" data-js={js || undefined} data-terang={terang || undefined} data-lewat={(js && lewat) || undefined}>
         <div className="lgt-wadah lgt-header-isi">
-          <Link href="/" className="lgt-merek" aria-label={`Beranda ${sekolah.nama}`} prefetch={false}>
-            <Image src={sekolah.logo} alt="" width={502} height={497} sizes="40px" className="lgt-logo" priority />
+          <Link href="/" className="lgt-merek" prefetch={false}>
+            <Image src={sekolah.logo} alt="" width={502} height={497} sizes="96px" className="lgt-logo" loading="eager" />
+            {/* nama yang terbaca = teks yang terlihat (WCAG 2.5.3) + keterangan tujuan untuk pembaca layar */}
             <span>SMAN 22 Bandung</span>
+            <span className="sr-only">, ke beranda</span>
           </Link>
 
           <nav className="lgt-pil" aria-label="Menu utama">

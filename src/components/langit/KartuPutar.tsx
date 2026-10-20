@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { KartuBeranda } from "@/content/kartu-beranda";
@@ -224,10 +224,17 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
                 }}
                 draggable={false}
               >
-                <span className="lgt-kartu-foto">
-                  {k.foto ? <Image src={k.foto} alt="" fill sizes="(min-width: 900px) 360px, 260px" loading={i < 2 ? "eager" : "lazy"} className="object-cover" draggable={false} /> : <span className="lgt-kartu-22" aria-hidden>22</span>}
-                  {k.sementara && k.foto && <span className="media-label">Ilustrasi sementara</span>}
-                </span>
+                <MediaSlot
+                  src={k.foto || undefined}
+                  alt=""
+                  ratio="isi"
+                  isPlaceholder={k.sementara}
+                  sizes="(min-width: 900px) 360px, 260px"
+                  priority={i < 2}
+                  draggable={false}
+                  className="lgt-kartu-foto"
+                  kosong={<span className="lgt-kartu-22" aria-hidden>22</span>}
+                />
                 <span className="lgt-kartu-isi">
                   <span className="lgt-kartu-label">{k.label}</span>
                   <span className="lgt-kartu-judul">{k.judul}</span>

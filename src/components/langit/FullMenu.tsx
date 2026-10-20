@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Search, X } from "lucide-react";
@@ -84,7 +84,7 @@ export function FullMenu({ terbuka, grupAwal, onTutup, data }: { terbuka: boolea
           {/* kolom 2 */}
           <div id="lgt-menu-anak" className="lgt-menu-anak" aria-live="polite">
             <figure className="lgt-menu-foto">
-              <Image src={g.foto.src} alt={g.foto.alt} fill sizes="(min-width: 900px) 28vw, 90vw" className="object-cover" />
+              <MediaSlot src={g.foto.src} alt={g.foto.alt} ratio="isi" sizes="(min-width: 900px) 28vw, 90vw" />
             </figure>
             <p className="lgt-menu-ket">{g.keterangan}</p>
             <ul>

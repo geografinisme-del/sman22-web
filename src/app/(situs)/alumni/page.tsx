@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MediaSlot } from "@/components/MediaSlot";
 import Link from "next/link";
 import { PageHeader, Section } from "@/components/ui";
 import { JENIS_KONTRIBUSI } from "@/lib/alumni";
@@ -44,8 +45,7 @@ export default async function Alumni() {
         <Section judul="Cerita alumni" className="!pt-0">
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{cerita.map((x) => (
             <li key={x.id} className="overflow-hidden kartu">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {x.foto_url && <img src={x.foto_url} alt="" className="aspect-[16/9] w-full object-cover" referrerPolicy="no-referrer" loading="lazy" />}
+              {x.foto_url && <MediaSlot src={x.foto_url} alt="" ratio="16/9" sizes="(min-width: 768px) 33vw, 100vw" />}
               <div className="p-5"><h3 className="text-2xl">{x.judul}</h3>
                 <p className="mt-2 line-clamp-5 whitespace-pre-line text-sm text-[var(--muted)]">{x.isi}</p>
                 <p className="mt-3 text-sm font-semibold">{x.nama} <span className="font-normal text-[var(--muted)]">· angkatan {x.tahun_lulus}{x.institusi && ` · ${x.institusi}`}</span></p></div>

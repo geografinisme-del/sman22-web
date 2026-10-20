@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import { ArrowUpRight } from "lucide-react";
 import type { TitikTur } from "@/content/tur-bawaan";
 import { TurPembungkus } from "./TurPembungkus";
@@ -17,22 +17,34 @@ export function TurSekolah({ titik }: { titik: TitikTur[] }) {
   return (
     <TurPembungkus jumlah={titik.length}>
       <div className="tur-pin">
+        {/* awan pembuka lebih dulu di DOM: urutan judul h2 → h3 tetap benar */}
+        <div className="tur-awan">
+          <div className="tur-awan-isi">
+            <p className="label-mono">Tur sekolah</p>
+            <h2 id="judul-tur">Mari berkeliling sekolah.</h2>
+            <p className="tur-awan-sub">Terus gulir untuk berkeliling.</p>
+          </div>
+        </div>
         <ol className="tur-titik">
           {titik.map((t, i) => (
             <li key={t.id} className="tur-item" data-i={i}>
-              <div className="tur-media">
-                {t.media?.tipe === "video" ? (
-                  <video className="tur-video" src={t.media.url} poster={t.media.poster} muted loop playsInline preload="none" aria-label={t.alt || t.judul} />
-                ) : t.media ? (
-                  <Image src={t.media.url} alt={t.alt} fill sizes="100vw" loading="lazy" className="tur-foto object-cover" style={{ objectPosition: `${t.fokus.x}% ${t.fokus.y}%` }} />
-                ) : (
-                  <div className="tur-kosong" role="img" aria-label={`${t.judul}: foto menyusul`}>
+              <MediaSlot
+                src={t.media?.tipe === "foto" ? t.media.url : undefined}
+                video={t.media?.tipe === "video" ? { src: t.media.url, poster: t.media.poster, label: t.alt || t.judul } : undefined}
+                alt={t.alt}
+                ratio="isi"
+                focus={t.fokus}
+                isPlaceholder={t.sementara}
+                sizes="100vw"
+                className="tur-media"
+                kelasMedia={t.media?.tipe === "video" ? "tur-video" : "tur-foto"}
+                kosong={
+                  <span className="tur-kosong" role="img" aria-label={`${t.judul}: foto menyusul`}>
                     <span aria-hidden>22</span>
-                    <p className="label-mono">Foto menyusul</p>
-                  </div>
-                )}
-                {t.sementara && t.media && <span className="media-label">Ilustrasi sementara</span>}
-              </div>
+                    <span className="label-mono">Foto menyusul</span>
+                  </span>
+                }
+              />
               <div className="tur-kartu">
                 <p className="tur-kartu-label">
                   {nomor(i)} — {t.label}
@@ -51,13 +63,6 @@ export function TurSekolah({ titik }: { titik: TitikTur[] }) {
         </ol>
 
         {/* awan pembuka (mode sticky: menutupi layar lalu memudar; mode daftar: judul bagian) */}
-        <div className="tur-awan">
-          <div className="tur-awan-isi">
-            <p className="label-mono">Tur sekolah</p>
-            <h2 id="judul-tur">Mari berkeliling sekolah.</h2>
-            <p className="tur-awan-sub">Terus gulir untuk berkeliling.</p>
-          </div>
-        </div>
 
         <ol className="tur-penanda" aria-hidden>
           {titik.map((t, i) => (

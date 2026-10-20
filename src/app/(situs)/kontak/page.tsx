@@ -35,9 +35,11 @@ export default async function Kontak() {
                   <dt className="label-mono text-[var(--blue-teks)]">{r.judul}</dt>
                   <dd className="mt-0.5 text-[1.0625rem] font-semibold">{r.isi}</dd>
                   {r.href && (
-                    <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="lgt-tautan-panah mt-1 text-[0.9375rem]">
-                      {r.aksi} <span aria-hidden>→</span>
-                    </a>
+                    <dd>
+                      <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="lgt-tautan-panah mt-1 text-[0.9375rem]">
+                        {r.aksi} <span aria-hidden>→</span>
+                      </a>
+                    </dd>
                   )}
                 </div>
               ))}

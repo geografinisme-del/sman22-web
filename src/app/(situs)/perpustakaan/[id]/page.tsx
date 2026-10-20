@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { MediaSlot } from "@/components/MediaSlot";
 import { notFound } from "next/navigation";
 import { pesanBuku } from "@/app/admin/actions-perpus";
 import { FormUlasan } from "@/components/perpus/Literasi";
@@ -47,8 +48,7 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
           <div className="space-y-6">
             <div className="flex gap-5">
               {b.sampul_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={b.sampul_url} alt="" className="h-48 w-32 shrink-0 rounded-[12px] object-cover" referrerPolicy="no-referrer" />
+                <MediaSlot src={b.sampul_url} alt="" ratio="2/3" sizes="128px" className="w-32 shrink-0 rounded-[12px]" />
               ) : <span className="sampul-buku w-32 shrink-0" aria-hidden><span>{b.judul.match(/[\p{L}\p{N}]/u)?.[0] ?? "?"}</span></span>}
               <dl className="grid grid-cols-[110px_1fr] content-start gap-y-1 text-sm">
                 <dt className="text-[var(--muted)]">Kategori</dt><dd>{b.kategori || "—"}</dd>

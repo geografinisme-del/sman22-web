@@ -2,7 +2,7 @@
  * Bagian beranda & halaman "Langit cerah" (server; terbaca tanpa JS). Bagian tanpa data disembunyikan.
  * Dipakai beranda (SusunanLangit) dan halaman dalam (Prestasi, Pengumuman, Agenda) agar tampilannya sama.
  */
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import Link from "next/link";
 import { ArrowRight, BookOpen, CalendarDays, GraduationCap, LayoutGrid, MapPin, MessageSquare, MonitorPlay, Sparkles, Users } from "lucide-react";
 import type { ComponentType } from "react";
@@ -47,11 +47,7 @@ export function KabarSekolah({ berita, p = {} }: { berita: BeritaItem[]; p?: P }
               {lain.map((b) => (
                 <li key={b.id}>
                   <Link href={`/berita/${b.slug}`} className="lgt-baris-kabar">
-                    {b.gambar && (
-                      <span className="lgt-baris-foto">
-                        <Image src={b.gambar} alt="" fill sizes="120px" className="object-cover" />
-                      </span>
-                    )}
+                    {b.gambar && <MediaSlot src={b.gambar} alt="" ratio="4/3" sizes="120px" isPlaceholder={b.gambarSementara} className="lgt-baris-foto" />}
                     <span className="min-w-0">
                       <span className="lgt-kartu-label">{[b.kategori, formatTanggal(b.tanggal)].filter(Boolean).join(" · ")}</span>
                       <span className="lgt-baris-judul">{b.judul}</span>
@@ -227,10 +223,7 @@ export function KehidupanSiswa({ galeri, p = {}, program }: { galeri: FotoItem[]
             {foto.map((f, i) => (
               <li key={f.src}>
                 <figure>
-                  <span className="lgt-mozaik-foto">
-                    <Image src={f.src} alt={f.judul} fill sizes={i === 0 ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 25vw, 50vw"} className="object-cover" />
-                    {f.sementara && <span className="media-label">Ilustrasi sementara</span>}
-                  </span>
+                  <MediaSlot src={f.src} alt="" ratio="isi" isPlaceholder={f.sementara} sizes={i === 0 ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 25vw, 50vw"} className="lgt-mozaik-foto" />
                   <figcaption>{f.judul}</figcaption>
                 </figure>
               </li>
@@ -344,9 +337,7 @@ export function TentangKami({ profil, p = {} }: { profil: Profil; p?: P }) {
             Profil sekolah <span aria-hidden>→</span>
           </Link>
         </div>
-        <div className="lgt-foto-besar">
-          <Image src="/images/gedung.jpg" alt="Gedung utama SMA Negeri 22 Bandung" fill sizes="(min-width: 900px) 50vw, 100vw" className="object-cover" />
-        </div>
+        <MediaSlot src="/images/gedung.jpg" alt="Gedung utama SMA Negeri 22 Bandung" ratio="4/3" sizes="(min-width: 900px) 50vw, 100vw" className="lgt-foto-besar" />
       </div>
     </section>
   );

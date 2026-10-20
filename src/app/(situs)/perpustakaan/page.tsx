@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { MediaSlot } from "@/components/MediaSlot";
 import { ArrowRight, BookOpen, Search } from "lucide-react";
 import { Kosong, PageHeader } from "@/components/ui";
 import { supabaseAktif } from "@/lib/supabase/config";
@@ -109,18 +110,18 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
                   <p className="mb-3 text-sm text-[var(--muted)]">
                     {total.toLocaleString("id-ID")} judul{kategori && ` · kategori ${kategori}`}
                   </p>
-                  <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" data-muncul="kelompok">
+                  <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     {list.map((b) => (
                       <li key={b.id} className="kartu flex gap-4 p-4">
                         <Link href={`/perpustakaan/${b.id}`} className="group w-20 shrink-0" tabIndex={-1} aria-hidden>
-                          <span className="sampul-buku">
-                            {b.sampul_url ? (
-                              // eslint-disable-next-line @next/next/no-img-element -- sampul dari katalog (domain beragam)
-                              <img src={b.sampul_url} alt="" referrerPolicy="no-referrer" loading="lazy" />
-                            ) : (
-                              <span>{b.judul.match(/[\p{L}\p{N}]/u)?.[0] ?? "?"}</span>
-                            )}
-                          </span>
+                          <MediaSlot
+                            src={b.sampul_url || undefined}
+                            alt=""
+                            ratio="2/3"
+                            sizes="80px"
+                            className="sampul-buku"
+                            kosong={<span>{b.judul.match(/[\p{L}\p{N}]/u)?.[0] ?? "?"}</span>}
+                          />
                         </Link>
                         <div className="min-w-0">
                           {b.kategori && <p className="text-sm text-[var(--muted)]">{b.kategori}</p>}
@@ -175,7 +176,7 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
           </div>
 
           <aside className="space-y-6" aria-label="Panduan layanan perpustakaan">
-            <div className="kartu p-5" data-muncul>
+            <div className="kartu p-5">
               <h2 className="flex items-center gap-2 text-[1.125rem] font-semibold">
                 <BookOpen size={20} aria-hidden className="text-[var(--tema-utama)]" /> Cara meminjam
               </h2>
@@ -197,7 +198,7 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
                 </p>
               )}
             </div>
-            <div className="kartu p-5" data-muncul>
+            <div className="kartu p-5">
               <h2 className="text-[1.125rem] font-semibold">Layanan pribadi</h2>
               <p className="mt-1 text-[0.9375rem] text-[var(--muted)]">Pinjaman aktif, reservasi, perpanjangan, jurnal baca, dan koleksi digital khusus warga sekolah.</p>
               <Link href="/admin/login?sebagai=siswa" className="btn btn-primary mt-3 w-full">

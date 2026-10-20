@@ -3,39 +3,6 @@
  * Kartu peran = kartu yang sama dengan InfoCard; daftar ruang kerja = baris bergaris --line. Nilai dari tokens.css.
  */
 
-/* ---------- MediaSlot (foto kartu peran; tanpa berkas → blok langit "22") ---------- */
-.media-slot {
-  position: relative;
-  overflow: hidden;
-  background: var(--haze);
-}
-.media-slot.media-isi {
-  height: 100%;
-}
-.media-slot img {
-  transition: scale 600ms var(--ease);
-}
-.media-kosong {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(160deg, var(--sky-1), var(--sky-3));
-}
-.media-kosong span {
-  font-size: clamp(3rem, 12vw, 7rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  color: rgb(255 255 255 / 0.35);
-}
-.media-keterangan {
-  margin-top: 8px;
-  font-size: 0.875rem;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
 /* ---------- status akun ---------- */
 .pd-akun {
   display: flex;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import { Prose } from "@/components/langit/Komponen";
 import { PageHeader } from "@/components/ui";
 import { sekolah } from "@/content/sekolah";
@@ -16,9 +16,7 @@ export default async function Sejarah() {
         <div className="lgt-wadah">
           <Prose>
             <figure>
-              <span className="relative block aspect-[16/9] overflow-hidden rounded-[18px] bg-[var(--soft)]">
-                <Image src="/images/gedung.jpg" alt="Gedung utama SMA Negeri 22 Bandung" fill sizes="(min-width: 900px) 760px, 100vw" className="object-cover" />
-              </span>
+              <MediaSlot src="/images/gedung.jpg" alt="Gedung utama SMA Negeri 22 Bandung" ratio="16/9" priority sizes="(min-width: 900px) 760px, 100vw" className="rounded-[18px]" />
               <figcaption>Gedung utama {sekolah.nama}.</figcaption>
             </figure>
             {p.sejarah.length > 0 ? p.sejarah.map((t, i) => <p key={i}>{t}</p>) : <p>Sekolah berdiri pada {sekolah.tahunBerdiri}. Uraian sejarah lengkap sedang dilengkapi.</p>}

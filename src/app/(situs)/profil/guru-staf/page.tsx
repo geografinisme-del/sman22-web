@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import { Kosong } from "@/components/langit/Komponen";
 import { SaringTingkat } from "@/components/langit/SaringTingkat";
 import { PageHeader, Section } from "@/components/ui";
@@ -30,10 +30,16 @@ export default async function GuruStaf() {
             <ul className="lgt-orang-kisi">
               {staf.map((s) => (
                 <li key={s.id} data-tingkat={s.bidang.replace(/[^A-Za-z]/g, "") || undefined}>
-                  <span className="lgt-orang-foto">
-                    {s.foto ? <Image src={s.foto} alt={`Foto ${s.nama}`} fill sizes="(min-width: 900px) 220px, 50vw" className="object-cover object-top" /> : <span aria-hidden>{inisial(s.nama)}</span>}
-                    {s.sementara && s.foto && <span className="media-label">Ilustrasi sementara</span>}
-                  </span>
+                  <MediaSlot
+                    src={s.foto}
+                    alt={`Foto ${s.nama}`}
+                    ratio="4/5"
+                    focus="50% 0%"
+                    isPlaceholder={s.sementara}
+                    sizes="(min-width: 900px) 220px, 50vw"
+                    className="lgt-orang-foto"
+                    kosong={<span aria-hidden>{inisial(s.nama)}</span>}
+                  />
                   <span className="lgt-orang-nama">{s.nama}</span>
                   {(s.jabatan || s.bidang) && <span className="lgt-orang-jabatan">{[s.jabatan, s.bidang].filter(Boolean).join(" · ")}</span>}
                 </li>

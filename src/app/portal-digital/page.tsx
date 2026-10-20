@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, LogOut } from "lucide-react";
 import { MediaSlot } from "@/components/MediaSlot";
@@ -45,7 +44,7 @@ export default async function PortalDigital() {
       <li key={p.bidang}>
         <Link href={href(p)} className="pd-baris">
           <span className="pd-inisial" aria-hidden>
-            {orang?.foto ? <Image src={orang.foto} alt="" fill sizes="48px" className="object-cover" /> : inisial(b.label)}
+            {orang?.foto ? <MediaSlot src={orang.foto} alt="" ratio="isi" sizes="48px" isPlaceholder={false} className="absolute inset-0" /> : inisial(b.label)}
           </span>
           <span className="min-w-0">
             <strong>
@@ -94,7 +93,7 @@ export default async function PortalDigital() {
               return (
                 <li key={p.bidang}>
                   <Link href={href(p)}>
-                    <MediaSlot src={f?.src} alt={f?.alt ?? ""} fokus={f?.fokus} ratio="4/3" sizes="(min-width: 768px) 33vw, 100vw" priority />
+                    <MediaSlot src={f?.src} alt={f?.alt ?? ""} focus={f?.fokus} ratio="4/3" sizes="(min-width: 768px) 33vw, 100vw" priority />
                     <h3>
                       {b.label}
                       {milik(p) && <span className="pd-status">Akses Anda</span>}

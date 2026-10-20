@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MediaSlot } from "@/components/MediaSlot";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Section } from "@/components/ui";
@@ -32,8 +33,7 @@ export default async function ProfilEkskul({ params }: { params: Promise<{ slug:
       <header className="text-white" style={{ background: d.warna }}>
         <div className="mx-auto flex max-w-7xl items-center gap-5 px-5 py-14 sm:px-8">
           {d.logo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={d.logo_url} alt={`Logo ${d.nama}`} className="h-24 w-24 rounded-full bg-white object-contain p-2" referrerPolicy="no-referrer" />
+            <MediaSlot src={d.logo_url} alt={`Logo ${d.nama}`} ratio="1/1" fit="contain" sizes="96px" className="h-24 w-24 shrink-0 rounded-full bg-white p-2" />
           ) : <span className="grid h-24 w-24 place-items-center rounded-full bg-white/20 text-4xl">{(d.singkatan || d.nama).slice(0, 2)}</span>}
           <div><p className="text-xs opacity-80">{JENIS_ORG[d.jenis]} · {BIDANG_ORG[d.bidang]}</p><h1 className="text-4xl sm:text-5xl">{d.nama}</h1></div>
         </div>
@@ -54,8 +54,7 @@ export default async function ProfilEkskul({ params }: { params: Promise<{ slug:
             {d.galeri.length > 0 && (
               <div><h2 className="mb-3 text-2xl">Galeri</h2>
                 <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">{d.galeri.map((g, i) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <li key={i}><img src={g} alt={`Kegiatan ${d.nama} ${i + 1}`} className="aspect-[4/3] w-full rounded-xl object-cover" referrerPolicy="no-referrer" loading="lazy" /></li>))}</ul></div>
+                  <li key={i}><MediaSlot src={g} alt={`Kegiatan ${d.nama} ${i + 1}`} ratio="4/3" sizes="(min-width: 640px) 33vw, 50vw" className="rounded-xl" /></li>))}</ul></div>
             )}
           </div>
           <aside className="space-y-3 self-start kartu p-6 text-sm">

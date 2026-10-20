@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import type { Profil } from "@/lib/data";
 import { sekolah } from "@/content/sekolah";
 
@@ -31,7 +31,7 @@ export function BentoAngka({ profil, foto }: { profil: Profil; foto: { src: stri
         </h2>
         <div className="lgt-bento">
           <div className="lgt-bento-kartu lgt-bento-biru">
-            <Image src={foto.src} alt="" fill sizes="(min-width: 900px) 33vw, 100vw" className="lgt-bento-foto" />
+            <MediaSlot src={foto.src} alt="" ratio="isi" sizes="(min-width: 900px) 33vw, 100vw" className="lgt-bento-foto" />
             <div className="lgt-bento-panel">
               <strong className="lgt-bento-angka">{sekolah.tahunBerdiri}</strong>
               <span>Tahun berdiri.</span>
@@ -65,14 +65,14 @@ export function BentoAngka({ profil, foto }: { profil: Profil; foto: { src: stri
               {siswa && (
                 <div className="lgt-bento-kartu lgt-bento-lime">
                   <p className="label-mono">Siswa aktif</p>
-                  <strong className="lgt-bento-angka">{formatAngka(siswa)}</strong>
+                  <strong className="lgt-bento-angka" data-hitung>{formatAngka(siswa)}</strong>
                   <span>Dari kelas X sampai XII</span>
                 </div>
               )}
               {ekskul && (
                 <div className="lgt-bento-kartu lgt-bento-ink">
                   <p className="label-mono">Ekstrakurikuler</p>
-                  <strong className="lgt-bento-angka">{formatAngka(ekskul)}</strong>
+                  <strong className="lgt-bento-angka" data-hitung>{formatAngka(ekskul)}</strong>
                 </div>
               )}
             </div>

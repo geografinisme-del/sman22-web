@@ -3,10 +3,10 @@
  * PageHero · SectionHeading · InfoCard · StatCard · Prose · CtaBand · Kosong.
  * Satu desain kartu dengan kartu putar beranda (foto atas, label mono biru, judul, deskripsi, "Buka →").
  */
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { MediaSlot } from "@/components/MediaSlot";
 import { uraiTeksCms } from "@/lib/teks-cms";
 
 export type Remah = { href?: string; label: string };
@@ -34,7 +34,7 @@ export function PageHero({
   const jejak: Remah[] = [{ href: "/", label: "Beranda" }, ...(remah ?? []), { label: judul }];
   return (
     <header className="lgt-phero" data-hero-langit>
-      {foto && <Image src={foto.src} alt="" fill priority sizes="100vw" className="lgt-phero-foto" />}
+      {foto && <MediaSlot src={foto.src} alt="" ratio="isi" priority sizes="100vw" className="lgt-phero-foto" />}
       <svg className="lgt-phero-awan" viewBox="0 0 760 140" preserveAspectRatio="none" aria-hidden>
         <path d="M0 120 C 60 60 140 60 190 95 C 230 40 330 40 370 95 C 420 55 520 60 560 110 C 620 70 720 80 760 120 Z" />
       </svg>
@@ -109,10 +109,15 @@ export function InfoCard({
 }) {
   const isi = (
     <>
-      <span className={`lgt-ikartu-foto ${rasio === "lebar" ? "lgt-ikartu-foto-lebar" : ""}`}>
-        {foto ? <Image src={foto} alt={alt} fill sizes={rasio === "lebar" ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 33vw, 100vw"} className="object-cover" /> : <span className="lgt-kartu-22" aria-hidden>22</span>}
-        {sementara && foto && <span className="media-label">Ilustrasi sementara</span>}
-      </span>
+      <MediaSlot
+        src={foto}
+        alt={alt}
+        ratio="isi"
+        isPlaceholder={sementara}
+        sizes={rasio === "lebar" ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 33vw, 100vw"}
+        className={`lgt-ikartu-foto ${rasio === "lebar" ? "lgt-ikartu-foto-lebar" : ""}`}
+        kosong={<span className="lgt-kartu-22" aria-hidden>22</span>}
+      />
       <span className="lgt-kartu-isi">
         {label && <span className="lgt-kartu-label">{label}</span>}
         <span className="lgt-kartu-judul">{judul}</span>

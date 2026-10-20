@@ -1,7 +1,7 @@
 import "server-only";
 import type { CSSProperties, ReactNode } from "react";
-import { PengamatMuncul } from "@/components/gerak/PengamatMuncul";
 import { dataMenu } from "@/components/langit/dataMenu";
+import { GerakLangit } from "@/components/langit/GerakLangit";
 import { SiteFooter } from "@/components/langit/SiteFooter";
 import { SiteHeader } from "@/components/langit/SiteHeader";
 import { PengaturOverlay } from "@/components/gerak/PengaturOverlay";
@@ -59,7 +59,7 @@ export async function KerangkaPublik({ konfig, halamanUtama = "/", pita, childre
         {children}
       </main>
       <SiteFooter data={menu} />
-      <PengamatMuncul />
+      <GerakLangit tingkat={konfig.gerak} />
       {/* lapisan overlay memakai gaya situs publik (.lp) walau berada di luar <main> */}
       <div className="lp">
         <PengaturOverlay

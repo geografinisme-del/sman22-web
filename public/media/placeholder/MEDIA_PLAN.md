@@ -1,38 +1,43 @@
-# Rencana media sementara — tema "Buku Tahunan"
+# Rencana media sementara — desain "Langit cerah + Tur sekolah"
 
-Folder ini untuk **ilustrasi sementara** sampai foto asli sekolah tersedia. Status (18 Okt 2026):
-slot hero, berita, dan galeri sudah terisi foto Unsplash (lihat `CREDITS.md`). Foto stok **hanya** dipakai
-oleh data contoh (`scripts/uji-e2e/seed-buku.sql`, semuanya `is_placeholder = true`); situs produksi tetap
-memakai foto asli di `public/images/` dan fallback blok krem (#E3D9C6, garis emas tipis, "22" samar).
-Kartu Portal (guru/siswa/orang tua) memakai foto asli sekolah, jadi slot `portal-*` tidak diisi stok.
+Folder ini berisi **ilustrasi sementara** (foto stok Unsplash, lihat `CREDITS.md`) sampai foto asli SMA Negeri 22
+Bandung tersedia. Foto asli sekolah ada di `public/images/`. Status per 20 Okt 2026.
 
 ## Aturan
 
-1. Semua media publik dirender lewat `<MediaSlot>` (`src/components/MediaSlot.tsx`).
-2. Media sementara diberi `is_placeholder = true` di database → tampil label **"Ilustrasi sementara"**.
-3. Foto unggahan admin otomatis dianggap asli (`is_placeholder = false`).
-4. Admin → Ringkasan menampilkan jumlah media yang masih sementara; tombol **"Tandai foto asli"** ada di
-   daftar Berita, Galeri, dan Prestasi.
-5. Gambar sintetis (AI) **tidak boleh** menampilkan wajah yang bisa dikira siswa/guru asli, seragam/logo
-   sekolah, papan nama, atau teks. Utamakan suasana: ruang kelas kosong, tangan menulis, buku, lapangan dari jauh.
-6. Setiap berkas stok wajib dicatat di `CREDITS.md` (sumber, penulis, lisensi, URL).
-7. Video hero hanya dipakai bila berkasnya ada: muted, loop, playsinline, dengan poster; disembunyikan saat
-   `prefers-reduced-motion`.
+1. Semua foto/video konten dirender lewat **satu komponen** `<MediaSlot>` (`src/components/MediaSlot.tsx`):
+   `src`, `alt`, `caption`, `ratio`, `isPlaceholder`, `focus` (+ `video` untuk tur). Pengecualian: logo sekolah
+   (header/footer/portal) dan poster pengumuman (ditampilkan utuh tanpa rasio tetap).
+2. Media sementara diberi `is_placeholder = true` di database → label kecil **"Ilustrasi sementara"** di situs.
+   Keterangan foto sementara tidak menyebut nama siswa, tanggal, atau peristiwa nyata.
+3. Foto lama di `public/images/` dan setiap unggahan admin = **foto asli** (`is_placeholder = false`).
+4. Admin → Ringkasan menampilkan jumlah media yang masih sementara (berita, galeri, prestasi, slide hero, kartu
+   beranda, tur sekolah, guru & staf, fasilitas). Tombol **"Tandai foto asli"** ada di daftar masing-masing.
+5. Tanpa berkas → blok gradien langit dengan "22" samar (bukan kotak abu/ikon rusak); di tur: "Foto menyusul".
+6. Foto stok: siswa SMA Indonesia (putih abu-abu) atau suasana tanpa orang; tanpa logo sekolah lain; tanpa wajah
+   close-up; WebP, hero ≤ 400 KB, lainnya ≤ 200 KB. Wajib dicatat di `CREDITS.md`.
+7. Video (tur): MP4 ≤ 15 detik / 8 MB, muted, loop, playsinline, poster wajib; hanya diputar saat titiknya aktif,
+   tidak diputar otomatis bila `prefers-reduced-motion`.
 
 ## Slot
 
-| Berkas | Dipakai di | Rasio / ukuran | Prompt / kata kunci (EN) |
-| --- | --- | --- | --- |
-| `hero-1.webp` ✓ | Beranda — hero | 16:9, 2400 px | Wide shot of an Indonesian public high school courtyard at golden hour, students seen from far behind walking, warm natural light, documentary photography, no readable text, no logos |
-| `hero-loop.mp4` | Beranda — video hero (opsional) | 16:9, 1920 px, ≤ 8 s, ≤ 4 MB, tanpa audio | Slow dolly shot across an empty school corridor with sunlight through windows, calm, documentary, seamless loop |
-| `berita-1.webp` ✓ | Kabar utama | 3:2, 1600 px | Students' hands working on a science experiment on a wooden lab bench, shallow depth of field, no faces |
-| `berita-2.webp` ✓ | Kabar kecil | 3:2, 800 px | Stack of textbooks and notebooks on a classroom desk by a window, morning light |
-| `berita-3.webp` ✓ | Kabar kecil | 3:2, 800 px | School flag ceremony seen from behind at a distance, soft morning haze, no identifiable faces |
-| `berita-4.webp` ✓ | Kabar kecil | 3:2, 800 px | Basketball on an outdoor school court with long shadows, late afternoon |
-| `galeri-1.webp` ✓ | Kehidupan siswa (besar) | 4:5, 1600 px | Group of teenagers in a school hall seen from behind during a performance, stage lights, candid |
-| `galeri-2.webp` … `galeri-5.webp` ✓ | Kehidupan siswa (kecil) | 1:1, 800 px | Candid school-life details: library shelves, art supplies, sports shoes on a field, musical instruments — no faces, no text |
-| `portal-guru.jpg` | Portal — kartu Guru | 4:3, 1200 px | Teacher's desk with lesson plans, laptop and coffee, warm light, no faces |
-| `portal-siswa.jpg` | Portal — kartu Siswa | 4:3, 1200 px | Backpacks and notebooks on a school bench, bright daylight |
-| `portal-ortu.jpg` | Portal — kartu Orang Tua | 4:3, 1200 px | School gate in the morning seen from the street, parents' silhouettes far away |
+| Slot | Dipakai di | Rasio | Sumber saat ini | Sementara? |
+| --- | --- | --- | --- | --- |
+| Kartu putar (12) | Beranda — hero | 260 × 150 | `kartu_beranda` / `KARTU_BAWAAN`: 6 foto asli `/images/*`, 6 stok (`galeri-1/3/5`, `berita-1/2/4`) | stok = ya |
+| Tur sekolah (6 titik) | Beranda — `#tur` | layar penuh / 16:10 di HP | `tur_sekolah` / `TUR_BAWAAN`: foto asli `/images/*`, titik Perpustakaan tanpa foto | ya (titik contoh) |
+| Bento "dalam angka" | Beranda | isi kartu | slide hero CMS → visual beranda → `/images/keluarga-besar.jpg` | tidak |
+| Kabar dari sekolah | Beranda, `/berita`, artikel | 16:10, 4:3, 3:2 | foto berita (CMS) | per baris |
+| Kehidupan siswa (mozaik 1 + 4) | Beranda | isi | galeri (CMS) → fallback `kehidupanSekolah` (foto asli) | per baris |
+| Tentang kami | Beranda | 4:3 | `/images/gedung.jpg` | tidak |
+| Galeri (masonry + lightbox) | `/galeri`, `/profil/fasilitas` | 4:5, 4:3, 1:1, 3:4, 16:10 bergiliran | galeri (CMS) | per baris |
+| PageHero (latar luminosity) | Profil, dll. | isi | `/images/gedung.jpg` | tidak |
+| Guru & staf | `/profil/guru-staf` | 4:5 | `staf_publik.foto_url` (kosong → inisial) | per baris |
+| Fasilitas | `/profil/fasilitas` | kartu 150 px | `fasilitas.foto_url` | per baris |
+| Kartu peran Portal | `/portal-digital` | 4:3 | foto asli: `kegiatan-aula.jpg`, `apel-lapangan.jpg`, `gedung.jpg` | tidak |
+| Halaman masuk | `/admin/login` | isi | visual "akun" CMS → `/images/gedung.jpg` | tidak |
+| Sampul buku | E-Library | 2:3 | katalog (URL luar) → huruf awal judul | — |
 
-Saat ini kartu Portal memakai foto asli: `kegiatan-aula.jpg` (Guru), `apel-lapangan.jpg` (Siswa), `gedung.jpg` (Orang Tua).
+## Berkas stok yang tersedia
+
+`hero-1.webp`, `berita-1.webp` … `berita-4.webp`, `galeri-1.webp` … `galeri-5.webp` — rincian sumber di `CREDITS.md`.
+Foto stok hanya dipakai kartu bawaan dan data contoh (`scripts/uji-e2e/seed-buku.sql`), semuanya `is_placeholder = true`.

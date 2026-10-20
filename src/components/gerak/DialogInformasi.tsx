@@ -1,5 +1,6 @@
 "use client";
 
+import { MediaSlot } from "@/components/MediaSlot";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
@@ -59,8 +60,7 @@ export function DialogInformasi({ info, onTutup }: { info: Informasi | null; onT
           <div className="dialog-info-isi">
             <h2 id="dialog-info-judul">{info.judul}</h2>
             {info.gambar && (
-              // eslint-disable-next-line @next/next/no-img-element -- ukuran tak diketahui, gambar opsional dari CMS
-              <img src={info.gambar} alt="" className="mt-4 aspect-[3/2] w-full rounded-lg object-cover" />
+              <MediaSlot src={info.gambar} alt="" ratio="3/2" sizes="(min-width: 640px) 560px, 100vw" className="mt-4 rounded-lg" />
             )}
             {ringkas && <p className="mt-3 whitespace-pre-line text-[var(--muted)]">{ringkas}</p>}
           </div>

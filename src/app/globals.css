@@ -75,41 +75,7 @@ h3 em {
   --ease-keluar: var(--ease);
 }
 
-/*
- * Muncul saat di-scroll. Atribut data-muncul hanya penanda; kelas .akan-muncul dipasang oleh
- * PengamatMuncul (JS) khusus untuk elemen yang masih di bawah layar. Tanpa JS → konten langsung terlihat.
- *   data-muncul            judul/teks: pudar + naik 16px
- *   data-muncul="foto"     foto: terbuka dari bingkainya
- *   data-muncul="kelompok" anak-anaknya muncul bertahap (maks. 4 jeda)
- */
-.akan-muncul {
-  opacity: 0;
-  transform: translateY(16px);
-}
-.akan-muncul.muncul {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity var(--gerak-muncul) var(--ease-keluar),
-    transform var(--gerak-muncul) var(--ease-keluar);
-  transition-delay: var(--jeda, 0ms);
-}
-[data-muncul="foto"].akan-muncul {
-  opacity: 1;
-  transform: none;
-  clip-path: inset(7% 5% 7% 5% round 10px);
-}
-[data-muncul="foto"].akan-muncul img {
-  transform: scale(1.06);
-}
-[data-muncul="foto"].akan-muncul.muncul {
-  clip-path: inset(0 round 10px);
-  transition: clip-path 550ms var(--ease-keluar);
-}
-[data-muncul="foto"].akan-muncul.muncul img {
-  transform: none;
-  transition: transform 550ms var(--ease-keluar);
-}
+/* Kemunculan blok saat digulir: GSAP + ScrollTrigger di components/langit/MesinLangit.tsx (keadaan awal diset di JS). */
 
 /* kompatibilitas kelas lama: tanpa gerak berulang */
 .naik {
@@ -144,13 +110,6 @@ a:hover .panah,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  .akan-muncul,
-  [data-muncul="foto"].akan-muncul,
-  [data-muncul="foto"].akan-muncul img {
-    opacity: 1;
-    transform: none;
-    clip-path: none;
   }
 }
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import { CtaBand, Prose } from "@/components/langit/Komponen";
 import { PageHeader } from "@/components/ui";
 import { getProfil } from "@/lib/data";
@@ -15,9 +15,7 @@ export default async function Sambutan() {
       <section className="lgt-bagian">
         <div className="lgt-wadah grid items-start gap-10 md:grid-cols-[280px_minmax(0,1fr)] lg:gap-16">
           <figure className="max-w-[280px]">
-            <span className="relative block aspect-[425/600] overflow-hidden rounded-[var(--radius-kartu-besar)] bg-[var(--soft)]">
-              <Image src={p.fotoKepalaSekolah} alt={`Foto ${p.kepalaSekolah}`} fill loading="eager" sizes="280px" className="object-cover object-top" />
-            </span>
+            <MediaSlot src={p.fotoKepalaSekolah} alt={`Foto ${p.kepalaSekolah}`} ratio="425/600" priority focus="50% 0%" sizes="280px" className="rounded-[var(--radius-kartu-besar)]" />
             <figcaption className="mt-3">
               <span className="block font-bold">{p.kepalaSekolah}</span>
               <span className="label-mono text-[var(--blue-teks)]">Kepala sekolah</span>

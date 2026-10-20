@@ -19,9 +19,9 @@ export type KunciFont = keyof typeof FONT;
 
 /** Tingkat gerak situs publik (reduced motion pengguna selalu menang). */
 export const GERAK = {
-  minimal: { label: "Minimal", keterangan: "Tanpa animasi gulir & parallax; hanya respons tombol." },
-  standar: { label: "Standar", keterangan: "Kemunculan bagian sekali saat digulir, sorotan program." },
-  dinamis: { label: "Dinamis", keterangan: "Standar + jarak gerak lebih besar & parallax foto." },
+  minimal: { label: "Minimal", keterangan: "Tanpa animasi gulir & parallax; hanya respons tombol, kartu putar, dan tur." },
+  standar: { label: "Standar", keterangan: "Blok muncul sekali saat digulir; angka beranda menghitung naik." },
+  dinamis: { label: "Dinamis", keterangan: "Standar + jarak gerak lebih besar & parallax foto (desktop)." },
 } as const;
 export type TingkatGerak = keyof typeof GERAK;
 

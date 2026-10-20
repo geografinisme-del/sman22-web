@@ -339,8 +339,10 @@ a.kartu:hover,
   }
 }
 .lgt-phero-foto {
+  position: absolute;
+  inset: 0;
   z-index: -2;
-  object-fit: cover;
+  background: none;
   mix-blend-mode: luminosity;
   opacity: 0.32;
 }
@@ -1187,4 +1189,76 @@ a.lgt-nomor:hover {
   .lgt-kisi-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* ---------- MediaSlot (components/MediaSlot.tsx): satu komponen foto/video untuk semua halaman ---------- */
+/* di @layer components: kelas komponen (lgt-*, tur-*) dan utilitas Tailwind tetap dapat menimpanya */
+@layer components {
+  .media-slot {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    background: var(--haze);
+  }
+  .media-slot.media-isi {
+    height: 100%;
+  }
+  .media-gambar {
+    object-fit: cover;
+  }
+  .media-muat {
+    background: transparent;
+  }
+  .media-muat .media-gambar {
+    object-fit: contain;
+  }
+  .media-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .media-kosong {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(160deg, var(--sky-1), var(--sky-3));
+  }
+  .media-kosong > span {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: rgb(255 255 255 / 0.4);
+  }
+  .media-figur {
+    margin: 0;
+  }
+  .media-keterangan {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .media-luar {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* ---------- kontras teks putih di atas langit (≥ 4,5:1) ----------
+   Gradien langit tetap; lapisan tipis biru tua di belakang teks menjaga kontras teks putih kecil. */
+.lgt-phero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgb(10 30 90 / 0.14) 0%, rgb(10 30 90 / 0.3) 72%, rgb(10 30 90 / 0) 100%);
 }

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import { InfoCard, PageHero, Prose, SectionHeading } from "@/components/langit/Komponen";
 import type { BeritaItem } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
@@ -13,10 +13,7 @@ export function ArtikelBerita({ b, terkait = [] }: { b: BeritaItem; terkait?: Be
           <Prose className="mx-auto">
             {b.gambar && (
               <figure>
-                <span className="relative block aspect-[3/2] overflow-hidden rounded-[18px] bg-[var(--soft)]">
-                  <Image src={b.gambar} alt={b.judul} fill loading="eager" fetchPriority="high" sizes="(min-width: 900px) 760px, 100vw" className="object-cover" />
-                  {b.gambarSementara && <span className="media-label">Ilustrasi sementara</span>}
-                </span>
+                <MediaSlot src={b.gambar} alt={b.judul} ratio="3/2" priority isPlaceholder={b.gambarSementara} sizes="(min-width: 900px) 760px, 100vw" className="rounded-[18px]" />
               </figure>
             )}
             <p className="sr-only">
