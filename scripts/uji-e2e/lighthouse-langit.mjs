@@ -1,6 +1,6 @@
 // Lighthouse (seluler, simulasi) untuk beberapa rute + ringkasan skor, metrik, dan audit yang gagal.
 // Pakai: node scripts/uji-e2e/lighthouse-langit.mjs <base-url> <folder-keluar> <jalur1,jalur2> [kategori] [ekstra-header-json]
-// Butuh CHROME_PATH. Untuk pratinjau Vercel terlindungi, kirim header cookie _vercel_jwt lewat argumen ke-5.
+// Butuh CHROME_PATH. Untuk pratinjau Vercel terlindungi, argumen ke-5 = path berkas JSON header (mis. {"Cookie":"_vercel_jwt=…"}).
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";

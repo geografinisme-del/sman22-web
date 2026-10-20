@@ -97,5 +97,5 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 | --- | --- | --- |
 | A — token, header + menu layar penuh, hero + kartu putar 3D | Selesai (disetujui) | Kartu dari `kartu_beranda` (migrasi 20261220, belum di produksi; ada kartu bawaan). |
 | B — tur sekolah + admin, angka, SPMB + footer | Selesai (disetujui) | Migrasi 20261221 (tur_sekolah, bucket, 2 kolom profil) belum di produksi; ada titik bawaan. |
-| C — semua halaman memakai desain baru, pembersihan desain lama | Selesai (menunggu persetujuan) | Halaman baru profil/pembelajaran/pengumuman/prestasi/cari; CMS staf_publik, fasilitas, halaman_cms (migrasi 20261222, belum di produksi). Komponen & CSS lama dihapus. |
-| D — media sementara, gerak, kinerja, verifikasi akhir | Belum | |
+| C — semua halaman memakai desain baru, pembersihan desain lama | Selesai (disetujui) | Halaman baru profil/pembelajaran/pengumuman/prestasi/cari; CMS staf_publik, fasilitas, halaman_cms (migrasi 20261222, belum di produksi). Komponen & CSS lama dihapus. |
+| D — media sementara, gerak, kinerja, verifikasi akhir | Selesai (menunggu persetujuan) | MediaSlot tunggal, MesinLangit (GSAP), aksesibilitas 100 di semua halaman yang diukur, Lighthouse seluler beranda median 0,86. |

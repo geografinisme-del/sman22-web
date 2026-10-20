@@ -15,7 +15,6 @@ const cek = (nama, ok, info) => {
 const keadaan = (page) =>
   page.evaluate(() => {
     const op = (s) => [...document.querySelectorAll(s)].map((e) => +getComputedStyle(e).opacity);
-    const tf = (s) => [...document.querySelectorAll(s)].map((e) => getComputedStyle(e).transform);
     return {
       judul: document.querySelector("#judul-hero")?.textContent?.trim(),
       opHero: op(".lgt-hero [data-masuk]"),

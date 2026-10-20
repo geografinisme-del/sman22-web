@@ -10,7 +10,7 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 | Sistem gerak (motion) situs publik | `desain-editorial-sekolah` | Selesai, di-commit, belum di-push |
 | Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `main` (sudah di produksi) | Kode tayang; **2 migrasi belum dijalankan di produksi** (lihat bawah) |
 | Portal Digital 22, warna bidang, tema "Sekolah Berwarna", navigasi berkelompok | `portal-digital-22` | Selesai & diuji lokal, di-commit, **belum di-push** |
-| "Langit cerah + Tur sekolah" — Tahap A (token, header + menu, hero + kartu putar), B (tur sekolah, angka, SPMB, footer), C (semua halaman, hapus desain lama) | `langit-cerah` (dari `buku-tahunan`) | Tahap A–C selesai & diuji lokal, di-push ke **pratinjau**; menunggu "lanjut" sebelum Tahap D. Migrasi 20261210, 20261220, 20261221, 20261222 belum di produksi |
+| "Langit cerah + Tur sekolah" — Tahap A (token, header + menu, hero + kartu putar), B (tur sekolah, angka, SPMB, footer), C (semua halaman, hapus desain lama), D (media, gerak, kinerja, verifikasi) | `langit-cerah` (dari `buku-tahunan`) | Tahap A–D selesai & diuji lokal, di-push ke **pratinjau**; menunggu persetujuan akhir. Migrasi 20261210, 20261220, 20261221, 20261222 belum di produksi |
 | "Buku tahunan yang hidup": token (Tahap 1), beranda majalah (Tahap 2), Portal Digital 22 (Tahap 3), gerak GSAP/Embla (Tahap 4) | `buku-tahunan` | Selesai & diuji lokal, di-push ke **pratinjau** Vercel (bukan produksi); migrasi 20261210 belum di produksi |
 
 Detail status per modul: **MODULE_STATUS.md**.
@@ -325,4 +325,24 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   hex lama diganti token di seluruh situs, portal, dan admin.
 - **Verifikasi**: `scripts/uji-e2e/tangkap-semua.mjs` (34 rute × 1440/390; cek header/footer baru, huruf, warna lama,
   luber — HP dibandingkan dengan lebar layar perangkat), `scripts/uji-e2e/tangkap-admin.mjs` (admin, akun uji lokal).
+
+### Tahap D
+- **MediaSlot** (`src/components/MediaSlot.tsx`) = satu-satunya komponen foto/video konten: `src`, `alt`, `caption`, `ratio`
+  (`"3/2"`… atau `"isi"`), `isPlaceholder`, `focus`, `video`, `kosong`, `fit`, `labelDiNamaInduk`. Berkas situs & Storage
+  Supabase lewat next/image; URL luar lain (sampul katalog, logo ekskul) `<img>` lazy `no-referrer` (tidak diproksikan).
+  Gaya dasar di `@layer components` (halaman.css) agar kelas komponen & utilitas dapat menimpanya. Pengecualian: logo
+  sekolah dan poster pengumuman (ditampilkan utuh). Rencana slot: `public/media/placeholder/MEDIA_PLAN.md`.
+- **Hitungan media sementara** (Admin → Ringkasan) mencakup berita, galeri, prestasi, slide hero, kartu beranda, tur,
+  guru & staf, fasilitas.
+- **Gerak**: `GerakLangit` memuat `MesinLangit` (GSAP + ScrollTrigger + CustomEase "0.22,1,0.36,1") setelah LCP & senggang;
+  tidak dimuat bila reduced motion / tingkat "minimal". Blok di bawah layar muncul sekali saat digulir (800 ms, jeda maks.
+  4 × 80 ms) — hanya `opacity` (tetap terbaca pembaca layar & Ctrl+F); angka `[data-hitung]` menghitung naik; parallax
+  foto hanya `(min-width: 900px) and (hover: hover)` + tingkat "dinamis"; awan hero dijeda (`data-diam`) di luar layar.
+  `PengamatMuncul` & CSS `data-muncul` dihapus.
+- **Aksesibilitas**: lapisan biru tua tipis di belakang teks putih (hero, PageHero, ajakan) → ≥ 4,5:1; label "TUR SEKOLAH"
+  digelapkan; awan tur lebih dulu di DOM (urutan h2 → h3); nama tautan logo = teks terlihat; struktur `dl` kontak.
+- **Kinerja** (Lighthouse 12.8.2 seluler di pratinjau): lihat laporan Tahap D. Skrip: `scripts/uji-e2e/lighthouse-langit.mjs`
+  (argumen ke-5 = berkas JSON header cookie `_vercel_jwt` untuk pratinjau terlindungi).
+- **Uji**: `uji-gerak.mjs` kini juga menguji mesin GSAP (blok menunggu, muncul setelah digulir, tidak ada yang tertinggal,
+  tidak memakai visibility:hidden, angka kembali ke nilai asli, awan dijeda).
 
