@@ -227,7 +227,7 @@
 }
 @media (min-width: 900px) {
   .lgt-menu-kisi {
-    grid-template-columns: 1.15fr 1fr 0.85fr;
+    grid-template-columns: 0.9fr 1.1fr 0.9fr;
     gap: 48px;
     padding: 40px 0;
   }
@@ -238,13 +238,14 @@
   position: relative;
   display: block;
   width: 100%;
-  padding: 6px 1.1em 6px 0;
+  padding: 5px 1.1em 5px 0;
   text-align: left;
   white-space: nowrap;
-  font-size: clamp(1.75rem, 1rem + 2.4vw, 3rem);
+  /* proporsional: ±34px di desktop 1440, 24px di HP */
+  font-size: clamp(1.5rem, 1.15rem + 1.1vw, 2.25rem);
   font-weight: 500;
   letter-spacing: var(--judul-spasi);
-  line-height: 1.1;
+  line-height: 1.2;
   color: rgb(255 255 255 / 0.5);
   transition: color var(--durasi-ui) var(--ease);
 }
