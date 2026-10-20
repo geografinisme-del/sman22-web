@@ -17,7 +17,7 @@ type Bidang =
 const JUDUL: Bidang = { k: "judul", label: "Judul bagian (kosong = bawaan)", tipe: "teks", maks: 80 };
 /** Bidang pengaturan per widget (nilai tetap divalidasi ulang oleh skema di server). */
 const BIDANG: Record<JenisWidget, Bidang[]> = {
-  hero: [{ k: "tata", label: "Tata letak", tipe: "pilih", opsi: [["majalah", "Foto penuh + gradasi (Buku Tahunan)"], ["panel", "Foto besar + panel teks putih"], ["berdampingan", "Foto berdampingan dengan teks"], ["penuh", "Foto penuh dengan lapisan teks"]] }],
+  hero: [{ k: "tata", label: "Tata letak", tipe: "pilih", opsi: [["langit", "Langit + kartu putar 3D"], ["majalah", "Foto penuh + gradasi (Buku Tahunan)"], ["panel", "Foto besar + panel teks putih"], ["berdampingan", "Foto berdampingan dengan teks"], ["penuh", "Foto penuh dengan lapisan teks"]] }],
   pengumuman: [JUDUL, { k: "jumlah", label: "Jumlah pengumuman", tipe: "angka", min: 1, maks: 6 }],
   layanan: [JUDUL, { k: "jumlah", label: "Jumlah tautan", tipe: "angka", min: 2, maks: 8 }, { k: "tata", label: "Tata letak", tipe: "pilih", opsi: [["kisi", "Kisi dua kolom"], ["daftar", "Daftar"]] }],
   profil: [JUDUL, { k: "tata", label: "Posisi foto", tipe: "pilih", opsi: [["foto-kiri", "Foto di kiri"], ["foto-kanan", "Foto di kanan"]] }, { k: "paralaks", label: "Parallax ringan (hanya tingkat gerak Dinamis, desktop)", tipe: "centang" }],

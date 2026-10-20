@@ -46,7 +46,7 @@ async function muatData(k: Konfigurasi): Promise<DataBeranda> {
  */
 export async function SusunanBeranda({ konfig }: { konfig: Konfigurasi }) {
   // tema Buku Tahunan memakai templat bagian tersendiri dengan konfigurasi widget yang sama
-  if (konfig.tema === "buku") return <SusunanBuku konfig={konfig} />;
+  if (konfig.tema === "buku" || konfig.tema === "langit") return <SusunanBuku konfig={konfig} />;
   const d = await muatData(konfig);
   const bagian = susunBagian(konfig);
   const sudahTampil = new Set([...fotoPembukaDari(d).map((f) => f.src), "/images/gedung.jpg"]);

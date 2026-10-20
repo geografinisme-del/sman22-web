@@ -1,28 +1,25 @@
 @import "tailwindcss";
 
+@import "../styles/tokens.css";
+
 /*
- * Design token — diambil dari logo resmi SMAN 22 Bandung.
- * Aksen sementara: merah bingkai logo (#db224c). Untuk teks & tombol dipakai varian lebih gelap
- * (#b3123c, kontras 6,8:1 terhadap putih) agar memenuhi WCAG AA. Ganti bila sekolah punya panduan warna resmi.
+ * Nama token lama (dipakai komponen yang belum didesain ulang) dipetakan ke token "Langit cerah"
+ * di styles/tokens.css — tidak ada lagi nilai warna lama. Hapus pemetaan ini setelah Tahap C.
  */
 @theme {
-  /* netral hangat (dulu biru tua) — dipakai portal & admin */
-  --color-brand-50: #f6f5f2;
-  --color-brand-100: #e9e6e0;
-  --color-brand-600: #5b6270;
-  --color-brand-700: #3b414b;
-  --color-brand-800: #2a2f36;
-  --color-brand-900: #1f2328;
-  /* kuning sayap logo — hanya untuk penanda kecil */
-  --color-accent-400: #f2c14e;
-  --color-accent-500: #d9a514;
-  --color-merah: #b3123c;
-  --color-krem: #faf8f5;
-  --color-krem-tua: #efebe5;
-  --color-tinta: #1f2328;
-  /* huruf dari next/font (app/fonts.ts): isi & menu = Plus Jakarta Sans, judul = Newsreader */
-  --font-sans: var(--font-isi), "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
-  --font-serif: var(--font-judul), Georgia, "Times New Roman", serif;
+  --color-brand-50: #f2f4f7;
+  --color-brand-100: #e6eaf0;
+  --color-brand-600: #4a5468;
+  --color-brand-700: #2b3445;
+  --color-brand-800: #182133;
+  --color-brand-900: #0b1220;
+  --color-accent-400: #d7f56a;
+  --color-accent-500: #b9db3c;
+  --color-merah: #1f5fd1;
+  --color-krem: #f2f4f7;
+  --color-krem-tua: #e6eaf0;
+  --color-tinta: #0b1220;
+  --font-serif: var(--font-utama);
   --text-4xl: 2rem;
   --text-4xl--line-height: 1.2;
   --text-5xl: 2.375rem;
@@ -35,38 +32,23 @@
   --text-8xl--line-height: 1.08;
 }
 
-/*
- * DESIGN TOKENS — "buku tahunan yang hidup" (nama berdasarkan peran).
- * --color-brand: marun dengan hue merah logo (±345°), kecerahan setara #7A1F2B. Kontras di atas
- *   --color-paper ±10:1, teks putih di atasnya ±11:1.
- * --color-accent (emas): SANGAT jarang & hanya dekoratif (kontras 2,6:1 → tidak untuk teks).
- */
 :root {
-  --color-brand: #7a1f36;
-  --color-paper: #f5f0e6;
-  --color-ink: #1c1a17;
-  --color-ink-muted: #5b554c;
-  --color-accent: #b8892b;
-  --color-rule: #d9d0bf;
-
-  /* skala tipe (desktop → ponsel lewat clamp) */
-  --text-hero: clamp(2.5rem, 1.6rem + 4vw, 4.5rem); /* 40px → 72px */
-  --text-h2: clamp(1.875rem, 1.5rem + 1.6vw, 2.5rem); /* 30px → 40px */
-  --text-isi: 1.125rem; /* 18px */
-  --leading-isi: 1.6;
-  --lebar-paragraf: 65ch;
-
-  /* bentuk: sudut 0–4px, bayangan hampir nol, pemisah = garis 1px */
+  --color-brand: var(--blue-teks);
+  --color-paper: var(--white);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--muted);
+  --color-accent: var(--blue);
+  --color-rule: var(--line);
   --radius-0: 0;
-  --radius-1: 2px;
-  --radius-2: 4px;
-  --bayangan: 0 1px 0 rgb(28 26 23 / 0.06);
-  --garis: 1px solid var(--color-rule);
+  --radius-1: var(--radius-pil);
+  --radius-2: var(--radius-kartu);
+  --bayangan: var(--bayangan-kartu);
+  --garis: 1px solid var(--line);
 
-  /* warna tema situs — bawaan = token merek; ditimpa dari Admin → Tema & Tampilan (lihat app/layout.tsx) */
-  --tema-utama: var(--color-brand);
-  --tema-aksen: var(--color-accent);
-  --tema-gelap: var(--color-ink);
+  /* warna tema situs — ditimpa dari Admin → Tema & Tampilan (lihat app/layout.tsx) */
+  --tema-utama: var(--blue);
+  --tema-aksen: var(--lime);
+  --tema-gelap: var(--ink);
   color-scheme: light;
 }
 
@@ -76,23 +58,23 @@ html {
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-utama);
   font-size: 16px;
   line-height: 1.6;
 }
 
-/* judul: tebal secukupnya, tanpa jarak huruf rapat dan tanpa miring dekoratif */
+/* judul besar: weight 500, letter-spacing -0.035em */
 h1,
 h2,
-h3,
 .font-serif {
-  letter-spacing: -0.005em;
+  font-weight: var(--judul-berat);
+  letter-spacing: var(--judul-spasi);
   text-wrap: balance;
 }
-.font-serif {
-  font-weight: 600;
+h3 {
+  text-wrap: balance;
 }
 h1 em,
 h2 em,
@@ -120,7 +102,7 @@ h3 em,
   --gerak-panel: 280ms;
   --gerak-muncul: 500ms;
   --gerak-jeda: 70ms;
-  --ease-keluar: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-keluar: var(--ease);
 }
 
 /*

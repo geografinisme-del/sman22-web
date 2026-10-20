@@ -10,6 +10,7 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 | Sistem gerak (motion) situs publik | `desain-editorial-sekolah` | Selesai, di-commit, belum di-push |
 | Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `main` (sudah di produksi) | Kode tayang; **2 migrasi belum dijalankan di produksi** (lihat bawah) |
 | Portal Digital 22, warna bidang, tema "Sekolah Berwarna", navigasi berkelompok | `portal-digital-22` | Selesai & diuji lokal, di-commit, **belum di-push** |
+| "Langit cerah + Tur sekolah" — Tahap A (token, header + menu layar penuh, hero langit + kartu putar 3D) | `langit-cerah` (dari `buku-tahunan`) | Tahap A selesai & diuji lokal, di-push ke **pratinjau**; menunggu "lanjut" sebelum Tahap B. Migrasi 20261210 & 20261220 belum di produksi |
 | "Buku tahunan yang hidup": token (Tahap 1), beranda majalah (Tahap 2), Portal Digital 22 (Tahap 3), gerak GSAP/Embla (Tahap 4) | `buku-tahunan` | Selesai & diuji lokal, di-push ke **pratinjau** Vercel (bukan produksi); migrasi 20261210 belum di produksi |
 
 Detail status per modul: **MODULE_STATUS.md**.
@@ -245,3 +246,32 @@ Konsep: majalah/koran sekolah, bukan SaaS. Mockup acuan: `Beranda.pdf` & `Portal
   footer, dan akses cepat beranda (`menu.test.ts`).
 - Footer: kolom Jelajahi, Pembelajaran, Layanan, SPMB. Akses cepat beranda berkelompok Pembelajaran / Layanan;
   setiap tujuan muncul sekali.
+
+## Langit cerah + Tur sekolah (branch `langit-cerah`) — keputusan
+
+Pengerjaan bertahap (A–D); setiap tahap berhenti untuk persetujuan pemilik ("lanjut").
+Keputusan pemilik 20 Okt 2026: Guru & staf memakai tabel CMS publik baru (Tahap C); item menu yang halamannya
+belum ada diarahkan ke halaman terdekat (ditandai `// sementara` di `src/content/menu-langit.ts`); YouTube hanya
+tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
+
+### Tahap A
+- **Token**: `src/styles/tokens.css` (satu sumber; juga `@theme inline` Tailwind). Huruf: Plus Jakarta Sans 400–800
+  (`--font-jakarta`) + JetBrains Mono 500/700 untuk `.label-mono`. Nama token lama (`--color-brand`, `--color-paper`,
+  kelas `text-merah`, `bg-krem`, `font-serif`, …) dipetakan ke nilai baru di `globals.css` — dihapus di Tahap C.
+  Teks biru kecil memakai `--blue-teks` #1F5FD1 (5,6:1); #2F7DF6 hanya untuk elemen besar/grafis (4,2:1).
+- **Tema**: `langit` satu-satunya tema yang bisa dipilih; tema lama `tersedia: false` (konfigurasi lama → langit).
+  Palet `cerah`. Uji: `tampilan.test.ts`.
+- **Header + menu** (`src/components/langit/`): `SiteHeader` (transparan di atas `[data-hero-langit]`, lalu putih 90% +
+  blur), `FullMenu` (`<dialog>` bawaan: Esc, fokus terkunci, fokus kembali ke pemicu; tata letak tidak bergeser saat
+  grup aktif berganti), `SiteFooter` (struktur = menu, `id="navigasi-situs"` = tujuan tautan menu tanpa JS),
+  `dataMenu()` (E-Learning dari CMS, alamat/jam dari profil, Instagram/YouTube hanya bila URL https diisi).
+  Dipakai semua halaman lewat `KerangkaPublik` + halaman 404. Pita pengumuman & tombol "Informasi" tidak ada lagi.
+- **Hero + kartu putar**: `HeroLangit`, `KartuPutar` (rAF sendiri; geometri murni di `src/lib/cincin.ts` + tes),
+  `MasukBertahap` (Web Animations, dilewati bila reduced-motion/hidrasi lambat). Tombol "Tur sekolah" muncul di
+  Tahap B (butuh `#tur`). Kartu dari tabel `kartu_beranda` (migrasi `20261220000000_kartu_beranda.sql`; tanpa tabel →
+  12 kartu bawaan di `src/content/kartu-beranda.ts`). Admin: `/admin/kartu-beranda`.
+- Pointer: cincin `pointer-events: none` (hanya kartu & panggung); pointer baru ditangkap setelah seret > 6px agar klik
+  tetap sampai ke tautan; `dragstart` bawaan dicegah.
+- Uji: `scripts/uji-e2e/uji-langit.mjs` (18 cek), `uji-menu.mjs` (struktur menu, Esc, footer, 24 tautan),
+  `uji-gerak.mjs` (tanpa JS / reduced-motion / 390), `supabase/tests/rls_langit_test.sql`.
+- Pencarian sementara: kotak cari menu → `/berita?q=` (halaman pencarian penuh di Tahap C).

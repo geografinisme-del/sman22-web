@@ -21,7 +21,7 @@ export const DEFINISI_WIDGET = {
     instans: "satu",
     wajib: true,
     kosong: "Foto bawaan sekolah dipakai bila belum ada slide.",
-    skema: z.object({ tata: pilihan(["berdampingan", "penuh", "panel", "majalah"], "majalah") }),
+    skema: z.object({ tata: pilihan(["langit", "berdampingan", "penuh", "panel", "majalah"], "langit") }),
   },
   pengumuman: {
     label: "Pengumuman",

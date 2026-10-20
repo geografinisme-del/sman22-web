@@ -1,20 +1,19 @@
 import "server-only";
 import type { CSSProperties, ReactNode } from "react";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
 import { PengamatMuncul } from "@/components/gerak/PengamatMuncul";
-import { HeaderMengecil } from "@/components/buku/HeaderMengecil";
+import { dataMenu } from "@/components/langit/dataMenu";
+import { SiteFooter } from "@/components/langit/SiteFooter";
+import { SiteHeader } from "@/components/langit/SiteHeader";
 import { PengaturOverlay } from "@/components/gerak/PengaturOverlay";
 import type { InfoPrioritas } from "@/components/gerak/ModalPrioritas";
 import type { Informasi } from "@/components/gerak/DialogInformasi";
-import { getBerita, getPengumuman, getSitus } from "@/lib/data";
-import { tautanELearning } from "@/content/menu";
+import { getBerita, getPengumuman } from "@/lib/data";
 import type { Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import { FONT, PALET } from "@/lib/tampilan/token";
-import Link from "next/link";
 import "@/components/beranda/beranda.css";
 import "./tema.css";
 import "@/components/buku/buku.css";
+import "@/components/langit/langit.css";
 
 const HARI_BERITA_RUTIN = 14;
 
@@ -42,53 +41,34 @@ async function muatOverlay(k: Konfigurasi): Promise<{ prioritas: InfoPrioritas |
 }
 
 /**
- * Kerangka halaman publik: header, konten, footer, pengamat gerak, dan pengatur overlay.
- * Token tema (palet, font) dipasang sebagai variabel CSS di pembungkus ini saja — dasbor admin tidak
- * terpengaruh. `data-tema` & `data-gerak` memilih varian CSS tema dan tingkat gerak.
+ * Kerangka halaman publik "Langit cerah": SiteHeader (+ menu layar penuh), konten, SiteFooter, dan pengatur overlay.
+ * Dipakai SEMUA halaman publik. Token tema (palet, font) dipasang sebagai variabel CSS di pembungkus ini saja —
+ * dasbor admin tidak terpengaruh. Tanpa tombol/panel "Informasi" mengambang (hanya pemandu = satu tombol mengambang).
  */
 export async function KerangkaPublik({ konfig, halamanUtama = "/", pita, children }: { konfig: Konfigurasi; halamanUtama?: string; pita?: ReactNode; children: ReactNode }) {
-  const buku = konfig.tema === "buku";
-  // tema Buku Tahunan: tanpa panel/tombol "Informasi" mengambang (pengumuman tampil di pita atas)
-  const overlay = await muatOverlay(buku ? { ...konfig, popup: { ...konfig.popup, rutin: false } } : konfig);
-  // pita pengumuman: satu pengumuman terpenting (prioritas → penting → terbaru); hilang bila tidak ada
-  const daftarPengumuman = buku ? await getPengumuman(6) : [];
-  const pitaPengumuman = daftarPengumuman.find((x) => x.prioritas) ?? daftarPengumuman[0];
-  // tujuan menu E-Learning: URL dari CMS (Tampilan Website → Layanan) atau halaman penjelasan bawaan
-  const eLearning = tautanELearning((await getSitus()).layanan);
+  const [overlay, menu] = await Promise.all([muatOverlay({ ...konfig, popup: { ...konfig.popup, rutin: false } }), dataMenu()]);
   const p = PALET[konfig.palet];
   const gaya = { "--tema-utama": p.utama, "--tema-aksen": p.aksen, "--tema-gelap": p.gelap, "--font-publik": FONT[konfig.font].css } as CSSProperties;
   return (
-    <div className="situs-publik flex min-h-screen flex-col" data-tema={konfig.tema} data-gerak={konfig.gerak} style={gaya}>
-      <a href="#konten" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">
+    <div className="situs-publik situs-langit flex min-h-screen flex-col" data-tema={konfig.tema} data-gerak={konfig.gerak} style={gaya}>
+      <a href="#konten" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
         Lewati ke konten
       </a>
       {pita}
-      {pitaPengumuman && (
-        <div className="pita-pengumuman">
-          <p className="lp-wadah">
-            <span className="pita-label">Pengumuman</span>
-            <span className="pita-teks">{pitaPengumuman.judul}</span>
-            <Link href={`/agenda#pengumuman-${pitaPengumuman.id}`} className="pita-tautan" prefetch={false}>
-              Lihat
-            </Link>
-          </p>
-        </div>
-      )}
-      <Header eLearning={eLearning} />
+      <SiteHeader data={menu} />
       <main id="konten" tabIndex={-1} className="lp halaman-publik flex-1 focus:outline-none">
         {children}
       </main>
-      <Footer />
+      <SiteFooter data={menu} />
       <PengamatMuncul />
-      {buku && <HeaderMengecil />}
       {/* lapisan overlay memakai gaya situs publik (.lp) walau berada di luar <main> */}
       <div className="lp">
         <PengaturOverlay
           halamanUtama={halamanUtama}
-          aturan={{ prioritas: konfig.popup.prioritas, rutin: buku ? false : konfig.popup.rutin, pemandu: konfig.pemandu.aktif }}
+          aturan={{ prioritas: konfig.popup.prioritas, rutin: false, pemandu: konfig.pemandu.aktif }}
           prioritas={overlay.prioritas}
           rutin={overlay.rutin}
-          adaTombolInfo={!buku}
+          adaTombolInfo={false}
         />
       </div>
     </div>

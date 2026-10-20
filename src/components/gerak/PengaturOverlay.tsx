@@ -105,7 +105,7 @@ export function PengaturOverlay({
   };
 
   const evaluasi = useCallback(() => {
-    const pembuka = document.querySelector(".pembuka");
+    const pembuka = document.querySelector(".pembuka, [data-hero-langit]");
     const total = document.documentElement.scrollHeight - window.innerHeight;
     const progres = total > 0 ? window.scrollY / total : 0;
     const lewatPembuka = !pembuka || pembuka.getBoundingClientRect().bottom < 0;

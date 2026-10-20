@@ -138,15 +138,16 @@ cek("pemilih ruang kerja: pindah ke Website tanpa menambah izin", (await url()) 
 await buka("/admin/pengguna");
 cek("humas: setelah pindah ruang kerja tetap tidak bisa membuka Pengguna & Peran", (await url()).includes("tanpa-akses"), await url());
 
-// ===== 2. EDITOR TEMA: draf → pratinjau → terapkan → pulihkan =====
+// ===== 2. EDITOR TAMPILAN: draf → pratinjau → terapkan → pulihkan =====
+// Tema lama diarsipkan (hanya "Langit cerah"); alur diuji lewat tingkat gerak (data-gerak) + susunan widget.
 await buka("/admin/tampilan", 2500);
 await foto("20-admin-tema.jpg");
 const temaAwal = await (async () => {
   await buka("/", 1500);
-  return js(`document.querySelector(".situs-publik").dataset.tema`);
+  return js(`document.querySelector(".situs-publik").dataset.gerak`);
 })();
 await buka("/admin/tampilan", 2500);
-await klik(`[...document.querySelectorAll("#panel-tema label")].find(l=>l.textContent.includes("Modern Interaktif")).querySelector("button")`);
+await klik(`[...document.querySelectorAll("#panel-tema label")].find(l=>l.textContent.includes("Dinamis"))`);
 await tidur(300);
 await klik(`document.querySelector("#tab-susunan")`);
 await tidur(300);
@@ -164,19 +165,19 @@ await foto("21-admin-susunan.jpg");
 await klik(tombolTeks("Simpan draf"));
 await sampai(`document.body.innerText.includes("Draf tersimpan")`);
 await buka("/", 1500);
-cek("draf tersimpan TIDAK mengubah situs publik", (await js(`document.querySelector(".situs-publik").dataset.tema`)) === temaAwal && (await js(`!!document.querySelector("[data-widget*='berita']")`)), { temaAwal });
+cek("draf tersimpan TIDAK mengubah situs publik", (await js(`document.querySelector(".situs-publik").dataset.gerak`)) === temaAwal && (await js(`!!document.querySelector("[data-widget*='berita']")`)), { temaAwal });
 await buka("/pratinjau/tampilan", 2500);
-const pra = await js(`({tema:document.querySelector(".situs-publik").dataset.tema, penuh:!!document.querySelector(".pembuka-penuh"), berita:!!document.querySelector("[data-widget*='berita']"), pita:document.body.innerText.includes("Pratinjau draf")})`);
-cek("pratinjau (pengelola) menampilkan draf: tema Modern, pembuka penuh, berita dilepas", pra.tema === "modern" && pra.penuh && !pra.berita && pra.pita, pra);
+const pra = await js(`({tema:document.querySelector(".situs-publik").dataset.gerak, penuh:!!document.querySelector("[data-hero-langit]"), berita:!!document.querySelector("[data-widget*='berita']"), pita:document.body.innerText.includes("Pratinjau draf")})`);
+cek("pratinjau (pengelola) menampilkan draf: gerak Dinamis, hero langit (tata lama → fallback), berita dilepas", pra.tema === "dinamis" && pra.penuh && !pra.berita && pra.pita, pra);
 await foto("22-pratinjau-draf-desktop.jpg");
 await buka("/admin/tampilan", 2500);
-await ketik(`document.querySelector("input[placeholder^='contoh: ganti']")`, "Uji terapkan tema Modern");
+await ketik(`document.querySelector("input[placeholder^='contoh: ganti']")`, "Uji terapkan gerak Dinamis");
 await klik(`[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="Terapkan")`);
 await sampai(`document.body.innerText.includes("Tampilan diterapkan")`, 20000);
 await tidur(2500);
 await buka("/", 2500);
-const pub = await js(`({tema:document.querySelector(".situs-publik").dataset.tema, penuh:!!document.querySelector(".pembuka-penuh"), berita:!!document.querySelector("[data-widget*='berita']"), urutan:[...document.querySelectorAll("[data-widget]")].map(s=>s.dataset.widget)})`);
-cek("setelah Terapkan: publik memakai konfigurasi baru", pub.tema === "modern" && pub.penuh && !pub.berita, { pub, susunanEditor });
+const pub = await js(`({tema:document.querySelector(".situs-publik").dataset.gerak, penuh:!!document.querySelector("[data-hero-langit]"), berita:!!document.querySelector("[data-widget*='berita']"), urutan:[...document.querySelectorAll("[data-widget]")].map(s=>s.dataset.widget)})`);
+cek("setelah Terapkan: publik memakai konfigurasi baru", pub.tema === "dinamis" && pub.penuh && !pub.berita, { pub, susunanEditor });
 await buka("/berita", 1500);
 cek("melepas widget Berita tidak menghapus data berita", (await js(`document.body.innerText.includes("Pekan literasi sekolah")`)) === true);
 await buka("/admin/tampilan", 2500);
@@ -184,25 +185,25 @@ await klik(`document.querySelector("#tab-riwayat")`);
 const jmlRiwayat = await js(`document.querySelectorAll("#panel-riwayat li").length`);
 cek("riwayat mencatat versi terbit", jmlRiwayat >= 1, jmlRiwayat);
 
-// kembalikan ke Akademik lewat draf + terapkan, lalu pulihkan versi Modern dari riwayat
+// kembalikan ke gerak Minimal lewat draf + terapkan, lalu pulihkan versi Dinamis dari riwayat
 await klik(`document.querySelector("#tab-tema")`);
-await klik(`[...document.querySelectorAll("#panel-tema label")].find(l=>l.textContent.includes("Akademik")).querySelector("button")`);
+await klik(`[...document.querySelectorAll("#panel-tema label")].find(l=>l.textContent.includes("Minimal"))`);
 await tidur(300);
 await klik(`[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="Terapkan")`);
 await sampai(`document.body.innerText.includes("Tampilan diterapkan")`, 20000);
 await tidur(2500);
 await buka("/", 2000);
-const setelahAkademik = await js(`document.querySelector(".situs-publik").dataset.tema`);
+const setelahAkademik = await js(`document.querySelector(".situs-publik").dataset.gerak`);
 await buka("/admin/tampilan", 2500);
 await klik(`document.querySelector("#tab-riwayat")`);
 await klik(`[...document.querySelectorAll("#panel-riwayat li")][1].querySelector("button")`);
 await sampai(`document.body.innerText.includes("dipulihkan ke draf")`, 15000);
 await tidur(2500);
 await buka("/pratinjau/tampilan", 2500);
-const pulih = await js(`document.querySelector(".situs-publik").dataset.tema`);
+const pulih = await js(`document.querySelector(".situs-publik").dataset.gerak`);
 await buka("/", 1500);
-cek("pulihkan versi lama → masuk draf (pratinjau Modern), publik tetap Akademik sampai diterapkan", setelahAkademik === "akademik" && pulih === "modern" && (await js(`document.querySelector(".situs-publik").dataset.tema`)) === "akademik", { setelahAkademik, pulih });
-// terapkan versi Modern yang dipulihkan untuk pemeriksaan visual & popup berikutnya
+cek("pulihkan versi lama → masuk draf (pratinjau Dinamis), publik tetap Minimal sampai diterapkan", setelahAkademik === "minimal" && pulih === "dinamis" && (await js(`document.querySelector(".situs-publik").dataset.gerak`)) === "minimal", { setelahAkademik, pulih });
+// terapkan versi Dinamis yang dipulihkan untuk pemeriksaan visual & popup berikutnya
 await buka("/admin/tampilan", 2500);
 await klik(`[...document.querySelectorAll("button")].find(b=>b.textContent.trim()==="Terapkan")`);
 await sampai(`document.body.innerText.includes("Tampilan diterapkan")`, 20000);
@@ -223,17 +224,13 @@ cek("Escape menutup modal, scroll dibuka, fokus ke konten utama", !tutup.buka &&
 await js(`window.scrollTo({top:(document.documentElement.scrollHeight-innerHeight)*0.4,behavior:"instant"})`);
 await tidur(1200);
 const rutin = await js(`({panel:!!document.querySelector(".info-panel,.info-teaser"), tombol:!!document.querySelector(".info-tombol"), modal:document.querySelector("dialog.dialog-prioritas").open})`);
-cek("setelah modal prioritas: panel rutin TIDAK otomatis, tombol Informasi tersedia", !rutin.panel && rutin.tombol && !rutin.modal, rutin);
+// desain "Langit cerah": hanya SATU tombol mengambang (pemandu) — panel rutin & tombol "Informasi" dimatikan;
+// pengumuman tersedia lewat menu Kabar & Agenda.
+cek("setelah modal prioritas: panel rutin TIDAK otomatis & tanpa tombol Informasi mengambang", !rutin.panel && !rutin.tombol && !rutin.modal, rutin);
 await buka("/", 2500);
 cek("muat ulang di sesi yang sama: modal prioritas tidak muncul lagi", (await js(`document.querySelector("dialog.dialog-prioritas")?.open`)) === false);
-await klik(`document.querySelector(".info-tombol")`).catch(async () => {
-  await js(`window.scrollTo({top:(document.documentElement.scrollHeight-innerHeight)*0.4,behavior:"instant"})`);
-  await tidur(1000);
-  await klik(`document.querySelector(".info-tombol")`);
-});
-await tidur(500);
-cek("tombol Informasi membuka daftar (prioritas + rutin)", (await js(`document.querySelectorAll(".info-panel h3, .info-panel .info-lain").length`)) >= 2);
-await foto("24-panel-informasi-modern.jpg");
+const mengambang = await js(`[...document.querySelectorAll("body *")].filter(e=>{const s=getComputedStyle(e); return s.position==="fixed" && (e.matches("button,a") || e.querySelector("button,a")) && e.getBoundingClientRect().height>0 && !e.closest("header,dialog")}).map(e=>e.className.toString().slice(0,30))`);
+cek("maksimal satu tombol mengambang di beranda", mengambang.length <= 1, mengambang);
 
 // ===== 4. PEMANDU =====
 await keluarAkun();

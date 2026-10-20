@@ -499,3 +499,16 @@ export const getPortalBidang = cache(async (): Promise<Record<string, Penanggung
   if (error) return {};
   return Object.fromEntries((data ?? []).map((b) => [b.kunci, { penanggungJawab: b.penanggung_jawab, foto: b.foto_url || undefined, fotoSementara: b.is_placeholder === true }]));
 });
+
+/* ------------------------------------------------------------------ */
+/* Kartu putar beranda (tema Langit cerah)                             */
+/* ------------------------------------------------------------------ */
+export { type KartuBeranda } from "@/content/kartu-beranda";
+/** Kartu aktif berurutan dari CMS; bila tabel belum ada (migrasi 20261220) atau kosong → kartu bawaan. */
+export const getKartuBeranda = cache(async (): Promise<import("@/content/kartu-beranda").KartuBeranda[]> => {
+  const { KARTU_BAWAAN } = await import("@/content/kartu-beranda");
+  if (!supabaseAktif) return KARTU_BAWAAN;
+  const { data, error } = await supabasePublik().from("kartu_beranda").select("*").eq("aktif", true).order("urutan").order("created_at");
+  if (error || !data?.length) return KARTU_BAWAAN;
+  return data.map((k) => ({ id: k.id, label: k.label, judul: k.judul, deskripsi: k.deskripsi ?? "", foto: k.foto_url || "", sementara: k.is_placeholder === true, url: k.url }));
+});

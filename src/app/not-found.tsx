@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { dataMenu } from "@/components/langit/dataMenu";
+import { SiteFooter } from "@/components/langit/SiteFooter";
+import { SiteHeader } from "@/components/langit/SiteHeader";
+import "@/components/langit/langit.css";
 
-export default function NotFound() {
+export default async function NotFound() {
+  const menu = await dataMenu();
   return (
     <>
-    <Header />
+    <SiteHeader data={menu} />
     <main className="flex-1">
     <div className="mx-auto max-w-xl px-5 pb-24 pt-36 text-center">
       <p className="font-serif text-8xl italic text-merah">404</p>
@@ -16,7 +19,7 @@ export default function NotFound() {
       </Link>
     </div>
     </main>
-    <Footer />
+    <SiteFooter data={menu} />
     </>
   );
 }

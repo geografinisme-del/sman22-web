@@ -4,7 +4,7 @@ import { tandaiFotoAsli } from "@/app/admin/actions-buku";
  * Penanda media "Ilustrasi sementara" di daftar admin + tombol untuk menandainya sebagai foto asli
  * (setelah admin mengganti gambarnya lewat "Ubah"). Tidak tampil bila kolom is_placeholder belum ada / false.
  */
-export function FotoSementara({ tabel, id, sementara, kembali }: { tabel: "berita" | "galeri" | "hero_slide" | "prestasi"; id: string; sementara?: boolean; kembali: string }) {
+export function FotoSementara({ tabel, id, sementara, kembali }: { tabel: "berita" | "galeri" | "hero_slide" | "prestasi" | "kartu_beranda"; id: string; sementara?: boolean; kembali: string }) {
   if (!sementara) return null;
   return (
     <form action={tandaiFotoAsli} className="flex items-center gap-1">

@@ -22,18 +22,21 @@
   font-size: var(--text-isi);
   line-height: var(--leading-isi);
 }
-/* judul: Newsreader (serif), isi & menu: Plus Jakarta Sans */
+/* judul: Plus Jakarta Sans weight 500, letter-spacing -0.035em (token Langit cerah) */
 .lp h1,
 .lp h2,
 .lp h3 {
-  font-family: var(--font-serif);
+  font-family: var(--font-utama);
   color: var(--lp-ink);
-  letter-spacing: -0.01em;
+  letter-spacing: var(--judul-spasi);
   text-wrap: balance;
+}
+.lp h3 {
+  letter-spacing: -0.015em;
 }
 .lp h1 {
   font-size: var(--text-h2);
-  font-weight: 600;
+  font-weight: var(--judul-berat);
   line-height: 1.1;
 }
 .lp .pembuka h1 {
@@ -42,8 +45,8 @@
 }
 .lp h2 {
   font-size: var(--text-h2);
-  font-weight: 600;
-  line-height: 1.15;
+  font-weight: var(--judul-berat);
+  line-height: 1.12;
 }
 .lp h3 {
   font-size: 1.25rem;

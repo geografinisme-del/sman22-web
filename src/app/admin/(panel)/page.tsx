@@ -42,9 +42,9 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
   const mediaSementara = punya(akses, "konten.kelola")
     ? (
         await Promise.all(
-          (["berita", "galeri", "prestasi", "hero_slide"] as const).map((t) => {
+          (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda"] as const).map((t) => {
             const q = supabase.from(t).select("id", { count: "exact", head: true }).eq("is_placeholder", true);
-            return t === "hero_slide" ? q : q.is("deleted_at", null);
+            return t === "hero_slide" || t === "kartu_beranda" ? q : q.is("deleted_at", null);
           }),
         )
       ).reduce((n, r) => n + (r.error ? 0 : (r.count ?? 0)), 0)
@@ -113,7 +113,7 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
         <div role="status" className="mb-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
           <strong>{mediaSementara} media</strong> di website masih berupa ilustrasi sementara (berlabel &ldquo;Ilustrasi sementara&rdquo;). Ganti dengan foto asli sekolah
           melalui <Link href="/admin/berita" className="font-semibold underline">Berita</Link>, <Link href="/admin/galeri" className="font-semibold underline">Galeri</Link>,{" "}
-          <Link href="/admin/prestasi" className="font-semibold underline">Prestasi</Link>, atau <Link href="/admin/situs" className="font-semibold underline">Tampilan Website</Link>.
+          <Link href="/admin/prestasi" className="font-semibold underline">Prestasi</Link>, <Link href="/admin/kartu-beranda" className="font-semibold underline">Kartu Beranda</Link>, atau <Link href="/admin/situs" className="font-semibold underline">Tampilan Website</Link>.
         </div>
       )}
 

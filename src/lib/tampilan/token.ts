@@ -7,15 +7,16 @@
 
 /** Palet terkurasi dari warna logo resmi (merah mahkota, biru dongker cincin, biru langit sayap). */
 export const PALET = {
+  cerah: { label: "Langit cerah", utama: "#1f5fd1", aksen: "#d7f56a", gelap: "#0b1220" },
   merah: { label: "Marun sekolah", utama: "#7a1f36", aksen: "#b8892b", gelap: "#1c1a17" },
   dongker: { label: "Biru dongker logo", utama: "#3b5070", aksen: "#b3123c", gelap: "#1f2328" },
   langit: { label: "Biru langit logo", utama: "#0f6a9c", aksen: "#b3123c", gelap: "#1f2328" },
 } as const;
 export type KunciPalet = keyof typeof PALET;
 
-/** Font isi terkurasi (next/font, lihat app/fonts.ts). Judul selalu Newsreader (--font-judul). */
+/** Font terkurasi (next/font, lihat app/fonts.ts): Plus Jakarta Sans untuk semua teks. */
 export const FONT = {
-  jakarta: { label: "Plus Jakarta Sans", css: "var(--font-isi), system-ui, sans-serif" },
+  jakarta: { label: "Plus Jakarta Sans", css: "var(--font-jakarta), system-ui, sans-serif" },
 } as const;
 export type KunciFont = keyof typeof FONT;
 
@@ -37,20 +38,29 @@ export type DefinisiTema = {
   bawaan: { palet: KunciPalet; font: KunciFont; gerak: TingkatGerak };
 };
 
-export const TEMA: Record<"buku" | "warna" | "akademik" | "modern" | "editorial", DefinisiTema> = {
+export const TEMA: Record<"langit" | "buku" | "warna" | "akademik" | "modern" | "editorial", DefinisiTema> = {
+  // satu-satunya tema aktif: "Langit cerah + Tur sekolah" (token di styles/tokens.css). Tema lain diarsipkan agar
+  // tidak ada halaman publik yang kembali ke desain lama; konfigurasi lama otomatis jatuh ke tema ini.
+  langit: {
+    label: "Langit cerah",
+    keterangan: "Langit biru bergradasi, kartu putar 3D, tur sekolah, kartu putih membulat, aksen lime.",
+    tersedia: true,
+    tata: { hero: ["langit"] },
+    bawaan: { palet: "cerah", font: "jakarta", gerak: "standar" },
+  },
   // tema utama: "buku tahunan yang hidup" — kertas krem, marun, judul serif, tata letak majalah/koran sekolah
   buku: {
-    label: "Buku Tahunan",
+    label: "Buku Tahunan (diarsipkan)",
     keterangan: "Kertas krem, judul serif, foto penuh berlapis gradasi, kabar bergaya koran, blok SPMB marun, kehidupan siswa berlatar gelap.",
-    tersedia: true,
+    tersedia: false,
     tata: { hero: ["majalah"] },
     bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
   },
   // tema utama: foto besar + panel teks putih (tanpa lapisan gelap), warna penanda bidang pada layanan
   warna: {
-    label: "Sekolah Berwarna",
+    label: "Sekolah Berwarna (diarsipkan)",
     keterangan: "Foto kegiatan besar dengan panel teks putih, warna penanda bidang pada layanan, ritme bagian bervariasi.",
-    tersedia: true,
+    tersedia: false,
     tata: {
       hero: ["panel", "berdampingan", "penuh"],
       layanan: ["kisi", "daftar"],
@@ -62,9 +72,9 @@ export const TEMA: Record<"buku" | "warna" | "akademik" | "modern" | "editorial"
     bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
   },
   akademik: {
-    label: "Akademik",
+    label: "Akademik (diarsipkan)",
     keterangan: "Dasar terang & informatif: foto berdampingan dengan teks, kartu bergaris tipis, gerak tenang.",
-    tersedia: true,
+    tersedia: false,
     tata: {
       hero: ["berdampingan"],
       layanan: ["kisi", "daftar"],
@@ -76,9 +86,9 @@ export const TEMA: Record<"buku" | "warna" | "akademik" | "modern" | "editorial"
     bawaan: { palet: "merah", font: "jakarta", gerak: "standar" },
   },
   modern: {
-    label: "Modern Interaktif",
+    label: "Modern Interaktif (diarsipkan)",
     keterangan: "Foto pembuka penuh dengan lapisan teks, bidang warna solid, sudut lebih bulat, gerak lebih ekspresif.",
-    tersedia: true,
+    tersedia: false,
     tata: {
       hero: ["penuh", "berdampingan"],
       layanan: ["kisi", "daftar"],
@@ -102,7 +112,7 @@ export type KunciTema = keyof typeof TEMA;
 
 /** Variabel CSS publik dari pilihan terkurasi (nilai berasal dari tabel di atas, bukan masukan bebas). */
 export function cssToken(palet: KunciPalet, font: KunciFont) {
-  const p = PALET[palet] ?? PALET.merah;
+  const p = PALET[palet] ?? PALET.cerah;
   const f = FONT[font] ?? FONT.jakarta;
   return `--tema-utama:${p.utama};--tema-aksen:${p.aksen};--tema-gelap:${p.gelap};--font-publik:${f.css}`;
 }

@@ -7,11 +7,15 @@ import { formatTanggal } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Berita", description: "Berita dan kegiatan terbaru sekolah." };
 
-export default async function DaftarBerita({ searchParams }: { searchParams: Promise<{ kategori?: string }> }) {
-  const { kategori } = await searchParams;
+export default async function DaftarBerita({ searchParams }: { searchParams: Promise<{ kategori?: string; q?: string }> }) {
+  const { kategori, q: qMentah } = await searchParams;
+  // pencarian sederhana (kotak cari menu layar penuh) — halaman pencarian lengkap dibuat di Tahap C
+  const q = typeof qMentah === "string" ? qMentah.trim().slice(0, 80).toLowerCase() : "";
   const semua = await getBerita();
   const daftarKategori = [...new Set(semua.map((b) => b.kategori).filter(Boolean))];
-  const list = kategori ? semua.filter((b) => b.kategori === kategori) : semua;
+  const list = semua
+    .filter((b) => !kategori || b.kategori === kategori)
+    .filter((b) => !q || [b.judul, b.ringkasan, b.kategori].some((t) => (t ?? "").toLowerCase().includes(q)));
   const [utama, ...lain] = list;
   const tab = (aktif: boolean) =>
     `inline-flex min-h-11 items-center border-b-2 px-1 text-[0.9375rem] font-semibold transition-colors duration-150 ${aktif ? "border-[var(--tema-utama)] text-[#1f2328]" : "border-transparent text-[#5b6270] hover:text-[#1f2328]"}`;
@@ -36,7 +40,7 @@ export default async function DaftarBerita({ searchParams }: { searchParams: Pro
       <section className="bagian">
         <div className="lp-wadah">
           {!utama ? (
-            <Kosong teks={kategori ? `Belum ada berita kategori ${kategori}.` : "Belum ada berita yang diterbitkan."} />
+            <Kosong teks={q ? `Tidak ada berita yang cocok dengan “${q}”.` : kategori ? `Belum ada berita kategori ${kategori}.` : "Belum ada berita yang diterbitkan."} />
           ) : (
             <>
               <Link href={`/berita/${utama.slug}`} className="group grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-center">

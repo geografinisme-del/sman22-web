@@ -2,7 +2,8 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import { WPerpus, WProfil } from "@/components/widget/Widget";
-import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getPengumuman, getPrestasi, getProfil, getRekomendasiBuku, getSitus, getSpmbInfo, getVisualAkun } from "@/lib/data";
+import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getKartuBeranda, getPengumuman, getPrestasi, getProfil, getRekomendasiBuku, getSitus, getSpmbInfo, getVisualAkun } from "@/lib/data";
+import { HeroLangit } from "@/components/langit/HeroLangit";
 import { susunBagian, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import { tautanELearning } from "@/content/menu";
 import { GerakBuku } from "./GerakBuku";
@@ -27,6 +28,7 @@ const adaVideoHero = () => {
 export async function SusunanBuku({ konfig }: { konfig: Konfigurasi }) {
   const tampil = konfig.beranda.filter((w) => w.tampil);
   const ada = (j: string) => tampil.some((w) => w.jenis === j);
+  const kartu = konfig.tema === "langit" && ada("hero") ? await getKartuBeranda() : [];
   const [situs, profil, berita, agenda, pengumuman, galeri, visual, prestasi, spmb, buku] = await Promise.all([
     getSitus(),
     getProfil(),
@@ -100,7 +102,8 @@ export async function SusunanBuku({ konfig }: { konfig: Konfigurasi }) {
     const pasang = (j: string) => k.find((w) => w.jenis === j)?.pengaturan;
     switch (a.jenis) {
       case "hero":
-        return <BkHero key={kunci} foto={fotoHero} video={adaVideoHero() ? VIDEO_HERO : undefined} fakta={fakta} />;
+        // tema Langit cerah: hero langit + kartu putar 3D (kartu dari CMS kartu_beranda). #tur hadir di Tahap B.
+        return konfig.tema === "langit" ? <HeroLangit key={kunci} kartu={kartu} adaTur={false} /> : <BkHero key={kunci} foto={fotoHero} video={adaVideoHero() ? VIDEO_HERO : undefined} fakta={fakta} />;
       case "angka":
         return <BkAngka key={kunci} profil={profil} />;
       case "berita":

@@ -1,22 +1,21 @@
-import { Newsreader, Plus_Jakarta_Sans } from "next/font/google";
+import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 /**
  * Huruf situs (next/font: di-host sendiri saat build, tanpa permintaan ke Google dari peramban).
- * - Judul: Newsreader 500–700 (+ italic untuk aksen sesekali)
- * - Isi & menu: Plus Jakarta Sans 400/500/700
- * Dipasang sebagai variabel CSS --font-judul & --font-isi di <html>.
+ * - Semua teks: Plus Jakarta Sans 400–800
+ * - Label kecil KAPITAL: JetBrains Mono 500/700 (letter-spacing 0.08em, lihat .label-mono)
+ * Dipasang sebagai variabel CSS --font-jakarta & --font-jetbrains di <html> (dipakai styles/tokens.css).
  */
-export const fontJudul = Newsreader({
+export const fontJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
-  variable: "--font-judul",
+  variable: "--font-jakarta",
 });
 
-export const fontIsi = Plus_Jakarta_Sans({
+export const fontMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["500", "700"],
   display: "swap",
-  variable: "--font-isi",
+  variable: "--font-jetbrains",
 });

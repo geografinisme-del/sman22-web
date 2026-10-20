@@ -26,8 +26,8 @@ export type Konfigurasi = {
 
 export const KONFIGURASI_BAWAAN: Konfigurasi = {
   versi: VERSI_KONFIGURASI,
-  tema: "buku",
-  palet: "merah",
+  tema: "langit",
+  palet: "cerah",
   font: "jakarta",
   gerak: "standar",
   slideshow: { gaya: "manual", detik: 8 },

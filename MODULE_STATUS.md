@@ -91,3 +91,11 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 | Media sementara | Selesai | 10 foto Unsplash (CREDITS.md) untuk data contoh; semua is_placeholder = true. |
 | Tahap 4 (GSAP, Embla, animasi) | Selesai | Progressive enhancement, reduced-motion, parallax desktop saja; Lighthouse ponsel 89–90 (simulasi), CLS 0. |
 | Navigasi E-Learning / Layanan | Selesai | Menu, footer, akses cepat selaras; URL E-Learning dari CMS, bawaan /pembelajaran/e-learning. |
+
+## Fase Langit cerah (branch `langit-cerah`)
+| Tahap | Status | Catatan |
+| --- | --- | --- |
+| A — token, header + menu layar penuh, hero + kartu putar 3D | Selesai (menunggu persetujuan) | Kartu dari `kartu_beranda` (migrasi 20261220, belum di produksi; ada kartu bawaan). |
+| B — tur sekolah + admin, angka, SPMB + footer | Belum | |
+| C — semua halaman memakai desain baru, pembersihan desain lama | Belum | Bagian beranda di bawah hero & halaman dalam masih komponen lama dengan token baru. |
+| D — media sementara, gerak, kinerja, verifikasi akhir | Belum | |
