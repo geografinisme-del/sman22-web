@@ -10,7 +10,7 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 | Sistem gerak (motion) situs publik | `desain-editorial-sekolah` | Selesai, di-commit, belum di-push |
 | Platform: ruang kerja, E-Library, mesin tema & widget, popup prioritas, pemandu | `main` (sudah di produksi) | Kode tayang; **2 migrasi belum dijalankan di produksi** (lihat bawah) |
 | Portal Digital 22, warna bidang, tema "Sekolah Berwarna", navigasi berkelompok | `portal-digital-22` | Selesai & diuji lokal, di-commit, **belum di-push** |
-| "Langit cerah + Tur sekolah" — Tahap A (token, header + menu layar penuh, hero langit + kartu putar 3D) | `langit-cerah` (dari `buku-tahunan`) | Tahap A selesai & diuji lokal, di-push ke **pratinjau**; menunggu "lanjut" sebelum Tahap B. Migrasi 20261210 & 20261220 belum di produksi |
+| "Langit cerah + Tur sekolah" — Tahap A (token, header + menu, hero + kartu putar) & Tahap B (tur sekolah + admin, angka, SPMB, footer) | `langit-cerah` (dari `buku-tahunan`) | Tahap A–B selesai & diuji lokal, di-push ke **pratinjau**; menunggu "lanjut" sebelum Tahap C. Migrasi 20261210, 20261220, 20261221 belum di produksi |
 | "Buku tahunan yang hidup": token (Tahap 1), beranda majalah (Tahap 2), Portal Digital 22 (Tahap 3), gerak GSAP/Embla (Tahap 4) | `buku-tahunan` | Selesai & diuji lokal, di-push ke **pratinjau** Vercel (bukan produksi); migrasi 20261210 belum di produksi |
 
 Detail status per modul: **MODULE_STATUS.md**.
@@ -275,3 +275,24 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Uji: `scripts/uji-e2e/uji-langit.mjs` (18 cek), `uji-menu.mjs` (struktur menu, Esc, footer, 24 tautan),
   `uji-gerak.mjs` (tanpa JS / reduced-motion / 390), `supabase/tests/rls_langit_test.sql`.
 - Pencarian sementara: kotak cari menu → `/berita?q=` (halaman pencarian penuh di Tahap C).
+
+### Tahap B
+- **Tur sekolah** (`src/components/langit/TurSekolah.tsx`, `TurPembungkus.tsx`, `MesinTur.tsx`; logika murni `src/lib/tur.ts`
+  + tes): dirender server sebagai daftar (tanpa JS / HP / reduced motion). `TurPembungkus` memuat `MesinTur` (GSAP +
+  ScrollTrigger, `useGSAP`, `gsap.matchMedia`) saat section mendekati layar; desktop ≥ 900px dengan gerak → section
+  sticky setinggi (n+1)×100vh: awan 10% pertama, crossfade di 40% tengah tiap segmen, zoom 1.12 → 1.04, kartu kiri
+  bawah, penanda kanan, video hanya diputar saat titiknya aktif. Titik pertama bernomor 00 (pembuka).
+- **Data**: tabel `tur_sekolah` + bucket `tur-sekolah` (migrasi `20261221000000_tur_sekolah.sql`; trigger maks 8 aktif;
+  video wajib poster; foto wajib alt). Tanpa tabel → titik bawaan `src/content/tur-bawaan.ts`; tabel kosong → section
+  disembunyikan. Widget `tur` (konfigurasi tampilan versi 2; konfigurasi versi 1 otomatis mendapat tur setelah hero).
+- **Admin `/admin/tur-sekolah`**: unggah langsung browser → Storage (URL bertanda tangan, `mintaUnggahanTur`) ke `masuk/`;
+  saat simpan server memproses — foto → WebP maks 2400px (`sharp`), poster maks 1920px, video MP4 ≤ 15 detik / 8 MB
+  diperiksa dari isi berkas (`durasiMp4`, kotak mvhd) lalu dipindah ke `video/`; berkas lama dihapus. Titik fokus
+  dengan klik pratinjau, pratinjau desktop/HP, urutan seret-lepas + tombol panah, aktif/nonaktif 3–8.
+- **Bento "SMAN 22 dalam angka"** (`BentoAngka.tsx`): tahun berdiri (konten), siswa aktif & ekskul & kutipan/nama kepala
+  sekolah (formulir Profil), persen lulusan ke PT & jabatan (kolom baru, formulir "Angka beranda" di halaman Profil).
+  Kartu tanpa data tidak tampil.
+- **Ajakan SPMB** (`CtaSpmb.tsx`): hanya bila `spmb_info.aktif`; posisi bawaan di akhir beranda.
+- Uji: `scripts/uji-e2e/uji-tur.mjs` (16 cek: unggah foto & kompres, tolak video 20 detik, ganti ke video tanpa deploy,
+  tur awan → titik terakhir, video hanya saat aktif, HP daftar, urutan, batas minimal 3; keadaan dikembalikan),
+  `scripts/tangkap-tur.mjs`, `supabase/tests/rls_tur_test.sql`. Berkas media uji sintetis dibuat dengan ffmpeg.

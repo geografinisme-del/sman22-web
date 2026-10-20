@@ -29,6 +29,7 @@ const BIDANG: Record<JenisWidget, Bidang[]> = {
   ],
   agenda: [JUDUL, { k: "jumlah", label: "Jumlah agenda", tipe: "angka", min: 1, maks: 8 }],
   angka: [],
+  tur: [],
   spmb: [JUDUL],
   prestasi: [JUDUL, { k: "jumlah", label: "Jumlah prestasi", tipe: "angka", min: 2, maks: 8 }],
   program: [JUDUL, { k: "tata", label: "Tata letak", tipe: "pilih", opsi: [["sorot", "Sorotan bergulir dengan foto (desktop)"], ["daftar", "Daftar ringkas"]] }],

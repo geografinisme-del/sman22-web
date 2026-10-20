@@ -93,3 +93,29 @@ export async function geserKartu(form: FormData) {
   segarkan();
   redirect("/admin/kartu-beranda?pesan=tersimpan");
 }
+
+/* ---------------- Angka beranda (bento "SMAN 22 dalam angka") ---------------- */
+
+const angkaSchema = z.object({
+  lulusan_pt_persen: z
+    .string()
+    .trim()
+    .refine((v) => v === "" || (/^[0-9]{1,3}([.,][0-9])?$/.test(v) && Number(v.replace(",", ".")) <= 100), "Isi angka 0–100, mis. 87 atau 87,5"),
+  kepala_sekolah_jabatan: z.string().trim().max(80, "Maksimal 80 karakter"),
+});
+
+/** Kolom migrasi 20261221; jumlah siswa, ekskul, dan kutipan tetap diisi di formulir Profil utama. */
+export async function simpanAngkaBeranda(_prev: HasilAksi, form: FormData): Promise<HasilAksi> {
+  const ctx = await wajibAdmin();
+  if (!ctx) return GAGAL_AKSES;
+  const parsed = angkaSchema.safeParse({ lulusan_pt_persen: String(form.get("lulusan_pt_persen") ?? ""), kepala_sekolah_jabatan: String(form.get("kepala_sekolah_jabatan") ?? "") });
+  if (!parsed.success) return { ok: false, pesan: "Periksa kembali isian yang ditandai.", errors: pesanError(parsed.error) };
+  const { error, count } = await ctx.supabase
+    .from("profil_sekolah")
+    .update({ ...parsed.data, updated_by: ctx.akses.userId }, { count: "exact" })
+    .eq("id", 1);
+  if (error) return { ok: false, pesan: ["42703", "PGRST204"].includes(error.code ?? "") ? "Fitur ini memerlukan migrasi 20261221000000_tur_sekolah.sql." : pesanDb(error) };
+  if (!count) return GAGAL_AKSES;
+  segarkan();
+  return { ok: true, pesan: "Angka beranda disimpan." };
+}

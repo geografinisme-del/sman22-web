@@ -15,6 +15,7 @@ const WEBSITE = [
   { href: "/admin/agenda", label: "Agenda" },
   { href: "/admin/galeri", label: "Galeri" },
   { href: "/admin/kartu-beranda", label: "Kartu Beranda" },
+  { href: "/admin/tur-sekolah", label: "Tur Sekolah" },
   { href: "/admin/prestasi", label: "Prestasi & Alumni" },
   { href: "/admin/spmb", label: "SPMB Beranda" },
   { href: "/admin/portal-bidang", label: "Penanggung Jawab Portal" },

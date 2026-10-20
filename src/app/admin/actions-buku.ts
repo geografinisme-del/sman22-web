@@ -167,7 +167,7 @@ export async function simpanPortalBidang(_prev: HasilAksi, form: FormData): Prom
 
 /* ---------------- "Ganti dengan foto asli" ---------------- */
 
-const TABEL_MEDIA = ["berita", "galeri", "hero_slide", "prestasi", "kartu_beranda"] as const;
+const TABEL_MEDIA = ["berita", "galeri", "hero_slide", "prestasi", "kartu_beranda", "tur_sekolah"] as const;
 
 /**
  * Menandai media sebagai foto asli (is_placeholder = false). Dipakai setelah admin mengganti

@@ -27,7 +27,7 @@ test("nilai di luar pilihan terkurasi ditolak (tidak ada warna/font bebas)", () 
 
 test("widget: jenis tak dikenal dibuang, instans tunggal tidak digandakan, pengaturan dibatasi", () => {
   const k = bacaKonfigurasi({
-    versi: 1,
+    versi: 2,
     beranda: [
       { id: "x", jenis: "skrip", tampil: true, pengaturan: { html: "<script>" } },
       { id: "galeri", jenis: "galeri", tampil: true, pengaturan: { jumlah: 999, tata: "acak" } },
@@ -54,7 +54,7 @@ test("pembuka wajib: selalu ada, selalu pertama, tidak bisa disembunyikan atau d
 
 test("versi lama (tanpa versi & susunan) dimigrasikan ke susunan bawaan; tema arsip → Langit cerah", () => {
   const k = bacaKonfigurasi({ tema: "modern" });
-  assert.equal(k.versi, 1);
+  assert.equal(k.versi, 2);
   assert.equal(k.tema, "langit", "tema lama yang diarsipkan tidak pernah tampil lagi");
   assert.deepEqual(k.beranda.map((w) => w.jenis), KONFIGURASI_BAWAAN.beranda.map((w) => w.jenis));
 });
@@ -97,7 +97,7 @@ test("konfigurasi dari tema lama dipertahankan; tata letak tak didukung → fall
 
 test("pasangan bersebelahan digabung, yang tersembunyi tidak ikut", () => {
   const k = bacaKonfigurasi({
-    versi: 1,
+    versi: 2,
     beranda: [
       { id: "hero", jenis: "hero" },
       { id: "pengumuman", jenis: "pengumuman" },
@@ -159,4 +159,12 @@ test("lambaian pemandu sekali per sesi, hanya di bagian atas & bila tak ada yang
 
 test("tanpa data: tidak ada popup kosong", () => {
   assert.equal(pilihOverlay({ prioritas: false, rutin: false, pemandu: false }, sesiBaru, { ...atas, lewatPembuka: true, progres: 0.9 }), null);
+});
+
+test("konfigurasi versi 1 mendapat widget tur setelah hero; versi 2 menghormati tur yang dilepas", () => {
+  const lama = bacaKonfigurasi({ versi: 1, beranda: [{ id: "hero", jenis: "hero" }, { id: "berita", jenis: "berita" }] });
+  assert.deepEqual(lama.beranda.map((w) => w.jenis), ["hero", "tur", "berita"]);
+  assert.equal(lama.versi, 2);
+  const baru = bacaKonfigurasi({ versi: 2, beranda: [{ id: "hero", jenis: "hero" }, { id: "berita", jenis: "berita" }] });
+  assert.deepEqual(baru.beranda.map((w) => w.jenis), ["hero", "berita"]);
 });

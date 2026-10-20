@@ -95,7 +95,7 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 ## Fase Langit cerah (branch `langit-cerah`)
 | Tahap | Status | Catatan |
 | --- | --- | --- |
-| A — token, header + menu layar penuh, hero + kartu putar 3D | Selesai (menunggu persetujuan) | Kartu dari `kartu_beranda` (migrasi 20261220, belum di produksi; ada kartu bawaan). |
-| B — tur sekolah + admin, angka, SPMB + footer | Belum | |
+| A — token, header + menu layar penuh, hero + kartu putar 3D | Selesai (disetujui) | Kartu dari `kartu_beranda` (migrasi 20261220, belum di produksi; ada kartu bawaan). |
+| B — tur sekolah + admin, angka, SPMB + footer | Selesai (menunggu persetujuan) | Migrasi 20261221 (tur_sekolah, bucket, 2 kolom profil) belum di produksi; ada titik bawaan. |
 | C — semua halaman memakai desain baru, pembersihan desain lama | Belum | Bagian beranda di bawah hero & halaman dalam masih komponen lama dengan token baru. |
 | D — media sementara, gerak, kinerja, verifikasi akhir | Belum | |

@@ -2,8 +2,11 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 import { WPerpus, WProfil } from "@/components/widget/Widget";
-import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getKartuBeranda, getPengumuman, getPrestasi, getProfil, getRekomendasiBuku, getSitus, getSpmbInfo, getVisualAkun } from "@/lib/data";
+import { getAgenda, getBerita, getEkskulRingkas, getGaleri, getKartuBeranda, getPengumuman, getTur, getPrestasi, getProfil, getRekomendasiBuku, getSitus, getSpmbInfo, getVisualAkun } from "@/lib/data";
+import { BentoAngka } from "@/components/langit/BentoAngka";
+import { CtaSpmb } from "@/components/langit/CtaSpmb";
 import { HeroLangit } from "@/components/langit/HeroLangit";
+import { TurSekolah } from "@/components/langit/TurSekolah";
 import { susunBagian, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import { tautanELearning } from "@/content/menu";
 import { GerakBuku } from "./GerakBuku";
@@ -28,7 +31,8 @@ const adaVideoHero = () => {
 export async function SusunanBuku({ konfig }: { konfig: Konfigurasi }) {
   const tampil = konfig.beranda.filter((w) => w.tampil);
   const ada = (j: string) => tampil.some((w) => w.jenis === j);
-  const kartu = konfig.tema === "langit" && ada("hero") ? await getKartuBeranda() : [];
+  const langit = konfig.tema === "langit";
+  const [kartu, tur] = await Promise.all([langit && ada("hero") ? getKartuBeranda() : Promise.resolve([]), langit && ada("tur") ? getTur() : Promise.resolve([])]);
   const [situs, profil, berita, agenda, pengumuman, galeri, visual, prestasi, spmb, buku] = await Promise.all([
     getSitus(),
     getProfil(),
@@ -102,17 +106,19 @@ export async function SusunanBuku({ konfig }: { konfig: Konfigurasi }) {
     const pasang = (j: string) => k.find((w) => w.jenis === j)?.pengaturan;
     switch (a.jenis) {
       case "hero":
-        // tema Langit cerah: hero langit + kartu putar 3D (kartu dari CMS kartu_beranda). #tur hadir di Tahap B.
-        return konfig.tema === "langit" ? <HeroLangit key={kunci} kartu={kartu} adaTur={false} /> : <BkHero key={kunci} foto={fotoHero} video={adaVideoHero() ? VIDEO_HERO : undefined} fakta={fakta} />;
+        // tema Langit cerah: hero langit + kartu putar 3D (kartu dari CMS kartu_beranda); tombol "Tur sekolah" bila ada tur
+        return langit ? <HeroLangit key={kunci} kartu={kartu} adaTur={tur.length > 0} /> : <BkHero key={kunci} foto={fotoHero} video={adaVideoHero() ? VIDEO_HERO : undefined} fakta={fakta} />;
+      case "tur":
+        return langit ? <TurSekolah key={kunci} titik={tur} /> : null;
       case "angka":
-        return <BkAngka key={kunci} profil={profil} />;
+        return langit ? <BentoAngka key={kunci} profil={profil} foto={fotoHero[0]} /> : <BkAngka key={kunci} profil={profil} />;
       case "berita":
         return <BkKabar key={kunci} berita={berita} p={a.pengaturan} />;
       case "pengumuman":
       case "agenda":
         return <BkPengumumanAgenda key={kunci} pengumuman={pengumuman} agenda={agenda} pP={pasang("pengumuman")} pA={pasang("agenda")} />;
       case "spmb":
-        return <BkSpmb key={kunci} spmb={spmb} p={a.pengaturan} />;
+        return langit ? <CtaSpmb key={kunci} spmb={spmb} /> : <BkSpmb key={kunci} spmb={spmb} p={a.pengaturan} />;
       case "prestasi":
         return <BkPrestasi key={kunci} prestasi={prestasi} profil={profil} p={a.pengaturan} />;
       case "galeri":

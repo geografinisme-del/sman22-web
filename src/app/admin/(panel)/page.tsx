@@ -42,9 +42,9 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
   const mediaSementara = punya(akses, "konten.kelola")
     ? (
         await Promise.all(
-          (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda"] as const).map((t) => {
+          (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda", "tur_sekolah"] as const).map((t) => {
             const q = supabase.from(t).select("id", { count: "exact", head: true }).eq("is_placeholder", true);
-            return t === "hero_slide" || t === "kartu_beranda" ? q : q.is("deleted_at", null);
+            return t === "hero_slide" || t === "kartu_beranda" || t === "tur_sekolah" ? q : q.is("deleted_at", null);
           }),
         )
       ).reduce((n, r) => n + (r.error ? 0 : (r.count ?? 0)), 0)

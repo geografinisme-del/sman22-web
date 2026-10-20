@@ -31,6 +31,10 @@ export type Profil = {
   statistik: { label: string; nilai: string }[];
   /** alumni diterima PTN (Fase 20; kosong bila belum diisi/migrasi belum jalan) */
   alumniPtn: { jumlah: string; tahun: string; keterangan: string };
+  /** persen lulusan melanjutkan ke perguruan tinggi (CMS, tanpa tanda %) */
+  lulusanPtPersen: string;
+  /** jabatan untuk kutipan kepala sekolah di bento angka */
+  jabatanKepala: string;
 };
 
 export type BeritaItem = {
@@ -99,6 +103,8 @@ export const getProfil = cache(async (): Promise<Profil> => {
     misi: daftarBersih(statis.misi),
     sejarah: daftarBersih(statis.sejarah),
     alumniPtn: { jumlah: "", tahun: "", keterangan: "" },
+    lulusanPtPersen: "",
+    jabatanKepala: "",
     statistik: statis.statistik.map((x) => ({ label: x.label, nilai: bersih(x.nilai) })),
   };
   if (!supabaseAktif) return fallback;
@@ -130,6 +136,9 @@ export const getProfil = cache(async (): Promise<Profil> => {
       { label: "Guru & tendik", nilai: bersih(data.jumlah_guru) },
       { label: "Ekstrakurikuler", nilai: bersih(data.jumlah_ekskul) },
     ],
+    // kolom migrasi 20261221 (kosong bila belum dijalankan)
+    lulusanPtPersen: bersih((data as Record<string, string>).lulusan_pt_persen),
+    jabatanKepala: bersih((data as Record<string, string>).kepala_sekolah_jabatan),
     alumniPtn: {
       jumlah: bersih((data as Record<string, string>).alumni_ptn),
       tahun: bersih((data as Record<string, string>).alumni_ptn_tahun),
@@ -511,4 +520,30 @@ export const getKartuBeranda = cache(async (): Promise<import("@/content/kartu-b
   const { data, error } = await supabasePublik().from("kartu_beranda").select("*").eq("aktif", true).order("urutan").order("created_at");
   if (error || !data?.length) return KARTU_BAWAAN;
   return data.map((k) => ({ id: k.id, label: k.label, judul: k.judul, deskripsi: k.deskripsi ?? "", foto: k.foto_url || "", sementara: k.is_placeholder === true, url: k.url }));
+});
+
+/* ------------------------------------------------------------------ */
+/* Tur sekolah (tema Langit cerah)                                     */
+/* ------------------------------------------------------------------ */
+export { type TitikTur } from "@/content/tur-bawaan";
+/**
+ * Titik tur aktif berurutan. Tabel belum ada (migrasi 20261221 belum dijalankan) → titik bawaan;
+ * tabel ada tetapi tanpa titik aktif → [] (section disembunyikan).
+ */
+export const getTur = cache(async (): Promise<import("@/content/tur-bawaan").TitikTur[]> => {
+  const { TUR_BAWAAN } = await import("@/content/tur-bawaan");
+  if (!supabaseAktif) return TUR_BAWAAN;
+  const { data, error } = await supabasePublik().from("tur_sekolah").select("*").eq("aktif", true).order("urutan").order("created_at").limit(8);
+  if (error) return error.code === "42P01" || error.code === "PGRST205" ? TUR_BAWAAN : [];
+  return (data ?? []).map((t) => ({
+    id: t.id,
+    label: t.label,
+    judul: t.judul,
+    deskripsi: t.deskripsi ?? "",
+    tombol: t.tombol_url ? { teks: t.tombol_teks || "Selengkapnya", url: t.tombol_url } : undefined,
+    media: t.media_url ? { tipe: t.media_tipe === "video" ? "video" : "foto", url: t.media_url, poster: t.poster_url || undefined } : null,
+    fokus: { x: t.fokus_x ?? 50, y: t.fokus_y ?? 50 },
+    alt: t.alt_text ?? "",
+    sementara: t.is_placeholder === true,
+  }));
 });
