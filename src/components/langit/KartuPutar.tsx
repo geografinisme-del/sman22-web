@@ -4,20 +4,25 @@ import { MediaSlot } from "@/components/MediaSlot";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { KartuBeranda } from "@/content/kartu-beranda";
-import { phiKartu, sudutTerdekat, tampilKartu } from "@/lib/cincin";
+import { kartuDepan, phiKartu, sudutGeserSatu, sudutOtomatis, sudutTerdekat, tampilKartu } from "@/lib/cincin";
 
 /**
  * Kartu putar 3D beranda (CSS 3D + requestAnimationFrame, tanpa three.js).
- * - Tanpa JS, layar < 900px, atau prefers-reduced-motion: baris kartu geser biasa (scroll-snap).
- * - Desktop: cincin; putar otomatis 5°/detik; berhenti saat hover, saat hero tidak terlihat, dan 3 detik setelah
- *   interaksi. Seret 0.14°/px dengan inersia ×0.92/frame. Klik kartu samping = putar ke tengah; klik kartu tengah =
- *   buka tautan; seret > 6px bukan klik. Tombol ← → = tepat 1 kartu. Fokus keyboard memutar kartu ke tengah.
- * Geometri & tampilan per kartu dihitung di lib/cincin.ts (murni, diuji).
+ * - Tanpa JS, layar < 900px, atau prefers-reduced-motion: baris kartu geser biasa (scroll-snap), tanpa putar otomatis.
+ * - Desktop: cincin TERUS berputar 5°/detik — hover tidak menghentikannya. Posisi dihitung dari waktu
+ *   (theta = theta0 − kecepatan × waktu berjalan): saat hero di luar layar / tab tersembunyi frame tidak dirender,
+ *   tetapi waktu tetap berjalan sehingga saat terlihat lagi posisinya sudah maju.
+ * - Berhenti hanya saat: kartu diklik (diputar ke tengah lalu diam sebagai kartu terpilih), cincin diseret,
+ *   atau kartu mendapat fokus keyboard. Lanjut saat: klik di luar cincin, Esc, 8 detik tanpa interaksi setelah
+ *   memilih, atau fokus keluar dari cincin. Seret dilepas → inersia lalu putar otomatis.
+ * - Klik kartu terpilih yang sudah di tengah = buka tautannya. Tombol ← → menggeser 1 kartu; otomatis lanjut 3 detik.
+ * Geometri & sudut berbasis waktu dihitung di lib/cincin.ts (murni, diuji).
  */
 const R = 760;
 const PERSPEKTIF = 1100;
 const KECEPATAN = 5; // derajat per detik
-const JEDA_INTERAKSI = 3000;
+const DIAM_PILIH = 8000; // ms tanpa interaksi setelah kartu dipilih
+const DIAM_TOMBOL = 3000; // ms setelah tombol ← →
 const AMBANG_SERET = 6;
 
 /** cubic-bezier(0.22, 1, 0.36, 1) — easing tunggal situs */
@@ -34,17 +39,37 @@ function ease(t: number) {
   return by(u);
 }
 
+type Keadaan = "otomatis" | "anim" | "diam" | "seret" | "inersia";
+type Mesin = {
+  keadaan: Keadaan;
+  theta: number;
+  /** jangkar putar otomatis: theta0 & waktu mulai (ms) */
+  theta0: number;
+  t0: number;
+  vel: number;
+  anim: null | { dari: number; ke: number; mulai: number; dur: number };
+  /** batas waktu keadaan diam (Infinity = sampai fokus keyboard keluar dari cincin) */
+  diamSampai: number;
+  /** kartu terpilih (−1 = tidak ada) */
+  pilih: number;
+  terlihat: boolean;
+  tekan: boolean;
+  geser: number;
+  xAkhir: number;
+};
+type Kendali = { putarKe: (target: number, opsi: { pilih: number; diam: number }) => void; lanjut: () => void };
+
 export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
   const wadah = useRef<HTMLDivElement>(null);
   const cincin = useRef<HTMLUListElement>(null);
   const [mode, setMode] = useState<"baris" | "cincin">("baris");
-  const [depan, setDepan] = useState(0);
+  // pengumuman pembaca layar hanya setelah tindakan pengguna (bukan setiap kartu lewat saat berputar otomatis)
+  const [umumkan, setUmumkan] = useState("");
   const n = kartu.length;
   const step = 360 / Math.max(n, 1);
 
-  // status mesin (tidak memicu render ulang)
-  const s = useRef({ theta: 0, vel: 0, hover: false, terlihat: true, jedaSampai: 0, tekan: false, tarik: false, geser: 0, xAkhir: 0, anim: null as null | { dari: number; ke: number; mulai: number; dur: number } });
-  const putarKe = useRef<(target: number) => void>(() => {});
+  const s = useRef<Mesin>({ keadaan: "otomatis", theta: 0, theta0: 0, t0: 0, vel: 0, anim: null, diamSampai: 0, pilih: -1, terlihat: true, tekan: false, geser: 0, xAkhir: 0 });
+  const kendali = useRef<Kendali>({ putarKe: () => {}, lanjut: () => {} });
 
   // pilih mode
   useEffect(() => {
@@ -64,7 +89,10 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
     const st = s.current;
     let raf = 0;
     let akhir = performance.now();
-    let depanLama = -1;
+    st.keadaan = "otomatis";
+    st.pilih = -1;
+    st.theta0 = st.theta;
+    st.t0 = performance.now();
 
     const render = () => {
       ring.style.transform = `translateZ(${R * 0.62}px) rotateY(${st.theta}deg)`;
@@ -75,26 +103,47 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
         el.style.zIndex = String(v.z);
         el.style.pointerEvents = v.opacity < 0.05 ? "none" : "auto";
         el.toggleAttribute("data-depan", v.near > 0.5);
+        el.toggleAttribute("data-terpilih", st.pilih === i && (st.keadaan === "diam" || st.keadaan === "anim"));
       });
-      const d = (((Math.round(-st.theta / step) % n) + n) % n);
-      if (d !== depanLama) {
-        depanLama = d;
-        setDepan(d);
-      }
+      w.dataset.keadaan = st.keadaan;
+    };
+
+    const mulaiOtomatis = (t: number) => {
+      st.keadaan = "otomatis";
+      st.pilih = -1;
+      st.theta0 = st.theta;
+      st.t0 = t;
     };
 
     const frame = (t: number) => {
       const dt = Math.min(0.05, (t - akhir) / 1000);
       akhir = t;
-      if (st.anim) {
-        const p = Math.min(1, (t - st.anim.mulai) / st.anim.dur);
-        st.theta = st.anim.dari + (st.anim.ke - st.anim.dari) * ease(p);
-        if (p >= 1) st.anim = null;
-      } else if (!st.tarik && Math.abs(st.vel) > 0.01) {
-        st.theta += st.vel;
-        st.vel *= 0.92;
-      } else if (!st.tarik && !st.hover && t > st.jedaSampai) {
-        st.theta -= KECEPATAN * dt;
+      switch (st.keadaan) {
+        case "otomatis":
+          st.theta = sudutOtomatis(st.theta0, st.t0, t, KECEPATAN);
+          break;
+        case "anim": {
+          const a = st.anim!;
+          const p = Math.min(1, (t - a.mulai) / a.dur);
+          st.theta = a.dari + (a.ke - a.dari) * ease(p);
+          if (p >= 1) {
+            st.anim = null;
+            st.keadaan = "diam";
+          }
+          break;
+        }
+        case "inersia": {
+          const k = dt * 60; // ×0.92 per frame pada 60 fps
+          st.theta += st.vel * k;
+          st.vel *= 0.92 ** k;
+          if (Math.abs(st.vel) < 0.01) mulaiOtomatis(t);
+          break;
+        }
+        case "diam":
+          if (t > st.diamSampai) mulaiOtomatis(t);
+          break;
+        case "seret":
+          break;
       }
       render();
       raf = st.terlihat && !document.hidden ? requestAnimationFrame(frame) : 0;
@@ -105,16 +154,27 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
         raf = requestAnimationFrame(frame);
       }
     };
-    const jeda = () => (st.jedaSampai = performance.now() + JEDA_INTERAKSI);
 
-    putarKe.current = (target: number) => {
+    kendali.current.putarKe = (target, { pilih, diam }) => {
+      const t = performance.now();
       st.vel = 0;
-      st.anim = { dari: st.theta, ke: target, mulai: performance.now(), dur: 650 };
-      jeda();
+      st.pilih = pilih;
+      st.keadaan = "anim";
+      st.anim = { dari: st.theta, ke: target, mulai: t, dur: 650 };
+      st.diamSampai = t + 650 + diam;
+      const d = kartuDepan(target, n);
+      setUmumkan(`Kartu ${d + 1} dari ${n}: ${kartu[d]?.judul ?? ""}`);
+      jalan();
+    };
+    kendali.current.lanjut = () => {
+      if (st.keadaan !== "diam" && st.keadaan !== "anim") return;
+      if (st.anim) st.theta = st.anim.ke;
+      st.anim = null;
+      mulaiOtomatis(performance.now());
       jalan();
     };
 
-    // hentikan saat hero tidak terlihat / tab tersembunyi
+    // hero di luar layar / tab tersembunyi: frame tidak dirender, tetapi waktu putar otomatis tetap berjalan
     const hero = w.closest("[data-hero-langit]") ?? w;
     const io = new IntersectionObserver(([e]) => {
       st.terlihat = e.isIntersecting;
@@ -124,14 +184,21 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
     const vis = () => jalan();
     document.addEventListener("visibilitychange", vis);
 
-    // hover
-    const masuk = () => (st.hover = true);
-    const keluar = () => {
-      st.hover = false;
-      jeda();
+    // klik di luar cincin (bukan kartu, bukan tombol ← →) atau Esc → lanjut berputar
+    const klikLuar = (e: PointerEvent) => {
+      if ((e.target as HTMLElement).closest(".lgt-cincin-slot, .lgt-cincin-kontrol")) return;
+      kendali.current.lanjut();
     };
-    w.addEventListener("pointerenter", masuk);
-    w.addEventListener("pointerleave", keluar);
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") kendali.current.lanjut();
+    };
+    document.addEventListener("pointerdown", klikLuar);
+    document.addEventListener("keydown", esc);
+    // fokus keyboard keluar dari cincin → lanjut berputar
+    const fokusKeluar = (e: FocusEvent) => {
+      if (st.diamSampai === Infinity && !ring.contains(e.relatedTarget as Node | null)) kendali.current.lanjut();
+    };
+    ring.addEventListener("focusout", fokusKeluar);
 
     // seret (mouse & jari). Pointer baru "ditangkap" setelah bergeser > 6px, supaya klik biasa tetap
     // sampai ke tautan kartu (penangkapan pointer membelokkan event click ke panggung).
@@ -141,19 +208,18 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
       // seleksi teks sisa klik sebelumnya bisa memicu seret bawaan peramban (dragstart → pointercancel)
       window.getSelection()?.removeAllRanges();
       st.tekan = true;
-      st.tarik = false;
       st.geser = 0;
       st.xAkhir = e.clientX;
-      jeda();
     };
     const gerak = (e: PointerEvent) => {
       if (!st.tekan) return;
       const dx = e.clientX - st.xAkhir;
       st.xAkhir = e.clientX;
       st.geser += Math.abs(dx);
-      if (!st.tarik) {
+      if (st.keadaan !== "seret") {
         if (st.geser <= AMBANG_SERET) return;
-        st.tarik = true;
+        st.keadaan = "seret";
+        st.pilih = -1;
         st.vel = 0;
         st.anim = null;
         panggung.setPointerCapture(e.pointerId);
@@ -165,9 +231,11 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
     const naik = (e: PointerEvent) => {
       if (!st.tekan) return;
       st.tekan = false;
-      st.tarik = false;
       if (panggung.hasPointerCapture(e.pointerId)) panggung.releasePointerCapture(e.pointerId);
-      jeda();
+      if (st.keadaan === "seret") {
+        st.keadaan = "inersia";
+        jalan();
+      }
     };
     const cegahSeretBawaan = (e: DragEvent) => e.preventDefault();
     panggung.addEventListener("dragstart", cegahSeretBawaan);
@@ -182,25 +250,29 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
       cancelAnimationFrame(raf);
       io.disconnect();
       document.removeEventListener("visibilitychange", vis);
-      w.removeEventListener("pointerenter", masuk);
-      w.removeEventListener("pointerleave", keluar);
+      document.removeEventListener("pointerdown", klikLuar);
+      document.removeEventListener("keydown", esc);
+      ring.removeEventListener("focusout", fokusKeluar);
       panggung.removeEventListener("dragstart", cegahSeretBawaan);
       panggung.removeEventListener("pointerdown", turun);
       panggung.removeEventListener("pointermove", gerak);
       panggung.removeEventListener("pointerup", naik);
       panggung.removeEventListener("pointercancel", naik);
       ring.style.transform = "";
+      delete w.dataset.keadaan;
       slot.forEach((el) => {
         el.style.transform = el.style.opacity = el.style.zIndex = el.style.pointerEvents = "";
         el.removeAttribute("data-depan");
+        el.removeAttribute("data-terpilih");
       });
     };
-  }, [mode, n, step]);
+  }, [mode, n, step, kartu]);
 
-  const keKartu = (i: number) => putarKe.current(sudutTerdekat(s.current.theta, -i * step));
+  /** pilih kartu i: putar ke tengah lalu diam (klik: 8 detik; fokus keyboard: sampai fokus keluar) */
+  const pilihKartu = (i: number, diam: number) => kendali.current.putarKe(sudutTerdekat(s.current.theta, -i * step), { pilih: i, diam });
   const geserSatu = (arah: 1 | -1) => {
-    const dasar = Math.round(s.current.anim ? s.current.anim.ke / step : s.current.theta / step) * step;
-    putarKe.current(dasar - arah * step);
+    const st = s.current;
+    kendali.current.putarKe(sudutGeserSatu(st.anim ? st.anim.ke : st.theta, n, arah), { pilih: -1, diam: DIAM_TOMBOL });
   };
 
   return (
@@ -212,14 +284,21 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
               <a
                 href={k.url}
                 className="lgt-kartu"
-                // hanya fokus keyboard (bukan klik/tekan mouse) yang memutar kartu ke tengah
-                onFocus={(e) => mode === "cincin" && e.currentTarget.matches(":focus-visible") && keKartu(i)}
+                // hanya fokus keyboard (bukan klik/tekan mouse) yang memutar kartu ke tengah & menghentikan putaran
+                onFocus={(e) => mode === "cincin" && e.currentTarget.matches(":focus-visible") && pilihKartu(i, Infinity)}
                 onClick={(e) => {
                   if (mode !== "cincin") return;
-                  // seret > 6px bukan klik; kartu samping diputar ke tengah dulu
-                  if (s.current.geser > AMBANG_SERET || Math.abs(phiKartu(i, s.current.theta, n)) > step / 2) {
+                  const st = s.current;
+                  // seret > 6px bukan klik (hanya klik pointer; Enter dari keyboard memiliki detail 0)
+                  if (e.detail !== 0 && st.geser > AMBANG_SERET) {
                     e.preventDefault();
-                    if (s.current.geser <= AMBANG_SERET) keKartu(i);
+                    return;
+                  }
+                  // kartu terpilih yang sudah di tengah → buka tautan; selain itu pilih dulu (putar ke tengah lalu diam)
+                  const diTengah = st.keadaan === "diam" && st.pilih === i && Math.abs(phiKartu(i, st.theta, n)) < step / 2;
+                  if (!diTengah) {
+                    e.preventDefault();
+                    pilihKartu(i, st.diamSampai === Infinity && st.pilih === i ? Infinity : DIAM_PILIH);
                   }
                 }}
                 draggable={false}
@@ -254,7 +333,7 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
             <ArrowLeft size={18} aria-hidden />
           </button>
           <span className="sr-only" aria-live="polite">
-            Kartu {depan + 1} dari {n}: {kartu[depan]?.judul}
+            {umumkan}
           </span>
           <button type="button" onClick={() => geserSatu(1)} aria-label="Kartu berikutnya">
             <ArrowRight size={18} aria-hidden />

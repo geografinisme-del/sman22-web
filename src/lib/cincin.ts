@@ -37,3 +37,23 @@ export function tampilKartu(i: number, theta: number, n: number, R: number) {
 export function sudutTerdekat(dari: number, target: number) {
   return dari + normalSudut(target - dari);
 }
+
+/**
+ * Sudut putaran otomatis berbasis waktu: theta = theta0 − kecepatan × waktu berjalan.
+ * Dipakai agar saat hero di luar layar (frame tidak dirender) posisi tetap maju seolah tidak pernah berhenti.
+ */
+export function sudutOtomatis(theta0: number, t0: number, t: number, kecepatanDerajatPerDetik: number) {
+  return theta0 - (kecepatanDerajatPerDetik * Math.max(0, t - t0)) / 1000;
+}
+
+/** Indeks kartu yang berada di depan untuk sudut theta. */
+export function kartuDepan(theta: number, n: number) {
+  const step = 360 / n;
+  return ((Math.round(-theta / step) % n) + n) % n;
+}
+
+/** Sudut target untuk menggeser tepat satu kartu (arah 1 = berikutnya) dari kartu yang sedang/akan di depan. */
+export function sudutGeserSatu(thetaAcuan: number, n: number, arah: 1 | -1) {
+  const step = 360 / n;
+  return Math.round(thetaAcuan / step) * step - arah * step;
+}

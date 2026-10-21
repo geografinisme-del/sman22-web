@@ -328,14 +328,15 @@ a.kartu:hover,
   display: flex;
   min-height: 300px;
   align-items: flex-end;
-  padding: 108px 0 56px;
+  /* jarak atas mengikuti tinggi header nyata (SiteHeader → --tinggi-header) */
+  padding: calc(var(--tinggi-header) + 36px) 0 56px;
   background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
   color: var(--white);
 }
 @media (min-width: 900px) {
   .lgt-phero {
     min-height: 420px;
-    padding: 132px 0 72px;
+    padding: calc(var(--tinggi-header) + 60px) 0 72px;
   }
 }
 .lgt-phero-foto {

@@ -47,6 +47,10 @@
   --bayangan-tegas: 0 2px 6px rgb(11 18 32 / 0.1), 0 24px 48px rgb(11 18 32 / 0.18);
   --cincin-fokus: 0 0 0 3px color-mix(in srgb, var(--blue) 45%, transparent);
 
+  /* tinggi header situs (SiteHeader mengukur ulang tinggi nyatanya lewat JS) */
+  --tinggi-header-min: 72px;
+  --tinggi-header: var(--tinggi-header-min);
+
   /* gerak: easing tunggal, tanpa bounce */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --durasi-ui: 240ms;

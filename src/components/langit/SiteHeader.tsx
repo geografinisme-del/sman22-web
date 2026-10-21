@@ -59,6 +59,20 @@ export function SiteHeader({ data }: { data: DataMenu }) {
     };
   }, [path]);
 
+  // tinggi header nyata (berubah saat zoom / teks terbungkus) → variabel CSS --tinggi-header untuk jarak atas hero
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const akar = document.documentElement;
+    const ukur = () => akar.style.setProperty("--tinggi-header", `${Math.ceil(el.getBoundingClientRect().height)}px`);
+    const ro = new ResizeObserver(ukur);
+    ro.observe(el);
+    ukur();
+    return () => {
+      ro.disconnect();
+      akar.style.removeProperty("--tinggi-header");
+    };
+  }, []);
 
   const buka = (k: GrupLangit["kunci"], e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();

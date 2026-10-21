@@ -44,7 +44,7 @@
 }
 .lgt-header-isi {
   display: flex;
-  min-height: 72px;
+  min-height: var(--tinggi-header-min);
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -468,14 +468,38 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 112px 0 96px;
+  /* jarak atas = tinggi header nyata + 32px (HP) / + 56px (desktop): header tidak pernah menimpa judul */
+  padding: calc(var(--tinggi-header) + 32px) 0 96px;
   background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 34%, var(--sky-3) 68%, var(--haze) 100%);
   color: var(--white);
 }
 @media (min-width: 900px) {
   .lgt-hero {
     min-height: min(1040px, 100svh + 260px);
-    padding: 132px 0 120px;
+    padding: calc(var(--tinggi-header) + 56px) 0 120px;
+  }
+}
+/* layar pendek (< 800px tinggi): judul lebih kecil, jarak & cincin dirapatkan — tidak bertumpuk */
+@media (min-width: 900px) and (max-height: 799px) {
+  .lgt-hero {
+    padding-bottom: 72px;
+  }
+  .lgt-hero h1,
+  .lp .lgt-hero h1 {
+    font-size: clamp(2.25rem, 1.2rem + 2.6vw + 1.4vh, 3.75rem);
+  }
+  .lgt-hero-sub {
+    margin-top: 16px;
+  }
+  .lgt-hero-aksi {
+    margin-top: 22px;
+  }
+  .lgt-cincin-wadah {
+    margin-top: 36px;
+    min-height: 460px;
+  }
+  .lgt-cincin-wadah[data-mode="cincin"] .lgt-cincin-panggung {
+    height: 430px;
   }
 }
 .lgt-hero-teks {
@@ -732,6 +756,13 @@
 }
 .lgt-cincin-wadah[data-mode="cincin"] .lgt-cincin-slot[data-depan] .lgt-kartu {
   box-shadow: var(--bayangan-tegas);
+}
+/* kartu terpilih (diklik / fokus keyboard): diam di tengah dengan bayangan lebih tegas */
+.lgt-cincin-wadah[data-mode="cincin"] .lgt-cincin-slot[data-terpilih] .lgt-kartu {
+  box-shadow:
+    0 0 0 3px var(--lime),
+    0 4px 10px rgb(11 18 32 / 0.16),
+    0 34px 64px rgb(11 18 32 / 0.3);
 }
 .lgt-cincin-kontrol {
   position: relative;

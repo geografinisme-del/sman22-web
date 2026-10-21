@@ -346,3 +346,15 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - **Uji**: `uji-gerak.mjs` kini juga menguji mesin GSAP (blok menunggu, muncul setelah digulir, tidak ada yang tertinggal,
   tidak memakai visibility:hidden, angka kembali ke nilai asli, awan dijeda).
 
+### Perbaikan 1 (prompt gabungan, Tahap 1): hero & kartu putar
+- **Jarak hero**: `SiteHeader` mengukur tinggi header nyata (ResizeObserver) ke `--tinggi-header` di `<html>`
+  (bawaan `--tinggi-header-min` 72px di tokens.css). Hero: `padding-top: calc(var(--tinggi-header) + 56px)` desktop /
+  `+ 32px` HP; PageHero `+ 60px` / `+ 36px`. Layar pendek (min-width 900 & max-height 799): judul clamp lebih kecil,
+  cincin dirapatkan. Uji: `scripts/uji-e2e/uji-hero.mjs` (5 ukuran layar × zoom 67–125% + header yang membesar).
+- **Kartu putar** (`KartuPutar.tsx`): mesin keadaan otomatis/anim/diam/seret/inersia. Putar otomatis dihitung dari waktu
+  (`sudutOtomatis` di lib/cincin.ts): di luar layar tidak merender frame tetapi posisi tetap maju. Hover tidak lagi
+  menghentikan. Berhenti hanya saat kartu dipilih (klik), diseret, atau difokus keyboard; lanjut saat klik di luar
+  cincin, Esc, 8 detik setelah memilih, atau fokus keluar. Klik kartu terpilih di tengah = buka tautan. ← → lanjut
+  setelah 3 detik. Kartu terpilih: `data-terpilih` (cincin lime + bayangan tegas). Pengumuman pembaca layar hanya setelah
+  tindakan pengguna. Uji: `uji-langit.mjs` (27 cek).
+

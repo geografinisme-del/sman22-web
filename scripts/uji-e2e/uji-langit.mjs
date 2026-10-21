@@ -1,4 +1,4 @@
-// Uji "Langit cerah" Tahap A (lokal saja): kartu putar 3D, menu layar penuh, header di atas hero.
+// Uji "Langit cerah" (lokal saja): kartu putar 3D (terus berputar kecuali dipilih/diseret/difokus), header di atas hero.
 // Pakai: node scripts/uji-e2e/uji-langit.mjs <base-url>
 import { chromium } from "playwright-core";
 
@@ -18,7 +18,6 @@ const bersih = (ctx) =>
     } catch {}
   });
 const depan = (page) => page.evaluate(() => [...document.querySelectorAll(".lgt-cincin-slot")].findIndex((s) => s.hasAttribute("data-depan")));
-const sudut = (page) => page.evaluate(() => document.querySelector(".lgt-cincin")?.style.transform ?? "");
 
 // ---------- desktop 1440 ----------
 {
@@ -31,69 +30,137 @@ const sudut = (page) => page.evaluate(() => document.querySelector(".lgt-cincin"
   const n = await page.locator(".lgt-cincin-slot").count();
   cek("12 kartu tampil", n === 12, n);
 
-  // putar otomatis (mouse jauh dari cincin)
-  await page.mouse.move(5, 5);
-  const a1 = await sudut(page);
-  await tidur(900);
-  const a2 = await sudut(page);
-  cek("berputar otomatis", a1 !== a2, { a1, a2 });
+  // sudut rotateY cincin (derajat) & keadaan mesin
+  const theta = () => page.evaluate(() => Number(/rotateY\((-?[\d.e-]+)deg\)/.exec(document.querySelector(".lgt-cincin")?.style.transform ?? "")?.[1] ?? NaN));
+  const keadaan = () => page.getAttribute(".lgt-cincin-wadah", "data-keadaan");
+  const terpilih = () => page.evaluate(() => [...document.querySelectorAll(".lgt-cincin-slot")].findIndex((s) => s.hasAttribute("data-terpilih")));
+  const keAtas = () => page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  const sudutDiam = async (ms) => {
+    const a = await theta();
+    await tidur(ms);
+    return Math.abs((await theta()) - a) < 0.01;
+  };
 
-  // berhenti saat hover
+  // 1. putar otomatis, termasuk saat kursor di atas cincin (hover tidak menghentikan)
+  await page.mouse.move(5, 5);
+  cek("berputar otomatis", !(await sudutDiam(900)), null);
   const box = await page.locator(".lgt-cincin-panggung").boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + 40);
   await tidur(300);
-  const h1 = await sudut(page);
-  await tidur(700);
-  cek("berhenti saat hover", h1 === (await sudut(page)), null);
+  cek("hover TIDAK menghentikan putaran", !(await sudutDiam(900)) && (await keadaan()) === "otomatis", await keadaan());
 
-  // tombol → menggeser tepat 1 kartu
+  // 2. di luar layar: frame tidak dirender, waktu tetap berjalan → kembali ke atas, posisi sudah maju (≈ 5°/detik)
+  await page.mouse.move(5, 5);
+  const s0 = await theta();
+  const w0 = Date.now();
+  await page.evaluate(() => window.scrollTo({ top: document.querySelector("[data-hero-langit]").offsetHeight + 600, behavior: "instant" }));
+  await tidur(400);
+  const diLuar1 = await theta();
+  await tidur(2000);
+  const tidakRender = Math.abs((await theta()) - diLuar1) < 0.01;
+  await tidur(7600);
+  await keAtas();
+  await tidur(400);
+  const lama = (Date.now() - w0) / 1000;
+  const maju = s0 - (await theta());
+  cek("di luar layar: frame tidak dirender (hemat CPU)", tidakRender, null);
+  cek(`kembali ke atas setelah ±10 detik: posisi maju ±${Math.round(5 * lama)}° (bukan berhenti)`, Math.abs(maju - 5 * lama) < 6, { maju, harapan: 5 * lama });
+
+  // 3. klik kartu samping → diputar ke tengah lalu diam sebagai kartu terpilih (tidak membuka tautan)
+  const url0 = page.url();
   const d0 = await depan(page);
+  const samping = (d0 + 1) % n;
+  await page.locator(".lgt-cincin-slot").nth(samping).locator("a").click({ force: true });
+  await tidur(1000);
+  cek("klik kartu → diputar ke tengah & diam sebagai kartu terpilih", (await depan(page)) === samping && (await terpilih()) === samping && page.url() === url0 && (await sudutDiam(1500)), { depan: await depan(page), terpilih: await terpilih(), samping });
+
+  // 4. klik di luar cincin → lanjut berputar
+  await page.mouse.click(box.x + 20, Math.max(5, box.y - 120));
+  await tidur(300);
+  cek("klik di luar cincin → berputar lagi", (await keadaan()) === "otomatis" && !(await sudutDiam(700)) && (await terpilih()) === -1, await keadaan());
+
+  // 5. Esc → lanjut berputar
+  await page.locator(".lgt-cincin-slot").nth((await depan(page) + 1) % n).locator("a").click({ force: true });
+  await tidur(1000);
+  const diamSebelumEsc = await sudutDiam(500);
+  await page.keyboard.press("Escape");
+  await tidur(300);
+  cek("Esc → berputar lagi", diamSebelumEsc && (await keadaan()) === "otomatis" && !(await sudutDiam(700)), await keadaan());
+
+  // 6. 8 detik tanpa interaksi setelah memilih → berputar lagi
+  await page.locator(".lgt-cincin-slot").nth((await depan(page) + 1) % n).locator("a").click({ force: true });
+  await tidur(7000);
+  const masihDiam = await sudutDiam(500);
+  await tidur(2000);
+  cek("8 detik setelah memilih → berputar lagi (sebelumnya tetap diam)", masihDiam && (await keadaan()) === "otomatis" && !(await sudutDiam(700)), { masihDiam, keadaan: await keadaan() });
+
+  // 7. tombol ← → tepat 1 kartu; putaran otomatis lanjut setelah 3 detik
+  const a0 = await depan(page);
   await page.click(".lgt-cincin-kontrol button[aria-label='Kartu berikutnya']");
   await tidur(900);
-  const d1 = await depan(page);
-  cek("tombol → = tepat 1 kartu", d1 === (d0 + 1) % n, { d0, d1 });
+  const a1 = await depan(page);
+  cek("tombol → = tepat 1 kartu", a1 === (a0 + 1) % n, { a0, a1 });
+  const diamTombol = await sudutDiam(1500);
+  await tidur(1500);
+  cek("tombol: diam lalu lanjut berputar setelah 3 detik", diamTombol && !(await sudutDiam(700)), { diamTombol });
   await page.click(".lgt-cincin-kontrol button[aria-label='Kartu sebelumnya']");
   await tidur(900);
-  cek("tombol ← = kembali 1 kartu", (await depan(page)) === d0, { d0, now: await depan(page) });
+  cek("tombol ← = kembali 1 kartu", (await depan(page)) === a0, { a0, now: await depan(page) });
 
-  // klik kartu samping = putar ke tengah (tidak berpindah halaman)
-  const samping = (d0 + 1) % n;
-  const url0 = page.url();
-  await page.locator(".lgt-cincin-slot").nth(samping).locator("a").click({ force: true });
-  await tidur(900);
-  cek("klik kartu samping memutarnya ke tengah", (await depan(page)) === samping && page.url() === url0, { depan: await depan(page), samping, url: page.url() });
-
-  // seret > 6px bukan klik, dan memutar cincin
-  // klik tombol menggulir halaman; kembalikan ke atas agar titik seret tidak tertutup header
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  // 8. seret > 6px: memutar cincin, bukan klik; dilepas → inersia lalu putaran otomatis
+  await keAtas();
   await tidur(300);
-  const sebelum = await sudut(page);
-  const b = await page.locator(".lgt-cincin-slot").nth(samping).boundingBox();
+  const sebelum = await theta();
+  const b = await page.locator(".lgt-cincin-slot").nth(await depan(page)).boundingBox();
   const ty = b.y + b.height / 2;
   await page.mouse.move(b.x + b.width / 2, ty);
   await page.mouse.down();
-  await page.mouse.move(b.x + b.width / 2 - 120, ty, { steps: 8 });
+  await page.mouse.move(b.x + b.width / 2 - 140, ty, { steps: 8 });
   await page.mouse.up();
-  await tidur(400);
-  const sesudah = await sudut(page);
-  cek("seret memutar cincin & tidak membuka tautan", sesudah !== sebelum && page.url() === url0, { url: page.url(), sebelum, sesudah });
+  await tidur(2500);
+  cek("seret memutar cincin & tidak membuka tautan", Math.abs((await theta()) - sebelum) > 5 && page.url() === url0, { url: page.url() });
+  cek("setelah seret: inersia lalu berputar otomatis", (await keadaan()) === "otomatis" && !(await sudutDiam(700)), await keadaan());
 
-  // fokus keyboard memutar kartu ke tengah
-  await tidur(3500);
+  // 9. fokus keyboard → kartu ke tengah & diam selama fokus di cincin (lebih dari 8 detik); fokus keluar → berputar
   await page.mouse.move(5, 5);
-  const target = (d0 + 4) % n;
+  const target = ((await depan(page)) + 4) % n;
   // fokus keyboard sungguhan: fokus ke kartu sebelumnya (tanpa :focus-visible), lalu tekan Tab
-  await page.locator(".lgt-cincin-slot").nth(target - 1).locator("a").focus();
+  await page.locator(".lgt-cincin-slot").nth((target - 1 + n) % n).locator("a").focus();
   await page.keyboard.press("Tab");
   await tidur(1000);
-  cek("fokus keyboard memutar kartu ke tengah", (await depan(page)) === target, { depan: await depan(page), target });
+  cek("fokus keyboard memutar kartu ke tengah", (await depan(page)) === target && (await terpilih()) === target, { depan: await depan(page), target });
+  await tidur(8200);
+  cek("selama fokus di kartu: tetap diam (lebih dari 8 detik)", await sudutDiam(600), await keadaan());
 
-  // klik kartu tengah = buka tautan
+  // 10. kartu terpilih di tengah → Enter/klik membuka tautannya
   const href = await page.locator(".lgt-cincin-slot").nth(target).locator("a").getAttribute("href");
-  await page.mouse.move(5, 5);
-  await page.locator(".lgt-cincin-slot").nth(target).locator("a").click();
+  await page.keyboard.press("Enter");
   await page.waitForURL((u) => u.pathname + u.search === href || u.href.endsWith(href), { timeout: 8000 }).catch(() => {});
-  cek("klik kartu tengah membuka tautannya", page.url().endsWith(href), { href, url: page.url() });
+  cek("kartu terpilih di tengah → Enter membuka tautannya", page.url().endsWith(href), { href, url: page.url() });
+
+  // 11. klik mouse: kartu pertama dipilih dulu, klik kedua pada kartu terpilih yang di tengah membuka tautan
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await tidur(800);
+  const k2 = ((await depan(page)) + 1) % n;
+  const href2 = await page.locator(".lgt-cincin-slot").nth(k2).locator("a").getAttribute("href");
+  await page.locator(".lgt-cincin-slot").nth(k2).locator("a").click({ force: true });
+  await tidur(1000);
+  const masihDiBeranda = new URL(page.url()).pathname === "/";
+  await page.locator(".lgt-cincin-slot").nth(k2).locator("a").click();
+  await page.waitForURL((u) => u.pathname + u.search === href2 || u.href.endsWith(href2), { timeout: 8000 }).catch(() => {});
+  cek("klik kartu terpilih yang sudah di tengah membuka tautannya", masihDiBeranda && page.url().endsWith(href2), { href2, url: page.url() });
+
+  // 12. fokus keluar dari cincin → berputar lagi
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await tidur(800);
+  const f = ((await depan(page)) + 2) % n;
+  await page.locator(".lgt-cincin-slot").nth((f - 1 + n) % n).locator("a").focus();
+  await page.keyboard.press("Tab");
+  await tidur(1000);
+  const diamFokus = await sudutDiam(500);
+  await page.locator(".lgt-cincin-kontrol button[aria-label='Kartu sebelumnya']").focus();
+  await tidur(400);
+  cek("fokus keluar dari cincin → berputar lagi", diamFokus && (await keadaan()) === "otomatis" && !(await sudutDiam(700)), { diamFokus, keadaan: await keadaan() });
 
   // header: transparan di atas hero, putih setelah melewati hero
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
@@ -105,10 +172,6 @@ const sudut = (page) => page.evaluate(() => document.querySelector(".lgt-cincin"
   cek("header teks putih di atas hero", atas.terang && atas.warna === "rgb(255, 255, 255)", atas);
   cek("header putih 90% + teks tinta setelah hero", bawah.lewat && bawah.warna !== "rgb(255, 255, 255)" && bawah.latar.includes("0.9"), bawah);
 
-  // cincin berhenti saat hero tidak terlihat
-  const t1 = await sudut(page);
-  await tidur(700);
-  cek("cincin berhenti saat hero di luar layar", t1 === (await sudut(page)), null);
   await ctx.close();
 }
 

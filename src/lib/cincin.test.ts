@@ -29,3 +29,21 @@ test("putar ke kartu memakai jalur terpendek", () => {
   assert.equal(t, 30);
   assert.equal(phiKartu(11, t, n), 0);
 });
+
+test("putaran otomatis dihitung dari waktu: 10 detik di luar layar = maju 50°", async () => {
+  const { sudutOtomatis } = await import("./cincin.ts");
+  assert.equal(sudutOtomatis(0, 1000, 1000, 5), 0);
+  assert.equal(sudutOtomatis(0, 1000, 11000, 5), -50);
+  assert.equal(sudutOtomatis(30, 5000, 4000, 5), 30, "waktu mundur tidak memutar balik");
+});
+
+test("kartu depan & geser satu kartu", async () => {
+  const { kartuDepan, sudutGeserSatu } = await import("./cincin.ts");
+  assert.equal(kartuDepan(0, 12), 0);
+  assert.equal(kartuDepan(-30, 12), 1);
+  assert.equal(kartuDepan(-359, 12), 0);
+  assert.equal(kartuDepan(29, 12), 11);
+  assert.equal(sudutGeserSatu(-31, 12, 1), -60);
+  assert.equal(sudutGeserSatu(-31, 12, -1), 0);
+  assert.equal(kartuDepan(sudutGeserSatu(0, 12, 1), 12), 1);
+});
