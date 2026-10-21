@@ -101,7 +101,7 @@ export const getAkses = cache(async () => {
   if (error) console.error("[auth] gagal memuat akses:", error.message);
   const d = (data ?? {}) as { nama?: string; aktif?: boolean; peran?: string[]; peran_tertunda?: string[]; izin?: Izin[] };
   const jumlahPeran = (d.peran?.length ?? 0) + (d.peran_tertunda?.length ?? 0);
-  // akun aktif tanpa peran = GTK yang belum ditetapkan → dasbor dasar (tanpa izin modul apa pun)
+  // akun aktif tanpa peran = belum diverifikasi admin → hanya halaman "menunggu verifikasi" (tanpa aksi apa pun)
   const akses: Akses | null = d.aktif
     ? { userId: user.id, email: user.email ?? "", nama: d.nama ?? "", peran: d.peran ?? [], izin: d.izin ?? [], peranTertunda: d.peran_tertunda ?? [], tanpaPeran: jumlahPeran === 0 }
     : null;
@@ -132,6 +132,8 @@ export async function wajibIzin(izin: Izin) {
 export async function aksesAksi(izin?: Izin) {
   const { supabase, akses } = await getAkses();
   if (!supabase || !akses) return null;
+  // akun tanpa peran (belum diverifikasi) tidak boleh menjalankan aksi apa pun
+  if (akses.tanpaPeran) return null;
   if (izin && !punya(akses, izin)) return null;
   return { supabase, akses };
 }

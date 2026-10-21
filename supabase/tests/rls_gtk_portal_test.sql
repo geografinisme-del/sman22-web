@@ -1,11 +1,11 @@
 -- Uji hak akses migrasi 20261224 (portal_login, portal_pengaturan) & 20261225 (jabatan, pegawai/laboran, direktori,
--- akun tanpa peran, pengumuman internal). Jalankan di database UJI. Semua perubahan di-rollback.
+-- akun tanpa peran = menunggu verifikasi, alumni, pengumuman internal). Jalankan di database UJI. Semua perubahan di-rollback.
 \set ON_ERROR_STOP on
 begin;
 
 insert into auth.users (id, email, aud, role)
 select gen_random_uuid(), e || '@sman22.test', 'authenticated', 'authenticated'
-from unnest(array['humas', 'guru', 'laboran_uji', 'satpam_uji', 'tanpaperan_uji', 'siswa_uji', 'opsarpras_uji']) e
+from unnest(array['humas', 'guru', 'laboran_uji', 'satpam_uji', 'tanpaperan_uji', 'siswa_uji', 'opsarpras_uji', 'alumni_uji']) e
 where not exists (select 1 from auth.users u where u.email = e || '@sman22.test');
 
 create or replace function pg_temp.uid(e text) returns uuid language sql as $$ select id from auth.users where email = e || '@sman22.test' $$;
@@ -23,17 +23,19 @@ end $$;
 update public.peran set wajib_mfa = false;
 insert into public.pengguna (user_id, nama, email)
 select pg_temp.uid(e), initcap(replace(e, '_uji', '')) || ' Uji', e || '@sman22.test'
-from unnest(array['humas', 'guru', 'laboran_uji', 'satpam_uji', 'tanpaperan_uji', 'siswa_uji', 'opsarpras_uji']) e
+from unnest(array['humas', 'guru', 'laboran_uji', 'satpam_uji', 'tanpaperan_uji', 'siswa_uji', 'opsarpras_uji', 'alumni_uji']) e
 on conflict (user_id) do update set aktif = true;
-delete from public.pengguna_peran where user_id in (select pg_temp.uid(e) from unnest(array['humas', 'guru', 'laboran_uji', 'satpam_uji', 'tanpaperan_uji', 'siswa_uji', 'opsarpras_uji']) e);
+delete from public.pengguna_peran where user_id in (select pg_temp.uid(e) from unnest(array['humas', 'guru', 'laboran_uji', 'satpam_uji', 'tanpaperan_uji', 'siswa_uji', 'opsarpras_uji', 'alumni_uji']) e);
 insert into public.pengguna_peran (user_id, peran) values
   (pg_temp.uid('humas'), 'humas'), (pg_temp.uid('guru'), 'guru'), (pg_temp.uid('laboran_uji'), 'laboran'),
-  (pg_temp.uid('satpam_uji'), 'pegawai'), (pg_temp.uid('siswa_uji'), 'siswa'), (pg_temp.uid('opsarpras_uji'), 'sarpras');
+  (pg_temp.uid('satpam_uji'), 'pegawai'), (pg_temp.uid('siswa_uji'), 'siswa'), (pg_temp.uid('opsarpras_uji'), 'sarpras'),
+  (pg_temp.uid('alumni_uji'), 'alumni');
 -- humas juga pemegang pengguna.kelola? (tidak) → penerima notifikasi = pemegang pengguna.kelola yang ada
 update public.pengguna set jabatan = 'satpam' where user_id = pg_temp.uid('satpam_uji');
 
 insert into public.portal_login (peran, foto_url, alt_text) values ('gtk', '/images/kegiatan-aula.jpg', 'Kegiatan di aula') on conflict (peran) do nothing;
 insert into public.pengumuman (judul, isi, tanggal, aktif, sasaran) values ('Rapat GTK uji', 'internal', current_date, true, 'pegawai'), ('Pengumuman umum uji', 'umum', current_date, true, 'umum');
+insert into public.kegiatan_kalender (judul, jenis, mulai, selesai, sasaran) values ('Rapat pegawai uji', 'rapat', current_date, current_date, 'pegawai');
 insert into public.kategori_barang (nama, kode) select 'Lab uji', 'LBU' where not exists (select 1 from public.kategori_barang where kode = 'LBU');
 
 -- ================= PENGUNJUNG =================
@@ -58,16 +60,18 @@ do $$ begin
 end $$;
 reset role;
 
--- ================= AKUN TANPA PERAN =================
+-- ================= AKUN TANPA PERAN = menunggu verifikasi admin =================
 select pg_temp.sebagai('tanpaperan_uji'); set local role authenticated;
 do $$ begin
-  if not public.staf_aktif() then raise exception 'GAGAL: akun tanpa peran tidak dianggap GTK (dasbor dasar)'; end if;
-  if not exists (select 1 from public.pengumuman where judul = 'Rapat GTK uji') then raise exception 'GAGAL: akun tanpa peran tidak membaca pengumuman internal'; end if;
-  if not exists (select 1 from public.direktori_gtk() d where d.nama = 'Satpam Uji' and d.jabatan = 'Satpam') then raise exception 'GAGAL: direktori tanpa jabatan satpam'; end if;
-  if exists (select 1 from public.direktori_gtk() d where d.nama = 'Siswa Uji') then raise exception 'GAGAL: direktori memuat siswa'; end if;
+  if public.staf_aktif() then raise exception 'GAGAL: akun tanpa peran dianggap GTK'; end if;
+  if exists (select 1 from public.pengumuman where judul = 'Rapat GTK uji') then raise exception 'GAGAL: akun tanpa peran membaca pengumuman internal'; end if;
+  if exists (select 1 from public.kegiatan_kalender where judul = 'Rapat pegawai uji') then raise exception 'GAGAL: akun tanpa peran membaca kalender pegawai'; end if;
+  if exists (select 1 from public.direktori_gtk()) then raise exception 'GAGAL: akun tanpa peran melihat direktori GTK'; end if;
+  if not exists (select 1 from public.pengguna where user_id = auth.uid()) then raise exception 'GAGAL: akun tanpa peran tidak bisa melihat profilnya sendiri'; end if;
+  if exists (select 1 from public.pengguna where user_id <> auth.uid()) then raise exception 'GAGAL: akun tanpa peran melihat profil orang lain'; end if;
   begin insert into public.barang (nama, kategori_id) select 'Sisipan tanpa peran', id from public.kategori_barang where kode = 'LBU'; raise exception 'GAGAL: akun tanpa peran menambah barang'; exception when insufficient_privilege then null; end;
   perform public.lapor_akun_tanpa_peran();
-  raise notice 'LULUS: akun tanpa peran = GTK dasbor dasar (pengumuman internal, direktori), tanpa izin modul';
+  raise notice 'LULUS: akun tanpa peran hanya melihat profilnya sendiri (tanpa pengumuman internal, kalender pegawai, direktori)';
 end $$;
 reset role;
 do $$ begin
@@ -78,16 +82,31 @@ do $$ begin
   raise notice 'LULUS: notifikasi akun tanpa peran terkirim ke pemegang pengguna.kelola';
 end $$;
 
+-- ================= ALUMNI (hanya peran alumni) =================
+select pg_temp.sebagai('alumni_uji'); set local role authenticated;
+do $$ begin
+  if public.staf_aktif() then raise exception 'GAGAL: alumni dianggap GTK'; end if;
+  if exists (select 1 from public.pengumuman where judul = 'Rapat GTK uji') then raise exception 'GAGAL: alumni membaca pengumuman internal'; end if;
+  if exists (select 1 from public.kegiatan_kalender where judul = 'Rapat pegawai uji') then raise exception 'GAGAL: alumni membaca kalender pegawai'; end if;
+  if exists (select 1 from public.direktori_gtk()) then raise exception 'GAGAL: alumni melihat direktori GTK'; end if;
+  raise notice 'LULUS: alumni tidak pernah mendapat data internal GTK';
+end $$;
+reset role;
+
 -- ================= PEGAWAI (satpam) =================
 select pg_temp.sebagai('satpam_uji'); set local role authenticated;
 do $$
 declare n int;
 begin
   if not public.staf_aktif() then raise exception 'GAGAL: pegawai bukan GTK'; end if;
+  if not exists (select 1 from public.pengumuman where judul = 'Rapat GTK uji') then raise exception 'GAGAL: pegawai tidak membaca pengumuman internal'; end if;
+  if not exists (select 1 from public.kegiatan_kalender where judul = 'Rapat pegawai uji') then raise exception 'GAGAL: pegawai tidak membaca kalender pegawai'; end if;
+  if not exists (select 1 from public.direktori_gtk() d where d.nama = 'Satpam Uji' and d.jabatan = 'Satpam') then raise exception 'GAGAL: direktori tanpa jabatan satpam'; end if;
+  if exists (select 1 from public.direktori_gtk() d where d.nama in ('Tanpaperan Uji', 'Siswa Uji', 'Alumni Uji')) then raise exception 'GAGAL: direktori memuat akun belum terverifikasi/siswa/alumni'; end if;
   begin insert into public.barang (nama, kategori_id) select 'Sisipan satpam', id from public.kategori_barang where kode = 'LBU'; raise exception 'GAGAL: pegawai menambah barang'; exception when insufficient_privilege then null; end;
   begin update public.pengguna set jabatan = 'guru' where user_id = auth.uid(); get diagnostics n = row_count; if n > 0 then raise exception 'GAGAL: pegawai mengubah jabatannya sendiri'; end if; exception when insufficient_privilege then null; end;
   begin insert into public.jabatan_gtk (kode, nama) values ('uji_jabatan', 'Uji'); raise exception 'GAGAL: pegawai menambah jabatan'; exception when insufficient_privilege then null; end;
-  raise notice 'LULUS: pegawai hanya dasbor dasar (tanpa inventaris, tanpa mengatur jabatan)';
+  raise notice 'LULUS: pegawai = dasbor dasar (pengumuman internal, kalender pegawai, direktori) tanpa inventaris & tanpa mengatur jabatan';
 end $$;
 reset role;
 

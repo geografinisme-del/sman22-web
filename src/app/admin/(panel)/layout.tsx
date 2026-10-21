@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { keluar } from "../actions";
 import { ruangKerjaUntuk } from "@/lib/ruang-kerja";
 import { AksenBidang } from "@/components/admin/AksenBidang";
+import { MenungguVerifikasi } from "@/components/admin/MenungguVerifikasi";
 
 export const dynamic = "force-dynamic";
 
@@ -32,8 +33,10 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const { supabase, user, akses } = await wajibLogin();
   // peran yang wajib verifikasi dua langkah: izinnya ditahan database sampai kode autentikator dimasukkan
   if (akses?.peranTertunda.length) redirect("/admin/mfa");
-  // akun GTK aktif tanpa peran tetap masuk panel dengan dasbor dasar saja
-  const bolehPanel = akses?.tanpaPeran || akses?.peran.some((p) => PERAN_PANEL.includes(p));
+  // akun aktif TANPA peran = belum diverifikasi: hanya profilnya sendiri + kontak operator (di semua alamat /admin/*).
+  // Dasbor dasar GTK baru terbuka setelah admin memberi peran (minimal "Pegawai umum").
+  if (akses?.tanpaPeran) return <MenungguVerifikasi supabase={supabase} nama={akses.nama} email={akses.email} keluar={keluar} />;
+  const bolehPanel = akses?.peran.some((p) => PERAN_PANEL.includes(p));
 
   if (akses && !bolehPanel && (berperan(akses, "siswa") || berperan(akses, "orang_tua"))) redirect("/portal");
   if (akses && !bolehPanel && berperan(akses, "alumni")) redirect("/alumni/akun");

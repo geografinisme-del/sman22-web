@@ -8,10 +8,13 @@
 -- 2. Peran baru: "pegawai" (Pegawai umum: dasbor dasar saja) & "laboran" (dasbor dasar + inventaris & jadwal lab).
 --    Izin baru "sarpras.inventaris": menambah/mengubah data barang, TETAPI harga & sumber dana (anggaran) hanya boleh
 --    diubah pemegang sarpras.kelola (dijaga trigger), tanpa hapus, tanpa persetujuan peminjaman.
--- 3. staf_aktif(): definisi terakhir (20261111: bukan siswa/orang tua/alumni) DIPERTAHANKAN, ditambah: akun aktif TANPA
---    peran apa pun ikut dianggap GTK (dasbor dasar) — sebelumnya tidak bisa membaca kalender pegawai dsb.
--- 4. direktori_gtk(): nama + jabatan + peran rekan GTK aktif (tanpa email/telepon), hanya untuk GTK aktif.
--- 5. lapor_akun_tanpa_peran(): akun GTK tanpa peran yang masuk → notifikasi ke pemegang pengguna.kelola (maks. 1/24 jam).
+-- 3. staf_aktif() TIDAK diubah (tetap definisi 20261111): perlu minimal satu peran selain siswa/orang tua/alumni.
+--    Akun TANPA peran & akun yang HANYA alumni tidak pernah dianggap GTK → tidak membaca data internal
+--    (pengumuman internal, kalender pegawai, direktori). Dasbor dasar aktif setelah admin memberi peran (min. "pegawai").
+-- 4. direktori_gtk(): nama + jabatan + peran rekan GTK terverifikasi (punya peran GTK; tanpa email/telepon),
+--    hanya untuk GTK aktif.
+-- 5. lapor_akun_tanpa_peran(): akun tanpa peran yang masuk → notifikasi ke pemegang pengguna.kelola (maks. 1/24 jam)
+--    agar admin memverifikasi & memberi peran.
 -- 6. pengumuman.sasaran ('umum' | 'pegawai'): pengumuman internal hanya terbaca GTK aktif. Baris lama = 'umum'
 --    (tetap publik seperti sebelumnya).
 
@@ -90,17 +93,8 @@ create trigger jaga_anggaran_barang before insert or update on public.barang
   for each row execute function public.jaga_anggaran_barang();
 
 -- ---------------------------------------------------------------------
--- 3. staf_aktif: akun aktif tanpa peran = GTK (dasbor dasar)
+-- 3. staf_aktif: TIDAK diubah (lihat keterangan di atas)
 -- ---------------------------------------------------------------------
-create or replace function public.staf_aktif()
-returns boolean language sql stable security definer set search_path = '' as $$
-  select exists (
-    select 1 from public.pengguna p
-    where p.user_id = auth.uid() and p.aktif
-      and (exists (select 1 from public.pengguna_peran pp where pp.user_id = p.user_id and pp.peran not in ('siswa', 'orang_tua', 'alumni'))
-           or not exists (select 1 from public.pengguna_peran pp where pp.user_id = p.user_id))
-  );
-$$;
 
 -- ---------------------------------------------------------------------
 -- 4. Direktori GTK (tanpa email/telepon)
@@ -116,7 +110,8 @@ language sql stable security definer set search_path = '' as $$
   left join public.pengguna_peran pp on pp.user_id = p.user_id
   left join public.peran r on r.kode = pp.peran
   where public.staf_aktif() and p.aktif and p.nama <> ''
-    and not exists (select 1 from public.pengguna_peran x where x.user_id = p.user_id and x.peran in ('siswa', 'orang_tua', 'alumni'))
+    -- hanya GTK terverifikasi: punya minimal satu peran selain siswa/orang tua/alumni (akun tanpa peran tidak tercantum)
+    and exists (select 1 from public.pengguna_peran x where x.user_id = p.user_id and x.peran not in ('siswa', 'orang_tua', 'alumni'))
   group by p.user_id, p.nama, j.nama
   order by p.nama;
 $$;
@@ -139,7 +134,7 @@ begin
   for admin in select public.pengguna_berizin('pengguna.kelola') loop
     if not exists (select 1 from public.notifikasi n where n.user_id = admin and n.tautan = v_tautan and n.created_at > now() - interval '24 hours') then
       perform public.kirim_notif(admin, 'akun', 'Akun GTK belum diberi peran',
-        coalesce(nullif(saya.nama, ''), saya.email) || ' masuk tanpa peran (dasbor dasar). Tetapkan peran & jabatannya.', v_tautan, 'biasa');
+        coalesce(nullif(saya.nama, ''), saya.email) || ' masuk tanpa peran (menunggu verifikasi). Periksa akunnya, lalu tetapkan peran & jabatannya.', v_tautan, 'biasa');
     end if;
   end loop;
 end $$;

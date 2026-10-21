@@ -119,7 +119,7 @@ export function FormUbahPengguna({
       <Centang label="Akun aktif" nama="aktif" nilai={data.aktif} bantuan="Akun nonaktif tidak bisa mengakses data apa pun." />
       {data.peran.length === 0 && (
         <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
-          Akun ini belum punya peran — saat masuk hanya melihat dasbor dasar (diperlakukan sebagai Pegawai umum). Pilih peran di bawah.
+          Akun ini belum punya peran (menunggu verifikasi) — saat masuk hanya melihat profilnya sendiri dan kontak operator. Setelah memastikan pemiliknya, pilih peran di bawah (minimal Pegawai umum).
         </p>
       )}
       <PilihPeran peran={peran} terpilih={data.peran} />

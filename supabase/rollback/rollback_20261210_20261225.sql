@@ -2,8 +2,8 @@
 -- JANGAN dijalankan kecuali ada masalah setelah migrasi dan sudah ada BACKUP. Bukan migrasi: berkas ini sengaja
 -- di luar folder migrations/ agar tidak pernah ikut "supabase db push".
 --
--- Yang dilakukan: mengembalikan objek LAMA ke definisi produksi sebelum migrasi (policy "publik baca pengumuman",
--- fungsi staf_aktif) lalu menghapus objek BARU yang dibuat ketujuh migrasi itu.
+-- Yang dilakukan: mengembalikan objek LAMA ke definisi produksi sebelum migrasi (policy "publik baca pengumuman")
+-- lalu menghapus objek BARU yang dibuat ketujuh migrasi itu.
 -- PERHATIAN — data yang diisi lewat fitur baru setelah migrasi IKUT HILANG (kartu beranda, tur, halaman CMS,
 -- menu, foto halaman masuk, jabatan, prestasi, info SPMB, portal bidang, kolom is_placeholder/alumni_ptn/...).
 -- Bucket storage "tur-sekolah" & "portal" TIDAK dihapus (berkasnya tetap; hanya policy tulisnya dicabut).
@@ -24,12 +24,7 @@ alter table public.pengumuman drop column if exists sasaran;
 
 drop function if exists public.lapor_akun_tanpa_peran();
 drop function if exists public.direktori_gtk();
--- definisi produksi sebelum migrasi (20261111_alumni_mutu)
-create or replace function public.staf_aktif()
-returns boolean language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.pengguna p join public.pengguna_peran pp on pp.user_id = p.user_id
-                  where p.user_id = auth.uid() and p.aktif and pp.peran not in ('siswa', 'orang_tua', 'alumni'));
-$$;
+-- staf_aktif() tidak diubah oleh migrasi 20261225 → tidak perlu dikembalikan
 
 drop trigger if exists jaga_anggaran_barang on public.barang;
 drop function if exists public.jaga_anggaran_barang();

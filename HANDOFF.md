@@ -398,12 +398,15 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - **Jabatan ≠ peran** (migrasi `20261225000000_gtk_jabatan_peran.sql`): `jabatan_gtk` (daftar, admin bisa menambah) +
   `pengguna.jabatan` (untuk tampilan & direktori; `pegawai.jabatan` teks bebas lama tetap ada). Peran baru `pegawai`
   (dasbor dasar) & `laboran` (dasbor dasar + inventaris/jadwal lab, izin `sarpras.inventaris`; harga & sumber dana
-  dijaga trigger `jaga_anggaran_barang`). Akun aktif tanpa peran = GTK (staf_aktif) → dasbor dasar + notifikasi admin
-  (`lapor_akun_tanpa_peran`, maks. 1/24 jam). `pengumuman.sasaran` ('umum'|'pegawai') untuk pengumuman internal.
+  dijaga trigger `jaga_anggaran_barang`). **Akun aktif tanpa peran = BELUM diverifikasi**: `staf_aktif()` tidak diubah
+  (perlu peran selain siswa/orang tua/alumni) sehingga tidak membaca data internal; panel menampilkan
+  `components/admin/MenungguVerifikasi.tsx` (profil sendiri + kontak operator) di semua /admin/*, `aksesAksi()` menolak
+  semua aksi; admin mendapat notifikasi (`lapor_akun_tanpa_peran`, maks. 1/24 jam) + daftar "Akun tanpa peran".
+  Dasbor dasar aktif setelah admin memberi peran (minimal "Pegawai umum"). Akun yang hanya alumni tidak pernah GTK. `pengumuman.sasaran` ('umum'|'pegawai') untuk pengumuman internal.
 - **Dasbor dasar** (`components/dashboard/DasborDasar.tsx`, di Ringkasan untuk semua GTK): pengumuman internal,
   pintasan (Profil saya, Direktori GTK, Kalender, Keamanan), jadwal piket bila ada, kartu "Ruang Guru" (tautan
   aplikasi guru lama) untuk peran guru. Halaman baru `/admin/profil-saya`, `/admin/direktori` (RPC `direktori_gtk`,
-  tanpa email/telepon). Pegawai umum/tanpa peran/laboran: menu ringkas (layout panel).
+  tanpa email/telepon; hanya GTK terverifikasi). Pegawai umum/laboran: menu ringkas (layout panel).
 - **CMS** (migrasi `20261224000000_portal_masuk.sql`): `portal_login` (foto per peran, bucket "portal", caption, alt,
   titik fokus, is_placeholder) + `portal_pengaturan` (tautan aplikasi guru lama). Admin → Halaman masuk portal
   (`/admin/portal-masuk`, `actions-portal-masuk.ts`, `components/admin/FotoFokus.tsx`). Tanpa baris = foto bawaan
@@ -431,3 +434,13 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   Jangan memakai `supabase db push` ke produksi: riwayat migrasi produksi hanya mencatat 3 entri (migrasi lama dijalankan
   lewat SQL Editor) sehingga db push akan mencoba menjalankan ulang migrasi lama.
 - Daftar kebutuhan foto/konten untuk sekolah: `docs/kebutuhan-konten.md`.
+
+### Keamanan akun & backup (21 Okt 2026)
+- **Signup Supabase Auth produksi TERBUKA** (`disable_signup: false`, provider email). Aplikasi tidak memakai signUp;
+  semua akun dibuat lewat Admin API (Pengguna & Peran, akun portal, alumni). Tutup di Supabase Dashboard →
+  Authentication → Sign In / Providers → matikan "Allow new users to sign up" (login, atur ulang sandi, dan pembuatan
+  akun oleh admin tetap berjalan). Akun yang mendaftar sendiri tidak punya baris `pengguna` → tidak mendapat akses apa pun.
+- **Backup**: `bash scripts/backup-produksi.sh` (butuh `SUPABASE_DB_URL` = connection string *Session pooler* di
+  .env.local; Docker image `postgres:17`). Hasil di `backup/<waktu>/` (diabaikan git): `skema_public.sql`, `data.sql`
+  (public + auth + storage), `lengkap_public.dump`. Pulihkan schema public: `pg_restore --clean --if-exists --no-owner
+  -d <url> lengkap_public.dump` (dump lengkap menghindari masalah FK melingkar `bukti_mutu` pada dump data-only).

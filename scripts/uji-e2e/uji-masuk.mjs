@@ -160,18 +160,33 @@ await klik(`[...document.querySelectorAll("button[type=submit]")].find(b=>b.text
 await sampai(`location.pathname==="/portal-digital/masuk/gtk"`);
 cek("tombol 'Keluar & masuk sebagai Guru & Tendik' → halaman GTK dengan lanjut", (await url()) === "/portal-digital/masuk/gtk?lanjut=%2Fadmin", await url());
 
-// 6. pegawai tanpa peran → dasbor dasar (bukan layar kosong), menu ringkas, admin mendapat notifikasi
+// 6a. akun TANPA peran → "menunggu verifikasi admin" (profil sendiri + kontak operator), tanpa data internal
 await keluarAkun();
 await buka("/portal-digital/masuk/gtk");
 await isiMasuk("pegawai");
+const verif = await js(`({u:location.pathname, h1:document.querySelector("h1")?.textContent, teks:document.body.innerText, nav:Boolean(document.querySelector("nav"))})`);
+cek("akun tanpa peran → halaman 'Akun Anda menunggu verifikasi admin' (profil + kontak operator)", verif.u.startsWith("/admin") && verif.h1 === "Akun Anda menunggu verifikasi admin" && verif.teks.includes("pegawai@sman22.test") && verif.teks.includes("Hubungi operator sekolah"), { u: verif.u, h1: verif.h1 });
+cek("akun tanpa peran: tanpa dasbor, menu, atau pengumuman internal", !verif.nav && !verif.teks.includes("Pengumuman internal") && !verif.teks.includes("Pintasan saya"), verif.teks.slice(0, 120));
+await foto("menunggu-verifikasi.jpg");
+for (const u of ["/admin/direktori", "/admin/kalender", "/admin/profil-saya"]) {
+  await buka(u);
+  const h = await js(`document.querySelector("h1")?.textContent`);
+  cek(`akun tanpa peran membuka ${u} → tetap halaman menunggu verifikasi`, h === "Akun Anda menunggu verifikasi admin", h);
+}
+
+// 6b. akun dengan peran "Pegawai umum" → dasbor dasar, menu ringkas
+await keluarAkun();
+await buka("/portal-digital/masuk/gtk");
+await isiMasuk("umum");
 const dasar = await js(`({u:location.pathname, teks:document.body.innerText, menu:document.querySelector("nav")?.innerText.split(String.fromCharCode(10)).map(t=>t.trim()).filter(Boolean)})`);
-cek("pegawai tanpa peran → /admin dengan Pengumuman internal + Pintasan saya", dasar.u === "/admin" && dasar.teks.includes("Pengumuman internal") && dasar.teks.includes("Pintasan saya"), { u: dasar.u });
-cek("menu pegawai ringkas (Ringkasan, Saya, Pengaturan — tanpa Jadwal/Kurikulum/Sarpras)", dasar.menu.includes("Saya") && !dasar.menu.some((m) => ["Jadwal", "Kurikulum", "Sarpras", "Kesiswaan"].includes(m)), dasar.menu);
+cek("Pegawai umum → /admin dengan Pengumuman internal + Pintasan saya", dasar.u === "/admin" && dasar.teks.includes("Pengumuman internal") && dasar.teks.includes("Pintasan saya"), { u: dasar.u });
+cek("menu Pegawai umum ringkas (Ringkasan, Saya, Pengaturan — tanpa Jadwal/Kurikulum/Sarpras)", dasar.menu.includes("Saya") && !dasar.menu.some((m) => ["Jadwal", "Kurikulum", "Sarpras", "Kesiswaan"].includes(m)), dasar.menu);
 await foto("dasbor-dasar-pegawai.jpg");
 await buka("/admin/direktori");
-cek("direktori GTK tampil untuk pegawai", (await js(`document.querySelectorAll("tbody tr").length`)) > 1, await url());
+const dir = await js(`[...document.querySelectorAll("tbody tr td:first-child")].map(t=>t.textContent)`);
+cek("direktori GTK tampil untuk Pegawai umum, tanpa akun yang belum diverifikasi", dir.length > 1 && !dir.includes("Pegawai Uji"), dir);
 await buka("/admin/profil-saya");
-cek("profil saya: pegawai umum menunggu penetapan", (await js(`document.body.innerText`)).includes("Pegawai umum"), await url());
+cek("profil saya: peran Pegawai umum", (await js(`document.body.innerText`)).includes("Pegawai umum"), await url());
 
 // 7. laboran → inventaris tanpa kolom anggaran
 await keluarAkun();

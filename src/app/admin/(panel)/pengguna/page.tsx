@@ -37,14 +37,14 @@ export default async function Pengguna({ searchParams }: { searchParams: Promise
       {tanpaPeran.length > 0 && (
         <Kartu className="mb-8 ring-2 ring-amber-300">
           <h2 className="text-2xl">Akun tanpa peran ({tanpaPeran.length})</h2>
-          <p className="mt-1 text-sm text-black/60">Saat masuk, akun ini hanya melihat dasbor dasar (diperlakukan sebagai Pegawai umum). Tetapkan peran dan jabatannya.</p>
+          <p className="mt-1 text-sm text-black/60">Akun ini menunggu verifikasi: saat masuk hanya melihat profilnya sendiri dan kontak operator, tanpa data internal. Periksa pemiliknya, lalu tetapkan peran (minimal Pegawai umum) dan jabatannya.</p>
           <ul className="mt-4 divide-y divide-black/5">
             {tanpaPeran.map((u) => (
               <li key={u.user_id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-2.5">
                 <span className="font-medium">{u.nama || "(tanpa nama)"}</span>
                 <span className="text-sm text-black/50">{u.email}</span>
                 <Link href={`/admin/pengguna/${u.user_id}`} className="ml-auto text-sm font-semibold text-blue-teks hover:underline">
-                  Atur peran & jabatan →
+                  Verifikasi & atur peran →
                 </Link>
               </li>
             ))}
