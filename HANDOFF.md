@@ -407,7 +407,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - **CMS** (migrasi `20261224000000_portal_masuk.sql`): `portal_login` (foto per peran, bucket "portal", caption, alt,
   titik fokus, is_placeholder) + `portal_pengaturan` (tautan aplikasi guru lama). Admin → Halaman masuk portal
   (`/admin/portal-masuk`, `actions-portal-masuk.ts`, `components/admin/FotoFokus.tsx`). Tanpa baris = foto bawaan
-  (GTK aula, Siswa apel, Orang Tua gedung); baris dengan foto kosong = gedung utama. Halaman dinamis → tanpa deploy ulang.
+  (GTK aula, Siswa apel, Orang Tua gedung); "Kembalikan ke foto awal" / foto kosong = foto awal peran itu. Halaman dinamis → tanpa deploy ulang.
 - **Admin pengguna**: daftar "Akun tanpa peran" di atas, kolom & pilihan jabatan, tambah jabatan.
 - **Sebelum migrasi dijalankan** halaman tetap berfungsi (fallback kolom jabatan/sasaran, foto bawaan, pesan "jalankan migrasi").
 - **Uji**: `uji-pengalihan.mjs` (36 cek, tanpa login), `uji-masuk.mjs` (24 cek: login tiap peran, salah peran,

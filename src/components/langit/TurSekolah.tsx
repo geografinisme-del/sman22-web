@@ -35,7 +35,8 @@ export function TurSekolah({ titik }: { titik: TitikTur[] }) {
                 ratio="isi"
                 focus={t.fokus}
                 isPlaceholder={t.sementara}
-                sizes="100vw"
+                // ≥900px: mode sticky selebar layar; 700–899px: daftar 2 kolom; HP: 1 kolom
+                sizes="(min-width: 900px) 100vw, (min-width: 700px) 50vw, 100vw"
                 className="tur-media"
                 kelasMedia={t.media?.tipe === "video" ? "tur-video" : "tur-foto"}
                 kosong={

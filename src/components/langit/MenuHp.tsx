@@ -83,7 +83,7 @@ export function MenuHp({ terbuka, onTutup, data }: { terbuka: boolean; onTutup: 
                 </h2>
                 <div id={`lgt-hp-${g.kunci}`} className="lgt-akordeon-isi" hidden={!terbukaIni}>
                   <figure className="lgt-akordeon-foto">
-                    <MediaSlot src={g.foto.src} alt={g.foto.alt} ratio="isi" isPlaceholder={g.foto.sementara} sizes="100vw" />
+                    <MediaSlot src={g.foto.src} alt={g.foto.alt} ratio="isi" isPlaceholder={g.foto.sementara} sizes="(min-width: 752px) 720px, calc(100vw - 32px)" />
                     <figcaption className="lgt-pil-caption">{g.foto.caption}</figcaption>
                   </figure>
                   <p className="lgt-akordeon-pengantar">{g.keterangan}</p>

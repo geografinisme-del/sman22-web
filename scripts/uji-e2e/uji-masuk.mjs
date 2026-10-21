@@ -213,14 +213,23 @@ if ((await url()).startsWith("/admin/mfa")) {
   await ketik(`document.querySelector("form:has(input[name=peran][value=gtk]) input[name=alt_text]")`, "Foto uji halaman masuk Guru & Tendik");
   await klik(`document.querySelector("form:has(input[name=peran][value=gtk]) button[type=submit]")`);
   await sampai(`location.search.includes("pesan=tersimpan")`, 20000);
+  // kartu "Pilih pintu" (tetap bisa dibuka saat masuk) memakai foto baru
+  const kartuGtk = `decodeURIComponent(document.querySelector(".pd-peran img")?.getAttribute("src") ?? "")`;
+  await buka("/portal-digital");
+  const kartu = await js(kartuGtk);
+  cek("kartu 'Pilih pintu' GTK memakai foto baru tanpa deploy ulang (bucket portal)", kartu.includes("/storage/v1/object/public/portal/"), kartu);
+  // kembalikan ke foto awal → foto awal peran itu (GTK = aula), bukan gedung
+  await buka("/admin/portal-masuk");
+  await klik(`document.querySelector("form:has(input[name=peran][value=gtk]) input[name=bawaan]")`);
+  await klik(`document.querySelector("form:has(input[name=peran][value=gtk]) button[type=submit]")`);
+  await sampai(`location.search.includes("pesan=tersimpan")`, 20000);
+  await buka("/portal-digital");
+  const kartuAwal = await js(kartuGtk);
+  cek("'Kembalikan ke foto awal' → kartu GTK kembali ke foto aula", kartuAwal.includes("kegiatan-aula"), kartuAwal);
   await keluarAkun();
   await buka("/portal-digital/masuk/gtk");
-  const src = await js(`document.querySelector(".masuk-foto img")?.getAttribute("src") ?? ""`);
-  cek("foto GTK diganti dari admin → langsung tampil tanpa deploy ulang (bucket portal)", decodeURIComponent(src).includes("/storage/v1/object/public/portal/"), src);
-  const pintu = await js(`decodeURIComponent([...document.querySelectorAll("img")].map(i=>i.getAttribute("src")).join(" "))`);
-  await buka("/portal-digital");
-  const kartu = await js(`decodeURIComponent(document.querySelector(".pd-peran img")?.getAttribute("src") ?? "")`);
-  cek("kartu 'Pilih pintu' GTK memakai foto yang sama", kartu.includes("/storage/v1/object/public/portal/"), { kartu, pintu: pintu.slice(0, 80) });
+  const src = await js(`decodeURIComponent(document.querySelector(".masuk-foto img")?.getAttribute("src") ?? "")`);
+  cek("halaman masuk GTK kembali ke foto aula", src.includes("kegiatan-aula"), src);
 }
 
 fs.writeFileSync(path.join(keluar, "hasil-masuk.json"), JSON.stringify(hasil, null, 1));

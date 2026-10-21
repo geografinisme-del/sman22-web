@@ -30,7 +30,7 @@ export default async function AdminPortalMasuk({ searchParams }: { searchParams:
     <>
       <JudulHalaman
         judul="Halaman masuk portal"
-        deskripsi="Foto khusus setiap pintu masuk (Guru & Tendik, Siswa, Orang Tua). Foto yang sama tampil di kartu “Pilih pintu Anda.”. Kosong = foto bawaan sekolah."
+        deskripsi="Foto khusus setiap pintu masuk (Guru & Tendik, Siswa, Orang Tua). Foto yang sama tampil di kartu “Pilih pintu Anda.”. Kosong = foto awal tiap pintu (Guru & Tendik: aula, Siswa: apel, Orang Tua: gedung utama)."
       />
       <Notifikasi kode={pesan} />
       {galat && (
@@ -63,7 +63,7 @@ export default async function AdminPortalMasuk({ searchParams }: { searchParams:
                   <Input label="Caption kecil di atas foto" nama="caption" nilai={d?.caption ?? ""} maks={80} placeholder={bawaan.caption} />
                 </div>
                 <Centang label="Ilustrasi sementara (foto stok — tampil label “Ilustrasi sementara”)" nama="is_placeholder" nilai={d?.is_placeholder ?? false} />
-                {pakaiCms && <Centang label="Kembalikan ke foto bawaan sekolah" nama="bawaan" bantuan="Berkas yang sudah diunggah tidak dihapus." />}
+                {pakaiCms && <Centang label={`Kembalikan ke foto awal (${bawaan.caption})`} nama="bawaan" bantuan="Berkas yang sudah diunggah tidak dihapus." />}
                 <div>
                   <TombolSimpan>Simpan foto {r.label}</TombolSimpan>
                 </div>

@@ -630,9 +630,8 @@ export const FOTO_PORTAL_BAWAAN: Record<PeranFoto, FotoPortal> = {
   siswa: { src: "/images/apel-lapangan.jpg", alt: "Siswa mengikuti apel di lapangan sekolah", caption: "Apel di lapangan", fokus: { x: 50, y: 50 }, sementara: false },
   orang_tua: { src: "/images/gedung.jpg", alt: "Gedung utama SMA Negeri 22 Bandung", caption: "Gedung utama", fokus: { x: 50, y: 50 }, sementara: false },
 };
-const FOTO_GEDUNG: FotoPortal = FOTO_PORTAL_BAWAAN.orang_tua;
 
-/** Foto halaman masuk & kartu "Pilih pintu Anda." per peran. Foto kosong di CMS → foto gedung utama. */
+/** Foto halaman masuk & kartu "Pilih pintu Anda." per peran. Foto kosong di CMS → foto awal peran itu (aula / apel / gedung). */
 export const getFotoPortal = cache(async (): Promise<Record<PeranFoto, FotoPortal>> => {
   if (!supabaseAktif) return FOTO_PORTAL_BAWAAN;
   const { data, error } = await supabasePublik().from("portal_login").select("*");
@@ -646,7 +645,7 @@ export const getFotoPortal = cache(async (): Promise<Record<PeranFoto, FotoPorta
     if (!(k in hasil)) continue;
     hasil[k] = r.foto_url
       ? { src: r.foto_url, alt: r.alt_text || FOTO_PORTAL_BAWAAN[k].alt, caption: r.caption || "", fokus: { x: r.fokus_x ?? 50, y: r.fokus_y ?? 50 }, sementara: r.is_placeholder === true }
-      : { ...FOTO_GEDUNG, caption: r.caption || FOTO_GEDUNG.caption };
+      : { ...FOTO_PORTAL_BAWAAN[k], caption: r.caption || FOTO_PORTAL_BAWAAN[k].caption };
   }
   return hasil;
 });
