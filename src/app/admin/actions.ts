@@ -1,6 +1,6 @@
 "use server";
 
-import { lanjutAman } from "@/lib/portal-digital";
+import { alamatMasuk, areaRute, cocokHalaman, JENIS_LOGIN, LABEL_PERAN_MASUK, lanjutAman, PERAN_MASUK, peranAkun, type PeranMasuk } from "@/lib/masuk";
 import { revalidatePath } from "next/cache";
 import { kirimSegera } from "@/lib/notif/kirim";
 import { redirect } from "next/navigation";
@@ -23,7 +23,7 @@ import { emailPortal } from "@/lib/portal";
 import { unggahGambar } from "@/lib/admin/unggah";
 import { kunciAdminTersedia, supabaseLayanan } from "@/lib/supabase/admin";
 
-export type HasilAksi = { ok: boolean; pesan: string; errors?: Record<string, string> };
+export type HasilAksi = { ok: boolean; pesan: string; errors?: Record<string, string>; tautan?: { href: string; label: string } };
 
 const GAGAL_AKSES: HasilAksi = { ok: false, pesan: "Anda tidak memiliki akses admin. Silakan masuk ulang." };
 
@@ -68,7 +68,10 @@ const loginSchema = z.discriminatedUnion("jenis", [
 
 export async function masuk(_prev: HasilAksi, form: FormData): Promise<HasilAksi> {
   if (!supabaseAktif) return { ok: false, pesan: "Database belum disambungkan. Isi kunci Supabase di Vercel terlebih dahulu." };
-  const parsed = loginSchema.safeParse({ ...ambil(form, "email", "password", "nisn"), jenis: String(form.get("jenis") || "staf") });
+  // peran ditentukan oleh HALAMAN masuk (gtk | siswa | orang-tua); cara login per peran tidak berubah
+  const halaman = (PERAN_MASUK as string[]).includes(String(form.get("halaman"))) ? (String(form.get("halaman")) as PeranMasuk) : null;
+  const jenis = halaman ? JENIS_LOGIN[halaman] : String(form.get("jenis") || "staf");
+  const parsed = loginSchema.safeParse({ ...ambil(form, "email", "password", "nisn"), jenis });
   if (!parsed.success) return { ok: false, pesan: "Periksa kembali isian Anda.", errors: pesanError(parsed.error) };
   const d = parsed.data;
   const email = d.jenis === "staf" ? d.email : emailPortal(d.nisn, d.jenis);
@@ -90,13 +93,40 @@ export async function masuk(_prev: HasilAksi, form: FormData): Promise<HasilAksi
     supabase.rpc("catat_aktivitas", { nama_tabel: "auth", aksi: "LOGIN", keterangan: { jenis: d.jenis } }),
   ]);
   const a = (akses ?? {}) as { peran?: string[]; peran_tertunda?: string[] };
-  const peran = a.peran ?? [];
-  // tujuan kembali (mis. kartu Portal Digital 22) — hanya jalur internal yang aman
+  const peran = [...(a.peran ?? []), ...(a.peran_tertunda ?? [])];
+  // akun tidak cocok dengan halaman ini → keluar lagi & arahkan ke halaman masuk yang benar
+  if (halaman && !cocokHalaman(halaman, peran)) {
+    await supabase.auth.signOut();
+    const benar = peranAkun(peran);
+    return {
+      ok: false,
+      pesan: `Akun ini terdaftar sebagai ${LABEL_PERAN_MASUK[benar].pendek}, bukan ${LABEL_PERAN_MASUK[halaman].pendek}. Silakan masuk lewat halaman ${LABEL_PERAN_MASUK[benar].pendek}.`,
+      tautan: { href: alamatMasuk(benar), label: `Masuk sebagai ${LABEL_PERAN_MASUK[benar].pendek}` },
+    };
+  }
+  // akun GTK tanpa peran: dasbor dasar + notifikasi ke admin pengguna (maks. 1×/24 jam, di database)
+  if (peran.length === 0) await supabase.rpc("lapor_akun_tanpa_peran");
+  // tujuan kembali — hanya jalur internal yang aman (lib/masuk.ts)
   const lanjut = lanjutAman(form.get("lanjut"));
+  // tujuan milik peran lain (mis. siswa membuka /admin) → penjelasan + tautan ke halaman masuk yang benar
+  const areaTujuan = lanjut ? areaRute(lanjut) : null;
+  if (lanjut && areaTujuan && areaTujuan !== peranAkun(peran)) redirect(`/portal-digital/akses-lain?untuk=${areaTujuan}&lanjut=${encodeURIComponent(lanjut)}`);
   // peran yang wajib verifikasi dua langkah → minta kode autentikator dulu
   if ((a.peran_tertunda ?? []).length > 0) redirect(lanjut ? `/admin/mfa?lanjut=${encodeURIComponent(lanjut)}` : "/admin/mfa");
   const hanyaPortal = peran.length > 0 && peran.every((p) => p === "siswa" || p === "orang_tua");
   redirect(lanjut ?? (hanyaPortal ? "/portal" : "/admin/mulai"));
+}
+
+/** Keluar lalu buka halaman masuk peran lain (dari halaman "akses lain"); tujuan divalidasi. */
+export async function keluarDanMasuk(form: FormData) {
+  const untuk = (PERAN_MASUK as string[]).includes(String(form.get("untuk"))) ? (String(form.get("untuk")) as PeranMasuk) : "gtk";
+  const lanjut = lanjutAman(form.get("lanjut"));
+  if (supabaseAktif) {
+    const supabase = await supabaseServer();
+    await supabase.rpc("catat_aktivitas", { nama_tabel: "auth", aksi: "LOGOUT" });
+    await supabase.auth.signOut();
+  }
+  redirect(lanjut ? `${alamatMasuk(untuk)}?lanjut=${encodeURIComponent(lanjut)}` : alamatMasuk(untuk));
 }
 
 /** Percobaan masuk yang gagal dicatat dengan kunci server (tanpa kata sandi), untuk deteksi tebak-sandi */
@@ -117,7 +147,7 @@ export async function keluar() {
     await supabase.rpc("catat_aktivitas", { nama_tabel: "auth", aksi: "LOGOUT" });
     await supabase.auth.signOut();
   }
-  redirect("/admin/login");
+  redirect("/portal-digital");
 }
 
 /* ------------------------------------------------------------------ */
@@ -280,6 +310,9 @@ export async function simpanPengumuman(_prev: HasilAksi, form: FormData): Promis
   void _i;
   // kolom popup prioritas hanya dikirim bila dipakai/ada sebelumnya, agar formulir tetap jalan sebelum migrasi Fase 19
   const baris: Record<string, unknown> = { ...dasar };
+  // sasaran (migrasi 20261225) hanya dikirim bila dipakai, agar formulir tetap jalan sebelum migrasi
+  const internal = form.get("internal") === "on";
+  if (internal || form.get("sasaran_lama") === "pegawai") baris.sasaran = internal ? "pegawai" : "umum";
   const poster = form.get("poster") as File | null;
   const salahPoster = cekGambar(poster);
   if (salahPoster) return { ok: false, pesan: salahPoster, errors: { poster: salahPoster } };
@@ -306,7 +339,12 @@ export async function simpanPengumuman(_prev: HasilAksi, form: FormData): Promis
   if (error)
     return {
       ok: false,
-      pesan: error.code === "PGRST204" || error.code === "42703" ? "Fitur popup prioritas memerlukan migrasi 20261202000000_tampilan_widget.sql." : pesanDb(error),
+      pesan:
+        error.code === "PGRST204" || error.code === "42703"
+          ? "sasaran" in baris
+            ? "Pengumuman internal memerlukan migrasi 20261225000000_gtk_jabatan_peran.sql."
+            : "Fitur popup prioritas memerlukan migrasi 20261202000000_tampilan_widget.sql."
+          : pesanDb(error),
     };
 
   segarkanSitus();

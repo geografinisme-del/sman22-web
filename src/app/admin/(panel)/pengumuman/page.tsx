@@ -42,6 +42,7 @@ export default async function AdminPengumuman({ searchParams }: { searchParams: 
                 <p className="flex flex-wrap items-center gap-2 font-medium">
                   {p.judul}
                   {p.penting && <Lencana warna="kuning">Penting</Lencana>}
+                  {p.sasaran === "pegawai" && <Lencana>Internal GTK</Lencana>}
                   {!p.aktif && <Lencana>Disembunyikan</Lencana>}
                   {p.tayang_mulai && new Date(p.tayang_mulai) > new Date() && <Lencana warna="kuning">Terjadwal {formatWaktu(p.tayang_mulai)}</Lencana>}
                   {p.tayang_selesai && new Date(p.tayang_selesai) <= new Date() && <Lencana>Sudah berakhir</Lencana>}

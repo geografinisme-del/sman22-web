@@ -5,7 +5,7 @@ import { PageHero } from "@/components/langit/Komponen";
 import { getAkses } from "@/lib/admin/auth";
 import { BIDANG, type KunciBidang } from "@/lib/bidang";
 import { putuskanPintu } from "@/lib/portal-digital";
-import { keluar } from "../../../admin/actions";
+import { keluar } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Membuka layanan", robots: { index: false, follow: false } };

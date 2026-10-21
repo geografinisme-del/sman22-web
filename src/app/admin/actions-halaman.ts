@@ -9,7 +9,7 @@ import { unggahGambar } from "@/lib/admin/unggah";
 import type { HasilAksi } from "./actions";
 
 /**
- * Aksi CMS halaman publik Tahap C (migrasi 20261222): guru & staf, fasilitas, halaman teks (kurikulum).
+ * Aksi CMS halaman publik Tahap C (migrasi 20261222): Guru & Tendik, fasilitas, halaman teks (kurikulum).
  * Diperiksa di server (izin konten.kelola) dan dibatasi lagi oleh RLS. Tidak ada hapus permanen (pakai nonaktif).
  */
 const GAGAL_AKSES: HasilAksi = { ok: false, pesan: "Anda tidak memiliki akses admin. Silakan masuk ulang." };

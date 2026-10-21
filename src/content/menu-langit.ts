@@ -152,9 +152,9 @@ export type ItemKabar = { id: string; jenis: Exclude<KategoriKabar, "Semua">; ju
 /** Chip akses cepat di baris bawah setiap panel mega menu. */
 export const CHIP_AKSES: Tautan[] = [
   { href: "/spmb", label: "Info SPMB" },
-  { href: "/portal-digital/buka/siswa", label: "Portal Siswa" },
-  { href: "/portal-digital/buka/ortu", label: "Portal Orang Tua" },
-  { href: "/portal-digital/buka/guru", label: "Guru & Tendik" },
+  { href: "/portal-digital/masuk/siswa", label: "Portal Siswa" },
+  { href: "/portal-digital/masuk/orang-tua", label: "Portal Orang Tua" },
+  { href: "/portal-digital/masuk/gtk", label: "Guru & Tendik" },
   { href: E_LEARNING_BAWAAN, label: "E-Learning" },
   { href: "/perpustakaan", label: "E-Library" },
 ];
@@ -163,19 +163,19 @@ export type AksesCepat = { untuk: string; tautan: Tautan[] };
 /** Akses cepat per pengguna (menu HP). */
 export const AKSES_CEPAT: AksesCepat[] = [
   { untuk: "Calon siswa", tautan: [{ href: "/spmb", label: "Info SPMB" }, { href: "/kontak", label: "Tanya panitia" }] },
-  { untuk: "Orang tua", tautan: [{ href: "/portal-digital/buka/ortu", label: "Portal Orang Tua" }, { href: "/agenda", label: "Kalender" }] },
+  { untuk: "Orang tua", tautan: [{ href: "/portal-digital/masuk/orang-tua", label: "Portal Orang Tua" }, { href: "/agenda", label: "Kalender" }] },
   {
     untuk: "Siswa",
     tautan: [
       { href: E_LEARNING_BAWAAN, label: "E-Learning" },
       { href: "/perpustakaan", label: "E-Library" },
-      { href: "/portal-digital/buka/siswa", label: "Portal Siswa" },
+      { href: "/portal-digital/masuk/siswa", label: "Portal Siswa" },
     ],
   },
   {
     untuk: "Guru & Tendik",
     tautan: [
-      { href: "/portal-digital/buka/guru", label: "Pojok Guru" },
+      { href: "/portal-digital/masuk/gtk", label: "Pojok Guru" },
       { href: "/portal-digital#judul-manajemen", label: "Ruang kerja manajemen" },
     ],
   },

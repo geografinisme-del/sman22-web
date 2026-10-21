@@ -201,13 +201,13 @@ export default async function Perpustakaan({ searchParams }: { searchParams: Pro
             <div className="kartu p-5">
               <h2 className="text-[1.125rem] font-semibold">Layanan pribadi</h2>
               <p className="mt-1 text-[0.9375rem] text-[var(--muted)]">Pinjaman aktif, reservasi, perpanjangan, jurnal baca, dan koleksi digital khusus warga sekolah.</p>
-              <Link href="/admin/login?sebagai=siswa" className="btn btn-primary mt-3 w-full">
+              <Link href="/portal-digital/masuk/siswa" className="btn btn-primary mt-3 w-full">
                 Masuk Portal Sekolah
                 <ArrowRight size={18} aria-hidden className="ikon-geser" />
               </Link>
               <p className="mt-3 text-sm text-[var(--muted)]">
                 Petugas perpustakaan mengelola koleksi, anggota, sirkulasi, dan laporan melalui{" "}
-                <Link href="/admin/login?sebagai=staf" className="tautan">
+                <Link href="/portal-digital/masuk/gtk" className="tautan">
                   Portal Manajemen
                 </Link>
                 .

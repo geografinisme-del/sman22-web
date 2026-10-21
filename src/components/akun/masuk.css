@@ -1,0 +1,216 @@
+/* Halaman masuk Portal Digital 22 (HalamanMasuk.tsx) — token dari styles/tokens.css */
+.masuk-halaman {
+  display: grid;
+  min-height: 100vh;
+  background: var(--soft);
+  color: var(--ink);
+}
+@media (min-width: 1024px) {
+  .masuk-halaman {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+.masuk-panel {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 18px 16px 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--sky-1) 0%, var(--sky-2) 55%, var(--sky-3) 100%);
+  color: var(--white);
+}
+.masuk-panel::before {
+  /* lapisan tipis biru tua: teks putih ≥ 4,5:1 */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgb(10 30 90 / 0.28), rgb(10 30 90 / 0) 45%);
+}
+.masuk-panel .lgt-awan-tipis {
+  z-index: -1;
+}
+@media (min-width: 1024px) {
+  .masuk-panel {
+    justify-content: space-between;
+    gap: 28px;
+    min-height: 100vh;
+    padding: 36px 44px 40px;
+  }
+}
+.masuk-merek {
+  position: relative;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+  color: var(--white);
+}
+.masuk-logo {
+  width: 44px;
+  height: auto;
+}
+.masuk-merek strong {
+  display: block;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.masuk-merek small {
+  display: block;
+  font-family: var(--font-kode);
+  font-size: 0.6875rem;
+  letter-spacing: var(--label-spasi);
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.masuk-foto {
+  position: relative;
+  height: 180px;
+  margin: 0 -16px;
+  overflow: hidden;
+}
+.masuk-foto > .media-slot {
+  position: absolute;
+  inset: 0;
+}
+.masuk-foto figcaption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  padding: 4px 12px;
+  border-radius: var(--radius-pil);
+  background: rgb(255 255 255 / 0.92);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+@media (min-width: 1024px) {
+  .masuk-foto {
+    flex: 1;
+    height: auto;
+    min-height: 420px;
+    margin: 0;
+    border-radius: var(--radius-kartu-besar);
+    box-shadow: 0 30px 60px rgb(11 18 32 / 0.25);
+  }
+}
+.masuk-sisi {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 16px 40px;
+}
+.masuk-kartu {
+  width: 100%;
+  max-width: 460px;
+  padding: 32px 28px;
+  border-radius: var(--radius-kartu-besar);
+  background: var(--white);
+  box-shadow: var(--bayangan-kartu);
+}
+@media (max-width: 640px) {
+  .masuk-kartu {
+    padding: 26px 20px;
+  }
+}
+.masuk-label {
+  color: var(--blue-teks);
+}
+.masuk-kartu h1 {
+  margin-top: 8px;
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  font-weight: var(--judul-berat);
+  letter-spacing: var(--judul-spasi);
+  line-height: 1.1;
+}
+.masuk-pengantar {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+/* kolom formulir: radius 14, garis --line, cincin fokus biru 3px */
+.masuk-kartu input:not([type="hidden"]) {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-input);
+  background: var(--white);
+  font-size: 1rem;
+  color: var(--ink);
+}
+.masuk-kartu input:focus {
+  border-color: var(--blue);
+  outline: 3px solid color-mix(in srgb, var(--blue) 45%, transparent);
+  outline-offset: 0;
+}
+.masuk-kartu input[aria-invalid="true"] {
+  border-color: #b42318;
+}
+.masuk-sandi {
+  position: relative;
+}
+.masuk-sandi input {
+  padding-right: 120px !important;
+}
+.masuk-sandi button {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  translate: 0 -50%;
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.masuk-sandi button:hover {
+  background: var(--soft);
+  color: var(--ink);
+}
+.masuk-kartu button[type="submit"] {
+  display: inline-flex;
+  width: 100%;
+  min-height: 52px;
+  justify-content: center;
+  border-radius: var(--radius-pil);
+  background: var(--ink);
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.masuk-kartu button[type="submit"]:hover {
+  background: color-mix(in srgb, var(--ink) 85%, var(--white));
+}
+.masuk-bawah {
+  display: grid;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.masuk-bawah a {
+  color: var(--blue-teks);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.masuk-pemberitahuan {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--haze) 45%, var(--white));
+  color: var(--ink);
+  font-size: 0.9375rem;
+}

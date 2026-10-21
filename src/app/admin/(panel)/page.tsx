@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { JudulHalaman, Notifikasi } from "@/components/admin/ui";
 import { BagianHariIni, Keadaan, Panel } from "@/components/dashboard/HariIni";
+import { DasborDasar } from "@/components/dashboard/DasborDasar";
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
 import { kalimatAktivitas, waktuWIB } from "@/lib/admin/label-audit";
@@ -119,6 +120,7 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
       )}
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        <DasborDasar supabase={supabase} akses={akses} />
         <BagianHariIni supabase={supabase} akses={akses} />
 
         {induk && (

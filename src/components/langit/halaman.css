@@ -987,7 +987,7 @@ a.lgt-nomor:hover {
 .lgt-bagian-soft .lgt-nomor {
   background: var(--white);
 }
-/* kartu orang (guru & staf) */
+/* kartu orang (Guru & Tendik) */
 .lgt-orang-kisi {
   display: grid;
   gap: 16px;

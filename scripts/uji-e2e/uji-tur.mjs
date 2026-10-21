@@ -28,11 +28,11 @@ await ctx.addInitScript(() => {
 const page = await ctx.newPage();
 
 // masuk sebagai pengelola konten (humas)
-await page.goto(BASE + "/admin/login?sebagai=staf", { waitUntil: "networkidle" });
+await page.goto(BASE + "/portal-digital/masuk/gtk", { waitUntil: "networkidle" });
 await page.fill("input[name=email]", "humas@sman22.test");
 await page.fill("input[name=password]", AKUN.humas);
 await page.locator("button[type=submit]", { hasText: "Masuk" }).click();
-await page.waitForURL((u) => !u.pathname.startsWith("/admin/login"), { timeout: 20000 });
+await page.waitForURL((u) => !u.pathname.startsWith("/portal-digital/masuk"), { timeout: 20000 });
 
 // buka titik "Aula"
 await page.goto(BASE + "/admin/tur-sekolah", { waitUntil: "networkidle" });
@@ -144,11 +144,11 @@ await ctx.close();
 {
   const c2 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const p = await c2.newPage();
-  await p.goto(BASE + "/admin/login?sebagai=staf", { waitUntil: "networkidle" });
+  await p.goto(BASE + "/portal-digital/masuk/gtk", { waitUntil: "networkidle" });
   await p.fill("input[name=email]", "humas@sman22.test");
   await p.fill("input[name=password]", AKUN.humas);
   await p.locator("button[type=submit]", { hasText: "Masuk" }).click();
-  await p.waitForURL((u) => !u.pathname.startsWith("/admin/login"), { timeout: 20000 });
+  await p.waitForURL((u) => !u.pathname.startsWith("/portal-digital/masuk"), { timeout: 20000 });
   await p.goto(BASE + "/admin/tur-sekolah", { waitUntil: "networkidle" });
   const judul = () => p.$$eval("ol > li", (li) => li.map((x) => x.querySelector("p")?.textContent ?? ""));
   const awalJudul = await judul();

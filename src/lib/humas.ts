@@ -18,7 +18,7 @@ export const STATUS_ADUAN: Record<string, { label: string; warna: string }> = {
 };
 export const JENIS_MITRA = { pendidikan: "Pendidikan / kampus", industri: "Dunia usaha & industri", pemerintah: "Pemerintah", komunitas: "Komunitas / LSM", alumni: "Alumni", lainnya: "Lainnya" } as const;
 export const JENIS_MEDIA = { cetak: "Media cetak", online: "Media online", televisi: "Televisi", radio: "Radio", humas_pemerintah: "Humas pemerintah", lainnya: "Lainnya" } as const;
-export const SASARAN_SURVEI = { publik: "Umum (tanpa login)", warga: "Semua warga sekolah (login)", siswa: "Siswa", ortu: "Orang tua", pegawai: "Guru & staf", alumni: "Alumni (tracer study)" } as const;
+export const SASARAN_SURVEI = { publik: "Umum (tanpa login)", warga: "Semua warga sekolah (login)", siswa: "Siswa", ortu: "Orang tua", pegawai: "Guru & Tendik", alumni: "Alumni (tracer study)" } as const;
 export type Pertanyaan = { id: string; jenis: "skala" | "pilihan" | "teks"; teks: string; pilihan?: string[]; wajib?: boolean };
 
 /** Format penyusun survei — satu pertanyaan per baris:

@@ -15,11 +15,11 @@ const browser = await chromium.launch({ executablePath: CHROME, headless: true }
 for (const lebar of [1440, 390]) {
   const ctx = await browser.newContext({ viewport: { width: lebar, height: lebar < 700 ? 844 : 900 }, isMobile: lebar < 700, hasTouch: lebar < 700 });
   const page = await ctx.newPage();
-  await page.goto(base + "/admin/login?sebagai=staf", { waitUntil: "load" });
+  await page.goto(base + "/portal-digital/masuk/gtk", { waitUntil: "load" });
   await page.fill("input[name=email]", "humas@sman22.test");
   await page.fill("input[name=password]", SANDI.humas);
   await page.getByRole("button", { name: "Masuk", exact: true }).click();
-  await page.waitForURL((u) => !u.pathname.startsWith("/admin/login"), { timeout: 30000 });
+  await page.waitForURL((u) => !u.pathname.startsWith("/portal-digital/masuk"), { timeout: 30000 });
   for (const r of RUTE) {
     const res = await page.goto(base + r, { waitUntil: "load", timeout: 120000 });
     await page.waitForTimeout(800);

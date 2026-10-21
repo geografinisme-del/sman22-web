@@ -23,7 +23,8 @@ export type DataBarang = {
   kondisi: string; sumber_dana: string; tahun_perolehan: number | null; harga: number | null; bisa_dipinjam: boolean; keterangan: string;
 };
 
-export function FormBarang({ data, kategori, ruang }: { data?: DataBarang; kategori: Opsi[]; ruang: Opsi[] }) {
+/** `anggaran` = boleh mengisi harga & sumber dana (Wakasek Sarpras); laboran tanpa kolom anggaran. */
+export function FormBarang({ data, kategori, ruang, anggaran = true }: { data?: DataBarang; kategori: Opsi[]; ruang: Opsi[]; anggaran?: boolean }) {
   return (
     <FormAksi aksi={simpanBarang} className="space-y-4">
       {data && <input type="hidden" name="id" value={data.id} />}
@@ -35,9 +36,9 @@ export function FormBarang({ data, kategori, ruang }: { data?: DataBarang; kateg
         <Pilihan label="Kondisi" nama="kondisi" nilai={data?.kondisi ?? "baik"} opsi={Object.entries(KONDISI).map(([k, v]) => ({ nilai: k, label: v.label }))} />
         <Input label="Jumlah" nama="jumlah" tipe="number" nilai={data?.jumlah ?? 1} wajib />
         <Input label="Satuan" nama="satuan" nilai={data?.satuan ?? "unit"} maks={20} />
-        <Pilihan label="Sumber dana" nama="sumber_dana" nilai={data?.sumber_dana ?? ""} opsi={[{ nilai: "", label: "—" }, ...SUMBER_DANA.map((s) => ({ nilai: s, label: s }))]} />
+        {anggaran && <Pilihan label="Sumber dana" nama="sumber_dana" nilai={data?.sumber_dana ?? ""} opsi={[{ nilai: "", label: "—" }, ...SUMBER_DANA.map((s) => ({ nilai: s, label: s }))]} />}
         <Input label="Tahun perolehan" nama="tahun_perolehan" tipe="number" nilai={data?.tahun_perolehan ?? ""} />
-        <Input label="Harga satuan (Rp)" nama="harga" nilai={data?.harga ?? ""} placeholder="mis. 5500000" />
+        {anggaran && <Input label="Harga satuan (Rp)" nama="harga" nilai={data?.harga ?? ""} placeholder="mis. 5500000" />}
       </div>
       <TextArea label="Spesifikasi" nama="spesifikasi" nilai={data?.spesifikasi} baris={2} maks={1000} />
       <TextArea label="Keterangan" nama="keterangan" nilai={data?.keterangan} baris={2} maks={1000} />

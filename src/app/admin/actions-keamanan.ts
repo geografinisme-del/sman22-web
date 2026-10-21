@@ -218,5 +218,5 @@ export async function keluarSemuaPerangkat() {
   if (!supabase || !user) redirect("/admin/login");
   await catat(supabase, "keluar_semua");
   await supabase.auth.signOut({ scope: "global" });
-  redirect("/admin/login?pesan=keluar-semua");
+  redirect("/portal-digital/masuk/gtk?pesan=keluar-semua");
 }

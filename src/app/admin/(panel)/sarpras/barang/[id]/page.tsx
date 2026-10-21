@@ -17,14 +17,15 @@ export default async function DetailBarang({ params, searchParams }: { params: P
   const { supabase, akses } = await wajibLogin();
   const kelola = punya(akses, "sarpras.kelola");
   const lihat = kelola || punya(akses, "sarpras.lihat");
+  const kelolaBarang = kelola || punya(akses, "sarpras.inventaris");
   const { data: b } = await supabase.from("barang").select("*, kategori_barang(nama), ruang(nama)").eq("id", id).maybeSingle();
   if (!b) notFound();
   const [{ data: pinjam }, { data: rusak }, { data: kategori }, { data: ruang }, qr] = await Promise.all([
     supabase.from("peminjaman").select("id, mulai, selesai, status, keperluan").eq("barang_id", id).order("mulai", { ascending: false }).limit(10),
     supabase.from("laporan_kerusakan").select("id, judul, status, created_at, penanganan, biaya").eq("barang_id", id).order("created_at", { ascending: false }).limit(10),
-    kelola ? supabase.from("kategori_barang").select("id, nama").order("urutan") : Promise.resolve({ data: [] }),
-    kelola ? supabase.from("ruang").select("id, nama").is("deleted_at", null).order("nama") : Promise.resolve({ data: [] }),
-    kelola ? qrBarang(id) : Promise.resolve(""),
+    kelolaBarang ? supabase.from("kategori_barang").select("id, nama").order("urutan") : Promise.resolve({ data: [] }),
+    kelolaBarang ? supabase.from("ruang").select("id, nama").is("deleted_at", null).order("nama") : Promise.resolve({ data: [] }),
+    kelolaBarang ? qrBarang(id) : Promise.resolve(""),
   ]);
   const info: [string, string][] = [
     ["Kode", b.kode], ["Kategori", b.kategori_barang?.nama ?? ""], ["Lokasi", b.ruang?.nama ?? "Gudang"], ["Merk / tipe", b.merk || "—"],
@@ -73,7 +74,7 @@ export default async function DetailBarang({ params, searchParams }: { params: P
             )}
           </Kartu>
         </div>
-        {kelola && (
+        {kelolaBarang && (
           <div className="space-y-6">
             <Kartu className="text-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -84,8 +85,8 @@ export default async function DetailBarang({ params, searchParams }: { params: P
             {!b.deleted_at && (
               <>
                 <Kartu><h2 className="mb-4 text-2xl">Ubah data</h2>
-                  <FormBarang data={b as unknown as DataBarang} kategori={(kategori ?? []) as { id: string; nama: string }[]} ruang={(ruang ?? []) as { id: string; nama: string }[]} /></Kartu>
-                <Kartu><h2 className="mb-3 text-xl">Penghapusan aset</h2><FormHapusBarang id={b.id} /></Kartu>
+                  <FormBarang anggaran={kelola} data={b as unknown as DataBarang} kategori={(kategori ?? []) as { id: string; nama: string }[]} ruang={(ruang ?? []) as { id: string; nama: string }[]} /></Kartu>
+                {kelola && <Kartu><h2 className="mb-3 text-xl">Penghapusan aset</h2><FormHapusBarang id={b.id} /></Kartu>}
               </>
             )}
           </div>

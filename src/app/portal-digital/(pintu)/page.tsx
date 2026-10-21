@@ -3,19 +3,20 @@ import { ArrowRight, LogOut } from "lucide-react";
 import { MediaSlot } from "@/components/MediaSlot";
 import { PageHero, SectionHeading } from "@/components/langit/Komponen";
 import { getAkses, labelPeran } from "@/lib/admin/auth";
-import { BIDANG, type KunciBidang } from "@/lib/bidang";
-import { getPortalBidang, type PenanggungJawab } from "@/lib/data";
+import { BIDANG } from "@/lib/bidang";
+import { getFotoPortal, getPortalBidang, type PenanggungJawab, type PeranFoto } from "@/lib/data";
+import { alamatMasuk, cocokHalaman, lanjutAman, type PeranMasuk } from "@/lib/masuk";
 import { GRUP, pintuTerlihat, type Pintu } from "@/lib/portal-digital";
-import { keluar } from "../admin/actions";
+import { keluar } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 
-/** Foto pengisi kartu peran: foto asli sekolah (bukan stok). */
-const FOTO_PERAN: Partial<Record<KunciBidang, { src: string; alt: string; fokus?: string }>> = {
-  guru: { src: "/images/kegiatan-aula.jpg", alt: "Guru dan siswa dalam kegiatan di aula sekolah", fokus: "50% 40%" },
-  siswa: { src: "/images/apel-lapangan.jpg", alt: "Siswa mengikuti apel di lapangan sekolah", fokus: "50% 45%" },
-  ortu: { src: "/images/gedung.jpg", alt: "Gedung SMA Negeri 22 Bandung", fokus: "50% 50%" },
-};
+/** Tiga pintu utama: teks resmi + halaman masuk per peran (foto dari CMS portal_login, sama dengan halaman masuk). */
+const PINTU: { peran: PeranMasuk; foto: PeranFoto; judul: string; teks: string }[] = [
+  { peran: "gtk", foto: "gtk", judul: "Guru dan Tenaga Kependidikan", teks: "Untuk guru, manajemen sekolah, TU, pustakawan, laboran, satpam, caraka, dan pegawai lainnya." },
+  { peran: "siswa", foto: "siswa", judul: "Siswa", teks: "Portal Siswa, E-Learning, dan E-Library." },
+  { peran: "orang-tua", foto: "orang_tua", judul: "Orang Tua", teks: "Pantau perkembangan dan informasi anak." },
+];
 
 /** Inisial bidang: dua kata pertama → huruf awal ("Tata Usaha" → "TU"); satu kata → dua huruf awal ("Humas" → "HU"). */
 function inisial(label: string) {
@@ -30,8 +31,11 @@ function inisial(label: string) {
  * Tautan "masuk" mengarah ke /portal-digital/buka/<bidang> yang memutuskan di server: login bersama,
  * buka ruang kerja, atau penjelasan akses. Kartu tidak pernah memberi hak.
  */
-export default async function PortalDigital() {
-  const [{ user, akses }, pj] = await Promise.all([getAkses(), getPortalBidang()]);
+export default async function PortalDigital({ searchParams }: { searchParams: Promise<{ lanjut?: string }> }) {
+  const [{ user, akses }, pj, foto, sp] = await Promise.all([getAkses(), getPortalBidang(), getFotoPortal(), searchParams]);
+  const lanjut = lanjutAman(sp.lanjut);
+  const peranSaya = akses ? [...akses.peran, ...akses.peranTertunda] : [];
+  const keMasuk = (p: PeranMasuk) => (lanjut ? `${alamatMasuk(p)}?lanjut=${encodeURIComponent(lanjut)}` : alamatMasuk(p));
   const pintu = pintuTerlihat(akses);
   const hanyaPortal = akses ? akses.peran.every((p) => p === "siswa" || p === "orang_tua") : false;
   const dari = (g: string) => pintu.filter((p) => p.grup === g);
@@ -87,20 +91,20 @@ export default async function PortalDigital() {
 
           <SectionHeading id="judul-peran" label="Masuk sesuai peran" judul="Pilih pintu Anda." />
           <ul className="pd-peran mt-8">
-            {dari("warga").map((p) => {
-              const b = BIDANG[p.bidang];
-              const f = FOTO_PERAN[p.bidang];
+            {PINTU.map((d) => {
+              const f = foto[d.foto];
+              const punya = Boolean(user && cocokHalaman(d.peran, peranSaya));
               return (
-                <li key={p.bidang}>
-                  <Link href={href(p)}>
-                    <MediaSlot src={f?.src} alt={f?.alt ?? ""} focus={f?.fokus} ratio="4/3" sizes="(min-width: 768px) 33vw, 100vw" priority />
+                <li key={d.peran}>
+                  <Link href={keMasuk(d.peran)}>
+                    <MediaSlot src={f.src} alt={f.alt} focus={f.fokus} isPlaceholder={f.sementara} ratio="4/3" sizes="(min-width: 768px) 33vw, 100vw" priority />
                     <h3>
-                      {b.label}
-                      {milik(p) && <span className="pd-status">Akses Anda</span>}
+                      {d.judul}
+                      {punya && <span className="pd-status">Akses Anda</span>}
                     </h3>
-                    <p>{b.keterangan}</p>
+                    <p>{d.teks}</p>
                     <span className="pd-masuk">
-                      {!user ? "Masuk" : p.tindakan}
+                      {punya ? "Buka" : "Masuk"}
                       <ArrowRight size={16} aria-hidden />
                     </span>
                   </Link>

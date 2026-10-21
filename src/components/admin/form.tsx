@@ -259,6 +259,11 @@ export function PesanHasil({ hasil }: { hasil: HasilAksi }) {
       }`}
     >
       {hasil.pesan}
+      {hasil.tautan && (
+        <a href={hasil.tautan.href} className="mt-2 block font-bold underline underline-offset-4">
+          {hasil.tautan.label} →
+        </a>
+      )}
     </div>
   );
 }

@@ -23,7 +23,14 @@ const nextConfig: NextConfig = {
   },
   // alamat mudah diingat untuk E-Library (halaman aslinya tetap /perpustakaan)
   async redirects() {
-    return [{ source: "/e-library", destination: "/perpustakaan", permanent: false }];
+    return [
+      { source: "/e-library", destination: "/perpustakaan", permanent: false },
+      // halaman masuk lama → halaman masuk per peran (308; semua parameter, termasuk ?lanjut=, ikut dibawa).
+      // /admin/login tetap ada sebagai pengalih — admin/CMS masuk lewat halaman Guru & Tendik.
+      { source: "/admin/login", has: [{ type: "query", key: "sebagai", value: "siswa" }], destination: "/portal-digital/masuk/siswa", permanent: true },
+      { source: "/admin/login", has: [{ type: "query", key: "sebagai", value: "(ortu|orang_tua)" }], destination: "/portal-digital/masuk/orang-tua", permanent: true },
+      { source: "/admin/login", destination: "/portal-digital/masuk/gtk", permanent: true },
+    ];
   },
   async headers() {
     return [

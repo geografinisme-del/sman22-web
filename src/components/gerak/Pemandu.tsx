@@ -35,7 +35,7 @@ const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: st
     kunci: "ortu",
     label: "Orang tua",
     tautan: [
-      { href: "/admin/login?sebagai=orang_tua", label: "Masuk Portal Orang Tua" },
+      { href: "/portal-digital/masuk/orang-tua", label: "Masuk Portal Orang Tua" },
       { href: "/agenda", label: "Agenda & pengumuman" },
       { href: "/pengaduan", label: "Pengaduan & aspirasi" },
     ],
@@ -45,7 +45,7 @@ const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: st
     label: "Guru & manajemen",
     tautan: [
       { href: "/portal-digital", label: "Portal Digital 22 (pilih bidang)" },
-      { href: "/admin/login?sebagai=staf", label: "Masuk (ruang kerja sesuai tugas)" },
+      { href: "/portal-digital/masuk/gtk", label: "Masuk (ruang kerja sesuai tugas)" },
     ],
   },
   {

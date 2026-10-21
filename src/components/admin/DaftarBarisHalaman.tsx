@@ -10,7 +10,7 @@ import { geserBarisHalaman, simpanBarisHalaman } from "@/app/admin/actions-halam
 export type BarisHalaman = { id: string; urutan: number; aktif: boolean; nama: string; jabatan?: string; bidang?: string; deskripsi?: string; foto_url: string; is_placeholder: boolean };
 
 /**
- * Pengelola daftar CMS halaman publik (guru & staf, fasilitas): tambah/ubah, foto, urutan, aktif/nonaktif.
+ * Pengelola daftar CMS halaman publik (Guru & Tendik, fasilitas): tambah/ubah, foto, urutan, aktif/nonaktif.
  * Tidak ada hapus permanen — baris yang tidak dipakai dinonaktifkan.
  */
 export function DaftarBarisHalaman({

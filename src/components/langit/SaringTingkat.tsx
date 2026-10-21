@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 
 /**
- * Saringan pil (tingkat prestasi, bidang guru & staf). Tanpa JavaScript semua baris tetap tampil; dengan JS baris lain disembunyikan
+ * Saringan pil (tingkat prestasi, bidang Guru & Tendik). Tanpa JavaScript semua baris tetap tampil; dengan JS baris lain disembunyikan
  * lewat atribut data-tingkat pada baris yang dirender server.
  */
 export function SaringTingkat({ tingkat, label = "Saring tingkat prestasi", children }: { tingkat: string[]; label?: string; children: ReactNode }) {

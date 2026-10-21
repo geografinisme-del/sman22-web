@@ -209,3 +209,55 @@
     scale: none;
   }
 }
+
+/* pemberitahuan halaman untuk peran lain (akses-lain) */
+.pd-akses-lain {
+  max-width: 640px;
+  padding: 32px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-kartu-besar);
+  background: var(--white);
+  box-shadow: var(--bayangan-kartu);
+}
+.pd-akses-lain .label-mono {
+  color: var(--blue-teks);
+}
+.pd-akses-lain h1 {
+  margin-top: 8px;
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  font-weight: var(--judul-berat);
+  letter-spacing: var(--judul-spasi);
+  line-height: 1.1;
+}
+.pd-akses-lain > p:not(.label-mono) {
+  margin-top: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.pd-akses-lain-aksi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  margin-top: 24px;
+}
+.pd-tombol {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  padding: 0 22px;
+  border-radius: var(--radius-pil);
+  background: var(--ink);
+  color: var(--white);
+  font-weight: 700;
+}
+.pd-tombol:hover {
+  background: color-mix(in srgb, var(--ink) 85%, var(--white));
+}
+.pd-akses-lain .pd-akses-lain-kecil {
+  font-size: 0.875rem;
+}
+.pd-akses-lain-kecil a {
+  color: var(--blue-teks);
+  text-decoration: underline;
+}

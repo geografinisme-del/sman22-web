@@ -116,6 +116,7 @@ Untuk menguji lokal tanpa mengubah data produksi, tambahkan data contoh sementar
 ## Platform (fase berikutnya) — keputusan
 
 ### Migrasi yang WAJIB dijalankan sebelum fitur baru aktif di produksi
+0. Cabang `langit-cerah` menambah: `20261210…`, `20261220…`, `20261221…`, `20261222…`, `20261223000000_menu_navigasi.sql`, `20261224000000_portal_masuk.sql`, `20261225000000_gtk_jabatan_peran.sql` — BELUM dijalankan di produksi (menunggu "jalankan").
 1. `supabase/migrations/20261201000000_elibrary_publik.sql` — RPC kategori katalog, saringan kategori, aturan pinjam ringkas (baca saja).
 2. `supabase/migrations/20261202000000_tampilan_widget.sql` — `tampilan_draf` (RLS: hanya `konten.kelola`), `riwayat_tampilan` (append-only), `terbitkan_tampilan()`, kolom popup di `pengumuman`.
 
@@ -378,3 +379,38 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Uji: `uji-menu.mjs` ditulis ulang (mega menu 1440 & 1024, keyboard, HP akordeon, 29 tautan); `uji-langit.mjs`
   diperbarui untuk header pil.
 
+
+### Perbaikan 3 (Tahap 3): halaman masuk per pengguna + dasbor dasar GTK
+- **Alamat**: `/portal-digital` = "Pilih pintu Anda." (3 pintu: Guru dan Tenaga Kependidikan, Siswa, Orang Tua; foto dari
+  CMS, meneruskan `?lanjut=`). Halaman masuk: `/portal-digital/masuk/gtk` (Email), `/siswa` (NISN), `/orang-tua`
+  (NISN anak) — `src/app/portal-digital/masuk/[peran]/page.tsx`, komponen `components/akun/HalamanMasuk.tsx`,
+  `FormMasuk.tsx`, `masuk.css`. Cara masuk TIDAK berubah; peran ditentukan halaman (field tersembunyi `halaman`).
+  noindex + judul tab per peran. Akun peran lain → pesan + tautan ke halaman yang benar (sesi tidak dibuat).
+- **Fungsi pusat** `src/lib/masuk.ts`: `urlMasuk(tujuan, peran?)`, `areaRute`, `lanjutAman` (hanya path internal "/…",
+  tolak `//`, skema, `\`, %2f%2f, kontrol, halaman login), `cocokHalaman`, `dasborPeran`. Dipakai `proxy.ts`,
+  `wajibLogin`, `putuskanPintu`, aksi `masuk`.
+- **Pengalihan**: `/admin/login` tetap ada sebagai 308 (`next.config.ts` + cadangan `admin/login/page.tsx`), semua
+  parameter dibawa. Proxy (belum masuk): /admin/*, /papan, /cetak, /pratinjau → GTK; /portal/(scan|kuis|tugas) → siswa;
+  /portal/(izin|anak) → orang tua; /portal lainnya → /portal-digital?lanjut=; /alumni/akun → /admin/login (apa adanya,
+  diteruskan 308 ke GTK; peran alumni diterima di halaman GTK lalu diarahkan ke /alumni/akun).
+- **Peran lain setelah masuk**: `?lanjut=` ke area peran lain → `/portal-digital/akses-lain` ("Halaman ini untuk
+  Guru & Tendik") + tombol keluar & masuk di halaman yang benar (`keluarDanMasuk`).
+- **Jabatan ≠ peran** (migrasi `20261225000000_gtk_jabatan_peran.sql`): `jabatan_gtk` (daftar, admin bisa menambah) +
+  `pengguna.jabatan` (untuk tampilan & direktori; `pegawai.jabatan` teks bebas lama tetap ada). Peran baru `pegawai`
+  (dasbor dasar) & `laboran` (dasbor dasar + inventaris/jadwal lab, izin `sarpras.inventaris`; harga & sumber dana
+  dijaga trigger `jaga_anggaran_barang`). Akun aktif tanpa peran = GTK (staf_aktif) → dasbor dasar + notifikasi admin
+  (`lapor_akun_tanpa_peran`, maks. 1/24 jam). `pengumuman.sasaran` ('umum'|'pegawai') untuk pengumuman internal.
+- **Dasbor dasar** (`components/dashboard/DasborDasar.tsx`, di Ringkasan untuk semua GTK): pengumuman internal,
+  pintasan (Profil saya, Direktori GTK, Kalender, Keamanan), jadwal piket bila ada, kartu "Ruang Guru" (tautan
+  aplikasi guru lama) untuk peran guru. Halaman baru `/admin/profil-saya`, `/admin/direktori` (RPC `direktori_gtk`,
+  tanpa email/telepon). Pegawai umum/tanpa peran/laboran: menu ringkas (layout panel).
+- **CMS** (migrasi `20261224000000_portal_masuk.sql`): `portal_login` (foto per peran, bucket "portal", caption, alt,
+  titik fokus, is_placeholder) + `portal_pengaturan` (tautan aplikasi guru lama). Admin → Halaman masuk portal
+  (`/admin/portal-masuk`, `actions-portal-masuk.ts`, `components/admin/FotoFokus.tsx`). Tanpa baris = foto bawaan
+  (GTK aula, Siswa apel, Orang Tua gedung); baris dengan foto kosong = gedung utama. Halaman dinamis → tanpa deploy ulang.
+- **Admin pengguna**: daftar "Akun tanpa peran" di atas, kolom & pilihan jabatan, tambah jabatan.
+- **Sebelum migrasi dijalankan** halaman tetap berfungsi (fallback kolom jabatan/sasaran, foto bawaan, pesan "jalankan migrasi").
+- **Uji**: `uji-pengalihan.mjs` (36 cek, tanpa login), `uji-masuk.mjs` (24 cek: login tiap peran, salah peran,
+  akses-lain, pegawai/laboran, akun tanpa peran, MFA admin, ganti foto tanpa deploy). `uji-portal`, `uji-alur`,
+  `uji-tur`, `uji-ponsel`, `uji-konsol`, `tangkap-*` memakai alamat masuk baru. RLS: `rls_gtk_portal_test.sql`.
+  Akun uji lokal tambahan (siswa/ortu NISN fiktif 9990000001, pegawai, laboran) dibuat dengan service key LOKAL saja.

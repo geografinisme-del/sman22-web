@@ -1,11 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { aturSandi, buatAkun, ubahPengguna } from "../../actions-pengguna";
+import { aturSandi, buatAkun, tambahJabatan, ubahPengguna } from "../../actions-pengguna";
 import { Centang, FormAksi, Input, Pilihan, TombolSimpan, useErrorKolom } from "@/components/admin/form";
 
 type Peran = { kode: string; nama: string; keterangan: string };
 type Pegawai = { id: string; nama: string };
+type Jabatan = { kode: string; nama: string };
+
+/** Jabatan = untuk tampilan & direktori GTK; hak akses tetap dari PERAN. */
+function PilihJabatan({ jabatan, nilai }: { jabatan: Jabatan[]; nilai: string }) {
+  return (
+    <Pilihan
+      label="Jabatan (tampilan & direktori, bukan hak akses)"
+      nama="jabatan"
+      nilai={nilai}
+      opsi={[{ nilai: "", label: "— Belum diisi —" }, ...jabatan.map((j) => ({ nilai: j.kode, label: j.nama }))]}
+    />
+  );
+}
+
+/** Tambah jabatan baru ke daftar (mis. "Operator Dapodik"). */
+export function FormTambahJabatan() {
+  return (
+    <FormAksi aksi={tambahJabatan} className="flex flex-wrap items-end gap-3">
+      <div className="min-w-56 flex-1">
+        <Input label="Jabatan baru" nama="nama" wajib maks={60} placeholder="mis. Operator Dapodik" />
+      </div>
+      <TombolSimpan>Tambah jabatan</TombolSimpan>
+    </FormAksi>
+  );
+}
 
 function PilihPeran({ peran, terpilih }: { peran: Peran[]; terpilih: string[] }) {
   const error = useErrorKolom("peran");
@@ -33,11 +58,13 @@ export function FormBuatAkun({
   pegawai,
   pegawaiAwal,
   adaKunci,
+  jabatan,
 }: {
   peran: Peran[];
   pegawai: Pegawai[];
   pegawaiAwal?: Pegawai;
   adaKunci: boolean;
+  jabatan: Jabatan[];
 }) {
   return (
     <FormAksi aksi={buatAkun}>
@@ -57,6 +84,7 @@ export function FormBuatAkun({
           nilai={pegawaiAwal?.id ?? ""}
           opsi={[{ nilai: "", label: "— Tidak ditautkan —" }, ...pegawai.map((p) => ({ nilai: p.id, label: p.nama }))]}
         />
+        <PilihJabatan jabatan={jabatan} nilai={pegawaiAwal ? "guru" : ""} />
       </div>
       <PilihPeran peran={peran} terpilih={pegawaiAwal ? ["guru"] : []} />
       <TombolSimpan>{adaKunci ? "Buat akun" : "Beri peran"}</TombolSimpan>
@@ -68,10 +96,12 @@ export function FormUbahPengguna({
   data,
   peran,
   pegawai,
+  jabatan,
 }: {
-  data: { user_id: string; nama: string; aktif: boolean; peran: string[]; pegawai_id: string };
+  data: { user_id: string; nama: string; aktif: boolean; peran: string[]; pegawai_id: string; jabatan: string };
   peran: Peran[];
   pegawai: Pegawai[];
+  jabatan: Jabatan[];
 }) {
   return (
     <FormAksi aksi={ubahPengguna}>
@@ -84,8 +114,14 @@ export function FormUbahPengguna({
           nilai={data.pegawai_id}
           opsi={[{ nilai: "", label: "— Tidak ditautkan —" }, ...pegawai.map((p) => ({ nilai: p.id, label: p.nama }))]}
         />
+        <PilihJabatan jabatan={jabatan} nilai={data.jabatan} />
       </div>
       <Centang label="Akun aktif" nama="aktif" nilai={data.aktif} bantuan="Akun nonaktif tidak bisa mengakses data apa pun." />
+      {data.peran.length === 0 && (
+        <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">
+          Akun ini belum punya peran — saat masuk hanya melihat dasbor dasar (diperlakukan sebagai Pegawai umum). Pilih peran di bawah.
+        </p>
+      )}
       <PilihPeran peran={peran} terpilih={data.peran} />
       <div className="flex items-center gap-3">
         <TombolSimpan>Simpan perubahan</TombolSimpan>

@@ -66,7 +66,7 @@ const isiMasuk = async (akun) => {
   await ketik(`document.querySelector('input[name=email]')`, `${akun}@sman22.test`);
   await ketik(`document.querySelector('input[name=password]')`, AKUN[akun]);
   await klik(`[...document.querySelectorAll("button[type=submit]")].find(b=>b.textContent.trim()==="Masuk")`);
-  await sampai(`!location.pathname.startsWith("/admin/login")`, 20000);
+  await sampai(`!location.pathname.startsWith("/portal-digital/masuk")`, 20000);
   await tidur(1500);
 };
 const hasil = {};
@@ -80,9 +80,9 @@ await keluarAkun();
 const anon = await js(`({kartu:[...document.querySelectorAll(".pd-peran h3, .pd-daftar strong")].map(h=>h.childNodes[0].textContent.trim()), sistem:document.body.innerText.includes("Administrasi Sistem"), surel:/@sman22\\.test|"user_?[iI]d"|"izin":\\[|"peran":\\[/.test(document.documentElement.outerHTML)})`);
 cek("pengunjung: 13 kartu bidang terlihat, administrasi sistem tersembunyi, tanpa data pribadi di payload", anon.kartu.length === 13 && !anon.sistem && !anon.surel, anon);
 await klik(`[...document.querySelectorAll(".pd-peran a, .pd-daftar a")].find(a=>a.textContent.includes("Kurikulum"))`);
-await sampai(`location.pathname==="/admin/login"`);
+await sampai(`location.pathname==="/portal-digital/masuk/gtk"`);
 const u1 = await url();
-cek("kartu Kurikulum (belum masuk) → login bersama sebagai staf dengan tujuan kembali", u1.includes("sebagai=staf") && u1.includes("lanjut=%2Fportal-digital%2Fbuka%2Fkurikulum"), u1);
+cek("kartu Kurikulum (belum masuk) → halaman masuk Guru & Tendik dengan tujuan kembali", u1.startsWith("/portal-digital/masuk/gtk") && u1.includes("lanjut=%2Fportal-digital%2Fbuka%2Fkurikulum"), u1);
 
 // 2. humas memilih Kurikulum → kembali ke pintu → ditolak dengan penjelasan
 await isiMasuk("humas");
@@ -113,7 +113,7 @@ cek("kartu E-Library → katalog publik", (await url()) === "/perpustakaan", awa
 
 // 4. tujuan kembali berbahaya diabaikan
 await keluarAkun();
-await buka("/admin/login?sebagai=staf&lanjut=https%3A%2F%2Fevil.test%2F");
+await buka("/portal-digital/masuk/gtk?lanjut=https%3A%2F%2Fevil.test%2F");
 cek("formulir tidak membawa tujuan eksternal", (await js(`!document.querySelector('input[name=lanjut]')`)) === true);
 await isiMasuk("guru");
 cek("setelah masuk tidak dialihkan ke situs luar", (await js("location.host")) === new URL(BASE).host, await js("location.href"));

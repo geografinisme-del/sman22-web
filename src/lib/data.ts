@@ -549,7 +549,7 @@ export const getTur = cache(async (): Promise<import("@/content/tur-bawaan").Tit
 });
 
 /* ------------------------------------------------------------------ */
-/* Halaman publik Tahap C: guru & staf, fasilitas, halaman CMS, kalender */
+/* Halaman publik Tahap C: Guru & Tendik, fasilitas, halaman CMS, kalender */
 /* Tabel belum ada (migrasi 20261222 belum dijalankan) → data kosong,    */
 /* halaman menampilkan keadaan kosong yang jujur (tanpa data contoh).    */
 /* ------------------------------------------------------------------ */
@@ -617,4 +617,44 @@ export const getKalenderUmum = cache(async (dari: string, sampai: string): Promi
     lokasi: k.lokasi ?? "",
     keterangan: k.keterangan ?? "",
   }));
+});
+
+/* ------------------------------------------------------------------ */
+/* Halaman masuk Portal Digital 22: foto per peran (migrasi 20261224)    */
+/* ------------------------------------------------------------------ */
+export type PeranFoto = "gtk" | "siswa" | "orang_tua";
+export type FotoPortal = { src: string; alt: string; caption: string; fokus: { x: number; y: number }; sementara: boolean };
+/** Foto awal (foto asli sekolah) — dipakai bila CMS kosong / tabel belum ada. */
+export const FOTO_PORTAL_BAWAAN: Record<PeranFoto, FotoPortal> = {
+  gtk: { src: "/images/kegiatan-aula.jpg", alt: "Kegiatan guru dan siswa di aula SMA Negeri 22 Bandung", caption: "Aula sekolah", fokus: { x: 50, y: 45 }, sementara: false },
+  siswa: { src: "/images/apel-lapangan.jpg", alt: "Siswa mengikuti apel di lapangan sekolah", caption: "Apel di lapangan", fokus: { x: 50, y: 50 }, sementara: false },
+  orang_tua: { src: "/images/gedung.jpg", alt: "Gedung utama SMA Negeri 22 Bandung", caption: "Gedung utama", fokus: { x: 50, y: 50 }, sementara: false },
+};
+const FOTO_GEDUNG: FotoPortal = FOTO_PORTAL_BAWAAN.orang_tua;
+
+/** Foto halaman masuk & kartu "Pilih pintu Anda." per peran. Foto kosong di CMS → foto gedung utama. */
+export const getFotoPortal = cache(async (): Promise<Record<PeranFoto, FotoPortal>> => {
+  if (!supabaseAktif) return FOTO_PORTAL_BAWAAN;
+  const { data, error } = await supabasePublik().from("portal_login").select("*");
+  if (error) {
+    if (!tabelBelumAda(error)) logGagal("foto portal", error);
+    return FOTO_PORTAL_BAWAAN;
+  }
+  const hasil = { ...FOTO_PORTAL_BAWAAN };
+  for (const r of data ?? []) {
+    const k = r.peran as PeranFoto;
+    if (!(k in hasil)) continue;
+    hasil[k] = r.foto_url
+      ? { src: r.foto_url, alt: r.alt_text || FOTO_PORTAL_BAWAAN[k].alt, caption: r.caption || "", fokus: { x: r.fokus_x ?? 50, y: r.fokus_y ?? 50 }, sementara: r.is_placeholder === true }
+      : { ...FOTO_GEDUNG, caption: r.caption || FOTO_GEDUNG.caption };
+  }
+  return hasil;
+});
+
+/** Tautan opsional "aplikasi guru lama" (judul + URL https); kosong = tidak tampil. */
+export const getTautanGuruLama = cache(async (): Promise<{ judul: string; url: string } | null> => {
+  if (!supabaseAktif) return null;
+  const { data, error } = await supabasePublik().from("portal_pengaturan").select("guru_lama_judul, guru_lama_url").eq("id", 1).maybeSingle();
+  if (error || !data?.guru_lama_url) return null;
+  return { judul: data.guru_lama_judul, url: data.guru_lama_url };
 });

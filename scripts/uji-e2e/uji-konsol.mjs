@@ -51,7 +51,7 @@ const buka = async (u) => {
   await kirim("Page.navigate", { url: BASE + u });
   await tidur(3500);
 };
-for (const u of ["/", "/perpustakaan", "/agenda", "/profil", "/admin/login"]) await buka(u);
+for (const u of ["/", "/perpustakaan", "/agenda", "/profil", "/portal-digital/masuk/gtk"]) await buka(u);
 // masuk sebagai humas
 await js(`(()=>{const e=document.querySelector('input[name=email]'); e.focus(); return 1})()`);
 await kirim("Input.insertText", { text: "humas@sman22.test" });

@@ -7,6 +7,9 @@
  */
 import { BIDANG, type KunciBidang } from "./bidang.ts";
 import { RUANG_KERJA } from "./ruang-kerja.ts";
+import { DARI_SEBAGAI, lanjutAman, urlMasuk } from "./masuk.ts";
+
+export { lanjutAman };
 
 type AksesMinimal = { peran: string[]; izin: readonly string[] };
 export type Sebagai = "staf" | "siswa" | "orang_tua";
@@ -62,15 +65,6 @@ export const PINTU: Pintu[] = [
   { bidang: "sistem", grup: "sistem", jenis: "masuk", href: "/admin/pengguna", sebagai: "staf", tindakan: "Buka", boleh: (a) => a.izin.includes("pengguna.kelola"), tersembunyi: true },
 ];
 
-/** Tujuan kembali setelah masuk: hanya jalur internal ruang kerja/portal (cegah open redirect). */
-export function lanjutAman(v: unknown): string | null {
-  if (typeof v !== "string" || v.length > 200) return null;
-  if (!/^\/(admin|portal|portal-digital)(\/|\?|$)/.test(v)) return null;
-  if (/[\\\s<>"']|\/\/|%2f%2f|%5c/i.test(v)) return null;
-  if (/^\/admin\/(login|lupa-sandi|sandi-baru)/.test(v)) return null;
-  return v;
-}
-
 export type Keputusan =
   | { aksi: "buka"; href: string }
   | { aksi: "masuk"; href: string }
@@ -86,8 +80,7 @@ export function putuskanPintu(bidang: string, akses: AksesMinimal | null, masukA
   if (p.jenis === "publik") return { aksi: "buka", href: p.href };
   const label = BIDANG[p.bidang].label;
   if (!masukAkun) {
-    const lanjut = `/portal-digital/buka/${p.bidang}`;
-    return { aksi: "masuk", href: `/admin/login?sebagai=${p.sebagai}&lanjut=${encodeURIComponent(lanjut)}` };
+    return { aksi: "masuk", href: urlMasuk(`/portal-digital/buka/${p.bidang}`, DARI_SEBAGAI[p.sebagai ?? "staf"]) };
   }
   if (!akses) return { aksi: "tolak", judul: "Akun belum aktif", alasan: "Akun Anda sudah masuk, tetapi belum diberi peran atau sedang dinonaktifkan. Hubungi admin sekolah." };
   if (p.boleh?.(akses)) return { aksi: "buka", href: p.href };

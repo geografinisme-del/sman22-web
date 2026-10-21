@@ -77,16 +77,16 @@ export default async function PengaturanSitus({ searchParams }: { searchParams: 
             </Kartu>
 
             <Kartu>
-              <h2 id="visual-masuk" className="scroll-mt-24 text-3xl">Visual sinematik (beranda & halaman masuk)</h2>
+              <h2 id="visual-masuk" className="scroll-mt-24 text-3xl">Visual sinematik (beranda & halaman akun)</h2>
               <p className="mt-1 text-sm text-black/60">
-                Video atau gambar untuk <strong>beranda</strong> (bergerak mengikuti gulir) dan latar <strong>halaman masuk</strong> guru, siswa &amp;
-                orang tua. Bila kosong, memakai visual bawaan.{" "}
+                Video atau gambar untuk <strong>beranda</strong> (bergerak mengikuti gulir) dan latar halaman akun (lupa kata sandi, verifikasi dua
+                langkah). Bila kosong, memakai visual bawaan. Foto halaman masuk per peran diatur di{" "}
+                <a href="/admin/portal-masuk" className="font-medium text-blue-teks underline">
+                  Halaman masuk portal
+                </a>
+                .{" "}
                 <a href="/" target="_blank" className="font-medium text-blue-teks underline">
                   Lihat beranda ↗
-                </a>{" "}
-                ·{" "}
-                <a href="/admin/login" target="_blank" className="font-medium text-blue-teks underline">
-                  Lihat halaman masuk ↗
                 </a>
               </p>
               {errVisual ? (

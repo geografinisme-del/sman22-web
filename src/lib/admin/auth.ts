@@ -3,6 +3,7 @@ import { cache } from "react";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAktif } from "@/lib/supabase/config";
+import { urlMasuk } from "@/lib/masuk";
 
 export type Izin =
   | "konten.kelola"
@@ -46,7 +47,8 @@ export type Izin =
   | "alumni.lihat"
   | "mutu.kelola"
   | "mutu.audit"
-  | "mutu.lihat";
+  | "mutu.lihat"
+  | "sarpras.inventaris";
 
 export type Akses = {
   userId: string;
@@ -56,6 +58,8 @@ export type Akses = {
   izin: Izin[];
   /** peran yang wajib verifikasi dua langkah tetapi sesi ini belum terverifikasi (izinnya ditahan database) */
   peranTertunda: string[];
+  /** akun GTK aktif yang belum diberi peran: diperlakukan sebagai "pegawai" (dasbor dasar), admin diberi notifikasi */
+  tanpaPeran?: boolean;
 };
 
 export const NAMA_PERAN: Record<string, string> = {
@@ -78,6 +82,8 @@ export const NAMA_PERAN: Record<string, string> = {
   bk: "Guru BK",
   wali_kelas: "Wali Kelas",
   guru: "Guru",
+  laboran: "Laboran",
+  pegawai: "Pegawai umum",
   siswa: "Siswa",
   orang_tua: "Orang Tua",
 };
@@ -94,10 +100,11 @@ export const getAkses = cache(async () => {
   const { data, error } = await supabase.rpc("akses_saya");
   if (error) console.error("[auth] gagal memuat akses:", error.message);
   const d = (data ?? {}) as { nama?: string; aktif?: boolean; peran?: string[]; peran_tertunda?: string[]; izin?: Izin[] };
-  const akses: Akses | null =
-    d.aktif && (d.peran?.length ?? 0) + (d.peran_tertunda?.length ?? 0) > 0
-      ? { userId: user.id, email: user.email ?? "", nama: d.nama ?? "", peran: d.peran ?? [], izin: d.izin ?? [], peranTertunda: d.peran_tertunda ?? [] }
-      : null;
+  const jumlahPeran = (d.peran?.length ?? 0) + (d.peran_tertunda?.length ?? 0);
+  // akun aktif tanpa peran = GTK yang belum ditetapkan → dasbor dasar (tanpa izin modul apa pun)
+  const akses: Akses | null = d.aktif
+    ? { userId: user.id, email: user.email ?? "", nama: d.nama ?? "", peran: d.peran ?? [], izin: d.izin ?? [], peranTertunda: d.peran_tertunda ?? [], tanpaPeran: jumlahPeran === 0 }
+    : null;
   return { supabase, user, akses };
 });
 
@@ -107,7 +114,7 @@ export const berperan = (akses: Akses | null, peran: string) => Boolean(akses?.p
 /** Untuk halaman admin: alihkan ke login bila belum masuk. */
 export async function wajibLogin() {
   const hasil = await getAkses();
-  if (!hasil.user || !hasil.supabase) redirect("/admin/login");
+  if (!hasil.user || !hasil.supabase) redirect(urlMasuk(null, "gtk"));
   return hasil as { supabase: NonNullable<typeof hasil.supabase>; user: NonNullable<typeof hasil.user>; akses: Akses | null };
 }
 

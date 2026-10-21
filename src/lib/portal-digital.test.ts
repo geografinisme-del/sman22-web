@@ -4,14 +4,14 @@ import { lanjutAman, PINTU, pintuTerlihat, putuskanPintu } from "./portal-digita
 
 const akun = (peran: string[], izin: string[] = []) => ({ peran, izin });
 
-test("belum masuk → ke login bersama dengan tujuan kembali yang aman", () => {
+test("belum masuk → ke halaman masuk peran dengan tujuan kembali yang aman", () => {
   const k = putuskanPintu("kurikulum", null, false);
   assert.equal(k?.aksi, "masuk");
   const url = new URL(`http://x${(k as { href: string }).href}`);
-  assert.equal(url.pathname, "/admin/login");
-  assert.equal(url.searchParams.get("sebagai"), "staf");
+  assert.equal(url.pathname, "/portal-digital/masuk/gtk");
   assert.equal(lanjutAman(url.searchParams.get("lanjut")), "/portal-digital/buka/kurikulum");
-  assert.equal(new URL(`http://x${(putuskanPintu("siswa", null, false) as { href: string }).href}`).searchParams.get("sebagai"), "siswa");
+  assert.equal(new URL(`http://x${(putuskanPintu("siswa", null, false) as { href: string }).href}`).pathname, "/portal-digital/masuk/siswa");
+  assert.equal(new URL(`http://x${(putuskanPintu("ortu", null, false) as { href: string }).href}`).pathname, "/portal-digital/masuk/orang-tua");
 });
 
 test("layanan publik dibuka tanpa login", () => {
@@ -43,9 +43,9 @@ test("administrasi sistem hanya terlihat bagi yang berhak", () => {
 });
 
 test("lanjutAman menolak open redirect & tujuan berbahaya", () => {
-  for (const buruk of ["https://evil.test", "//evil.test", "/\\evil.test", "/admin/login", "/situs", "javascript:alert(1)", "/admin//evil", "/portal%2F%2Fevil", "/admin/x y", 5, null])
+  for (const buruk of ["https://evil.test", "//evil.test", "/\\evil.test", "/admin/login", "situs", "javascript:alert(1)", "/admin//evil", "/portal%2F%2Fevil", "/admin/x y", 5, null])
     assert.equal(lanjutAman(buruk), null, String(buruk));
-  for (const baik of ["/admin", "/admin/kurikulum", "/portal", "/portal-digital/buka/bk", "/admin/perpus?tab=1"]) assert.equal(lanjutAman(baik), baik);
+  for (const baik of ["/admin", "/admin/kurikulum", "/portal", "/portal-digital/buka/bk", "/admin/perpus?tab=1", "/alumni/akun"]) assert.equal(lanjutAman(baik), baik);
 });
 
 test("setiap pintu 'masuk' punya peran masuk & syarat; pintu publik tidak", () => {

@@ -90,11 +90,11 @@ const keluarAkun = async () => {
 };
 const masuk = async (akun, sebagai = "staf") => {
   await keluarAkun();
-  await buka(`/admin/login?sebagai=${sebagai}`);
+  await buka(`/portal-digital/masuk/${{ staf: "gtk", siswa: "siswa", orang_tua: "orang-tua" }[sebagai] ?? "gtk"}`);
   await ketik(`document.querySelector('input[name=email]')`, `${akun}@sman22.test`);
   await ketik(`document.querySelector('input[name=password]')`, AKUN[akun]);
   await klik(`[...document.querySelectorAll("button[type=submit]")].find(b=>b.textContent.trim()==="Masuk")`);
-  await sampai(`!location.pathname.startsWith("/admin/login")`, 20000);
+  await sampai(`!location.pathname.startsWith("/portal-digital/masuk")`, 20000);
   await tidur(1500);
 };
 // TOTP (RFC 6238) dari kunci base32 — sama seperti aplikasi autentikator

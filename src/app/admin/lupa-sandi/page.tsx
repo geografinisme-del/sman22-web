@@ -9,9 +9,9 @@ export default async function LupaSandi({ searchParams }: { searchParams: Promis
   return (
     <BingkaiAkun
       judul="Lupa kata sandi"
-      deskripsi="Untuk guru & staf. Kami kirim tautan atur ulang ke email akun Anda."
+      deskripsi="Untuk Guru & Tendik. Kami kirim tautan atur ulang ke email akun Anda."
       bawah={
-        <Link href="/admin/login" className="text-[var(--muted)] hover:text-[var(--tema-utama)]">
+        <Link href="/portal-digital/masuk/gtk" className="text-[var(--muted)] hover:text-[var(--tema-utama)]">
           ← Kembali ke halaman masuk
         </Link>
       }

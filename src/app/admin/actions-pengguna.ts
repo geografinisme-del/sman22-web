@@ -14,6 +14,9 @@ import type { HasilAksi } from "./actions";
 
 // kode peran dicek oleh database (foreign key ke tabel peran) — daftar di layar diambil dari tabel tsb
 const kodePeran = z.string().regex(/^[a-z_]{2,30}$/);
+// jabatan (tampilan & direktori, BUKAN hak akses) — kode dicek database (foreign key ke jabatan_gtk); "" = belum diisi
+const kodeJabatan = z.union([z.literal(""), z.string().regex(/^[a-z][a-z0-9_]{1,39}$/)]);
+const kolomBelumAda = (e: { code?: string }) => ["42703", "PGRST204"].includes(e.code ?? "");
 const TANPA_AKSES: HasilAksi = { ok: false, pesan: "Anda tidak berhak mengelola pengguna." };
 
 const sandi = z
@@ -28,6 +31,7 @@ const buatSchema = z.object({
   password: z.string(),
   peran: z.array(kodePeran).min(1, "Pilih minimal satu peran"),
   pegawai_id: z.union([z.literal(""), z.string().uuid()]),
+  jabatan: kodeJabatan,
 });
 
 export async function buatAkun(_p: HasilAksi, form: FormData): Promise<HasilAksi> {
@@ -39,6 +43,7 @@ export async function buatAkun(_p: HasilAksi, form: FormData): Promise<HasilAksi
     password: String(form.get("password") ?? ""),
     peran: form.getAll("peran").map(String),
     pegawai_id: String(form.get("pegawai_id") ?? ""),
+    jabatan: String(form.get("jabatan") ?? ""),
   });
   if (!parsed.success) return { ok: false, pesan: "Periksa kembali isian yang ditandai.", errors: pesanError(parsed.error) };
   const d = parsed.data;
@@ -81,7 +86,8 @@ export async function buatAkun(_p: HasilAksi, form: FormData): Promise<HasilAksi
     return { ok: false, pesan };
   };
 
-  const p = await ctx.supabase.from("pengguna").upsert({ user_id: userId, nama: d.nama, email: d.email, aktif: true }, { onConflict: "user_id" });
+  let p = await ctx.supabase.from("pengguna").upsert({ user_id: userId, nama: d.nama, email: d.email, aktif: true, jabatan: d.jabatan || null }, { onConflict: "user_id" });
+  if (p.error && kolomBelumAda(p.error)) p = await ctx.supabase.from("pengguna").upsert({ user_id: userId, nama: d.nama, email: d.email, aktif: true }, { onConflict: "user_id" });
   if (p.error) return batal("Gagal menyimpan pengguna: " + p.error.message);
   const r = await ctx.supabase
     .from("pengguna_peran")
@@ -103,6 +109,7 @@ const ubahSchema = z.object({
   aktif: z.boolean(),
   peran: z.array(kodePeran),
   pegawai_id: z.union([z.literal(""), z.string().uuid()]),
+  jabatan: kodeJabatan,
 });
 
 export async function ubahPengguna(_p: HasilAksi, form: FormData): Promise<HasilAksi> {
@@ -114,6 +121,7 @@ export async function ubahPengguna(_p: HasilAksi, form: FormData): Promise<Hasil
     aktif: form.get("aktif") === "on",
     peran: form.getAll("peran").map(String),
     pegawai_id: String(form.get("pegawai_id") ?? ""),
+    jabatan: String(form.get("jabatan") ?? ""),
   });
   if (!parsed.success) return { ok: false, pesan: "Periksa kembali isian.", errors: pesanError(parsed.error) };
   const d = parsed.data;
@@ -125,7 +133,9 @@ export async function ubahPengguna(_p: HasilAksi, form: FormData): Promise<Hasil
   const tambah = [...sesudah].filter((x) => !sebelum.has(x));
   const hapus = [...sebelum].filter((x) => !sesudah.has(x));
 
-  const u = await ctx.supabase.from("pengguna").update({ nama: d.nama, aktif: d.aktif }).eq("user_id", d.user_id);
+  let u = await ctx.supabase.from("pengguna").update({ nama: d.nama, aktif: d.aktif, jabatan: d.jabatan || null }).eq("user_id", d.user_id);
+  // sebelum migrasi 20261225 kolom jabatan belum ada → simpan tanpa jabatan
+  if (u.error && kolomBelumAda(u.error)) u = await ctx.supabase.from("pengguna").update({ nama: d.nama, aktif: d.aktif }).eq("user_id", d.user_id);
   if (u.error) return { ok: false, pesan: u.error.message.includes("super admin") ? u.error.message : "Gagal menyimpan pengguna." };
   if (tambah.length) {
     const t = await ctx.supabase.from("pengguna_peran").insert(tambah.map((peran) => ({ user_id: d.user_id, peran, diberikan_oleh: ctx.akses.userId })));
@@ -217,4 +227,27 @@ export async function kirimTautanReset(form: FormData) {
   else await ctx.supabase.rpc("catat_keamanan_pengguna", { p_user: id.data, p_peristiwa: "tautan_reset" });
   kirimSegera();
   redirect(`/admin/pengguna/${id.data}?pesan=${error ? "gagal" : "tautan-terkirim"}`);
+}
+
+const jabatanSchema = z.object({ nama: z.string().trim().min(2, "Nama jabatan minimal 2 karakter").max(60, "Maksimal 60 karakter") });
+
+/** Tambah jabatan GTK ke daftar (kode dibuat dari nama). Jabatan hanya untuk tampilan & direktori, tidak memberi hak akses. */
+export async function tambahJabatan(_p: HasilAksi, form: FormData): Promise<HasilAksi> {
+  const ctx = await aksesAksi("pengguna.kelola");
+  if (!ctx) return TANPA_AKSES;
+  const parsed = jabatanSchema.safeParse({ nama: String(form.get("nama") ?? "") });
+  if (!parsed.success) return { ok: false, pesan: "Periksa kembali isian.", errors: pesanError(parsed.error) };
+  const kode = parsed.data.nama
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .replace(/^(\d)/, "j_$1")
+    .slice(0, 40);
+  if (kode.length < 2) return { ok: false, pesan: "Nama jabatan harus berisi huruf.", errors: { nama: "Gunakan huruf" } };
+  const { count } = await ctx.supabase.from("jabatan_gtk").select("kode", { count: "exact", head: true });
+  const { error } = await ctx.supabase.from("jabatan_gtk").insert({ kode, nama: parsed.data.nama, urutan: (count ?? 0) + 1 });
+  if (error) return { ok: false, pesan: error.code === "23505" ? "Jabatan itu sudah ada." : error.code === "42P01" || error.code === "PGRST205" ? "Fitur ini memerlukan migrasi 20261225000000_gtk_jabatan_peran.sql." : "Gagal menambah jabatan." };
+  revalidatePath("/admin/pengguna");
+  return { ok: true, pesan: `Jabatan "${parsed.data.nama}" ditambahkan.` };
 }

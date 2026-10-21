@@ -18,7 +18,7 @@ const RUTE = daftarArg
       "/pembelajaran", "/program", "/program/7kaih", "/pembelajaran/e-learning", "/pembelajaran/kalender", "/pembelajaran/kurikulum",
       "/prestasi", "/ekskul", "/galeri", "/berita", "/berita/uji-kegiatan-literasi", "/pengumuman", "/agenda",
       "/perpustakaan", "/perpustakaan/00000000-0000-0000-0000-0000000f0b01", "/pengaduan", "/pengaduan/cek", "/sertifikat", "/survei",
-      "/spmb", "/kontak", "/alumni", "/alumni/daftar", "/cari?q=sekolah", "/portal-digital", "/admin/login", "/halaman-tidak-ada",
+      "/spmb", "/kontak", "/alumni", "/alumni/daftar", "/cari?q=sekolah", "/portal-digital", "/portal-digital/masuk/gtk", "/portal-digital/masuk/siswa", "/portal-digital/masuk/orang-tua", "/halaman-tidak-ada",
     ];
 // warna & huruf desain lama yang tidak boleh muncul lagi (rgb dari #7A1F36, #7A1F2B, #F5F0E6, #F6F2EA, #EDE5D6)
 const WARNA_LAMA = ["rgb(122, 31, 54)", "rgb(122, 31, 43)", "rgb(245, 240, 230)", "rgb(246, 242, 234)", "rgb(237, 229, 214)"];

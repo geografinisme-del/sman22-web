@@ -18,6 +18,7 @@ export default async function Inventaris({ searchParams }: { searchParams: Promi
   const { supabase, akses } = await wajibLogin();
   const kelola = punya(akses, "sarpras.kelola");
   const lihat = kelola || punya(akses, "sarpras.lihat");
+  const kelolaBarang = kelola || punya(akses, "sarpras.inventaris");
   if (!lihat) redirect("/admin/sarpras/peminjaman");
   const hal = Math.max(1, Number(sp.hal) || 1);
   let q = supabase.from("barang").select("id, kode, nama, jumlah, satuan, kondisi, merk, kategori_barang(nama), ruang(nama)", { count: "exact" }).is("deleted_at", null).order("kode").range((hal - 1) * PER, hal * PER - 1);
@@ -39,7 +40,7 @@ export default async function Inventaris({ searchParams }: { searchParams: Promi
     <>
       <JudulHalaman judul="Sarana & Prasarana" deskripsi="Inventaris barang sekolah: kode otomatis, lokasi, kondisi, nilai aset, dan label QR."
         aksi={<div className="flex gap-2"><a href="/admin/sarpras/ekspor" className="rounded-full px-4 py-2.5 text-sm font-semibold ring-1 ring-black/15">Unduh Excel</a>
-          {kelola && <Link href="?tambah=1#tambah" className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white">+ Barang</Link>}</div>} />
+          {kelolaBarang && <Link href="?tambah=1#tambah" className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white">+ Barang</Link>}</div>} />
       <NavSarpras lihat={lihat} kelola={kelola} />
       <Notifikasi kode={sp.pesan} />
       <ul className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -64,9 +65,9 @@ export default async function Inventaris({ searchParams }: { searchParams: Promi
           </table>
         </div>
       )}
-      {kelola && sp.tambah && (
+      {kelolaBarang && sp.tambah && (
         <Kartu className="mb-6"><h2 id="tambah" className="mb-4 text-2xl">Barang baru</h2>
-          <FormBarang kategori={(kategori ?? []) as { id: string; nama: string }[]} ruang={(ruang ?? []) as { id: string; nama: string }[]} /></Kartu>
+          <FormBarang anggaran={kelola} kategori={(kategori ?? []) as { id: string; nama: string }[]} ruang={(ruang ?? []) as { id: string; nama: string }[]} /></Kartu>
       )}
       <form className="mb-4 flex flex-wrap gap-2 text-sm">
         <input name="q" defaultValue={sp.q} placeholder="Cari nama / kode / merk" className="min-w-56 flex-1 rounded-full border border-black/15 bg-white px-4 py-2" />
