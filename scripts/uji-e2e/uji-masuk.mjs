@@ -145,7 +145,7 @@ cek("siswa masuk via NISN → /portal", (await url()).startsWith("/portal"), awa
 await keluarAkun();
 await buka("/portal-digital/masuk/orang-tua");
 const labelOrtu = await js(`({h1:document.querySelector("h1")?.textContent, nisn:document.querySelector("label[for=nisn]")?.textContent, bantu:document.body.innerText.includes("Gunakan NISN putra/putri Anda.")})`);
-cek("halaman orang tua: judul, NISN anak, bantuan", labelOrtu.h1 === "Masuk ke Portal Orang Tua" && /NISN anak/.test(labelOrtu.nisn ?? "") && labelOrtu.bantu, labelOrtu);
+cek("halaman orang tua: judul, NISN anak, bantuan", labelOrtu.h1 === "Masuk ke Portal Orang Tua" && /NISN Anak/.test(labelOrtu.nisn ?? "") && labelOrtu.bantu, labelOrtu);
 await isiMasuk("ortu");
 cek("orang tua masuk via NISN anak → /portal", (await url()).startsWith("/portal"), await url());
 

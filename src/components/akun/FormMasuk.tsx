@@ -8,7 +8,7 @@ import { FormAksi, Input, Kolom, TombolSimpan, useErrorKolom } from "@/component
 import type { PeranMasuk } from "@/lib/masuk";
 
 /** Kolom kata sandi dengan tombol lihat/sembunyikan (bisa dipakai dengan keyboard). */
-export function InputSandi({ nama = "password", label = "Kata sandi", autoComplete = "current-password" }: { nama?: string; label?: string; autoComplete?: string }) {
+export function InputSandi({ nama = "password", label = "Kata Sandi", autoComplete = "current-password" }: { nama?: string; label?: string; autoComplete?: string }) {
   const [lihat, setLihat] = useState(false);
   const error = useErrorKolom(nama);
   return (
@@ -47,7 +47,7 @@ export function FormMasuk({ peran, lanjut }: { peran: PeranMasuk; lanjut?: strin
         <Input label="Email" nama="email" tipe="email" wajib placeholder="Masukkan email Anda" />
       ) : (
         <Input
-          label={peran === "siswa" ? "NISN" : "NISN anak"}
+          label={peran === "siswa" ? "NISN" : "NISN Anak"}
           nama="nisn"
           tipe="text"
           wajib
