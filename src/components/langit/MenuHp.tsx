@@ -9,6 +9,7 @@ import type { KunciGrup } from "@/content/menu-langit";
 import { sekolah } from "@/content/sekolah";
 import { formatTanggal } from "@/lib/format";
 import { AwanTipis } from "./AwanTipis";
+import { MerekTeks } from "./MerekTeks";
 import type { DataMenu } from "./tipeMenu";
 
 /**
@@ -52,10 +53,7 @@ export function MenuHp({ terbuka, onTutup, data }: { terbuka: boolean; onTutup: 
         <div className="lgt-menu-hp-atas">
           <Link href="/" className="lgt-merek lgt-merek-gelap" prefetch={false} onClick={onTutup}>
             <Image src={sekolah.logo} alt="" width={502} height={497} sizes="80px" className="lgt-logo" />
-            <span className="lgt-merek-teks">
-              <strong>SMA Negeri 22</strong>
-              <small>Bandung</small>
-            </span>
+            <MerekTeks />
             <span className="sr-only">, ke beranda</span>
           </Link>
           <button type="button" className="lgt-menu-hp-tutup" onClick={onTutup}>

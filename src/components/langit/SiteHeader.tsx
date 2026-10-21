@@ -8,6 +8,7 @@ import { ArrowRight, ChevronDown, Menu, Search } from "lucide-react";
 import { sekolah } from "@/content/sekolah";
 import type { KunciGrup } from "@/content/menu-langit";
 import { MenuHp } from "./MenuHp";
+import { MerekTeks } from "./MerekTeks";
 import { PanelMega } from "./PanelMega";
 import type { DataMenu } from "./tipeMenu";
 import "./navigasi.css";
@@ -166,10 +167,7 @@ export function SiteHeader({ data }: { data: DataMenu }) {
           <Link href="/" className="lgt-merek" prefetch={false}>
             <Image src={sekolah.logo} alt="" width={502} height={497} sizes="96px" className="lgt-logo" loading="eager" />
             {/* nama yang terbaca = teks yang terlihat (WCAG 2.5.3) + keterangan tujuan untuk pembaca layar */}
-            <span className="lgt-merek-teks">
-              <strong>SMA Negeri 22</strong>
-              <small>Bandung</small>
-            </span>
+            <MerekTeks />
             <span className="sr-only">, ke beranda</span>
           </Link>
 
