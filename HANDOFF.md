@@ -116,7 +116,7 @@ Untuk menguji lokal tanpa mengubah data produksi, tambahkan data contoh sementar
 ## Platform (fase berikutnya) — keputusan
 
 ### Migrasi yang WAJIB dijalankan sebelum fitur baru aktif di produksi
-0. Cabang `langit-cerah` menambah: `20261210…`, `20261220…`, `20261221…`, `20261222…`, `20261223000000_menu_navigasi.sql`, `20261224000000_portal_masuk.sql`, `20261225000000_gtk_jabatan_peran.sql` — BELUM dijalankan di produksi (menunggu "jalankan").
+0. Cabang `langit-cerah` menambah 7 migrasi (20261210, 20261220, 20261221, 20261222, 20261223, 20261224, 20261225) — **SUDAH dijalankan di produksi 21 Okt 2026** via psql (satu transaksi per berkas, setelah backup), dan dicatat di `supabase_migrations.schema_migrations`.
 1. `supabase/migrations/20261201000000_elibrary_publik.sql` — RPC kategori katalog, saringan kategori, aturan pinjam ringkas (baca saja).
 2. `supabase/migrations/20261202000000_tampilan_widget.sql` — `tampilan_draf` (RLS: hanya `konten.kelola`), `riwayat_tampilan` (append-only), `terbitkan_tampilan()`, kolom popup di `pengumuman`.
 
