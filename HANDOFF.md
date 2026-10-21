@@ -452,3 +452,12 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   kompatibel dengan kode lama; rollback DB darurat: `supabase/rollback/rollback_20261210_20261225.sql`, backup 21 Okt).
 - Rilis = merge `langit-cerah` → `main` (merge commit, tanpa konflik). Signup Supabase Auth ditutup sebelum rilis.
 - Domain sekolah (smanegeri22bandung.sch.id) & DNS belum diubah — langkah terpisah.
+- **Hasil rilis (21 Okt 2026)**: deployment production baru `dpl_A5HQotUmD4ZR2KRwCV3eiecpguT3`
+  (`sman22-6d80yjxbk-geo-bbba.vercel.app`, merge commit `409a45d`), alamat publik **https://sman22-web.vercel.app**
+  (alias `sman22-web-geo-bbba` & `-git-main-` terkunci Vercel Authentication — normal).
+  Dicek: 13 halaman publik 200 tanpa error/"Contoh:", mega menu & menu HP tanpa galat konsol (1440 & 390), pengalihan
+  /admin/login → halaman masuk per peran (308) & /admin → login GTK, SEO: title/description terisi, tanpa noindex
+  (kecuali 3 halaman masuk — disengaja), robots.txt & sitemap.xml (26 halaman publik) normal; log Vercel & Supabase
+  tanpa error. Login admin dicek pemilik (akun asli).
+- **Belum**: domain sekolah smanegeri22bandung.sch.id & DNS (keputusan terpisah) — setelah domain aktif, perbarui
+  `sekolah.urlSitus` agar sitemap/robots memakai domain resmi. Supabase advisor: aktifkan "Leaked password protection".
