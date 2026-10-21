@@ -8,7 +8,7 @@ const [base, berkasAkun, keluar] = process.argv.slice(2);
 if (!/^http:\/\/localhost:\d+$/.test(base ?? "")) throw new Error("base harus http://localhost:<port>");
 const SANDI = JSON.parse(fs.readFileSync(berkasAkun, "utf8")).sandi;
 const CHROME = process.env.CHROME_PATH ?? "C:/Program Files/Google/Chrome/Application/chrome.exe";
-const RUTE = ["/admin", "/admin/staf-publik?baru=1", "/admin/fasilitas", "/admin/halaman", "/admin/kartu-beranda", "/admin/tur-sekolah", "/admin/berita", "/admin/tampilan"];
+const RUTE = ["/admin", "/admin/menu", "/admin/staf-publik?baru=1", "/admin/fasilitas", "/admin/halaman", "/admin/kartu-beranda", "/admin/tur-sekolah", "/admin/berita", "/admin/tampilan"];
 fs.mkdirSync(keluar, { recursive: true });
 
 const browser = await chromium.launch({ executablePath: CHROME, headless: true });

@@ -118,10 +118,10 @@ export async function geserBarisHalaman(form: FormData) {
 /* ---------------- halaman_cms ---------------- */
 
 /** Halaman teks yang dikenal situs (slug → alamat publik). */
-const HALAMAN_CMS = { kurikulum: "/pembelajaran/kurikulum" } as const;
+const HALAMAN_CMS = { kurikulum: "/pembelajaran/kurikulum", "tata-tertib": "/profil/tata-tertib" } as const;
 
 const halamanSchema = z.object({
-  slug: z.enum(["kurikulum"]),
+  slug: z.enum(["kurikulum", "tata-tertib"]),
   judul: z.string().trim().min(2, "Judul minimal 2 karakter").max(120),
   ringkasan: z.string().trim().max(240, "Maksimal 240 karakter"),
   isi: z.string().trim().max(40000, "Isi terlalu panjang"),

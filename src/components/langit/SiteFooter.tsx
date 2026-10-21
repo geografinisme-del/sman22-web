@@ -2,16 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { sekolah } from "@/content/sekolah";
-import { GRUP_LANGIT, denganELearning } from "@/content/menu-langit";
-import type { DataMenu } from "./FullMenu";
+import type { DataMenu } from "./tipeMenu";
 
 /**
- * Footer semua halaman publik — struktur kolom sama dengan menu layar penuh.
+ * Footer semua halaman publik — struktur kolom sama dengan mega menu / menu HP.
  * `id="navigasi-situs"` = tujuan tautan menu di header saat JavaScript tidak aktif.
  * Media sosial hanya tampil bila URL-nya diisi di CMS (Instagram, YouTube).
  */
 export function SiteFooter({ data }: { data: DataMenu }) {
-  const grup = denganELearning(GRUP_LANGIT, data.eLearning);
+  const grup = data.grup;
   return (
     <footer className="lgt-footer">
       <div className="lgt-wadah">

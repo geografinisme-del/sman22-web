@@ -5,7 +5,7 @@ import { SaringTingkat } from "@/components/langit/SaringTingkat";
 import { PageHeader, Section } from "@/components/ui";
 import { getStafPublik } from "@/lib/data";
 
-export const metadata: Metadata = { title: "Guru dan Staf" };
+export const metadata: Metadata = { title: "Guru dan Tenaga Kependidikan" };
 
 const inisial = (nama: string) =>
   nama
@@ -21,10 +21,10 @@ export default async function GuruStaf() {
   const bidang = [...new Set(staf.map((s) => s.bidang).filter(Boolean))].sort((a, b) => a.localeCompare(b, "id"));
   return (
     <>
-      <PageHeader judul="Guru dan staf" label="Profil" remah={[{ href: "/profil", label: "Profil" }]} deskripsi="Pendidik dan tenaga kependidikan SMA Negeri 22 Bandung." />
+      <PageHeader judul="Guru dan Tenaga Kependidikan" label="Profil" remah={[{ href: "/profil", label: "Profil" }]} deskripsi="Pendidik dan tenaga kependidikan SMA Negeri 22 Bandung." />
       <Section>
         {staf.length === 0 ? (
-          <Kosong teks="Daftar guru dan staf sedang disiapkan." sub="Data ditampilkan setelah diisi dan disetujui pihak sekolah." />
+          <Kosong teks="Daftar guru dan tenaga kependidikan sedang disiapkan." sub="Data ditampilkan setelah diisi dan disetujui pihak sekolah." />
         ) : (
           <SaringTingkat tingkat={bidang} label="Saring bidang">
             <ul className="lgt-orang-kisi">

@@ -21,7 +21,6 @@
   --soft: #f2f4f7;
   --line: #e6eaf0;
   --white: #ffffff;
-  --menu-latar: #0a0a0c;
 
   /* huruf (next/font, app/fonts.ts) */
   --font-utama: var(--font-jakarta), "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;

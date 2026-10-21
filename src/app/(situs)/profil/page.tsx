@@ -13,8 +13,9 @@ const SUBHALAMAN = [
   { href: "/sambutan", label: "Profil", judul: "Sambutan kepala sekolah", deskripsi: "Pesan kepala sekolah untuk warga dan calon siswa.", foto: "/images/kepala-sekolah.jpg" },
   { href: "/profil/visi-misi", label: "Profil", judul: "Visi dan misi", deskripsi: "Arah dan tujuan pendidikan di SMA Negeri 22 Bandung.", foto: "/images/apel-lapangan.jpg" },
   { href: "/profil/sejarah", label: "Profil", judul: "Sejarah", deskripsi: `Perjalanan sekolah sejak ${sekolah.tahunBerdiri}.`, foto: "/images/gedung.jpg" },
-  { href: "/profil/guru-staf", label: "Profil", judul: "Guru dan staf", deskripsi: "Pendidik dan tenaga kependidikan sekolah.", foto: "/images/keluarga-besar.jpg" },
+  { href: "/profil/guru-staf", label: "Profil", judul: "Guru dan Tenaga Kependidikan", deskripsi: "Direktori guru dan tenaga kependidikan (GTK).", foto: "/images/keluarga-besar.jpg" },
   { href: "/profil/fasilitas", label: "Profil", judul: "Fasilitas", deskripsi: "Ruang belajar, laboratorium, dan sarana pendukung.", foto: "/images/kegiatan-aula.jpg" },
+  { href: "/profil/tata-tertib", label: "Profil", judul: "Tata tertib", deskripsi: "Aturan dan pembiasaan.", foto: "/images/upacara-pagi.jpg" },
 ];
 
 export default async function Profil() {

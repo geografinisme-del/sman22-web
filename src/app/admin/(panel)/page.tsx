@@ -42,7 +42,7 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
   const mediaSementara = punya(akses, "konten.kelola")
     ? (
         await Promise.all(
-          (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda", "tur_sekolah", "staf_publik", "fasilitas"] as const).map((t) => {
+          (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda", "tur_sekolah", "staf_publik", "fasilitas", "menu_sorotan"] as const).map((t) => {
             const q = supabase.from(t).select("id", { count: "exact", head: true }).eq("is_placeholder", true);
             // tabel tanpa kolom deleted_at (nonaktif = aktif false); galat (tabel belum dimigrasi) dihitung 0
             return t === "berita" || t === "galeri" || t === "prestasi" ? q.is("deleted_at", null) : q;
@@ -114,7 +114,7 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
         <div role="status" className="mb-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
           <strong>{mediaSementara} media</strong> di website masih berupa ilustrasi sementara (berlabel &ldquo;Ilustrasi sementara&rdquo;). Ganti dengan foto asli sekolah
           melalui <Link href="/admin/berita" className="font-semibold underline">Berita</Link>, <Link href="/admin/galeri" className="font-semibold underline">Galeri</Link>,{" "}
-          <Link href="/admin/prestasi" className="font-semibold underline">Prestasi</Link>, <Link href="/admin/kartu-beranda" className="font-semibold underline">Kartu Beranda</Link>, <Link href="/admin/tur-sekolah" className="font-semibold underline">Tur Sekolah</Link>, <Link href="/admin/staf-publik" className="font-semibold underline">Guru &amp; Staf</Link>, <Link href="/admin/fasilitas" className="font-semibold underline">Fasilitas</Link>, atau <Link href="/admin/situs" className="font-semibold underline">Tampilan Website</Link>.
+          <Link href="/admin/prestasi" className="font-semibold underline">Prestasi</Link>, <Link href="/admin/kartu-beranda" className="font-semibold underline">Kartu Beranda</Link>, <Link href="/admin/tur-sekolah" className="font-semibold underline">Tur Sekolah</Link>, <Link href="/admin/staf-publik" className="font-semibold underline">Guru &amp; Tendik</Link>, <Link href="/admin/fasilitas" className="font-semibold underline">Fasilitas</Link>, atau <Link href="/admin/situs" className="font-semibold underline">Tampilan Website</Link>.
         </div>
       )}
 

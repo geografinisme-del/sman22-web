@@ -6,7 +6,10 @@ import { simpanHalamanCms } from "../../actions-halaman";
 
 export const metadata = { title: "Halaman teks" };
 
-const HALAMAN = [{ slug: "kurikulum", judul: "Kurikulum", alamat: "/pembelajaran/kurikulum" }] as const;
+const HALAMAN = [
+  { slug: "kurikulum", judul: "Kurikulum", alamat: "/pembelajaran/kurikulum" },
+  { slug: "tata-tertib", judul: "Tata tertib", alamat: "/profil/tata-tertib" },
+] as const;
 
 export default async function AdminHalaman({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
   const { pesan } = await searchParams;

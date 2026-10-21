@@ -2,7 +2,7 @@ import { DaftarBarisHalaman, type BarisHalaman } from "@/components/admin/Daftar
 import { wajibIzin } from "@/lib/admin/auth";
 import { uuid } from "@/lib/admin/schema";
 
-export const metadata = { title: "Guru & Staf (publik)" };
+export const metadata = { title: "Guru & Tendik (publik)" };
 
 export default async function AdminStafPublik({ searchParams }: { searchParams: Promise<{ pesan?: string; ubah?: string; baru?: string }> }) {
   const { pesan, ubah, baru } = await searchParams;
@@ -12,8 +12,8 @@ export default async function AdminStafPublik({ searchParams }: { searchParams: 
     <DaftarBarisHalaman
       tabel="staf_publik"
       halaman="/admin/staf-publik"
-      judul="Guru & staf (halaman publik)"
-      deskripsi="Daftar yang tampil di Profil → Guru dan staf. Terpisah dari data kepegawaian; hanya isian di sini yang tampil publik."
+      judul="Guru & Tendik (halaman publik)"
+      deskripsi="Daftar yang tampil di Profil → Guru dan Tenaga Kependidikan. Terpisah dari data kepegawaian; hanya isian di sini yang tampil publik."
       catatan={
         <p className="mb-6 rounded-xl bg-[var(--soft)] px-4 py-3 text-sm text-[var(--ink)] ring-1 ring-[var(--line)]">
           <strong>Persetujuan:</strong> tampilkan nama, jabatan, dan foto hanya untuk guru/staf yang sudah menyetujui datanya dipublikasikan. Data yang tidak lagi disetujui cukup dinonaktifkan.

@@ -358,3 +358,23 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   setelah 3 detik. Kartu terpilih: `data-terpilih` (cincin lime + bayangan tegas). Pengumuman pembaca layar hanya setelah
   tindakan pengguna. Uji: `uji-langit.mjs` (27 cek).
 
+### Perbaikan 2 (Tahap 2): navigasi — mega menu desktop + menu HP terang
+- **Header** (`SiteHeader.tsx` + `navigasi.css`): desktop ≥ 1024px = pil putih (logo + "SMA Negeri 22 / BANDUNG",
+  5 menu ber-chevron, ikon cari → /cari, tombol lime "Portal Digital 22 →"). HP/tablet < 1024px = logo + tombol Menu +
+  Portal. Menu layar penuh gelap (`FullMenu.tsx`) dihapus; token `--menu-latar` dihapus.
+- **Mega menu** (`PanelMega.tsx`): panel overlay (tanpa CLS) di bawah header; buka hover (jeda niat 120ms), klik,
+  Enter/↓; pindah menu langsung berganti; tutup saat kursor keluar > 250ms, klik di luar, Esc (fokus kembali),
+  klik tautan; layar sentuh hanya ketuk. Kiri: semua tautan + keterangan; kanan: 3 kartu foto (Profil, Pembelajaran,
+  Kehidupan Siswa), kategori + 3 kabar terbaru (Kabar & Agenda), kartu layanan berikon + kotak bantuan (Layanan);
+  bawah: chip akses cepat.
+- **Menu HP** (`MenuHp.tsx`): <dialog> terang + `AwanTipis` (komponen awan reusable, `awan-tipis.css`), kolom cari,
+  akordeon 01–05 (foto + caption, tautan, tombol ajakan; Kabar: 3 kabar terbaru), kartu Portal, akses cepat per pengguna.
+- **Data**: struktur & teks bawaan di `content/menu-langit.ts`; CMS opsional (migrasi `20261223000000_menu_navigasi.sql`:
+  menu_grup, menu_keterangan, menu_sorotan) lewat Admin → Menu navigasi (`/admin/menu`, `actions-menu.ts`).
+  `lib/menu-data.ts`: `getMenuCms` & `getKabarMenu` di-cache 5 menit (`unstable_cache`, tag "menu-navigasi";
+  `updateTag` saat admin menyimpan). Uji RLS: `supabase/tests/rls_menu_test.sql`.
+- **Istilah**: "Guru dan Tenaga Kependidikan" / "Guru & Tendik" (bukan "Guru dan staf"). Halaman baru
+  `/profil/tata-tertib` (halaman_cms slug "tata-tertib").
+- Uji: `uji-menu.mjs` ditulis ulang (mega menu 1440 & 1024, keyboard, HP akordeon, 29 tautan); `uji-langit.mjs`
+  diperbarui untuk header pil.
+

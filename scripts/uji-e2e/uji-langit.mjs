@@ -165,13 +165,30 @@ const depan = (page) => page.evaluate(() => [...document.querySelectorAll(".lgt-
   // header: transparan di atas hero, putih setelah melewati hero
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
   await tidur(500);
+  const atas = await page.evaluate(() => ({ terang: document.querySelector(".lgt-header").hasAttribute("data-terang"), warna: getComputedStyle(document.querySelector(".lgt-merek")).color, pil: getComputedStyle(document.querySelector(".lgt-header-isi")).backgroundColor }));
+  await page.evaluate(() => window.scrollTo({ top: document.querySelector("[data-hero-langit]").offsetHeight + 50, behavior: "instant" }));
+  await tidur(400);
+  const bawah = await page.evaluate(() => ({ lewat: document.querySelector(".lgt-header").hasAttribute("data-lewat"), warna: getComputedStyle(document.querySelector(".lgt-merek")).color, pil: getComputedStyle(document.querySelector(".lgt-header-isi")).backgroundColor }));
+  // desktop: header berupa pil putih mengambang (teks tinta) di atas hero maupun setelah hero
+  cek("desktop: header pil putih + teks tinta di atas hero", atas.terang && atas.pil.includes("0.96") && atas.warna === "rgb(11, 18, 32)", atas);
+  cek("desktop: header pil putih tetap setelah hero (lengket)", bawah.lewat && bawah.pil.includes("0.96") && bawah.warna === "rgb(11, 18, 32)", bawah);
+
+  await ctx.close();
+}
+
+// ---------- HP 390: header transparan (teks putih) di atas hero, bar putih 90% + teks tinta setelah hero ----------
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await bersih(ctx);
+  const page = await ctx.newPage();
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await tidur(500);
   const atas = await page.evaluate(() => ({ terang: document.querySelector(".lgt-header").hasAttribute("data-terang"), warna: getComputedStyle(document.querySelector(".lgt-merek")).color }));
   await page.evaluate(() => window.scrollTo({ top: document.querySelector("[data-hero-langit]").offsetHeight + 50, behavior: "instant" }));
   await tidur(400);
   const bawah = await page.evaluate(() => ({ lewat: document.querySelector(".lgt-header").hasAttribute("data-lewat"), warna: getComputedStyle(document.querySelector(".lgt-merek")).color, latar: getComputedStyle(document.querySelector(".lgt-header")).backgroundColor }));
-  cek("header teks putih di atas hero", atas.terang && atas.warna === "rgb(255, 255, 255)", atas);
-  cek("header putih 90% + teks tinta setelah hero", bawah.lewat && bawah.warna !== "rgb(255, 255, 255)" && bawah.latar.includes("0.9"), bawah);
-
+  cek("HP: header teks putih di atas hero", atas.terang && atas.warna === "rgb(255, 255, 255)", atas);
+  cek("HP: header putih 90% + teks tinta setelah hero", bawah.lewat && bawah.warna !== "rgb(255, 255, 255)" && bawah.latar.includes("0.9"), bawah);
   await ctx.close();
 }
 
@@ -205,7 +222,7 @@ for (const [nama, opsi] of [
     judul: document.querySelector("#judul-hero")?.textContent,
     kartu: document.querySelectorAll("[data-hero-langit] .lgt-kartu").length,
     navFooter: !!document.querySelector("#navigasi-situs a"),
-    tautanMenu: document.querySelector(".lgt-pil a")?.getAttribute("href"),
+    tautanMenu: document.querySelector(".lgt-mega-pemicu")?.getAttribute("href"),
   }));
   cek("tanpa JS: judul, 12 kartu, dan navigasi footer terbaca", /Tempat tumbuh/.test(k.judul ?? "") && k.kartu === 12 && k.navFooter && k.tautanMenu === "#navigasi-situs", k);
   await ctx.close();

@@ -1,0 +1,56 @@
+/* Awan tipis (AwanTipis.tsx): lapis putih lembut, melayang pelan; hanya transform/opacity, tanpa CLS. */
+.lgt-awan-tipis {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.lgt-at {
+  position: absolute;
+  height: auto;
+  fill: var(--white);
+}
+.lgt-at-1 {
+  top: -30px;
+  left: -12%;
+  width: 78%;
+  opacity: 0.75;
+  filter: blur(4px);
+}
+.lgt-at-2 {
+  top: 60px;
+  right: -16%;
+  width: 70%;
+  opacity: 0.55;
+  filter: blur(6px);
+  scale: -1 1;
+}
+.lgt-at-3 {
+  right: -10%;
+  bottom: 4%;
+  width: 56%;
+  opacity: 0.45;
+  filter: blur(2px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lgt-at-1 {
+    animation: lgt-at-geser 90s linear infinite alternate;
+  }
+  .lgt-at-2 {
+    animation: lgt-at-geser-balik 120s linear infinite alternate;
+  }
+  .lgt-at-3 {
+    animation: lgt-at-geser 70s linear infinite alternate;
+  }
+}
+@keyframes lgt-at-geser {
+  to {
+    translate: 60px 0;
+  }
+}
+@keyframes lgt-at-geser-balik {
+  to {
+    translate: -80px 0;
+  }
+}
