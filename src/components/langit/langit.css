@@ -192,9 +192,12 @@
   background: rgb(255 255 255 / 0.22);
 }
 .lgt-pil-lime {
-  padding-right: 6px;
   background: var(--lime);
   color: var(--ink);
+}
+/* padding kanan dirapatkan hanya bila ada ikon bulat di ujung kanan; tanpa ikon teks tetap di tengah */
+.lgt-pil-lime:has(> .lgt-pil-bulat) {
+  padding-right: 6px;
 }
 .lgt-pil-bulat {
   display: grid;
