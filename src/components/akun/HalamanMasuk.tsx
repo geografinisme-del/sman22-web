@@ -19,7 +19,7 @@ export function HalamanMasuk({ foto, label, judul, pengantar, children, bawah }:
       <section className="masuk-panel" aria-label="Identitas sekolah">
         <AwanTipis lapis={3} />
         <Link href="/" className="masuk-merek" prefetch={false}>
-          <Image src={sekolah.logo} alt="" width={502} height={497} sizes="96px" className="masuk-logo" loading="eager" />
+          <Image src={sekolah.logo} alt="" width={502} height={497} sizes="44px" className="masuk-logo" loading="eager" />
           <span>
             <strong>SMA Negeri 22 Bandung</strong>
             <small>Portal Sekolah</small>

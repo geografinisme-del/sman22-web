@@ -214,3 +214,7 @@
   color: var(--ink);
   font-size: 0.9375rem;
 }
+/* teks bantuan kolom (mis. "Gunakan NISN putra/putri Anda."): warna muted agar kontras ≥ 4,5:1 */
+.masuk-kartu form p.text-xs {
+  color: var(--muted);
+}

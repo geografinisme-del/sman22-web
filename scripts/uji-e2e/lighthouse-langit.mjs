@@ -35,7 +35,7 @@ for (const jalur of daftar.split(",")) {
     bobotKB: Math.round((a["total-byte-weight"]?.numericValue ?? 0) / 1024),
     gagal: Object.entries(a)
       .filter(([k, v]) => v.score === 0 && ids.has(k))
-      .map(([k, v]) => `${k}: ${(v.details?.items ?? []).slice(0, 2).map((i) => i.node?.selector ?? i.url ?? i.description ?? "").join(" | ")}`),
+      .map(([k, v]) => `${k}: ${(Array.isArray(v.details?.items) ? v.details.items : []).slice(0, 2).map((i) => i.node?.selector ?? i.url ?? i.description ?? "").join(" | ")}`),
   });
 }
 fs.writeFileSync(path.join(keluar, "ringkasan.json"), JSON.stringify(ringkas, null, 1));
