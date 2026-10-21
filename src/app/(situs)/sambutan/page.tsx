@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import { MediaSlot } from "@/components/MediaSlot";
+import { CtaBand, Prose } from "@/components/langit/Komponen";
 import { PageHeader } from "@/components/ui";
 import { getProfil } from "@/lib/data";
 
@@ -11,42 +11,31 @@ export default async function Sambutan() {
   const ada = Boolean(p.sambutanKutipan || p.sambutanParagraf.length);
   return (
     <>
-      <PageHeader judul="Sambutan Kepala Sekolah" deskripsi={p.kepalaSekolah ? `${p.kepalaSekolah}, Kepala SMA Negeri 22 Bandung` : undefined} />
-      <section className="bagian">
-        <div className="lp-wadah grid items-start gap-8 sm:grid-cols-[200px_1fr] md:grid-cols-[260px_1fr] lg:gap-12">
-          <figure className="max-w-[260px]">
-            <div className="foto relative aspect-[425/600] border border-[#e5e1da] bg-white">
-              <Image src={p.fotoKepalaSekolah} alt={`Foto ${p.kepalaSekolah}`} fill priority sizes="260px" className="object-cover object-top" />
-            </div>
-            <figcaption className="mt-2">
-              <span className="block font-semibold">{p.kepalaSekolah}</span>
-              <span className="text-sm text-[#5b6270]">Kepala Sekolah</span>
+      <PageHeader judul="Sambutan kepala sekolah" label="Profil" remah={[{ href: "/profil", label: "Profil" }]} deskripsi={p.kepalaSekolah ? `${p.kepalaSekolah}, ${p.jabatanKepala || "Kepala SMA Negeri 22 Bandung"}.` : undefined} />
+      <section className="lgt-bagian">
+        <div className="lgt-wadah grid items-start gap-10 md:grid-cols-[280px_minmax(0,1fr)] lg:gap-16">
+          <figure className="max-w-[280px]">
+            <MediaSlot src={p.fotoKepalaSekolah} alt={`Foto ${p.kepalaSekolah}`} ratio="425/600" priority focus="50% 0%" sizes="280px" className="rounded-[var(--radius-kartu-besar)]" />
+            <figcaption className="mt-3">
+              <span className="block font-bold">{p.kepalaSekolah}</span>
+              <span className="label-mono text-[var(--blue-teks)]">Kepala sekolah</span>
             </figcaption>
           </figure>
-          <div className="bacaan">
+          <Prose>
             {ada ? (
               <>
-                {p.sambutanKutipan && <p className="border-l-4 border-[var(--tema-utama)] pl-4 text-[1.25rem] font-semibold leading-relaxed">{p.sambutanKutipan}</p>}
-                <div className="mt-5 space-y-4 text-[1.0625rem] leading-relaxed text-[#3b414b]">
-                  {p.sambutanParagraf.map((t, i) => (
-                    <p key={i}>{t}</p>
-                  ))}
-                </div>
+                {p.sambutanKutipan && <blockquote>{p.sambutanKutipan}</blockquote>}
+                {p.sambutanParagraf.map((t, i) => (
+                  <p key={i}>{t}</p>
+                ))}
               </>
             ) : (
-              <p className="text-[#3b414b]">Naskah sambutan kepala sekolah sedang dilengkapi.</p>
+              <p>Naskah sambutan kepala sekolah sedang dilengkapi.</p>
             )}
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
-              <Link href="/profil#visi-misi" className="tautan">
-                Visi & misi sekolah
-              </Link>
-              <Link href="/program" className="tautan">
-                Program sekolah
-              </Link>
-            </div>
-          </div>
+          </Prose>
         </div>
       </section>
+      <CtaBand label="Profil" judul="Kenali arah sekolah." lanjutan="Visi, misi, dan nilai kami." tombol={{ href: "/profil/visi-misi", teks: "Visi dan misi" }} />
     </>
   );
 }

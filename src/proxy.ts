@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseAktif } from "@/lib/supabase/config";
+import { urlMasuk } from "@/lib/masuk";
 
 /** Menjaga sesi login admin tetap segar dan menolak akses /admin tanpa login. */
 export async function proxy(request: NextRequest) {
@@ -26,10 +27,13 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user && !isLogin) {
-    const url = new URL("/admin/login", request.url);
-    if (request.nextUrl.pathname.startsWith("/portal"))
-      url.searchParams.set("sebagai", request.nextUrl.pathname.startsWith("/portal/scan") ? "siswa" : "orang_tua");
-    return NextResponse.redirect(url);
+    const { pathname, search } = request.nextUrl;
+    // /alumni/akun: sementara lewat halaman masuk Guru & Tendik (email); ?lanjut=/alumni/… memunculkan catatan alumni.
+    // Jalur masuk alumni terpisah menyusul (lihat HANDOFF.md).
+    if (pathname.startsWith("/alumni/akun")) return NextResponse.redirect(new URL(urlMasuk(pathname + search, "gtk"), request.url));
+    // peta terpusat (lib/masuk.ts): /admin, /papan, /cetak, /pratinjau → GTK; /portal milik siswa/orang tua → halaman
+    // perannya; /portal lain → pilih pintu. Tujuan dibawa sebagai ?lanjut= (divalidasi: hanya jalur internal).
+    return NextResponse.redirect(new URL(urlMasuk(pathname + search), request.url));
   }
   // pengguna yang sudah masuk diarahkan oleh /admin (portal → /portal)
   if (user && isLogin) return NextResponse.redirect(new URL("/admin", request.url));

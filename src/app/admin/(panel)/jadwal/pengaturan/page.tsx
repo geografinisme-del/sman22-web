@@ -33,7 +33,7 @@ export default async function PengaturanJadwal({ searchParams }: { searchParams:
 
       <div className="space-y-8">
         <Kartu>
-          <h2 className="font-serif text-3xl">Jam pelajaran</h2>
+          <h2 className="text-3xl">Jam pelajaran</h2>
           {hariJam.length === 0 ? (
             <p className="mt-2 text-sm text-black/60">Belum diatur. Isi pola di bawah lalu simpan.</p>
           ) : (
@@ -41,12 +41,12 @@ export default async function PengaturanJadwal({ searchParams }: { searchParams:
               {hariJam.map((h) => {
                 const list = jam.filter((j) => j.hari === h);
                 return (
-                  <div key={h} className="rounded-xl bg-krem p-3 text-sm">
+                  <div key={h} className="rounded-xl bg-soft p-3 text-sm">
                     <div className="mb-1 flex items-center justify-between">
                       <p className="font-semibold">{HARI[h]} · {list.filter((j) => j.jp_ke).length} JP</p>
                       <form action={kosongkanJamHari}>
                         <input type="hidden" name="hari" value={h} />
-                        <button className="text-xs text-merah underline" aria-label={`Kosongkan jam ${HARI[h]}`}>kosongkan</button>
+                        <button className="text-xs text-blue-teks underline" aria-label={`Kosongkan jam ${HARI[h]}`}>kosongkan</button>
                       </form>
                     </div>
                     <ol className="space-y-0.5 text-xs">
@@ -63,21 +63,21 @@ export default async function PengaturanJadwal({ searchParams }: { searchParams:
             </div>
           )}
           <details className="mt-6" open={hariJam.length === 0}>
-            <summary className="cursor-pointer font-semibold text-brand-700">Atur / ubah jam pelajaran</summary>
+            <summary className="cursor-pointer font-semibold text-blue-teks">Atur / ubah jam pelajaran</summary>
             <div className="mt-4"><FormJam /></div>
           </details>
         </Kartu>
 
         <Kartu>
-          <h2 className="font-serif text-3xl">Mata pelajaran</h2>
+          <h2 className="text-3xl">Mata pelajaran</h2>
           <div className="mt-4"><FormMapel /></div>
           <ul className="mt-5 grid gap-2 sm:grid-cols-2">
             {(mapel ?? []).map((m) => (
-              <li key={m.id} className="flex items-center justify-between gap-2 rounded-xl bg-krem px-3 py-2 text-sm">
+              <li key={m.id} className="flex items-center justify-between gap-2 rounded-xl bg-soft px-3 py-2 text-sm">
                 <span>{m.nama} {m.kode && <span className="text-black/50">({m.kode})</span>} <span className="text-xs text-black/40">· {KELOMPOK[m.kelompok]}</span></span>
                 <form action={arsipReferensi}>
                   <input type="hidden" name="tabel" value="mapel" /><input type="hidden" name="id" value={m.id} />
-                  <button className="text-xs text-black/50 underline hover:text-merah" aria-label={`Arsipkan ${m.nama}`}>arsipkan</button>
+                  <button className="text-xs text-black/50 underline hover:text-blue-teks" aria-label={`Arsipkan ${m.nama}`}>arsipkan</button>
                 </form>
               </li>
             ))}
@@ -86,16 +86,16 @@ export default async function PengaturanJadwal({ searchParams }: { searchParams:
         </Kartu>
 
         <Kartu>
-          <h2 className="font-serif text-3xl">Ruang</h2>
+          <h2 className="text-3xl">Ruang</h2>
           <p className="mt-1 text-sm text-black/60">Opsional. Isi bila ingin mencegah dua kelas memakai laboratorium/lapangan yang sama di jam yang sama.</p>
           <div className="mt-4"><FormRuang /></div>
           <ul className="mt-5 flex flex-wrap gap-2">
             {(ruang ?? []).map((r) => (
-              <li key={r.id} className="flex items-center gap-2 rounded-full bg-krem px-3 py-1.5 text-sm">
+              <li key={r.id} className="flex items-center gap-2 rounded-full bg-soft px-3 py-1.5 text-sm">
                 {r.nama}{r.kapasitas ? <span className="text-xs text-black/40">· {r.kapasitas}</span> : null}
                 <form action={arsipReferensi}>
                   <input type="hidden" name="tabel" value="ruang" /><input type="hidden" name="id" value={r.id} />
-                  <button className="text-black/40 hover:text-merah" aria-label={`Arsipkan ruang ${r.nama}`}>×</button>
+                  <button className="text-black/40 hover:text-blue-teks" aria-label={`Arsipkan ruang ${r.nama}`}>×</button>
                 </form>
               </li>
             ))}
@@ -103,7 +103,7 @@ export default async function PengaturanJadwal({ searchParams }: { searchParams:
         </Kartu>
 
         <Kartu>
-          <h2 id="piket" className="font-serif text-3xl">Jadwal piket guru</h2>
+          <h2 id="piket" className="text-3xl">Jadwal piket guru</h2>
           <form action={aturPiket} className="mt-4 flex flex-wrap items-end gap-2">
             <input type="hidden" name="aksi" value="tambah" />
             <select name="hari" aria-label="Hari piket" className="rounded-xl border border-black/15 bg-white px-3 py-2">
@@ -112,13 +112,13 @@ export default async function PengaturanJadwal({ searchParams }: { searchParams:
             <select name="pegawai_id" aria-label="Guru piket" className="w-64 rounded-xl border border-black/15 bg-white px-3 py-2">
               {(guru ?? []).map((g) => <option key={g.id} value={g.id}>{g.nama}</option>)}
             </select>
-            <button className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">Tambah</button>
+            <button className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">Tambah</button>
           </form>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((h) => {
               const list = (piket ?? []).filter((p) => p.hari === h);
               return (
-                <div key={h} className="rounded-xl bg-krem p-3 text-sm">
+                <div key={h} className="rounded-xl bg-soft p-3 text-sm">
                   <p className="font-semibold">{HARI[h]}</p>
                   {list.length === 0 ? <p className="text-xs text-black/40">—</p> : (
                     <ul className="mt-1 space-y-1">
@@ -127,7 +127,7 @@ export default async function PengaturanJadwal({ searchParams }: { searchParams:
                           <span>{namaGuru.get(p.pegawai_id) ?? "—"}</span>
                           <form action={aturPiket}>
                             <input type="hidden" name="aksi" value="hapus" /><input type="hidden" name="id" value={p.id} />
-                            <button className="text-black/40 hover:text-merah" aria-label="Hapus dari piket">×</button>
+                            <button className="text-black/40 hover:text-blue-teks" aria-label="Hapus dari piket">×</button>
                           </form>
                         </li>
                       ))}

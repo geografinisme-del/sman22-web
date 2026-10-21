@@ -19,7 +19,7 @@ export function KalenderBulan({ bulan, kegiatan, libur, hariIni, tautan }: { bul
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-black/10">
-      <div className="grid grid-cols-7 border-b border-black/10 bg-krem text-center text-xs font-semibold uppercase tracking-wider text-black/50">
+      <div className="grid grid-cols-7 border-b border-black/10 bg-soft text-center text-xs font-semibold uppercase tracking-wider text-black/50">
         {HARI.map((h) => <div key={h} className="py-2">{h}</div>)}
       </div>
       <div className="grid grid-cols-7">
@@ -29,10 +29,10 @@ export function KalenderBulan({ bulan, kegiatan, libur, hariIni, tautan }: { bul
           const lib = libur.get(h);
           return (
             <div key={h} className={`min-h-20 border-b border-r border-black/5 p-1 sm:min-h-24 sm:p-1.5 ${luar ? "bg-black/[0.02] text-black/30" : ""} ${(i + 1) % 7 === 0 ? "border-r-0" : ""}`}>
-              <div className={`mb-1 flex h-6 w-6 items-center justify-center rounded-full text-xs ${h === hariIni ? "bg-brand-900 font-bold text-white" : lib || i % 7 === 6 ? "font-semibold text-merah" : ""}`}>
+              <div className={`mb-1 flex h-6 w-6 items-center justify-center rounded-full text-xs ${h === hariIni ? "bg-ink font-bold text-white" : lib || i % 7 === 6 ? "font-semibold text-blue-teks" : ""}`}>
                 {Number(h.slice(8))}
               </div>
-              {lib && !isi.some((k) => k.kbm_libur) && !luar && <p className="truncate text-[10px] text-merah" title={lib}>{lib}</p>}
+              {lib && !isi.some((k) => k.kbm_libur) && !luar && <p className="truncate text-[10px] text-blue-teks" title={lib}>{lib}</p>}
               <ul className="space-y-0.5">
                 {isi.slice(0, 3).map((k) => {
                   const chip = `block truncate rounded px-1 py-0.5 text-[10px] font-medium ring-1 sm:text-[11px] ${JENIS_KEGIATAN[k.jenis].warna}`;

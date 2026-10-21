@@ -56,7 +56,7 @@ export default async function Pojok({ searchParams }: { searchParams: Promise<{ 
                   <summary className="cursor-pointer font-semibold">Kegiatan ({kg.length})</summary>
                   <ul className="mt-2 divide-y divide-black/5">{kg.slice(0, 20).map((k) => (
                     <li key={k.id} className="flex gap-3 py-1.5"><span className="w-24 shrink-0 text-black/50">{tgl(k.tanggal)}</span><span className="flex-1">{k.kegiatan}{k.peserta > 0 && ` · ${k.peserta} peserta`}</span>
-                      {k.tautan_dokumentasi && <a href={k.tautan_dokumentasi} target="_blank" rel="noreferrer" className="text-brand-700 underline">dokumentasi</a>}</li>
+                      {k.tautan_dokumentasi && <a href={k.tautan_dokumentasi} target="_blank" rel="noreferrer" className="text-blue-teks underline">dokumentasi</a>}</li>
                   ))}</ul>
                   {boleh && <div className="mt-3 border-t border-black/5 pt-3"><FormKegiatanPojok pojok_id={p.id} hari={hari} /></div>}
                 </details>
@@ -66,7 +66,7 @@ export default async function Pojok({ searchParams }: { searchParams: Promise<{ 
         </div>
         {bina && (
           <Kartu className="self-start">
-            <h2 className="mb-4 font-serif text-2xl">{sp.ubah ? "Ubah pojok baca" : "Pojok baca baru"}</h2>
+            <h2 className="mb-4 text-2xl">{sp.ubah ? "Ubah pojok baca" : "Pojok baca baru"}</h2>
             <FormPojok key={sp.ubah ?? "baru"} d={pojok.find((p) => p.id === sp.ubah)} guru={guru} kelas={kelas} />
             <p className="mt-3 text-xs text-black/50">Koleksi ditempatkan lewat Katalog → buku → pilih lokasi eksemplar.</p>
           </Kartu>

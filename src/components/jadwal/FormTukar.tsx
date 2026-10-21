@@ -6,7 +6,7 @@ import { ajukanTukar } from "@/app/admin/actions-tukar";
 import { FormAksi, TextArea, TombolSimpan, useErrorKolom } from "@/components/admin/form";
 
 type Slot = { id: string; hari: number; jp_ke: number; kelas: string; mapel: string };
-const kelas = "w-full rounded-xl border border-black/15 bg-white px-4 py-3 outline-none focus:border-brand-600 aria-[invalid=true]:border-merah";
+const kelas = "w-full rounded-xl border border-black/15 bg-white px-4 py-3 outline-none focus:border-muted aria-[invalid=true]:border-blue-teks";
 const HARI = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
 function PilihSlot({ nama, label, slot, tanggal }: { nama: string; label: string; slot: Slot[]; tanggal: Record<number, { nilai: string; label: string }[]> }) {
@@ -22,7 +22,7 @@ function PilihSlot({ nama, label, slot, tanggal }: { nama: string; label: string
           <option value="">— pilih jam —</option>
           {slot.map((s) => <option key={s.id} value={s.id}>{HARI[s.hari]} · JP {s.jp_ke} · {s.mapel} {s.kelas}</option>)}
         </select>
-        {errSlot && <span className="mt-1 block text-merah">{errSlot}</span>}
+        {errSlot && <span className="mt-1 block text-blue-teks">{errSlot}</span>}
       </label>
       <label className="block text-sm">
         <span className="mb-1.5 block font-semibold">Tanggal</span>
@@ -30,7 +30,7 @@ function PilihSlot({ nama, label, slot, tanggal }: { nama: string; label: string
           {(hari ? tanggal[hari] ?? [] : []).map((t) => <option key={t.nilai} value={t.nilai}>{t.label}</option>)}
         </select>
         {hari && !(tanggal[hari] ?? []).length && <span className="mt-1 block text-black/50">Tidak ada tanggal tersedia (libur).</span>}
-        {errTgl && <span className="mt-1 block text-merah">{errTgl}</span>}
+        {errTgl && <span className="mt-1 block text-blue-teks">{errTgl}</span>}
       </label>
     </div>
   );
@@ -62,7 +62,7 @@ export function FormTukar({ guru, mitra, slotSaya, slotMitra, tanggal }: {
             <legend className="mb-2 text-sm font-semibold">Bentuk</legend>
             <div className="grid gap-2 sm:grid-cols-2">
               {([["ya", "Tukar jam", "Saya menggantikan salah satu jam guru tsb sebagai balasan"], ["tidak", "Minta digantikan", "Guru tsb mengisi jam saya tanpa balasan"]] as const).map(([v, l, k]) => (
-                <label key={v} className="flex cursor-pointer gap-3 rounded-xl border border-black/10 bg-white p-3 has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+                <label key={v} className="flex cursor-pointer gap-3 rounded-xl border border-black/10 bg-white p-3 has-[:checked]:border-muted has-[:checked]:bg-soft">
                   <input type="radio" name="balas" value={v} checked={balas === v} onChange={() => setBalas(v)} className="mt-1" />
                   <span><span className="block text-sm font-semibold">{l}</span><span className="block text-xs text-black/50">{k}</span></span>
                 </label>

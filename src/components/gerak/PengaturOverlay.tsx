@@ -72,8 +72,11 @@ export function PengaturOverlay({
   aturan,
   prioritas,
   rutin,
+  adaTombolInfo = true,
 }: {
   halamanUtama?: string;
+  /** false = tanpa tombol "Informasi" mengambang (tema Buku Tahunan: pengumuman di pita atas) */
+  adaTombolInfo?: boolean;
   aturan: { prioritas: boolean; rutin: boolean; pemandu: boolean };
   prioritas: InfoPrioritas | null;
   rutin: Informasi[];
@@ -102,7 +105,7 @@ export function PengaturOverlay({
   };
 
   const evaluasi = useCallback(() => {
-    const pembuka = document.querySelector(".pembuka");
+    const pembuka = document.querySelector(".pembuka, [data-hero-langit]");
     const total = document.documentElement.scrollHeight - window.innerHeight;
     const progres = total > 0 ? window.scrollY / total : 0;
     const lewatPembuka = !pembuka || pembuka.getBoundingClientRect().bottom < 0;
@@ -110,7 +113,7 @@ export function PengaturOverlay({
     const s: Sesi = { prioritasTampil: sesi.baca(K.prioritas) === "1", rutinTampil: sesi.baca(K.rutin) === "1", sapaTampil: sesi.baca(K.sapa) === "1" };
     // tombol "Informasi" tersedia setelah ambang gulir (atau setelah panel/modal pernah tampil di sesi ini),
     // tidak bergantung pada overlay otomatis yang sedang berjalan
-    if (diBeranda && daftar.length && (s.rutinTampil || s.prioritasTampil || (lewatPembuka && progres >= AMBANG_RUTIN))) setTombolInfo(true);
+    if (adaTombolInfo && diBeranda && daftar.length && (s.rutinTampil || s.prioritasTampil || (lewatPembuka && progres >= AMBANG_RUTIN))) setTombolInfo(true);
     if (otomatis) return;
     const pilih = pilihOverlay(kandidat, s, {
       pembukaTerlihat: Boolean(pembuka) && performance.now() - mulai.current > 1200,
@@ -125,7 +128,7 @@ export function PengaturOverlay({
     setOtomatis(pilih);
     if (pilih === "rutin") setMode(window.matchMedia(KUERI_LEBAR).matches ? "panel" : "teaser");
     // eslint-disable-next-line react-hooks/exhaustive-deps -- kandidat/daftar dihitung ulang tiap render dari props
-  }, [otomatis, mode, diBeranda, kandidat.prioritas, kandidat.rutin, kandidat.pemandu, daftar.length]);
+  }, [otomatis, mode, diBeranda, adaTombolInfo, kandidat.prioritas, kandidat.rutin, kandidat.pemandu, daftar.length]);
 
   useEffect(() => {
     mulai.current = performance.now();
@@ -210,22 +213,22 @@ export function PengaturOverlay({
             </button>
           </div>
           <article className="mt-3">
-            <p className="text-sm text-[#5b6270]">
+            <p className="text-sm text-[var(--muted)]">
               <span className="font-semibold text-[var(--lp-utama)]">{utama.jenis}</span> · <time dateTime={utama.tanggal}>{formatTanggal(utama.tanggal)}</time>
             </p>
             <h3 className="mt-1 line-clamp-2 font-semibold leading-snug">{utama.judul}</h3>
-            {utama.isi && <p className="mt-1.5 line-clamp-3 text-[0.9375rem] text-[#3b414b]">{utama.isi}</p>}
+            {utama.isi && <p className="mt-1.5 line-clamp-3 text-[0.9375rem] text-[var(--muted)]">{utama.isi}</p>}
             <button type="button" className="btn btn-primary mt-4 w-full" onClick={() => setDetail(utama)}>
               Baca informasi
             </button>
           </article>
           {lain.length > 0 && (
-            <ul className="mt-4 border-t border-[#e5e1da] pt-2">
+            <ul className="mt-4 border-t border-[var(--line)] pt-2">
               {lain.slice(0, 3).map((i) => (
                 <li key={i.id}>
                   <button type="button" className="info-lain" onClick={() => setDetail(i)}>
                     <span className="line-clamp-1 font-semibold">{i.judul}</span>
-                    <time dateTime={i.tanggal} className="shrink-0 text-sm text-[#5b6270]">
+                    <time dateTime={i.tanggal} className="shrink-0 text-sm text-[var(--muted)]">
                       {formatTanggal(i.tanggal, { year: undefined })}
                     </time>
                   </button>

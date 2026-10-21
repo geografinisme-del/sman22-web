@@ -25,7 +25,7 @@ export async function RiwayatPerubahan({ tabel, id }: { tabel: string; id: strin
 
   return (
     <Kartu>
-      <h2 className="mb-4 font-serif text-2xl">Riwayat perubahan</h2>
+      <h2 className="mb-4 text-2xl">Riwayat perubahan</h2>
       {!data?.length ? (
         <p className="text-sm text-black/50">Belum ada catatan.</p>
       ) : (
@@ -35,7 +35,7 @@ export async function RiwayatPerubahan({ tabel, id }: { tabel: string; id: strin
             const baru = (d.data_baru ?? {}) as Record<string, unknown>;
             const berubah = d.aksi === "UPDATE" ? Object.keys(baru).filter((k) => !ABAIKAN.has(k) && JSON.stringify(lama[k]) !== JSON.stringify(baru[k])) : [];
             return (
-              <li key={d.id} className="border-l-2 border-brand-100 pl-3">
+              <li key={d.id} className="border-l-2 border-line pl-3">
                 <p className="text-black/50">
                   {new Date(d.waktu).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" })} ·{" "}
                   {nama.get(d.user_id) ?? "sistem"}

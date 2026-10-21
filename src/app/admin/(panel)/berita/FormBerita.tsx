@@ -42,7 +42,7 @@ export function FormBerita({ data, bolehTerbit }: { data: DataBerita; bolehTerbi
               onChange={(e) => setJudul(e.target.value)}
               required
               maxLength={200}
-              className="w-full rounded-xl border border-black/15 bg-white px-4 py-3 font-serif text-2xl outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10"
+              className="w-full rounded-xl border border-black/15 bg-white px-4 py-3 text-2xl outline-none focus:border-muted focus:ring-4 focus:ring-muted/10"
               placeholder="Tulis judul berita…"
             />
           </div>

@@ -12,8 +12,8 @@ function InputFoto({ label = "Foto (opsional)" }: { label?: string }) {
   return (
     <div>
       <label htmlFor="foto" className="mb-1.5 block text-sm font-semibold">{label}</label>
-      <input id="foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-900 file:px-4 file:py-2 file:text-white" />
-      <p className={`mt-1 text-xs ${err ? "text-merah" : "text-black/50"}`}>{err ?? "JPG/PNG/WEBP, maks. 4 MB. Di HP bisa langsung memotret."}</p>
+      <input id="foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-white" />
+      <p className={`mt-1 text-xs ${err ? "text-blue-teks" : "text-black/50"}`}>{err ?? "JPG/PNG/WEBP, maks. 4 MB. Di HP bisa langsung memotret."}</p>
     </div>
   );
 }
@@ -23,7 +23,8 @@ export type DataBarang = {
   kondisi: string; sumber_dana: string; tahun_perolehan: number | null; harga: number | null; bisa_dipinjam: boolean; keterangan: string;
 };
 
-export function FormBarang({ data, kategori, ruang }: { data?: DataBarang; kategori: Opsi[]; ruang: Opsi[] }) {
+/** `anggaran` = boleh mengisi harga & sumber dana (Wakasek Sarpras); laboran tanpa kolom anggaran. */
+export function FormBarang({ data, kategori, ruang, anggaran = true }: { data?: DataBarang; kategori: Opsi[]; ruang: Opsi[]; anggaran?: boolean }) {
   return (
     <FormAksi aksi={simpanBarang} className="space-y-4">
       {data && <input type="hidden" name="id" value={data.id} />}
@@ -35,9 +36,9 @@ export function FormBarang({ data, kategori, ruang }: { data?: DataBarang; kateg
         <Pilihan label="Kondisi" nama="kondisi" nilai={data?.kondisi ?? "baik"} opsi={Object.entries(KONDISI).map(([k, v]) => ({ nilai: k, label: v.label }))} />
         <Input label="Jumlah" nama="jumlah" tipe="number" nilai={data?.jumlah ?? 1} wajib />
         <Input label="Satuan" nama="satuan" nilai={data?.satuan ?? "unit"} maks={20} />
-        <Pilihan label="Sumber dana" nama="sumber_dana" nilai={data?.sumber_dana ?? ""} opsi={[{ nilai: "", label: "—" }, ...SUMBER_DANA.map((s) => ({ nilai: s, label: s }))]} />
+        {anggaran && <Pilihan label="Sumber dana" nama="sumber_dana" nilai={data?.sumber_dana ?? ""} opsi={[{ nilai: "", label: "—" }, ...SUMBER_DANA.map((s) => ({ nilai: s, label: s }))]} />}
         <Input label="Tahun perolehan" nama="tahun_perolehan" tipe="number" nilai={data?.tahun_perolehan ?? ""} />
-        <Input label="Harga satuan (Rp)" nama="harga" nilai={data?.harga ?? ""} placeholder="mis. 5500000" />
+        {anggaran && <Input label="Harga satuan (Rp)" nama="harga" nilai={data?.harga ?? ""} placeholder="mis. 5500000" />}
       </div>
       <TextArea label="Spesifikasi" nama="spesifikasi" nilai={data?.spesifikasi} baris={2} maks={1000} />
       <TextArea label="Keterangan" nama="keterangan" nilai={data?.keterangan} baris={2} maks={1000} />
@@ -53,7 +54,7 @@ export function FormHapusBarang({ id }: { id: string }) {
     <FormAksi aksi={hapusBarang} className="space-y-3">
       <input type="hidden" name="id" value={id} />
       <Input label="Alasan penghapusan aset" nama="alasan_hapus" wajib maks={300} placeholder="mis. Rusak berat, sudah dilelang (BA No. …)" />
-      <button className="rounded-full px-5 py-2.5 text-sm font-semibold text-merah ring-1 ring-merah/30">Hapus dari daftar aset</button>
+      <button className="rounded-full px-5 py-2.5 text-sm font-semibold text-blue-teks ring-1 ring-blue/30">Hapus dari daftar aset</button>
     </FormAksi>
   );
 }
@@ -75,7 +76,7 @@ export function FormRuang({ r, guru }: { r: { id: string; gedung: string; kondis
         </select>
       </label>
       <label className="flex items-center gap-1.5 pb-2 text-xs font-semibold"><input type="checkbox" name="bisa_dipinjam" defaultChecked={r.bisa_dipinjam} /> Bisa dipinjam</label>
-      <button className="rounded-full bg-brand-900 px-4 py-2 text-xs font-semibold text-white">Simpan</button>
+      <button className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-white">Simpan</button>
     </FormAksi>
   );
 }
@@ -94,7 +95,7 @@ export function FormPinjam({ ruang, barang, hariIni, awal }: { ruang: Opsi[]; ba
           {ruang.length > 0 && <optgroup label="Ruang">{ruang.map((r) => <option key={r.id} value={`ruang:${r.id}`}>{r.nama}</option>)}</optgroup>}
           {barang.length > 0 && <optgroup label="Barang">{barang.map((b) => <option key={b.id} value={`barang:${b.id}`}>{b.nama} ({b.jumlah})</option>)}</optgroup>}
         </select>
-        {err && <span className="mt-1 block text-merah">{err}</span>}
+        {err && <span className="mt-1 block text-blue-teks">{err}</span>}
       </label>
       <div className="grid gap-4 sm:grid-cols-3">
         <Input label="Tanggal" nama="tanggal" tipe="date" nilai={hariIni} wajib />

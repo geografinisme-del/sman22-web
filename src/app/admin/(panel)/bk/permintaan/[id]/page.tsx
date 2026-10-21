@@ -32,10 +32,10 @@ export default async function Permintaan({ params, searchParams }: { params: Pro
           <p className="text-xs uppercase tracking-widest text-black/50">🔒 Cerita</p>
           <p className="mt-1 whitespace-pre-line">{dekripsi(enc as string) || <span className="text-black/50">(tidak ada cerita tertulis)</span>}</p>
           <p className="mt-4 text-sm"><strong>Waktu yang memungkinkan:</strong> {r.waktu_preferensi || "—"}</p>
-          {r.kasus_id && <p className="mt-2 text-sm"><Link href={`/admin/bk/kasus/${r.kasus_id}`} className="font-semibold text-brand-700 underline">Buka kasus terkait →</Link></p>}
+          {r.kasus_id && <p className="mt-2 text-sm"><Link href={`/admin/bk/kasus/${r.kasus_id}`} className="font-semibold text-blue-teks underline">Buka kasus terkait →</Link></p>}
         </Kartu>
         <Kartu className="self-start">
-          <h2 className="mb-3 font-serif text-2xl">Tanggapi</h2>
+          <h2 className="mb-3 text-2xl">Tanggapi</h2>
           <form action={prosesPermintaan} className="space-y-3 text-sm">
             <input type="hidden" name="id" value={r.id} />
             <label className="block font-semibold">Balasan untuk pemohon (terlihat di portal)
@@ -47,9 +47,9 @@ export default async function Permintaan({ params, searchParams }: { params: Pro
                 </select></label>
             )}
             <div className="flex flex-wrap gap-2">
-              {r.status === "baru" && <button name="aksi" value="terima" className="rounded-full bg-brand-900 px-4 py-2 font-semibold text-white">Terima & buka kasus</button>}
+              {r.status === "baru" && <button name="aksi" value="terima" className="rounded-full bg-ink px-4 py-2 font-semibold text-white">Terima & buka kasus</button>}
               <button name="aksi" value="balas" className="rounded-full px-4 py-2 font-semibold ring-1 ring-black/15">Kirim balasan</button>
-              {r.status === "baru" && <button name="aksi" value="tolak" className="rounded-full px-4 py-2 font-semibold text-merah ring-1 ring-merah/30">Tidak dapat dilayani</button>}
+              {r.status === "baru" && <button name="aksi" value="tolak" className="rounded-full px-4 py-2 font-semibold text-blue-teks ring-1 ring-blue/30">Tidak dapat dilayani</button>}
             </div>
           </form>
           <p className="mt-3 text-xs text-black/50">Pemohon diberi tahu di aplikasi (tanpa WhatsApp). Pembukaan cerita ini tercatat bila sudah tertaut ke kasus.</p>

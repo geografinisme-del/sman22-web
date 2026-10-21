@@ -12,13 +12,13 @@ function PilihHari({ nilai }: { nilai: number[] }) {
       <legend className="mb-2 text-sm font-semibold">Hari sekolah</legend>
       <div className="flex flex-wrap gap-2">
         {HARI.map((h, i) => (
-          <label key={h} className="flex cursor-pointer items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1.5 text-sm has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+          <label key={h} className="flex cursor-pointer items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1.5 text-sm has-[:checked]:border-muted has-[:checked]:bg-soft">
             <input type="checkbox" name="hari_sekolah" value={i + 1} defaultChecked={nilai.includes(i + 1)} />
             {h}
           </label>
         ))}
       </div>
-      {error && <p className="mt-1 text-sm text-merah">{error}</p>}
+      {error && <p className="mt-1 text-sm text-blue-teks">{error}</p>}
     </fieldset>
   );
 }

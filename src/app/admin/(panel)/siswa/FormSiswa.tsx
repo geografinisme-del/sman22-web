@@ -23,7 +23,7 @@ export function FormSiswa({
       <fieldset disabled={!bisaUbah} className="space-y-6">
         {data.id && <input type="hidden" name="id" value={data.id} />}
         <Kartu>
-          <h2 className="mb-5 font-serif text-2xl">Identitas</h2>
+          <h2 className="mb-5 text-2xl">Identitas</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <Input label="Nama lengkap" nama="nama" nilai={data.nama} wajib maks={150} />
@@ -42,7 +42,7 @@ export function FormSiswa({
           </div>
         </Kartu>
         <Kartu>
-          <h2 className="mb-5 font-serif text-2xl">Sekolah</h2>
+          <h2 className="mb-5 text-2xl">Sekolah</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <Pilihan
               label={namaTa ? `Kelas (tahun ajaran ${namaTa})` : "Kelas (belum ada tahun ajaran aktif)"}
@@ -61,7 +61,7 @@ export function FormSiswa({
           </div>
         </Kartu>
         <Kartu>
-          <h2 className="mb-5 font-serif text-2xl">Kontak</h2>
+          <h2 className="mb-5 text-2xl">Kontak</h2>
           <div className="grid gap-5 sm:grid-cols-2">
             <Input label="No. HP siswa" nama="telepon" tipe="tel" nilai={data.telepon} maks={30} />
             <Input label="Email" nama="email" tipe="email" nilai={data.email} />

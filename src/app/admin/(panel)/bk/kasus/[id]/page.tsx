@@ -32,7 +32,7 @@ export default async function Kasus({ params, searchParams }: { params: Promise<
           <form className="space-y-3">
             <label className="block text-sm font-semibold">Alasan membuka (tercatat di log akses)
               <input name="alasan" minLength={10} maxLength={300} required className="mt-1 w-full rounded-xl border border-black/15 px-3 py-2 font-normal" placeholder="mis. Menggantikan konselor yang cuti" /></label>
-            <button className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">Buka kasus</button>
+            <button className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">Buka kasus</button>
           </form>
         </Kartu>
       </>
@@ -64,7 +64,7 @@ export default async function Kasus({ params, searchParams }: { params: Promise<
         <div className="space-y-6">
           {b.permintaan.length > 0 && (
             <Kartu>
-              <h2 className="mb-2 font-serif text-xl">Permintaan awal</h2>
+              <h2 className="mb-2 text-xl">Permintaan awal</h2>
               {b.permintaan.map((r) => (
                 <div key={r.id} className="border-t border-black/5 py-2 text-sm first:border-0">
                   <p className="font-semibold">{r.topik} <span className="font-normal text-black/50">· {r.sumber === "ortu" ? "orang tua" : "siswa"} · {waktuWIB(r.dibuat)}</span></p>
@@ -74,13 +74,13 @@ export default async function Kasus({ params, searchParams }: { params: Promise<
             </Kartu>
           )}
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Sesi ({(ss ?? []).length})</h2>
+            <h2 className="mb-3 text-2xl">Sesi ({(ss ?? []).length})</h2>
             <ul className="space-y-3">{(ss ?? []).map((x) => (
-              <li key={x.id} className="rounded-xl bg-krem/60 p-3 text-sm">
+              <li key={x.id} className="rounded-xl bg-soft/60 p-3 text-sm">
                 <p><strong>{waktuWIB(x.mulai, true)}</strong> · {JENIS_SESI[x.jenis]} · {MODE_SESI[x.mode]} · {x.tempat} · <span className={x.status === "terjadwal" ? "font-semibold text-sky-800" : ""}>{STATUS_SESI[x.status]}</span></p>
                 {catatan.get(x.id) && <p className="mt-1 whitespace-pre-line">{catatan.get(x.id)}</p>}
                 {!k.isi_dimusnahkan && (
-                  <details className="mt-2"><summary className="cursor-pointer text-xs font-semibold text-brand-700">Ubah / tulis catatan</summary>
+                  <details className="mt-2"><summary className="cursor-pointer text-xs font-semibold text-blue-teks">Ubah / tulis catatan</summary>
                     <div className="mt-2"><FormSesi kasus_id={id} d={{ ...x, mulai: keLokalWIB(x.mulai), catatan: catatan.get(x.id) ?? "", sidik: sidik(catatan.get(x.id) ?? "") }} /></div>
                   </details>
                 )}
@@ -88,17 +88,17 @@ export default async function Kasus({ params, searchParams }: { params: Promise<
             {k.status !== "selesai" && <details className="mt-4 border-t border-black/5 pt-3"><summary className="cursor-pointer font-semibold">+ Jadwalkan sesi</summary><div className="mt-3"><FormSesi kasus_id={id} /></div></details>}
           </Kartu>
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Tindak lanjut</h2>
+            <h2 className="mb-3 text-2xl">Tindak lanjut</h2>
             <ul className="space-y-2 text-sm">{(tl ?? []).map((t) => (
-              <li key={t.id} className="rounded-xl bg-krem/60 p-3">
-                <p><strong>{t.rencana}</strong> · {t.pihak}{t.tenggat && ` · ${tgl(t.tenggat)}`} · <span className={t.status === "selesai" ? "text-emerald-700" : t.tenggat && t.tenggat < hari ? "font-semibold text-merah" : ""}>{STATUS_TL[t.status]}</span></p>
+              <li key={t.id} className="rounded-xl bg-soft/60 p-3">
+                <p><strong>{t.rencana}</strong> · {t.pihak}{t.tenggat && ` · ${tgl(t.tenggat)}`} · <span className={t.status === "selesai" ? "text-emerald-700" : t.tenggat && t.tenggat < hari ? "font-semibold text-blue-teks" : ""}>{STATUS_TL[t.status]}</span></p>
                 {t.hasil && <p className="mt-1 text-black/70">{t.hasil}</p>}
-                <details className="mt-1"><summary className="cursor-pointer text-xs font-semibold text-brand-700">Perbarui</summary><div className="mt-2"><FormTindakLanjut kasus_id={id} d={t} /></div></details>
+                <details className="mt-1"><summary className="cursor-pointer text-xs font-semibold text-blue-teks">Perbarui</summary><div className="mt-2"><FormTindakLanjut kasus_id={id} d={t} /></div></details>
               </li>))}</ul>
             <div className="mt-4 border-t border-black/5 pt-3"><FormTindakLanjut kasus_id={id} /></div>
           </Kartu>
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Rujukan ke luar sekolah</h2>
+            <h2 className="mb-3 text-2xl">Rujukan ke luar sekolah</h2>
             {(rl ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
               <ul className="text-sm">{(rl ?? []).map((r) => <li key={r.id}>{tgl(r.tanggal)} · <strong>{r.lembaga}</strong> ({JENIS_RUJUKAN_LUAR[r.jenis]}) · {r.status}{r.alasan && ` — ${r.alasan}`}</li>)}</ul>
             )}
@@ -107,7 +107,7 @@ export default async function Kasus({ params, searchParams }: { params: Promise<
         </div>
         <div className="space-y-6 self-start">
           <Kartu>
-            <h2 className="mb-4 font-serif text-2xl">Data kasus</h2>
+            <h2 className="mb-4 text-2xl">Data kasus</h2>
             <FormKasus kategori={kategori} konselor={staf} terkunci={k.isi_dimusnahkan}
               d={{ id, kategori: k.kategori, prioritas: k.prioritas, risiko: k.risiko, status: k.status, konselor_id: k.konselor_id, saran_wali: k.saran_wali,
                    asesmen, ringkasan, sidik_asesmen: sidik(asesmen), sidik_ringkasan: sidik(ringkasan) }} />

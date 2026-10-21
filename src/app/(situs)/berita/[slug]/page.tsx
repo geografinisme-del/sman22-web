@@ -24,8 +24,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function DetailBerita({ params }: Props) {
   const { slug } = await params;
-  const b = await getBeritaBySlug(slug);
+  const [b, semua] = await Promise.all([getBeritaBySlug(slug), getBerita(24)]);
   if (!b) notFound();
+  // berita terkait: kategori sama dulu, lalu terbaru
+  const terkait = semua
+    .filter((x) => x.slug !== b.slug)
+    .sort((x, y) => Number(y.kategori === b.kategori) - Number(x.kategori === b.kategori))
+    .slice(0, 3);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -38,7 +43,7 @@ export default async function DetailBerita({ params }: Props) {
   };
   return (
     <>
-      <ArtikelBerita b={b} />
+      <ArtikelBerita b={b} terkait={terkait} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
     </>
   );

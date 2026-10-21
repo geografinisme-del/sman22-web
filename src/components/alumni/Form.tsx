@@ -7,15 +7,15 @@ import { Centang, FormAksi, Input, Pilihan, TextArea, TombolSimpan, useKirim } f
 import { FIELD_DIREKTORI, JENIS_KONTRIBUSI, JENIS_PELUANG, KEBIJAKAN_PRIVASI, SASARAN_PELUANG, STATUS_KEGIATAN } from "@/lib/alumni";
 
 const opsi = (m: Record<string, string>) => Object.entries(m).map(([k, v]) => ({ nilai: k, label: v }));
-const inp = "w-full rounded-xl border border-black/15 bg-white px-4 py-3 outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10";
+const inp = "w-full rounded-xl border border-black/15 bg-white px-4 py-3 outline-none focus:border-muted focus:ring-4 focus:ring-muted/10";
 
 export function FormDaftarAlumni() {
   const [hasil, aksi, proses] = useActionState<HasilAksi, FormData>(daftarAlumni, { ok: false, pesan: "" });
   const kirim = useKirim(aksi);
   const e = hasil.errors ?? {};
-  if (hasil.ok) return <div role="status" className="rounded-2xl bg-emerald-50 p-6 text-emerald-900 ring-1 ring-emerald-200"><p className="font-serif text-2xl">Pendaftaran terkirim</p><p className="mt-2">{hasil.pesan}</p></div>;
+  if (hasil.ok) return <div role="status" className="rounded-2xl bg-emerald-50 p-6 text-emerald-900 ring-1 ring-emerald-200"><p className="text-2xl">Pendaftaran terkirim</p><p className="mt-2">{hasil.pesan}</p></div>;
   const f = (nama: string, label: string, props: Record<string, unknown> = {}) => (
-    <label className="block text-sm font-semibold">{label}<input name={nama} className={`${inp} mt-1.5 font-normal`} aria-invalid={Boolean(e[nama])} {...props} />{e[nama] && <span className="mt-1 block text-merah">{e[nama]}</span>}</label>
+    <label className="block text-sm font-semibold">{label}<input name={nama} className={`${inp} mt-1.5 font-normal`} aria-invalid={Boolean(e[nama])} {...props} />{e[nama] && <span className="mt-1 block text-blue-teks">{e[nama]}</span>}</label>
   );
   return (
     <form onSubmit={kirim} className="space-y-4" noValidate>
@@ -31,12 +31,12 @@ export function FormDaftarAlumni() {
         {f("telepon", "No. HP (opsional)", { maxLength: 30 })}
       </div>
       {f("email", "Email (untuk masuk)", { type: "email", maxLength: 150 })}
-      <div className="rounded-xl bg-krem p-4 text-sm">
+      <div className="rounded-xl bg-soft p-4 text-sm">
         <p className="font-semibold">Kebijakan privasi alumni</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-black/70">{KEBIJAKAN_PRIVASI.map((k) => <li key={k}>{k}</li>)}</ul>
       </div>
-      <label className="flex items-start gap-2 text-sm"><input type="checkbox" name="setuju" className="mt-1 h-5 w-5" /> <span>Saya menyetujui kebijakan privasi di atas dan menyatakan data yang saya isi benar.{e.setuju && <span className="block text-merah">{e.setuju}</span>}</span></label>
-      <button disabled={proses} className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Daftar sebagai alumni"}</button>
+      <label className="flex items-start gap-2 text-sm"><input type="checkbox" name="setuju" className="mt-1 h-5 w-5" /> <span>Saya menyetujui kebijakan privasi di atas dan menyatakan data yang saya isi benar.{e.setuju && <span className="block text-blue-teks">{e.setuju}</span>}</span></label>
+      <button disabled={proses} className="rounded-full bg-ink px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Mengirim…" : "Daftar sebagai alumni"}</button>
     </form>
   );
 }

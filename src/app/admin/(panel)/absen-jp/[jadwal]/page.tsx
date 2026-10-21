@@ -27,7 +27,7 @@ export default async function AbsenJp({ params, searchParams }: { params: Promis
       <JudulHalaman
         judul={`${j.mapel} · ${j.kelas}`}
         deskripsi={`${formatTanggal(tanggal, { weekday: "long" })} · JP ${j.jp_ke}${j.jam_mulai ? ` (${jamPendek(j.jam_mulai)}–${jamPendek(j.jam_selesai)})` : ""}${jurnal ? " · sudah diisi" : ""}`}
-        aksi={<Link href="/admin/jadwal-saya" className="text-sm text-brand-700 underline">← Jadwal Saya</Link>}
+        aksi={<Link href="/admin/jadwal-saya" className="text-sm text-blue-teks underline">← Jadwal Saya</Link>}
       />
       {error ? (
         <KosongAdmin teks="Anda tidak berhak membuka absensi jam pelajaran ini." />

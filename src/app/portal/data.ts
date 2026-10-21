@@ -8,7 +8,7 @@ export type Anak = { id: string; nama: string; nisn: string | null; kelas: strin
 /** Pengguna portal + daftar anak (orang tua) atau dirinya (siswa). Dibatasi RLS. */
 export const konteksPortal = cache(async () => {
   const { supabase, user, akses } = await getAkses();
-  if (!supabase || !user) redirect("/admin/login?sebagai=orang_tua");
+  if (!supabase || !user) redirect("/portal-digital");
   const portal = berperan(akses, "siswa") || berperan(akses, "orang_tua");
   if (!akses || !portal) redirect("/admin");
   const { data } = await supabase

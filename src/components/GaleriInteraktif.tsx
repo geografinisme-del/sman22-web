@@ -1,10 +1,14 @@
 "use client";
 
-import Image from "next/image";
+import { MediaSlot } from "@/components/MediaSlot";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import type { FotoItem } from "@/lib/data";
 
+/** Rasio bergiliran agar kisi kolom (masonry) tampak alami tanpa data ukuran foto. */
+const RASIO = ["4/5", "4/3", "1/1", "3/4", "16/10"] as const;
+
+/** Galeri masonry + lightbox (dialog bawaan: Esc menutup, panah kiri/kanan berpindah). */
 export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
   const [buka, setBuka] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -32,12 +36,12 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
 
   return (
     <>
-      <ul className="galeri-kisi grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3" data-muncul="kelompok">
+      <ul className="galeri-kisi">
         {foto.map((f, i) => (
           <li key={f.id}>
             <figure>
-              <button type="button" onClick={() => setBuka(i)} className="foto relative block aspect-[4/3] w-full" aria-label={`Perbesar foto: ${f.judul}`}>
-                {f.gambar && <Image src={f.gambar} alt={f.judul} fill sizes="(min-width: 768px) 33vw, 50vw" className="object-cover" />}
+              <button type="button" onClick={() => setBuka(i)} className="block w-full" aria-label={`Perbesar foto: ${f.judul}${f.sementara ? " (Ilustrasi sementara)" : ""}`}>
+                <MediaSlot src={f.gambar} alt="" ratio={RASIO[i % RASIO.length]} isPlaceholder={f.sementara} labelDiNamaInduk sizes="(min-width: 768px) 33vw, 100vw" />
               </button>
               <figcaption className="keterangan-foto">{f.judul}</figcaption>
             </figure>
@@ -68,7 +72,7 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
               </button>
             </div>
             <div className="relative flex-1">
-              <Image key={aktif.id} src={aktif.gambar} alt={aktif.judul} fill sizes="100vw" className="galeri-foto object-contain" />
+              <MediaSlot key={aktif.id} src={aktif.gambar} alt={aktif.judul} ratio="isi" fit="contain" sizes="100vw" className="absolute inset-0" kelasMedia="galeri-foto" isPlaceholder={aktif.sementara} />
               {total > 1 && (
                 <>
                   <button type="button" onClick={() => setBuka(((buka ?? 0) - 1 + total) % total)} className="galeri-panah left-3" aria-label="Foto sebelumnya">

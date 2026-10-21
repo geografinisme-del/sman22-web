@@ -14,12 +14,17 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   if (!uuid.safeParse(id).success) notFound();
   const { supabase, akses } = await wajibIzin("pengguna.kelola");
-  const { data: u } = await supabase.from("pengguna").select("user_id, nama, email, aktif, pengguna_peran(peran)").eq("user_id", id).maybeSingle();
+  // kolom jabatan baru ada setelah migrasi 20261225 — sebelum itu halaman tetap berfungsi tanpa jabatan
+  const pilih = (kolom: string) => supabase.from("pengguna").select(kolom).eq("user_id", id).maybeSingle<{ user_id: string; nama: string; email: string; aktif: boolean; jabatan?: string | null; pengguna_peran: { peran: string }[] }>();
+  const pertama = await pilih("user_id, nama, email, aktif, jabatan, pengguna_peran(peran)");
+  let u = pertama.data;
+  if (pertama.error) u = (await pilih("user_id, nama, email, aktif, pengguna_peran(peran)")).data;
   if (!u) notFound();
-  const [{ data: peran }, { data: pegawaiBebas }, { data: tertaut }] = await Promise.all([
+  const [{ data: peran }, { data: pegawaiBebas }, { data: tertaut }, { data: jabatan }] = await Promise.all([
     supabase.from("peran").select("kode, nama, keterangan").order("urutan"),
     supabase.from("pegawai").select("id, nama").is("user_id", null).is("deleted_at", null).order("nama").range(0, 999),
     supabase.from("pegawai").select("id, nama").eq("user_id", id).maybeSingle(),
+    supabase.from("jabatan_gtk").select("kode, nama").eq("aktif", true).order("urutan"),
   ]);
   const pegawai = [...(tertaut ? [tertaut] : []), ...(pegawaiBebas ?? [])];
   const authInfo = kunciAdminTersedia ? (await supabaseAdminAuth().getUserById(id)).data.user : null;
@@ -41,11 +46,12 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
           <FormUbahPengguna
             peran={peran ?? []}
             pegawai={pegawai}
-            data={{ user_id: u.user_id, nama: u.nama, aktif: u.aktif, peran: (u.pengguna_peran as { peran: string }[]).map((p) => p.peran), pegawai_id: tertaut?.id ?? "" }}
+            jabatan={jabatan ?? []}
+            data={{ user_id: u.user_id, nama: u.nama, aktif: u.aktif, jabatan: u.jabatan ?? "", peran: (u.pengguna_peran as { peran: string }[]).map((p) => p.peran), pegawai_id: tertaut?.id ?? "" }}
           />
         </Kartu>
         <Kartu>
-          <h2 className="mb-4 font-serif text-2xl">Kata sandi</h2>
+          <h2 className="mb-4 text-2xl">Kata sandi</h2>
           {kunciAdminTersedia ? (
             <FormSandi userId={u.user_id} />
           ) : (
@@ -54,7 +60,7 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
           {!akunPortal && (
             <form action={kirimTautanReset} className="mt-4 border-t border-black/10 pt-4">
               <input type="hidden" name="user_id" value={u.user_id} />
-              <button type="submit" className="text-sm font-semibold text-brand-700 underline-offset-2 hover:underline">
+              <button type="submit" className="text-sm font-semibold text-blue-teks underline-offset-2 hover:underline">
                 Kirim tautan atur ulang ke {u.email}
               </button>
               <p className="mt-1 text-xs text-black/50">Lebih aman: pemilik akun membuat sandinya sendiri.</p>
@@ -68,7 +74,7 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
               {jumlahMfa > 0 && berperan(akses, "super_admin") && u.user_id !== akses.userId && (
                 <form action={resetMfaPengguna} className="mt-3">
                   <input type="hidden" name="user_id" value={u.user_id} />
-                  <button type="submit" className="rounded-full px-4 py-2 text-xs font-semibold text-merah ring-1 ring-merah/30 hover:bg-red-50">
+                  <button type="submit" className="rounded-full px-4 py-2 text-xs font-semibold text-blue-teks ring-1 ring-blue/30 hover:bg-red-50">
                     Reset verifikasi dua langkah (HP hilang/ganti)
                   </button>
                 </form>

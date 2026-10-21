@@ -24,7 +24,7 @@ export default async function AdminAgenda({ searchParams }: { searchParams: Prom
       <JudulHalaman judul="Agenda" deskripsi="Agenda tampil di beranda dan halaman Agenda (mulai 7 hari terakhir ke depan)." />
       <Notifikasi kode={pesan} />
       <Kartu className="mb-8">
-        <h2 className="mb-5 font-serif text-2xl">{diubah ? "Ubah agenda" : "Tambah agenda"}</h2>
+        <h2 className="mb-5 text-2xl">{diubah ? "Ubah agenda" : "Tambah agenda"}</h2>
         <FormAgenda key={diubah?.id ?? "baru"} data={diubah ?? { judul: "", tanggal: hariIni, waktu: "", tempat: "" }} />
       </Kartu>
 
@@ -34,7 +34,7 @@ export default async function AdminAgenda({ searchParams }: { searchParams: Prom
         <ul className="divide-y divide-black/5 overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
           {list.map((a) => (
             <li key={a.id} className={`flex flex-col gap-2 p-4 sm:flex-row sm:items-center ${a.tanggal < hariIni ? "opacity-50" : ""}`}>
-              <time className="w-48 shrink-0 text-sm font-semibold text-brand-700">{formatTanggal(a.tanggal, { weekday: "short" })}</time>
+              <time className="w-48 shrink-0 text-sm font-semibold text-blue-teks">{formatTanggal(a.tanggal, { weekday: "short" })}</time>
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{a.judul}</p>
                 {(a.waktu || a.tempat) && <p className="text-sm text-black/50">{[a.waktu, a.tempat].filter(Boolean).join(" · ")}</p>}

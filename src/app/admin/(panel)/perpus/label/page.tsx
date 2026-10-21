@@ -24,7 +24,7 @@ export default async function LabelBuku({ searchParams }: { searchParams: Promis
       <div className="print:hidden">
         <JudulHalaman judul="Label Buku" deskripsi="QR berisi kode eksemplar. Tempel di sampul belakang; pindai saat pinjam/kembali." aksi={<TombolCetak label="Cetak label" />} />
         <NavPerpus kelola />
-        <form className="mb-6 flex gap-2 text-sm"><input name="dari" defaultValue={sp.dari} placeholder="Mulai dari kode, mis. PUS000101" className="rounded-full border border-black/15 bg-white px-4 py-2" /><button className="rounded-full bg-brand-900 px-4 py-2 font-semibold text-white">Tampilkan</button><span className="self-center text-black/50">{label.length} label (maks. 120)</span></form>
+        <form className="mb-6 flex gap-2 text-sm"><input name="dari" defaultValue={sp.dari} placeholder="Mulai dari kode, mis. PUS000101" className="rounded-full border border-black/15 bg-white px-4 py-2" /><button className="rounded-full bg-ink px-4 py-2 font-semibold text-white">Tampilkan</button><span className="self-center text-black/50">{label.length} label (maks. 120)</span></form>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 print:grid-cols-4">
         {label.map((e) => (

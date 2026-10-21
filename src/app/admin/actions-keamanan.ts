@@ -1,5 +1,6 @@
 "use server";
 
+import { lanjutAman } from "@/lib/portal-digital";
 import { createClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -86,8 +87,7 @@ export async function verifikasiMfa(_p: HasilAksi, form: FormData): Promise<Hasi
     return { ok: false, pesan, errors: { kode: "Kode tidak cocok" } };
   }
   if (form.get("baru") === "1") await catat(supabase, "mfa_aktif");
-  const tujuan = String(form.get("lanjut") ?? "/admin");
-  redirect(/^\/admin(\/|$)/.test(tujuan) ? tujuan : "/admin");
+  redirect(lanjutAman(form.get("lanjut")) ?? "/admin/mulai");
 }
 
 export async function hapusFaktorMfa(form: FormData) {
@@ -218,5 +218,5 @@ export async function keluarSemuaPerangkat() {
   if (!supabase || !user) redirect("/admin/login");
   await catat(supabase, "keluar_semua");
   await supabase.auth.signOut({ scope: "global" });
-  redirect("/admin/login?pesan=keluar-semua");
+  redirect("/portal-digital/masuk/gtk?pesan=keluar-semua");
 }

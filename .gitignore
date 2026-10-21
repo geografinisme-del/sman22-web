@@ -44,3 +44,7 @@ next-env.d.ts
 # supabase cli (cache lokal)
 supabase/.temp/
 akun-uji.local.json
+
+# backup database (berisi data pribadi) — jangan pernah di-commit
+/backup/
+*.dump

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MediaSlot } from "@/components/MediaSlot";
 import Link from "next/link";
 import { PageHeader, Section } from "@/components/ui";
 import { JENIS_KONTRIBUSI } from "@/lib/alumni";
@@ -24,19 +25,19 @@ export default async function Alumni() {
       <Section>
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <div className="rounded-2xl bg-[var(--tema-utama)] p-8 text-white">
-            <p className="font-serif text-3xl">Gabung jejaring alumni</p>
+            <p className="text-3xl">Gabung jejaring alumni</p>
             <p className="mt-2 text-white/80">Daftar sekali, data diverifikasi sekolah. Anda mengatur sendiri apa yang terlihat oleh alumni lain.</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link href="/alumni/daftar" className="rounded-lg bg-white px-5 py-2.5 font-semibold text-brand-900">Daftar alumni</Link>
-              <Link href="/admin/login" className="rounded-lg px-5 py-2.5 font-semibold ring-1 ring-white/40">Masuk area alumni</Link>
+              <Link href="/alumni/daftar" className="rounded-lg bg-white px-5 py-2.5 font-semibold text-ink">Daftar alumni</Link>
+              <Link href="/portal-digital/masuk/gtk?lanjut=%2Falumni%2Fakun" className="rounded-lg px-5 py-2.5 font-semibold ring-1 ring-white/40">Masuk area alumni</Link>
             </div>
           </div>
-          <div className="kartu p-6 ">
-            <p className="text-sm text-[#5b6270]">Tracer study</p>
-            <p className="mt-1 font-serif text-4xl">{ring.alumni.toLocaleString("id-ID")}</p><p className="text-sm text-[#5b6270]">alumni terdaftar</p>
+          <div className="kartu p-6">
+            <p className="text-sm text-[var(--muted)]">Tracer study</p>
+            <p className="mt-1 text-4xl">{ring.alumni.toLocaleString("id-ID")}</p><p className="text-sm text-[var(--muted)]">alumni terdaftar</p>
             {ring.cukup ? (
               <p className="mt-3 text-sm">Dari {ring.responden} responden: <strong>{ring.persen_kuliah}%</strong> melanjutkan kuliah, <strong>{ring.persen_bekerja}%</strong> bekerja/berwirausaha.</p>
-            ) : <p className="mt-3 text-sm text-[#5b6270]">Statistik tampil setelah cukup banyak alumni mengisi.</p>}
+            ) : <p className="mt-3 text-sm text-[var(--muted)]">Statistik tampil setelah cukup banyak alumni mengisi.</p>}
           </div>
         </div>
       </Section>
@@ -44,21 +45,20 @@ export default async function Alumni() {
         <Section judul="Cerita alumni" className="!pt-0">
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{cerita.map((x) => (
             <li key={x.id} className="overflow-hidden kartu">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              {x.foto_url && <img src={x.foto_url} alt="" className="aspect-[16/9] w-full object-cover" referrerPolicy="no-referrer" loading="lazy" />}
-              <div className="p-5"><h3 className="font-serif text-2xl">{x.judul}</h3>
-                <p className="mt-2 line-clamp-5 whitespace-pre-line text-sm text-[#3b414b]">{x.isi}</p>
-                <p className="mt-3 text-sm font-semibold">{x.nama} <span className="font-normal text-[#5b6270]">· angkatan {x.tahun_lulus}{x.institusi && ` · ${x.institusi}`}</span></p></div>
+              {x.foto_url && <MediaSlot src={x.foto_url} alt="" ratio="16/9" sizes="(min-width: 768px) 33vw, 100vw" />}
+              <div className="p-5"><h3 className="text-2xl">{x.judul}</h3>
+                <p className="mt-2 line-clamp-5 whitespace-pre-line text-sm text-[var(--muted)]">{x.isi}</p>
+                <p className="mt-3 text-sm font-semibold">{x.nama} <span className="font-normal text-[var(--muted)]">· angkatan {x.tahun_lulus}{x.institusi && ` · ${x.institusi}`}</span></p></div>
             </li>))}</ul>
         </Section>
       )}
       {(acara.length > 0 || kontribusi.length > 0) && (
         <Section className="!pt-0">
           <div className="grid gap-8 lg:grid-cols-2">
-            {acara.length > 0 && <div><h2 className="mb-3 font-serif text-3xl">Acara alumni</h2>
-              <ul className="space-y-2">{acara.map((x) => <li key={x.id} className="rounded-xl bg-white p-4 ring-1 ring-black/5"><strong>{x.judul}</strong><p className="text-sm text-[#5b6270]">{new Date(x.mulai).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" })}{x.tempat && ` · ${x.tempat}`}</p></li>)}</ul></div>}
-            {kontribusi.length > 0 && <div><h2 className="mb-3 font-serif text-3xl">Terima kasih, alumni</h2>
-              <ul className="space-y-2">{kontribusi.map((x, i) => <li key={i} className="rounded-xl bg-white p-4 text-sm ring-1 ring-black/5"><strong>{x.nama}</strong> · {JENIS_KONTRIBUSI[x.jenis]}<p className="text-[#5b6270]">{x.deskripsi}</p></li>)}</ul></div>}
+            {acara.length > 0 && <div><h2 className="mb-3 text-3xl">Acara alumni</h2>
+              <ul className="space-y-2">{acara.map((x) => <li key={x.id} className="rounded-xl bg-white p-4 ring-1 ring-black/5"><strong>{x.judul}</strong><p className="text-sm text-[var(--muted)]">{new Date(x.mulai).toLocaleString("id-ID", { dateStyle: "long", timeStyle: "short", timeZone: "Asia/Jakarta" })}{x.tempat && ` · ${x.tempat}`}</p></li>)}</ul></div>}
+            {kontribusi.length > 0 && <div><h2 className="mb-3 text-3xl">Terima kasih, alumni</h2>
+              <ul className="space-y-2">{kontribusi.map((x, i) => <li key={i} className="rounded-xl bg-white p-4 text-sm ring-1 ring-black/5"><strong>{x.nama}</strong> · {JENIS_KONTRIBUSI[x.jenis]}<p className="text-[var(--muted)]">{x.deskripsi}</p></li>)}</ul></div>}
           </div>
         </Section>
       )}

@@ -1,34 +1,41 @@
-import Link from "next/link";
-import { Gambar } from "@/components/Gambar";
+import { MediaSlot } from "@/components/MediaSlot";
+import { InfoCard, PageHero, Prose, SectionHeading } from "@/components/langit/Komponen";
 import type { BeritaItem } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
 
-/** Tampilan satu berita — dipakai halaman publik dan pratinjau admin */
-export function ArtikelBerita({ b, kembali = true }: { b: BeritaItem; kembali?: boolean }) {
+/** Tampilan satu berita (PageHero + Prose + berita terkait) — dipakai halaman publik dan pratinjau admin. */
+export function ArtikelBerita({ b, terkait = [] }: { b: BeritaItem; terkait?: BeritaItem[] }) {
   return (
-    <article className="lp mx-auto max-w-3xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
-      {kembali && (
-        <nav aria-label="Lokasi halaman" className="remah">
-          <Link href="/">Beranda</Link>
-          <span aria-hidden>/</span>
-          <Link href="/berita">Berita</Link>
-        </nav>
-      )}
-      <p className="mt-6 text-sm text-[#5b6270]">
-        {b.kategori} · <time dateTime={b.tanggal}>{formatTanggal(b.tanggal)}</time>
-      </p>
-      <h1 className="mt-2">{b.judul}</h1>
-      {b.ringkasan && <p className="mt-4 text-[1.1875rem] leading-relaxed text-[#3b414b]">{b.ringkasan}</p>}
-      <Gambar src={b.gambar} alt={b.judul} priority sizes="(min-width: 768px) 768px, 100vw" className="mt-8 aspect-[3/2] rounded-[10px]" />
-      <div className="mt-8 space-y-4 text-[1.0625rem] leading-[1.7] text-[#1f2328]">
-        {b.isi.map((p, i) => (
-          <p key={i}>{p}</p>
-        ))}
-      </div>
-      {kembali && (
-        <Link href="/berita" className="tautan mt-10 inline-block">
-          Berita lainnya
-        </Link>
+    <article className="lp">
+      <PageHero judul={b.judul} label={[b.kategori, formatTanggal(b.tanggal)].filter(Boolean).join(" · ")} remah={[{ href: "/berita", label: "Berita" }]} deskripsi={b.ringkasan || undefined} />
+      <section className="lgt-bagian">
+        <div className="lgt-wadah">
+          <Prose className="mx-auto">
+            {b.gambar && (
+              <figure>
+                <MediaSlot src={b.gambar} alt={b.judul} ratio="3/2" priority isPlaceholder={b.gambarSementara} sizes="(min-width: 900px) 760px, 100vw" className="rounded-[18px]" />
+              </figure>
+            )}
+            <p className="sr-only">
+              Diterbitkan <time dateTime={b.tanggal}>{formatTanggal(b.tanggal)}</time>
+            </p>
+            {b.isi.map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </Prose>
+        </div>
+      </section>
+      {terkait.length > 0 && (
+        <section className="lgt-bagian lgt-bagian-soft" aria-labelledby="judul-terkait">
+          <div className="lgt-wadah">
+            <SectionHeading id="judul-terkait" label="Berita terkait" judul="Baca juga." aksi={{ href: "/berita", label: "Semua berita" }} />
+            <div className="lgt-kisi mt-8">
+              {terkait.map((t) => (
+                <InfoCard key={t.slug} href={`/berita/${t.slug}`} foto={t.gambar} alt={t.judul} sementara={t.gambarSementara} label={[t.kategori, formatTanggal(t.tanggal)].filter(Boolean).join(" · ")} judul={t.judul} deskripsi={t.ringkasan} aksi="Baca" />
+              ))}
+            </div>
+          </div>
+        </section>
       )}
     </article>
   );

@@ -32,19 +32,19 @@ export default async function PerangkatAjar({ searchParams }: { searchParams: Pr
   return (
     <>
       <JudulHalaman judul="Perangkat Ajar" deskripsi="Unggah prota, promes, ATP, dan modul ajar untuk diperiksa Wakasek Kurikulum."
-        aksi={punya(akses, "kurikulum.kelola") ? <Link href="/admin/perangkat-ajar/review" className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Periksa perangkat guru →</Link> : undefined} />
+        aksi={punya(akses, "kurikulum.kelola") ? <Link href="/admin/perangkat-ajar/review" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Periksa perangkat guru →</Link> : undefined} />
       <NavKurikulum />
       <Notifikasi kode={sp.pesan} />
       <div className="mb-4 flex gap-2">
-        {[1, 2].map((s) => <Link key={s} href={`?semester=${s}`} className={`rounded-full px-4 py-2 text-sm font-semibold ${s === semester ? "bg-brand-900 text-white" : "bg-white ring-1 ring-black/10"}`}>Semester {s}</Link>)}
+        {[1, 2].map((s) => <Link key={s} href={`?semester=${s}`} className={`rounded-full px-4 py-2 text-sm font-semibold ${s === semester ? "bg-ink text-white" : "bg-white ring-1 ring-black/10"}`}>Semester {s}</Link>)}
       </div>
 
       <section className="mb-8">
-        <h2 className="mb-3 font-serif text-2xl">Kelengkapan saya</h2>
+        <h2 className="mb-3 text-2xl">Kelengkapan saya</h2>
         {milik.length === 0 ? <KosongAdmin teks="Belum ada penugasan mengajar di tahun ajaran aktif." /> : (
           <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
             <table className="w-full min-w-[640px] text-left text-sm">
-              <thead><tr className="bg-krem text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Mapel</th><th className="px-4 py-2">Prota</th><th className="px-4 py-2">Promes</th><th className="px-4 py-2">ATP</th><th className="px-4 py-2">Modul ajar</th></tr></thead>
+              <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Mapel</th><th className="px-4 py-2">Prota</th><th className="px-4 py-2">Promes</th><th className="px-4 py-2">ATP</th><th className="px-4 py-2">Modul ajar</th></tr></thead>
               <tbody>
                 {milik.map((r) => (
                   <tr key={r.mapel_id + r.tingkat} className="border-t border-black/5">
@@ -61,7 +61,7 @@ export default async function PerangkatAjar({ searchParams }: { searchParams: Pr
 
       <div className="grid gap-6 xl:grid-cols-[1fr_400px]">
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Unggahan semester {semester}</h2>
+          <h2 className="mb-3 text-2xl">Unggahan semester {semester}</h2>
           {daftar.length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
             <ul className="divide-y divide-black/5">
               {daftar.map((d) => (
@@ -70,8 +70,8 @@ export default async function PerangkatAjar({ searchParams }: { searchParams: Pr
                   <p className="text-black/60">{JENIS_PERANGKAT[d.jenis]} · {d.mapel?.nama} {d.tingkat}</p>
                   {d.catatan_review && <p className="rounded-lg bg-amber-50 px-3 py-2 text-amber-900">Catatan kurikulum: {d.catatan_review}</p>}
                   <div className="flex flex-wrap gap-3 text-xs font-semibold">
-                    {d.berkas_path && <a href={`/berkas/perangkat/${d.id}`} target="_blank" rel="noopener" className="text-brand-700 underline">Buka berkas{d.berkas_nama && ` (${d.berkas_nama})`}</a>}
-                    {d.tautan && <a href={d.tautan} target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">Buka tautan</a>}
+                    {d.berkas_path && <a href={`/berkas/perangkat/${d.id}`} target="_blank" rel="noopener" className="text-blue-teks underline">Buka berkas{d.berkas_nama && ` (${d.berkas_nama})`}</a>}
+                    {d.tautan && <a href={d.tautan} target="_blank" rel="noopener noreferrer" className="text-blue-teks underline">Buka tautan</a>}
                     {(d.status === "draf" || d.status === "revisi") && (
                       <form action={ubahStatusPerangkat}><input type="hidden" name="id" value={d.id} /><button name="aksi" value="ajukan" className="text-emerald-700 underline">Ajukan</button></form>
                     )}
@@ -79,7 +79,7 @@ export default async function PerangkatAjar({ searchParams }: { searchParams: Pr
                       <form action={ubahStatusPerangkat}><input type="hidden" name="id" value={d.id} /><button name="aksi" value="tarik" className="underline">Tarik pengajuan</button></form>
                     )}
                     {d.status !== "disetujui" && d.status !== "diajukan" && (
-                      <form action={ubahStatusPerangkat}><input type="hidden" name="id" value={d.id} /><button name="aksi" value="arsip" className="text-merah underline">Arsip</button></form>
+                      <form action={ubahStatusPerangkat}><input type="hidden" name="id" value={d.id} /><button name="aksi" value="arsip" className="text-blue-teks underline">Arsip</button></form>
                     )}
                   </div>
                 </li>
@@ -88,7 +88,7 @@ export default async function PerangkatAjar({ searchParams }: { searchParams: Pr
           )}
         </Kartu>
         <Kartu className="self-start">
-          <h2 className="mb-4 font-serif text-2xl">Unggah perangkat</h2>
+          <h2 className="mb-4 text-2xl">Unggah perangkat</h2>
           {milik.length ? <FormPerangkat tugas={milik.map((r) => ({ mapel_id: r.mapel_id, mapel: r.mapel, tingkat: r.tingkat }))} semester={semester} /> : <p className="text-sm text-black/50">Butuh penugasan mengajar.</p>}
           <p className="mt-4 text-xs text-black/50">Butuh bantuan menyusun modul ajar? Buka <Link href="/admin/kurikulum/atp" className="underline">CP, TP & ATP</Link> → Kerangka modul ajar (AI).</p>
         </Kartu>

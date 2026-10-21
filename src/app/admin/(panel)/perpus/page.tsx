@@ -32,7 +32,7 @@ export default async function Perpus({ searchParams }: { searchParams: Promise<{
               <li key={r.id} className="flex flex-wrap items-center gap-2 py-2">
                 <span className="flex-1 font-medium">{r.buku?.judul}</span>
                 <span className={r.status === "siap" ? "font-semibold text-emerald-700" : "text-black/60"}>{r.status === "siap" ? `siap diambil s.d. ${tgl(r.batas_ambil!)}` : "dalam antrean"}</span>
-                <form action={batalPesan}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-merah underline">Batalkan</button></form>
+                <form action={batalPesan}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-blue-teks underline">Batalkan</button></form>
               </li>))}</ul>
           </Kartu>
         )}
@@ -42,7 +42,7 @@ export default async function Perpus({ searchParams }: { searchParams: Promise<{
               <li key={r.id} className="flex flex-wrap items-center gap-2 py-2">
                 <span className="flex-1 font-medium">{r.eksemplar?.buku?.judul} <span className="font-mono text-xs text-black/50">{r.eksemplar?.kode}</span></span>
                 <span className="text-black/60">{r.kembali_pada ? `dikembalikan ${tgl(r.kembali_pada)}` : `kembali ${tgl(r.jatuh_tempo)}`}</span>
-                {!r.kembali_pada && <form action={perpanjangBuku}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-brand-700 underline">Perpanjang</button></form>}
+                {!r.kembali_pada && <form action={perpanjangBuku}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-blue-teks underline">Perpanjang</button></form>}
               </li>))}</ul>
           )}
         </Kartu>
@@ -65,29 +65,29 @@ export default async function Perpus({ searchParams }: { searchParams: Promise<{
       <Notifikasi kode={sp.pesan} />
       <ul className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[["Judul buku", s.judul], ["Eksemplar", s.eksemplar], ["Sedang dipinjam", s.dipinjam], ["Terlambat", s.terlambat]].map(([l, v]) => (
-          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className={`font-serif text-3xl tabular-nums ${l === "Terlambat" && Number(v) ? "text-amber-700" : ""}`}>{Number(v ?? 0).toLocaleString("id-ID")}</p><p className="text-sm text-black/60">{l}</p></li>
+          <li key={l} className="rounded-2xl bg-white p-4 ring-1 ring-black/5"><p className={`text-3xl tabular-nums ${l === "Terlambat" && Number(v) ? "text-amber-700" : ""}`}>{Number(v ?? 0).toLocaleString("id-ID")}</p><p className="text-sm text-black/60">{l}</p></li>
         ))}
       </ul>
       {kelola && (
         <div className="mb-6 grid gap-6 lg:grid-cols-2">
-          <Kartu><h2 className="mb-4 font-serif text-2xl">Pinjam</h2><FormPinjam /></Kartu>
-          <Kartu><h2 className="mb-4 font-serif text-2xl">Kembali</h2><FormKembali /></Kartu>
+          <Kartu><h2 className="mb-4 text-2xl">Pinjam</h2><FormPinjam /></Kartu>
+          <Kartu><h2 className="mb-4 text-2xl">Kembali</h2><FormKembali /></Kartu>
         </div>
       )}
       {pesanan.length > 0 && (
         <Kartu className="mb-6">
-          <h2 className="mb-3 font-serif text-2xl">Pesanan buku ({pesanan.length})</h2>
+          <h2 className="mb-3 text-2xl">Pesanan buku ({pesanan.length})</h2>
           <ul className="divide-y divide-black/5 text-sm">{pesanan.map((r) => (
             <li key={r.id} className={`flex flex-wrap items-center gap-3 py-2 ${r.status === "siap" ? "" : "text-black/60"}`}>
               <span className="flex-1"><span className="font-medium">{r.judul}</span> · {r.pemesan} <span className="text-black/50">{r.kelas}</span></span>
               {r.status === "siap" ? <span className="font-semibold text-emerald-700">siapkan <span className="font-mono">{r.kode}</span> · s.d. {tgl(r.batas_ambil!)}</span> : <span>antrean ke-{r.antrean}</span>}
-              {kelola && <form action={batalPesan}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-merah underline">Batalkan</button></form>}
+              {kelola && <form action={batalPesan}><input type="hidden" name="id" value={r.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-blue-teks underline">Batalkan</button></form>}
             </li>))}</ul>
           <p className="mt-2 text-xs text-black/50">Eksemplar yang disiapkan hanya bisa dipinjamkan kepada pemesannya. Pesanan yang tidak diambil 3 hari otomatis gugur dan diteruskan ke antrean berikutnya.</p>
         </Kartu>
       )}
       <Kartu>
-        <h2 className="mb-3 font-serif text-2xl">Sedang dipinjam ({list.length})</h2>
+        <h2 className="mb-3 text-2xl">Sedang dipinjam ({list.length})</h2>
         {list.length === 0 ? <p className="text-sm text-black/50">Tidak ada.</p> : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
@@ -98,8 +98,8 @@ export default async function Perpus({ searchParams }: { searchParams: Promise<{
                     <td className="py-2"><span className="font-medium">{p.judul}</span> <span className="font-mono text-xs text-black/50">{p.kode}</span></td>
                     <td>{p.peminjam} <span className="text-black/50">{p.kelas}</span></td>
                     <td>{tgl(p.pinjam_pada)}</td>
-                    <td className={p.terlambat ? "font-semibold text-merah" : ""}>{tgl(p.jatuh_tempo)}{p.terlambat > 0 && ` (+${p.terlambat} hari)`}</td>
-                    <td className="text-right">{kelola && <form action={perpanjangBuku}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-brand-700 underline">Perpanjang</button></form>}</td>
+                    <td className={p.terlambat ? "font-semibold text-blue-teks" : ""}>{tgl(p.jatuh_tempo)}{p.terlambat > 0 && ` (+${p.terlambat} hari)`}</td>
+                    <td className="text-right">{kelola && <form action={perpanjangBuku}><input type="hidden" name="id" value={p.id} /><input type="hidden" name="kembali" value="/admin/perpus" /><button className="text-xs font-semibold text-blue-teks underline">Perpanjang</button></form>}</td>
                   </tr>
                 ))}
               </tbody>

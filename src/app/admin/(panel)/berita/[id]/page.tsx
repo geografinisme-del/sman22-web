@@ -47,7 +47,7 @@ export default async function UbahBerita({ params, searchParams }: { params: Pro
       <FormBerita bolehTerbit={boleh} data={{ ...data, tayang_mulai: keInputWaktu(data.tayang_mulai) }} />
 
       <section className="mt-10">
-        <h2 className="font-serif text-3xl">Riwayat revisi</h2>
+        <h2 className="text-3xl">Riwayat revisi</h2>
         <p className="mt-1 text-sm text-black/60">Setiap kali isi berita diubah, versi sebelumnya disimpan di sini dan bisa dipulihkan.</p>
         {!revisi?.length ? (
           <p className="mt-3 text-sm text-black/50">Belum ada revisi.</p>
@@ -63,7 +63,7 @@ export default async function UbahBerita({ params, searchParams }: { params: Pro
                       <span className="text-black/50">{formatWaktu(r.dibuat_pada)} · diubah oleh {nama.get(r.dibuat_oleh ?? "") ?? "—"}</span>
                       <Lencana>{STATUS[r.status] ?? r.status}</Lencana>
                     </summary>
-                    <div className="mt-3 rounded-xl bg-krem p-4 text-sm">
+                    <div className="mt-3 rounded-xl bg-soft p-4 text-sm">
                       <p className="font-semibold">{d.judul}</p>
                       {d.ringkasan && <p className="mt-1 text-black/60">{d.ringkasan}</p>}
                       <p className="mt-2 line-clamp-6 whitespace-pre-line text-black/70">{d.isi}</p>

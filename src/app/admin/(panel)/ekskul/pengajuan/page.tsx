@@ -28,7 +28,7 @@ export default async function DaftarPengajuan({ searchParams }: { searchParams: 
       <JudulHalaman judul="Pengajuan kegiatan" deskripsi="Proposal kegiatan organisasi siswa: persetujuan pembina → kesiswaan, lalu LPJ setelah kegiatan." />
       <div className="mb-4 flex flex-wrap gap-2 text-sm">
         {[["", "Perlu tindak lanjut"], ...Object.entries(STATUS_PENGAJUAN).map(([k, v]) => [k, v.label]), ["semua", "Semua"]].map(([k, l]) => (
-          <Link key={k} href={k ? `?status=${k}` : "?"} className={`rounded-full px-3 py-1.5 font-semibold ${(sp.status ?? "") === k ? "bg-brand-900 text-white" : "ring-1 ring-black/15"}`}>{l}</Link>
+          <Link key={k} href={k ? `?status=${k}` : "?"} className={`rounded-full px-3 py-1.5 font-semibold ${(sp.status ?? "") === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>
         ))}
       </div>
       <Kartu>

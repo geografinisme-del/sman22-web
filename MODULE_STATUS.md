@@ -22,7 +22,9 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 | Beranda publik | Berfungsi | Editorial terang + sistem gerak (lihat HANDOFF.md). Susunan masih tertanam di kode → dipindah ke widget (Tahap 4). |
 | Halaman dalam publik (profil, program, berita, agenda, galeri, SPMB, kontak, sambutan) | Berfungsi | Sistem visual bersama. |
 | Halaman publik lain (ekskul, alumni, sertifikat, survei, pengaduan) | Sebagian | Kontras & huruf kapital sudah diperbaiki; tata letak lama belum diselaraskan penuh dengan sistem editorial. |
-| Header publik | Berfungsi | Menu "Layanan" (Portal Sekolah, Portal Manajemen, E-Library, Pengaduan). |
+| Header publik | Berfungsi | Navigasi berkelompok (Profil, Pembelajaran, Kehidupan Siswa, Kabar & Agenda, SPMB, Layanan) + tombol Portal Digital 22. |
+| Portal Digital 22 (`/portal-digital`) | Berfungsi | Pintu bidang publik, keputusan akses di server, tujuan kembali aman setelah login/MFA, status akun. |
+| Warna penanda bidang | Berfungsi | Token terpusat + tes kontras; dipakai portal, ruang kerja admin, E-Library, SPMB, beranda. Lihat docs/WARNA-BIDANG.md. |
 | Login bersama + MFA | Berfungsi | "Guru, Tendik & Manajemen" / Siswa / Orang Tua; MFA TOTP diuji nyata di lokal (daftar, kode salah, tempel, kode benar). |
 | Ruang kerja manajemen | Berfungsi | Turunan izin; satu penugasan langsung, beberapa → pemilih. Halaman awal ruang kerja = halaman modul yang ada (belum ada beranda khusus per ruang kerja). |
 | Dasbor & sidebar admin | Berfungsi | Terang, keadaan kosong/gagal/libur dibedakan, aktivitas WIB. |
@@ -31,7 +33,7 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 | E-Library pribadi (`/portal/perpus`) | Berfungsi | Pinjaman/reservasi via login bersama. |
 | E-Library petugas (`/admin/perpus`) | Berizin | Sirkulasi, katalog, laporan, literasi, pojok baca (`perpus.kelola/lihat`, `literasi.kelola`). |
 | Tema & Tampilan (Admin) | Berfungsi* | Tema, palet, huruf, gerak, slideshow, susunan widget (seret/naik-turun/sembunyi/lepas/tambah), popup & pemandu, pratinjau desktop/ponsel, draf, terapkan, riwayat & pulihkan. *Butuh migrasi 20261202. |
-| Mesin tema + widget | Berfungsi* | Akademik & Modern; Editorial disiapkan (belum bisa dipilih). Hanya beranda yang disusun widget; halaman dalam memakai sistem visual bersama. |
+| Mesin tema + widget | Berfungsi* | Sekolah Berwarna (bawaan), Akademik, Modern; Editorial disiapkan. Widget baru: Prestasi. Hanya beranda yang disusun widget. |
 | Popup prioritas + panel rutin | Berfungsi* | Satu pengatur overlay; poster/tautan diatur di Admin → Pengumuman. *Butuh migrasi 20261202. |
 | Pemandu | Sebagian | Berbasis pilihan & berfungsi; aset karakter ilustrasi belum ada (memakai tombol berikon). |
 
@@ -70,3 +72,30 @@ Branch kerja: `desain-editorial-sekolah` (belum di-push, belum di produksi).
 - Aset karakter pemandu belum ada. Contoh popup poster dari brief tidak tersedia di percakapan.
 - Belum diuji di Safari/iOS & perangkat fisik; uji alur dilakukan di Chrome headless terhadap Supabase lokal.
 - Migrasi Fase 18–19 belum diterapkan di staging/produksi (sengaja; perlu persetujuan).
+
+- **Fase Portal Digital 22** (branch `portal-digital-22`) — selesai: audit referensi, token warna bidang, navigasi berkelompok, tema Sekolah Berwarna + pembuka panel + widget Prestasi, Portal Digital 22 + keputusan akses + `lanjut` aman, aksen ruang kerja, E-Library hijau & SPMB marun. Uji: 36 unit, 14/14 e2e portal, 29/29 e2e regresi, 42 kombinasi halaman×lebar tanpa luber (1 perbaikan di 360px).
+
+## Belum selesai (fase Portal Digital 22)
+- Dasbor tiap bidang belum didesain ulang menjadi "ringkasan + tugas + tindakan utama" khusus bidang; saat ini halaman modul lama + pita/aksen bidang.
+- Belum ada modul SPMB internal (kartu SPMB menuju informasi publik).
+- "Sumber belajar" selain E-Library (materi/kelas digital) hanya dapat diakses dari Pojok Guru/Portal Siswa, belum menjadi kartu tersendiri.
+- Aset karakter pemandu belum ada; uji Safari/iOS & perangkat fisik belum dilakukan.
+
+## Fase Buku Tahunan (branch `buku-tahunan`)
+| Area | Status | Catatan |
+| --- | --- | --- |
+| Token desain (Tahap 1) | Selesai | Newsreader + Plus Jakarta Sans, kertas/tinta/marun, `/spesimen`. |
+| Beranda tema Buku Tahunan (Tahap 2) | Selesai* | Tema bawaan. *Prestasi, SPMB, alumni butuh migrasi 20261210 + data dari admin. |
+| Admin Prestasi & Alumni, SPMB Beranda, Penanggung Jawab Portal | Selesai* | *Butuh migrasi 20261210. |
+| Portal Digital 22 ala buku (Tahap 3) | Selesai | Tanpa warna per bidang. |
+| Media sementara | Selesai | 10 foto Unsplash (CREDITS.md) untuk data contoh; semua is_placeholder = true. |
+| Tahap 4 (GSAP, Embla, animasi) | Selesai | Progressive enhancement, reduced-motion, parallax desktop saja; Lighthouse ponsel 89–90 (simulasi), CLS 0. |
+| Navigasi E-Learning / Layanan | Selesai | Menu, footer, akses cepat selaras; URL E-Learning dari CMS, bawaan /pembelajaran/e-learning. |
+
+## Fase Langit cerah (branch `langit-cerah`)
+| Tahap | Status | Catatan |
+| --- | --- | --- |
+| A — token, header + menu layar penuh, hero + kartu putar 3D | Selesai (disetujui) | Kartu dari `kartu_beranda` (migrasi 20261220, belum di produksi; ada kartu bawaan). |
+| B — tur sekolah + admin, angka, SPMB + footer | Selesai (disetujui) | Migrasi 20261221 (tur_sekolah, bucket, 2 kolom profil) belum di produksi; ada titik bawaan. |
+| C — semua halaman memakai desain baru, pembersihan desain lama | Selesai (disetujui) | Halaman baru profil/pembelajaran/pengumuman/prestasi/cari; CMS staf_publik, fasilitas, halaman_cms (migrasi 20261222, belum di produksi). Komponen & CSS lama dihapus. |
+| D — media sementara, gerak, kinerja, verifikasi akhir | Selesai (menunggu persetujuan) | MediaSlot tunggal, MesinLangit (GSAP), aksesibilitas 100 di semua halaman yang diukur, Lighthouse seluler beranda median 0,86. |

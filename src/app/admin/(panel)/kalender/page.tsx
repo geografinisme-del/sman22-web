@@ -42,15 +42,15 @@ export default async function Kalender({ searchParams }: { searchParams: Promise
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Link href={`?bulan=${bulanBerikut(bulan, -1)}`} className="rounded-full px-3 py-1.5 ring-1 ring-black/15 hover:bg-black/5" aria-label="Bulan sebelumnya">←</Link>
-            <h2 className="min-w-44 text-center font-serif text-2xl capitalize">{namaBulan(bulan)}</h2>
+            <h2 className="min-w-44 text-center text-2xl capitalize">{namaBulan(bulan)}</h2>
             <Link href={`?bulan=${bulanBerikut(bulan, 1)}`} className="rounded-full px-3 py-1.5 ring-1 ring-black/15 hover:bg-black/5" aria-label="Bulan berikutnya">→</Link>
-            {bulan !== hariIni.slice(0, 7) && <Link href="?" className="ml-2 text-sm text-brand-700 underline">Bulan ini</Link>}
+            {bulan !== hariIni.slice(0, 7) && <Link href="?" className="ml-2 text-sm text-blue-teks underline">Bulan ini</Link>}
           </div>
           <LegendaKegiatan />
           <KalenderBulan bulan={bulan} kegiatan={kegiatan} libur={petaLibur} hariIni={hariIni} tautan={kelola ? (k) => `?bulan=${bulan}&ubah=${k.id}#form` : undefined} />
 
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Daftar kegiatan bulan ini</h2>
+            <h2 className="mb-3 text-2xl">Daftar kegiatan bulan ini</h2>
             {diBulan.length === 0 ? (
               <p className="text-sm text-black/50">Belum ada kegiatan.</p>
             ) : (
@@ -77,7 +77,7 @@ export default async function Kalender({ searchParams }: { searchParams: Promise
                         <form action={hapusKegiatan}>
                           <input type="hidden" name="id" value={k.id} />
                           <input type="hidden" name="bulan" value={bulan} />
-                          <button type="submit" className="rounded-full px-3 py-1.5 text-xs font-semibold text-merah ring-1 ring-merah/30 hover:bg-red-50">Hapus</button>
+                          <button type="submit" className="rounded-full px-3 py-1.5 text-xs font-semibold text-blue-teks ring-1 ring-blue/30 hover:bg-red-50">Hapus</button>
                         </form>
                       </span>
                     )}
@@ -90,8 +90,8 @@ export default async function Kalender({ searchParams }: { searchParams: Promise
 
         {kelola && (
           <Kartu className="self-start xl:sticky xl:top-8">
-            <h2 id="form" className="mb-4 font-serif text-2xl">{ubah ? "Ubah kegiatan" : "Tambah kegiatan"}</h2>
-            {ubah && <Link href={`?bulan=${bulan}`} className="mb-4 inline-block text-sm text-brand-700 underline">+ Tambah baru saja</Link>}
+            <h2 id="form" className="mb-4 text-2xl">{ubah ? "Ubah kegiatan" : "Tambah kegiatan"}</h2>
+            {ubah && <Link href={`?bulan=${bulan}`} className="mb-4 inline-block text-sm text-blue-teks underline">+ Tambah baru saja</Link>}
             <FormKegiatan key={ubah?.id ?? "baru"} data={ubah ?? undefined} tanggalAwal={bulan === hariIni.slice(0, 7) ? hariIni : awal} />
           </Kartu>
         )}

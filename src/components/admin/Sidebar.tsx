@@ -241,8 +241,8 @@ export function Sidebar({
       aria-current={aktif(m.href) ? "page" : undefined}
       className={`relative flex items-center justify-between gap-2 rounded-md py-2 pl-9 pr-3 transition-colors duration-150 ${kecil ? "text-[13.5px]" : "text-sm"} ${
         aktif(m.href)
-          ? "bg-[color-mix(in_srgb,var(--tema-utama)_8%,#fff)] font-semibold text-[#1f2328] before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-[var(--tema-utama)]"
-          : "text-[#3b414b] hover:bg-[#f2f3f5] hover:text-[#1f2328]"
+          ? "bg-[color-mix(in_srgb,var(--tema-utama)_8%,#fff)] font-semibold text-[var(--ink)] before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-[var(--tema-utama)]"
+          : "text-[var(--muted)] hover:bg-[var(--soft)] hover:text-[var(--ink)]"
       }`}
     >
       <span className="truncate">{m.label}</span>
@@ -258,7 +258,7 @@ export function Sidebar({
   const pemilihRuang = (asal: "sisi" | "laci") =>
     ruang.length >= 2 ? (
       <div className="px-3 pb-3">
-        <label htmlFor={`ruang-kerja-${asal}`} className="mb-1 block px-1 text-xs font-semibold text-[#5b6270]">
+        <label htmlFor={`ruang-kerja-${asal}`} className="mb-1 block px-1 text-xs font-semibold text-[var(--muted)]">
           Ruang kerja
         </label>
         <select
@@ -269,7 +269,7 @@ export function Sidebar({
             tutupLaci(false);
             router.push(r ? r.href : "/admin");
           }}
-          className="w-full rounded-md border border-[#d9dce1] bg-white px-2.5 py-2 text-sm font-semibold text-[#1f2328] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]"
+          className="w-full rounded-md border border-[var(--line)] bg-white px-2.5 py-2 text-sm font-semibold text-[var(--ink)] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]"
         >
           <option value="">Ringkasan (semua tugas)</option>
           {ruang.map((r) => (
@@ -280,9 +280,9 @@ export function Sidebar({
         </select>
       </div>
     ) : ruang.length === 1 ? (
-      <p className="px-4 pb-3 text-xs text-[#5b6270]">
+      <p className="px-4 pb-3 text-xs text-[var(--muted)]">
         Ruang kerja:{" "}
-        <Link href={ruang[0].href} onClick={() => tutupLaci(false)} className="font-semibold text-[#1f2328] underline underline-offset-2">
+        <Link href={ruang[0].href} onClick={() => tutupLaci(false)} className="font-semibold text-[var(--ink)] underline underline-offset-2">
           {ruang[0].label}
         </Link>
       </p>
@@ -314,10 +314,10 @@ export function Sidebar({
           }}
           placeholder="Cari menu"
           autoComplete="off"
-          className="w-full rounded-md border border-[#d9dce1] bg-white py-2 pl-9 pr-9 text-sm text-[#1f2328] placeholder:text-[#6b7280] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]"
+          className="w-full rounded-md border border-[var(--line)] bg-white py-2 pl-9 pr-9 text-sm text-[var(--ink)] placeholder:text-[var(--muted)] focus:border-[var(--tema-utama)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--tema-utama)_20%,transparent)]"
         />
-        <Search size={16} aria-hidden className="pointer-events-none absolute left-6 top-[18px] -translate-y-1/2 text-[#6b7280]" />
-        {!cari && <kbd className="pointer-events-none absolute right-6 top-[18px] hidden -translate-y-1/2 rounded border border-[#d9dce1] px-1.5 text-[11px] text-[#6b7280] lg:block">/</kbd>}
+        <Search size={16} aria-hidden className="pointer-events-none absolute left-6 top-[18px] -translate-y-1/2 text-[var(--muted)]" />
+        {!cari && <kbd className="pointer-events-none absolute right-6 top-[18px] hidden -translate-y-1/2 rounded border border-[var(--line)] px-1.5 text-[11px] text-[var(--muted)] lg:block">/</kbd>}
       </div>
 
       <nav aria-label="Menu admin" className="min-h-0 flex-1 overflow-y-auto px-3 pb-4">
@@ -325,7 +325,7 @@ export function Sidebar({
           hasilCari.length ? (
             hasilCari.map((g) => (
               <div key={g.i} className="pb-2">
-                {g.judul && <p className="px-3 pb-1 pt-2 text-xs font-semibold text-[#5b6270]">{g.judul}</p>}
+                {g.judul && <p className="px-3 pb-1 pt-2 text-xs font-semibold text-[var(--muted)]">{g.judul}</p>}
                 <ul className="space-y-0.5">
                   {g.item.map((m) => (
                     <li key={m.href}>{tautan(m)}</li>
@@ -334,13 +334,13 @@ export function Sidebar({
               </div>
             ))
           ) : (
-            <p className="px-3 py-3 text-sm text-[#5b6270]">Tidak ada menu “{cari}”.</p>
+            <p className="px-3 py-3 text-sm text-[var(--muted)]">Tidak ada menu “{cari}”.</p>
           )
         ) : (
           <>
             {pintasan.length > 1 && (
-              <div className="mb-2 border-b border-[#eceef1] pb-2">
-                <p className="px-3 pb-1 pt-1 text-xs font-semibold text-[#5b6270]">Terakhir dibuka</p>
+              <div className="mb-2 border-b border-[var(--line)] pb-2">
+                <p className="px-3 pb-1 pt-1 text-xs font-semibold text-[var(--muted)]">Terakhir dibuka</p>
                 <ul className="space-y-0.5">
                   {pintasan.map((m) => (
                     <li key={m.href}>{tautan(m, true)}</li>
@@ -353,7 +353,7 @@ export function Sidebar({
                 if (!g.judul)
                   return g.item.map((m) => (
                     <li key={m.href} className="relative">
-                      <LayoutDashboard size={17} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[#5b6270]" />
+                      <LayoutDashboard size={17} strokeWidth={1.75} aria-hidden className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-[var(--muted)]" />
                       {tautan(m)}
                     </li>
                   ));
@@ -368,18 +368,18 @@ export function Sidebar({
                       onClick={() => alihGrup(g.judul!)}
                       aria-expanded={terbuka}
                       aria-controls={idIsi}
-                      className={`flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 hover:bg-[#f2f3f5] ${
-                        g.judul === grupAktif ? "text-[#1f2328]" : "text-[#3b414b]"
+                      className={`flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm font-semibold transition-colors duration-150 hover:bg-[var(--soft)] ${
+                        g.judul === grupAktif ? "text-[var(--ink)]" : "text-[var(--muted)]"
                       }`}
                     >
-                      <IkonGrup size={17} strokeWidth={1.75} aria-hidden className="shrink-0 text-[#5b6270]" />
+                      <IkonGrup size={17} strokeWidth={1.75} aria-hidden className="shrink-0 text-[var(--muted)]" />
                       <span className="flex-1">{g.judul}</span>
                       {!terbuka && totalBadge > 0 && (
                         <span className="rounded-md bg-[#fdf1d6] px-1.5 text-xs font-semibold tabular-nums text-[#7a5300]" aria-label={`${totalBadge} perlu ditindaklanjuti`}>
                           {totalBadge}
                         </span>
                       )}
-                      <ChevronRight size={15} aria-hidden className={`shrink-0 text-[#6b7280] transition-transform duration-150 ${terbuka ? "rotate-90" : ""}`} />
+                      <ChevronRight size={15} aria-hidden className={`shrink-0 text-[var(--muted)] transition-transform duration-150 ${terbuka ? "rotate-90" : ""}`} />
                     </button>
                     {terbuka && (
                       <ul id={idIsi} className="mb-1 space-y-0.5">
@@ -396,29 +396,29 @@ export function Sidebar({
         )}
       </nav>
 
-      <div className="border-t border-[#eceef1] p-3">
+      <div className="border-t border-[var(--line)] p-3">
         <details className="group/akun relative">
-          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md px-2 py-2 hover:bg-[#f2f3f5] [&::-webkit-details-marker]:hidden">
-            <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#eceef1] text-sm font-semibold text-[#3b414b]">
+          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md px-2 py-2 hover:bg-[var(--soft)] [&::-webkit-details-marker]:hidden">
+            <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--line)] text-sm font-semibold text-[var(--muted)]">
               {(nama || email).trim().charAt(0).toUpperCase()}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-semibold text-[#1f2328]">{nama || email}</span>
-              <span className="block truncate text-xs text-[#5b6270]">{peran}</span>
+              <span className="block truncate text-sm font-semibold text-[var(--ink)]">{nama || email}</span>
+              <span className="block truncate text-xs text-[var(--muted)]">{peran}</span>
             </span>
-            <ChevronRight size={15} aria-hidden className="shrink-0 -rotate-90 text-[#6b7280] transition-transform duration-150 group-open/akun:rotate-90" />
+            <ChevronRight size={15} aria-hidden className="shrink-0 -rotate-90 text-[var(--muted)] transition-transform duration-150 group-open/akun:rotate-90" />
             <span className="sr-only">Menu akun</span>
           </summary>
-          <div className="absolute bottom-full left-0 right-0 mb-2 rounded-lg border border-[#e3e5e8] bg-white p-1.5 shadow-[0_12px_28px_-12px_rgb(31_35_40/0.35)]">
-            <p className="truncate px-2.5 py-1.5 text-xs text-[#5b6270]">{email}</p>
-            <Link href="/admin/keamanan" onClick={() => tutupLaci(false)} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[#f2f3f5]">
+          <div className="absolute bottom-full left-0 right-0 mb-2 rounded-lg border border-[var(--line)] bg-white p-1.5 shadow-[0_12px_28px_-12px_rgb(31_35_40/0.35)]">
+            <p className="truncate px-2.5 py-1.5 text-xs text-[var(--muted)]">{email}</p>
+            <Link href="/admin/keamanan" onClick={() => tutupLaci(false)} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[var(--soft)]">
               <ShieldCheck size={16} aria-hidden /> Keamanan akun
             </Link>
-            <a href="/" target="_blank" rel="noopener" className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[#f2f3f5]">
+            <a href="/" target="_blank" rel="noopener" className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[var(--soft)]">
               <ExternalLink size={16} aria-hidden /> Lihat website
             </a>
             <form action={keluar}>
-              <button type="submit" className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-merah hover:bg-[#f2f3f5]">
+              <button type="submit" className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-blue-teks hover:bg-[var(--soft)]">
                 <LogOut size={16} aria-hidden /> Keluar
               </button>
             </form>
@@ -432,8 +432,8 @@ export function Sidebar({
     <Link href="/admin" className="flex min-w-0 items-center gap-2.5" onClick={() => tutupLaci(false)}>
       <Image src={sekolah.logo} alt="" width={502} height={497} sizes="36px" className="h-auto w-9 shrink-0" />
       <span className="min-w-0 leading-tight">
-        <span className="block truncate text-sm font-bold text-[#1f2328]">{sekolah.namaPendek}</span>
-        <span className="block text-xs text-[#5b6270]">Portal Sekolah</span>
+        <span className="block truncate text-sm font-bold text-[var(--ink)]">{sekolah.namaPendek}</span>
+        <span className="block text-xs text-[var(--muted)]">Portal Sekolah</span>
       </span>
     </Link>
   );
@@ -442,11 +442,11 @@ export function Sidebar({
       href="/admin/notifikasi"
       onClick={() => tutupLaci(false)}
       aria-label={`Notifikasi${notif ? `, ${notif} belum dibaca` : ""}`}
-      className="relative ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-md text-[#3b414b] hover:bg-[#f2f3f5]"
+      className="relative ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-md text-[var(--muted)] hover:bg-[var(--soft)]"
     >
       <Bell size={19} strokeWidth={1.75} aria-hidden />
       {notif > 0 && (
-        <span className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-merah px-1 text-[11px] font-bold text-white">
+        <span className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-blue-teks px-1 text-[11px] font-bold text-white">
           {notif > 99 ? "99+" : notif}
         </span>
       )}
@@ -456,14 +456,14 @@ export function Sidebar({
   return (
     <>
       {/* bilah atas ponsel */}
-      <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[#e3e5e8] bg-white px-4 print:hidden lg:hidden">
+      <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[var(--line)] bg-white px-4 print:hidden lg:hidden">
         <button
           ref={tombolMenu}
           type="button"
           onClick={() => setBuka(true)}
           aria-expanded={buka}
           aria-controls="laci-menu"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-[#d9dce1] text-[#1f2328]"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-[var(--line)] text-[var(--ink)]"
         >
           <Menu size={20} aria-hidden />
           <span className="sr-only">Buka menu</span>
@@ -477,9 +477,9 @@ export function Sidebar({
         <div className="fixed inset-0 z-40 print:hidden lg:hidden">
           <button type="button" aria-label="Tutup menu" tabIndex={-1} onClick={() => tutupLaci()} className="absolute inset-0 bg-black/30" />
           <div ref={laci} id="laci-menu" role="dialog" aria-modal="true" aria-label="Menu admin" className="absolute inset-y-0 left-0 flex w-[min(320px,88vw)] flex-col bg-white shadow-xl">
-            <div className="flex h-14 items-center gap-2 border-b border-[#eceef1] px-4">
+            <div className="flex h-14 items-center gap-2 border-b border-[var(--line)] px-4">
               {merek}
-              <button type="button" onClick={() => tutupLaci()} className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-md hover:bg-[#f2f3f5]">
+              <button type="button" onClick={() => tutupLaci()} className="ml-auto grid h-10 w-10 shrink-0 place-items-center rounded-md hover:bg-[var(--soft)]">
                 <X size={20} aria-hidden />
                 <span className="sr-only">Tutup menu</span>
               </button>
@@ -490,7 +490,7 @@ export function Sidebar({
       )}
 
       {/* sidebar layar lebar dengan area gulir sendiri */}
-      <aside className="hidden border-r border-[#e3e5e8] bg-white print:hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-[260px] lg:flex-col">
+      <aside className="hidden border-r border-[var(--line)] bg-white print:hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-[260px] lg:flex-col">
         <div className="flex h-16 shrink-0 items-center gap-2 px-4">
           {merek}
           {lonceng}

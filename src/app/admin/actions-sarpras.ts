@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { aksesAksi, getAkses } from "@/lib/admin/auth";
+import { aksesAksi, getAkses, punya } from "@/lib/admin/auth";
 import { cekBukti, unggahPrivat } from "@/lib/admin/berkas";
 import { pesanError, uuid } from "@/lib/admin/schema";
 import { dariLokalWIB } from "@/lib/lms";
@@ -39,8 +39,10 @@ async function fotoDari(form: FormData, supabase: NonNullable<Awaited<ReturnType
 /* ============================ Inventaris ============================ */
 
 export async function simpanBarang(_p: HasilAksi, form: FormData): Promise<HasilAksi> {
-  const ctx = await aksesAksi("sarpras.kelola");
-  if (!ctx) return TANPA_AKSES;
+  // Wakasek Sarpras (sarpras.kelola) atau laboran (sarpras.inventaris: tanpa harga & sumber dana — dijaga juga oleh trigger)
+  const ctx = await aksesAksi();
+  if (!ctx || !(punya(ctx.akses, "sarpras.kelola") || punya(ctx.akses, "sarpras.inventaris"))) return TANPA_AKSES;
+  const anggaran = punya(ctx.akses, "sarpras.kelola");
   const id = String(form.get("id") ?? "");
   const p = z
     .object({
@@ -66,11 +68,12 @@ export async function simpanBarang(_p: HasilAksi, form: FormData): Promise<Hasil
   if (!p.success) return { ok: false, pesan: "Periksa isian.", errors: pesanError(p.error) };
   const foto = await fotoDari(form, ctx.supabase, ctx.akses.userId, "barang");
   if (foto.salah) return { ok: false, pesan: foto.salah, errors: { foto: foto.salah } };
+  const { harga, sumber_dana, ...tanpaAnggaran } = p.data;
   const baris = {
-    ...p.data,
+    ...tanpaAnggaran,
     ruang_id: p.data.ruang_id || null,
     tahun_perolehan: p.data.tahun_perolehan === "" ? null : p.data.tahun_perolehan,
-    harga: p.data.harga === "" ? null : p.data.harga,
+    ...(anggaran ? { harga: harga === "" ? null : harga, sumber_dana } : {}),
     ...(foto.path ? { foto_path: foto.path } : {}),
   };
   const r = id && uuid.safeParse(id).success

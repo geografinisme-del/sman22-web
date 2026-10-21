@@ -23,7 +23,7 @@ export async function DaftarNotifikasi({ supabase, kembali }: { supabase: Supaba
         {belum > 0 && (
           <form action={tandaiSemuaDibaca}>
             <input type="hidden" name="kembali" value={kembali} />
-            <button className="text-sm font-semibold text-brand-700 underline">Tandai semua dibaca</button>
+            <button className="text-sm font-semibold text-blue-teks underline">Tandai semua dibaca</button>
           </form>
         )}
       </div>
@@ -33,8 +33,8 @@ export async function DaftarNotifikasi({ supabase, kembali }: { supabase: Supaba
         <ul className="divide-y divide-black/5 overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
           {list.map((n) => (
             <li key={n.id}>
-              <a href={`/notif/${n.id}`} className={`flex gap-3 px-4 py-3 hover:bg-black/[0.03] ${n.dibaca_pada ? "" : "bg-brand-50/60"}`}>
-                <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${n.dibaca_pada ? "bg-transparent" : n.prioritas === "penting" ? "bg-merah" : "bg-brand-700"}`} aria-hidden />
+              <a href={`/notif/${n.id}`} className={`flex gap-3 px-4 py-3 hover:bg-black/[0.03] ${n.dibaca_pada ? "" : "bg-soft/60"}`}>
+                <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${n.dibaca_pada ? "bg-transparent" : n.prioritas === "penting" ? "bg-blue-teks" : "bg-ink/85"}`} aria-hidden />
                 <span className="min-w-0 flex-1">
                   <span className={`block ${n.dibaca_pada ? "" : "font-semibold"}`}>{n.judul}</span>
                   {n.isi && <span className="block text-sm text-black/60">{n.isi}</span>}

@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { sekolah } from "@/content/sekolah";
 import { getSitus } from "@/lib/data";
-import { cssTema } from "@/lib/tema";
+import { cssBidang } from "@/lib/bidang";
+import { fontJakarta, fontMono } from "./fonts";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seo } = await getSitus();
@@ -24,10 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // colorScheme "light": cegah peramban HP (mode gelap paksa) mengubah warna situs sehingga tampilan HP & laptop seragam
-export const viewport: Viewport = { themeColor: "#121831", colorScheme: "light" };
+export const viewport: Viewport = { themeColor: "#1f6ff0", colorScheme: "light" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const { tema } = await getSitus();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "HighSchool",
@@ -37,10 +37,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <html lang="id" data-scroll-behavior="smooth">
+    <html lang="id" data-scroll-behavior="smooth" className={`${fontJakarta.variable} ${fontMono.variable}`}>
       <head>
-        {/* warna tema dari Admin → Tema & Tampilan (sudah divalidasi berformat #rrggbb) */}
-        <style dangerouslySetInnerHTML={{ __html: cssTema(tema) }} />
+        {/* warna penanda bidang (src/lib/bidang.ts) — nilai tetap dari kode, bukan masukan pengguna */}
+        <style dangerouslySetInnerHTML={{ __html: cssBidang() }} />
       </head>
       <body className="flex min-h-screen flex-col antialiased">
         {children}

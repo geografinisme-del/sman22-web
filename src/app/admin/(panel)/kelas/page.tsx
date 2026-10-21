@@ -19,7 +19,7 @@ export default async function Kelas({ searchParams }: { searchParams: Promise<{ 
         <JudulHalaman judul="Kelas" />
         <KosongAdmin
           teks="Buat tahun ajaran terlebih dahulu sebelum menambah kelas."
-          aksi={<Link href="/admin/tahun-ajaran" className="font-semibold text-brand-700 underline">Buka Tahun Ajaran</Link>}
+          aksi={<Link href="/admin/tahun-ajaran" className="font-semibold text-blue-teks underline">Buka Tahun Ajaran</Link>}
         />
       </>
     );
@@ -64,7 +64,7 @@ export default async function Kelas({ searchParams }: { searchParams: Promise<{ 
 
       {bisaUbah && (
         <Kartu className="mb-8">
-          <h2 className="mb-5 font-serif text-2xl">{diubah ? `Ubah kelas ${diubah.nama}` : "Tambah kelas"}</h2>
+          <h2 className="mb-5 text-2xl">{diubah ? `Ubah kelas ${diubah.nama}` : "Tambah kelas"}</h2>
           <FormKelas
             key={diubah?.id ?? "baru"}
             guru={guru ?? []}
@@ -100,7 +100,7 @@ export default async function Kelas({ searchParams }: { searchParams: Promise<{ 
               </tr>
             )}
             {list.map((k) => (
-              <tr key={k.id} className="hover:bg-krem/50">
+              <tr key={k.id} className="hover:bg-soft/50">
                 <td className={`${kelasTd} font-semibold`}>
                   <Link href={`/admin/kelas/${k.id}`} className="hover:underline">
                     {k.nama}
@@ -123,7 +123,7 @@ export default async function Kelas({ searchParams }: { searchParams: Promise<{ 
                     {bisaUbah && k.jumlah_siswa === 0 && (
                       <form action={arsipkanKelas}>
                         <input type="hidden" name="id" value={k.id} />
-                        <button type="submit" className="rounded-full px-3 py-1 text-merah hover:bg-red-50">
+                        <button type="submit" className="rounded-full px-3 py-1 text-blue-teks hover:bg-red-50">
                           Arsipkan
                         </button>
                       </form>

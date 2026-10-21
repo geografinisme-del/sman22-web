@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { JudulHalaman, Notifikasi } from "@/components/admin/ui";
 import { BagianHariIni, Keadaan, Panel } from "@/components/dashboard/HariIni";
+import { DasborDasar } from "@/components/dashboard/DasborDasar";
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
 import { kalimatAktivitas, waktuWIB } from "@/lib/admin/label-audit";
@@ -37,6 +38,19 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
         supabase.from("profil_sekolah").select("*").eq("id", 1).maybeSingle(),
       ])
     : null;
+
+  // media yang masih ilustrasi sementara (kolom is_placeholder dari migrasi 20261210; galat = dianggap 0)
+  const mediaSementara = punya(akses, "konten.kelola")
+    ? (
+        await Promise.all(
+          (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda", "tur_sekolah", "staf_publik", "fasilitas", "menu_sorotan"] as const).map((t) => {
+            const q = supabase.from(t).select("id", { count: "exact", head: true }).eq("is_placeholder", true);
+            // tabel tanpa kolom deleted_at (nonaktif = aktif false); galat (tabel belum dimigrasi) dihitung 0
+            return t === "berita" || t === "galeri" || t === "prestasi" ? q.is("deleted_at", null) : q;
+          }),
+        )
+      ).reduce((n, r) => n + (r.error ? 0 : (r.count ?? 0)), 0)
+    : 0;
 
   let induk: null | { gagal: boolean; siswa: number; pegawai: number; kelas: number; tingkat: Record<string, number>; tanpaKelas: number } = null;
   if (punya(akses, "data_induk.baca")) {
@@ -85,7 +99,7 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
         deskripsi={`Halo, ${akses.nama || "Bapak/Ibu"}. Berikut hal yang perlu Anda perhatikan hari ini.`}
         aksi={
           berperan(akses, "wali_kelas") ? (
-            <Link href="/admin/kelas-saya" className="inline-flex min-h-10 shrink-0 items-center rounded-lg border border-[#d9dce1] bg-white px-4 text-sm font-semibold hover:border-[#9aa1ab]">
+            <Link href="/admin/kelas-saya" className="inline-flex min-h-10 shrink-0 items-center rounded-lg border border-[var(--line)] bg-white px-4 text-sm font-semibold hover:border-[var(--muted)]">
               Kelas perwalian saya
             </Link>
           ) : undefined
@@ -97,8 +111,16 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
         </div>
       )}
       <Notifikasi kode={pesan === "tanpa-akses" ? undefined : pesan} />
+      {mediaSementara > 0 && (
+        <div role="status" className="mb-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
+          <strong>{mediaSementara} media</strong> di website masih berupa ilustrasi sementara (berlabel &ldquo;Ilustrasi sementara&rdquo;). Ganti dengan foto asli sekolah
+          melalui <Link href="/admin/berita" className="font-semibold underline">Berita</Link>, <Link href="/admin/galeri" className="font-semibold underline">Galeri</Link>,{" "}
+          <Link href="/admin/prestasi" className="font-semibold underline">Prestasi</Link>, <Link href="/admin/kartu-beranda" className="font-semibold underline">Kartu Beranda</Link>, <Link href="/admin/tur-sekolah" className="font-semibold underline">Tur Sekolah</Link>, <Link href="/admin/staf-publik" className="font-semibold underline">Guru &amp; Tendik</Link>, <Link href="/admin/fasilitas" className="font-semibold underline">Fasilitas</Link>, atau <Link href="/admin/situs" className="font-semibold underline">Tampilan Website</Link>.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        <DasborDasar supabase={supabase} akses={akses} />
         <BagianHariIni supabase={supabase} akses={akses} />
 
         {induk && (
@@ -130,12 +152,12 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
                     ["Kelas", induk.kelas],
                   ].map(([l, v]) => (
                     <div key={l}>
-                      <dt className="text-sm text-[#5b6270]">{l}</dt>
+                      <dt className="text-sm text-[var(--muted)]">{l}</dt>
                       <dd className="text-[1.625rem] font-semibold leading-none tabular-nums">{v}</dd>
                     </div>
                   ))}
                 </dl>
-                <p className="mt-4 border-t border-[#eceef1] pt-3 text-sm text-[#3b414b]">
+                <p className="mt-4 border-t border-[var(--line)] pt-3 text-sm text-[var(--muted)]">
                   {Object.entries(induk.tingkat)
                     .map(([t, v]) => `Kelas ${t}: ${v}`)
                     .join(" · ")}
@@ -168,19 +190,19 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
                   </p>
                   <p className="mt-0.5 text-[#5c3d00]">{profilKosong.map(([, l]) => l).join(", ")}.</p>
                 </div>
-                <Link href="/admin/profil" className="inline-flex min-h-9 shrink-0 items-center rounded-lg bg-brand-900 px-3 text-sm font-semibold text-white hover:bg-brand-700">
+                <Link href="/admin/profil" className="inline-flex min-h-9 shrink-0 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white hover:bg-ink/85">
                   Lengkapi profil sekolah
                 </Link>
               </div>
             ) : (
-              <p className="text-sm text-[#3b414b]">Semua isian profil sekolah sudah terisi.</p>
+              <p className="text-sm text-[var(--muted)]">Semua isian profil sekolah sudah terisi.</p>
             )}
             {kontenGagal ? (
               <div className="mt-3">
                 <Keadaan jenis="gagal">Ringkasan konten gagal dimuat.</Keadaan>
               </div>
             ) : (
-              <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-[#eceef1] pt-4 sm:grid-cols-4">
+              <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-[var(--line)] pt-4 sm:grid-cols-4">
                 {[
                   ["Berita terbit", konten[0].count ?? 0, "/admin/berita"],
                   ["Draf berita", konten[1].count ?? 0, "/admin/berita"],
@@ -188,7 +210,7 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
                   ["Agenda mendatang", konten[3].count ?? 0, "/admin/agenda"],
                 ].map(([l, v, href]) => (
                   <div key={String(l)}>
-                    <dt className="text-sm text-[#5b6270]">
+                    <dt className="text-sm text-[var(--muted)]">
                       <Link href={String(href)} className="hover:underline">
                         {l}
                       </Link>
@@ -216,11 +238,11 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
                 Aktivitas gagal dimuat.
               </Keadaan>
             ) : !audit?.length ? (
-              <p className="text-sm text-[#3b414b]">Belum ada aktivitas tercatat.</p>
+              <p className="text-sm text-[var(--muted)]">Belum ada aktivitas tercatat.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[520px] text-left text-sm">
-                  <thead className="border-b border-[#eceef1] text-[#5b6270]">
+                  <thead className="border-b border-[var(--line)] text-[var(--muted)]">
                     <tr>
                       <th scope="col" className="py-2 pr-4 font-semibold">
                         Aktivitas
@@ -233,12 +255,12 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#eceef1]">
+                  <tbody className="divide-y divide-[var(--line)]">
                     {audit.map((a) => (
                       <tr key={a.id}>
                         <td className="py-2.5 pr-4">{kalimatAktivitas(a)}</td>
-                        <td className="max-w-[220px] truncate py-2.5 pr-4 text-[#3b414b]">{a.user_id ? (namaPelaku.get(a.user_id) ?? "Pengguna") : "Sistem"}</td>
-                        <td className="whitespace-nowrap py-2.5 tabular-nums text-[#3b414b]">
+                        <td className="max-w-[220px] truncate py-2.5 pr-4 text-[var(--muted)]">{a.user_id ? (namaPelaku.get(a.user_id) ?? "Pengguna") : "Sistem"}</td>
+                        <td className="whitespace-nowrap py-2.5 tabular-nums text-[var(--muted)]">
                           <time dateTime={a.waktu}>{waktuWIB(a.waktu)}</time>
                         </td>
                       </tr>

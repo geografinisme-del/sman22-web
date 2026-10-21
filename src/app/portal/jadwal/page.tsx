@@ -19,7 +19,7 @@ export default async function JadwalPortal() {
   const entriKelas = new Map(kelasIds.map((k, i) => [k, perKelas[i]]));
   const nama = await namaUntukPerubahan(supabase, perubahan);
 
-  if (!kelasIds.length) return <p className="rounded-2xl bg-white p-6 text-[#5b6270] ring-1 ring-black/5">Belum ada kelas untuk ditampilkan.</p>;
+  if (!kelasIds.length) return <p className="rounded-2xl bg-white p-6 text-[var(--muted)] ring-1 ring-black/5">Belum ada kelas untuk ditampilkan.</p>;
 
   return (
     <div className="space-y-8">
@@ -31,8 +31,8 @@ export default async function JadwalPortal() {
         const akanDatang = milik.filter((p) => p.tanggal > hari).sort((x, y) => (x.tanggal < y.tanggal ? -1 : 1));
         return (
           <section key={a.id}>
-            <h1 className="font-serif text-3xl">Jadwal kelas {a.kelas}</h1>
-            {anak.length > 1 && <p className="text-sm text-[#5b6270]">{a.nama}</p>}
+            <h1 className="text-3xl">Jadwal kelas {a.kelas}</h1>
+            {anak.length > 1 && <p className="text-sm text-[var(--muted)]">{a.nama}</p>}
             {akanDatang.length > 0 && (
               <div className="my-4 rounded-2xl bg-amber-50 p-4 text-sm ring-1 ring-amber-200">
                 <p className="font-semibold">Perubahan jadwal minggu ini</p>

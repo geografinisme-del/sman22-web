@@ -32,7 +32,7 @@ export default async function DetailSupervisi({ params, searchParams }: { params
         <div className="space-y-6">
           <Kartu>
             <div className="flex flex-wrap items-end gap-6">
-              <p><span className="block font-serif text-6xl leading-none tabular-nums">{Number(s.nilai).toFixed(0)}</span><span className="text-sm text-black/60">nilai (rata-rata × 25)</span></p>
+              <p><span className="block text-6xl leading-none tabular-nums">{Number(s.nilai).toFixed(0)}</span><span className="text-sm text-black/60">nilai (rata-rata × 25)</span></p>
               <p className="rounded-full bg-emerald-50 px-4 py-1.5 font-semibold text-emerald-800 ring-1 ring-emerald-200">{predikatSupervisi(Number(s.nilai))}</p>
             </div>
             {INSTRUMEN_SUPERVISI.map((b) => (
@@ -51,11 +51,11 @@ export default async function DetailSupervisi({ params, searchParams }: { params
           </Kartu>
           <div className="grid gap-6 lg:grid-cols-3">
             {([["Kekuatan", s.kekuatan], ["Perlu diperbaiki", s.perbaikan], ["Rekomendasi", s.rekomendasi]] as const).map(([j, t]) => (
-              <Kartu key={j}><h2 className="mb-2 font-serif text-xl">{j}</h2><p className="whitespace-pre-line text-sm text-black/70">{t || "—"}</p></Kartu>
+              <Kartu key={j}><h2 className="mb-2 text-xl">{j}</h2><p className="whitespace-pre-line text-sm text-black/70">{t || "—"}</p></Kartu>
             ))}
           </div>
           <Kartu>
-            <h2 className="mb-3 font-serif text-xl">Tanggapan guru</h2>
+            <h2 className="mb-3 text-xl">Tanggapan guru</h2>
             {s.pegawai_id === saya ? <FormTanggapan id={s.id} nilai={s.tanggapan_guru} /> : <p className="whitespace-pre-line text-sm text-black/70">{s.tanggapan_guru || "Belum ada tanggapan."}</p>}
           </Kartu>
         </div>

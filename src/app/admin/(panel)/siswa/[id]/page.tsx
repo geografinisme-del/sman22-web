@@ -41,7 +41,7 @@ export default async function DetailSiswa({ params, searchParams }: { params: Pr
         <FormSiswa data={data} kelas={kelas ?? []} bisaUbah={bisaUbah} namaTa={ta?.nama ?? null} />
         <div className="space-y-6">
           <Kartu>
-            <h2 id="orang-tua" className="mb-4 font-serif text-2xl">Orang tua / wali</h2>
+            <h2 id="orang-tua" className="mb-4 text-2xl">Orang tua / wali</h2>
             {!ortu?.length ? (
               <p className="text-sm text-black/50">Belum ada data orang tua.</p>
             ) : (
@@ -62,7 +62,7 @@ export default async function DetailSiswa({ params, searchParams }: { params: Pr
                         <form action={lepasOrangTua}>
                           <input type="hidden" name="siswa_id" value={id} />
                           <input type="hidden" name="orang_tua_id" value={d.id} />
-                          <button type="submit" className="text-xs text-merah hover:underline">Lepas</button>
+                          <button type="submit" className="text-xs text-blue-teks hover:underline">Lepas</button>
                         </form>
                       )}
                     </li>
@@ -72,7 +72,7 @@ export default async function DetailSiswa({ params, searchParams }: { params: Pr
             )}
             {bisaUbah && (
               <details className="mt-4">
-                <summary className="cursor-pointer text-sm font-semibold text-brand-700">+ Tambah orang tua/wali</summary>
+                <summary className="cursor-pointer text-sm font-semibold text-blue-teks">+ Tambah orang tua/wali</summary>
                 <div className="mt-4">
                   <FormOrtu siswaId={id} />
                 </div>
@@ -80,7 +80,7 @@ export default async function DetailSiswa({ params, searchParams }: { params: Pr
             )}
           </Kartu>
           <Kartu>
-            <h2 className="mb-4 font-serif text-2xl">Riwayat kelas</h2>
+            <h2 className="mb-4 text-2xl">Riwayat kelas</h2>
             {!riwayat?.length ? (
               <p className="text-sm text-black/50">Belum pernah ditempatkan di kelas.</p>
             ) : (

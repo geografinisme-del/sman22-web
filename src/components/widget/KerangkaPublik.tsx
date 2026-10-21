@@ -1,16 +1,18 @@
 import "server-only";
 import type { CSSProperties, ReactNode } from "react";
-import { Footer } from "@/components/Footer";
-import { Header } from "@/components/Header";
-import { PengamatMuncul } from "@/components/gerak/PengamatMuncul";
+import { dataMenu } from "@/components/langit/dataMenu";
+import { GerakLangit } from "@/components/langit/GerakLangit";
+import { SiteFooter } from "@/components/langit/SiteFooter";
+import { SiteHeader } from "@/components/langit/SiteHeader";
 import { PengaturOverlay } from "@/components/gerak/PengaturOverlay";
 import type { InfoPrioritas } from "@/components/gerak/ModalPrioritas";
 import type { Informasi } from "@/components/gerak/DialogInformasi";
 import { getBerita, getPengumuman } from "@/lib/data";
 import type { Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import { FONT, PALET } from "@/lib/tampilan/token";
-import "@/components/beranda/beranda.css";
-import "./tema.css";
+import "@/components/langit/halaman.css";
+import "@/components/langit/overlay.css";
+import "@/components/langit/langit.css";
 
 const HARI_BERITA_RUTIN = 14;
 
@@ -21,14 +23,14 @@ async function muatOverlay(k: Konfigurasi): Promise<{ prioritas: InfoPrioritas |
   const p = pengumuman.find((x) => x.prioritas);
   const prioritas: InfoPrioritas | null =
     k.popup.prioritas && p
-      ? { id: p.id, judul: p.judul, tanggal: p.tanggal, isi: p.isi, kategori: "Pengumuman prioritas", poster: p.poster, tautan: p.tautan, href: `/agenda#pengumuman-${p.id}` }
+      ? { id: p.id, judul: p.judul, tanggal: p.tanggal, isi: p.isi, kategori: "Pengumuman prioritas", poster: p.poster, tautan: p.tautan, href: `/pengumuman#pengumuman-${p.id}` }
       : null;
   const batas = new Date(Date.now() - HARI_BERITA_RUTIN * 864e5).toISOString().slice(0, 10);
   const rutin: Informasi[] = k.popup.rutin
     ? [
         ...pengumuman
           .filter((x) => !x.prioritas)
-          .map((x) => ({ id: x.id, jenis: x.penting ? "Pengumuman penting" : "Pengumuman", judul: x.judul, tanggal: x.tanggal, isi: x.isi, href: `/agenda#pengumuman-${x.id}` })),
+          .map((x) => ({ id: x.id, jenis: x.penting ? "Pengumuman penting" : "Pengumuman", judul: x.judul, tanggal: x.tanggal, isi: x.isi, href: `/pengumuman#pengumuman-${x.id}` })),
         ...berita
           .filter((b) => b.tanggal >= batas)
           .map((b) => ({ id: `berita-${b.slug}`, jenis: b.kategori || "Berita", judul: b.judul, tanggal: b.tanggal, isi: b.ringkasan, href: `/berita/${b.slug}`, gambar: b.gambar })),
@@ -38,33 +40,34 @@ async function muatOverlay(k: Konfigurasi): Promise<{ prioritas: InfoPrioritas |
 }
 
 /**
- * Kerangka halaman publik: header, konten, footer, pengamat gerak, dan pengatur overlay.
- * Token tema (palet, font) dipasang sebagai variabel CSS di pembungkus ini saja — dasbor admin tidak
- * terpengaruh. `data-tema` & `data-gerak` memilih varian CSS tema dan tingkat gerak.
+ * Kerangka halaman publik "Langit cerah": SiteHeader (+ menu layar penuh), konten, SiteFooter, dan pengatur overlay.
+ * Dipakai SEMUA halaman publik. Token tema (palet, font) dipasang sebagai variabel CSS di pembungkus ini saja —
+ * dasbor admin tidak terpengaruh. Tanpa tombol/panel "Informasi" mengambang (hanya pemandu = satu tombol mengambang).
  */
 export async function KerangkaPublik({ konfig, halamanUtama = "/", pita, children }: { konfig: Konfigurasi; halamanUtama?: string; pita?: ReactNode; children: ReactNode }) {
-  const overlay = await muatOverlay(konfig);
+  const [overlay, menu] = await Promise.all([muatOverlay({ ...konfig, popup: { ...konfig.popup, rutin: false } }), dataMenu()]);
   const p = PALET[konfig.palet];
   const gaya = { "--tema-utama": p.utama, "--tema-aksen": p.aksen, "--tema-gelap": p.gelap, "--font-publik": FONT[konfig.font].css } as CSSProperties;
   return (
-    <div className="situs-publik flex min-h-screen flex-col" data-tema={konfig.tema} data-gerak={konfig.gerak} style={gaya}>
-      <a href="#konten" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">
+    <div className="situs-publik situs-langit flex min-h-screen flex-col" data-tema={konfig.tema} data-gerak={konfig.gerak} style={gaya}>
+      <a href="#konten" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-white focus:px-4 focus:py-2">
         Lewati ke konten
       </a>
       {pita}
-      <Header />
+      <SiteHeader data={menu} />
       <main id="konten" tabIndex={-1} className="lp halaman-publik flex-1 focus:outline-none">
         {children}
       </main>
-      <Footer />
-      <PengamatMuncul />
+      <SiteFooter data={menu} />
+      <GerakLangit tingkat={konfig.gerak} />
       {/* lapisan overlay memakai gaya situs publik (.lp) walau berada di luar <main> */}
       <div className="lp">
         <PengaturOverlay
           halamanUtama={halamanUtama}
-          aturan={{ prioritas: konfig.popup.prioritas, rutin: konfig.popup.rutin, pemandu: konfig.pemandu.aktif }}
+          aturan={{ prioritas: konfig.popup.prioritas, rutin: false, pemandu: konfig.pemandu.aktif }}
           prioritas={overlay.prioritas}
           rutin={overlay.rutin}
+          adaTombolInfo={false}
         />
       </div>
     </div>

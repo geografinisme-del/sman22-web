@@ -8,7 +8,7 @@ import { DAFTAR_IKON, ISI_OTOMATIS, LABEL_IKON, type IsiOtomatis, type KartuBent
 import { simpanTema } from "../../actions-tema";
 
 const kelas =
-  "w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 text-[15px] outline-none transition focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10";
+  "w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 text-[15px] outline-none transition focus:border-muted focus:ring-4 focus:ring-muted/10";
 
 /** Pilihan halaman tujuan yang umum */
 const TUJUAN = [
@@ -16,7 +16,7 @@ const TUJUAN = [
   ["/sambutan", "Sambutan kepala sekolah"],
   ["/program", "Program unggulan"],
   ["/berita", "Berita"],
-  ["/berita?kategori=Prestasi", "Prestasi siswa"],
+  ["/prestasi", "Prestasi siswa"],
   ["/agenda", "Agenda"],
   ["/galeri", "Galeri"],
   ["/spmb", "SPMB"],
@@ -27,17 +27,10 @@ const TUJUAN = [
   ["/masuk", "Masuk portal"],
 ] as const;
 
-const PALET = [
-  { nama: "Kobalt & ungu (bawaan)", utama: "#284fd7", aksen: "#7c5cff", gelap: "#0b0a1a" },
-  { nama: "Merah marun (logo)", utama: "#b3123a", aksen: "#e2a33b", gelap: "#140a0d" },
-  { nama: "Hijau sekolah", utama: "#1f7a4d", aksen: "#36c58a", gelap: "#07140e" },
-  { nama: "Biru laut", utama: "#0e6fb8", aksen: "#22c1d6", gelap: "#06121c" },
-  { nama: "Jingga hangat", utama: "#d2561e", aksen: "#f2b23d", gelap: "#140b06" },
-];
 
 function ErrorKolom({ nama }: { nama: string }) {
   const e = useErrorKolom(nama);
-  return e ? <span className="block text-sm font-normal text-merah">{e}</span> : null;
+  return e ? <span className="block text-sm font-normal text-blue-teks">{e}</span> : null;
 }
 
 export function TombolReset({ yang }: { yang: "warna" | "beranda" | "masuk" }) {
@@ -45,7 +38,7 @@ export function TombolReset({ yang }: { yang: "warna" | "beranda" | "masuk" }) {
     <FormAksi aksi={simpanTema} className="contents">
       <input type="hidden" name="bagian" value="reset" />
       <input type="hidden" name="yang" value={yang} />
-      <button type="submit" className="text-sm text-black/55 underline hover:text-merah">
+      <button type="submit" className="text-sm text-black/55 underline hover:text-blue-teks">
         Kembalikan bawaan
       </button>
     </FormAksi>
@@ -53,73 +46,6 @@ export function TombolReset({ yang }: { yang: "warna" | "beranda" | "masuk" }) {
 }
 
 /* ---------------- warna ---------------- */
-export function FormWarna({ w }: { w: Tema["warna"] }) {
-  const [warna, setWarna] = useState(w);
-  return (
-    <FormAksi aksi={simpanTema} className="space-y-5">
-      <input type="hidden" name="bagian" value="warna" />
-      <div>
-        <p className="mb-2 text-sm font-semibold">Palet siap pakai</p>
-        <div className="flex flex-wrap gap-2">
-          {PALET.map((p) => (
-            <button
-              key={p.nama}
-              type="button"
-              onClick={() => setWarna({ utama: p.utama, aksen: p.aksen, gelap: p.gelap })}
-              className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 text-sm ring-1 ring-black/10 hover:ring-black/30"
-            >
-              <span className="flex">
-                {[p.utama, p.aksen, p.gelap].map((c) => (
-                  <span key={c} className="-ml-1 h-5 w-5 rounded-full ring-2 ring-white first:ml-0" style={{ background: c }} />
-                ))}
-              </span>
-              {p.nama}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        {(
-          [
-            ["utama", "Warna utama", "Tombol, tautan, judul kecil"],
-            ["aksen", "Warna aksen", "Cahaya, gradasi, sorotan"],
-            ["gelap", "Warna latar gelap", "Hero, kartu kaca, halaman masuk"],
-          ] as const
-        ).map(([k, label, bantuan]) => (
-          <label key={k} className="block text-sm font-semibold">
-            {label}
-            <span className="mt-1 flex items-center gap-2">
-              <input type="color" value={warna[k]} onChange={(e) => setWarna({ ...warna, [k]: e.target.value })} className="h-11 w-14 cursor-pointer rounded-lg border border-black/15 bg-white p-1" aria-label={`${label} (pemilih)`} />
-              <input name={k} value={warna[k]} onChange={(e) => setWarna({ ...warna, [k]: e.target.value })} maxLength={7} className={kelas} />
-            </span>
-            <span className="mt-1 block font-normal text-black/50">{bantuan}</span>
-            <ErrorKolom nama={k} />
-          </label>
-        ))}
-      </div>
-      <div>
-        <p className="mb-2 text-sm font-semibold">Pratinjau</p>
-        <div className="flex flex-wrap items-center gap-4 rounded-[10px] border border-[#e3e5e8] bg-white p-6">
-          <span className="rounded-lg px-5 py-3 text-sm font-semibold text-white" style={{ background: warna.utama }}>
-            Tombol utama
-          </span>
-          <span className="rounded-lg border px-5 py-3 text-sm font-semibold" style={{ borderColor: warna.utama, color: warna.utama }}>
-            Masuk Portal
-          </span>
-          <span className="font-semibold underline underline-offset-4" style={{ color: warna.utama }}>
-            Tautan
-          </span>
-          <span className="border-l-4 bg-[#faf8f5] px-3 py-2 text-sm" style={{ borderColor: warna.aksen }}>
-            Blok pengumuman
-          </span>
-        </div>
-      </div>
-      <TombolSimpan>Simpan warna</TombolSimpan>
-    </FormAksi>
-  );
-}
-
-/* ---------------- beranda ---------------- */
 export function FormBeranda({ b }: { b: Tema["beranda"] }) {
   return (
     <FormAksi aksi={simpanTema} className="space-y-5">
@@ -149,7 +75,7 @@ const idBaru = () => Math.random().toString(36).slice(2, 10);
 function PilihIkon({ nilai, ubah, kosong = true }: { nilai: NamaIkon | ""; ubah: (v: NamaIkon | "") => void; kosong?: boolean }) {
   return (
     <span className="flex items-center gap-2">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-900 text-white">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ink text-white">
         <Ikon nama={nilai} size={18} />
       </span>
       <select value={nilai} onChange={(e) => ubah(e.target.value as NamaIkon | "")} className={kelas}>
@@ -212,7 +138,7 @@ export function FormBento({ kartu }: { kartu: KartuBento[] }) {
         {daftar.map((k, i) => {
           const gambar = pratinjau[k.id] || (k.hapusGambar ? "" : k.gambar);
           return (
-            <li key={k.id} className="rounded-2xl bg-krem p-4">
+            <li key={k.id} className="rounded-2xl bg-soft p-4">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <p className="font-semibold">
                   Kartu {i + 1} <span className="font-normal text-black/50">· {k.judul || k.label || "tanpa judul"}</span>
@@ -224,7 +150,7 @@ export function FormBento({ kartu }: { kartu: KartuBento[] }) {
                   <button type="button" onClick={() => pindah(i, 1)} disabled={i === daftar.length - 1} className="rounded-lg p-2 hover:bg-white disabled:opacity-30" aria-label="Turunkan">
                     <ArrowDown size={16} />
                   </button>
-                  <button type="button" onClick={() => setDaftar((d) => d.filter((x) => x.id !== k.id))} className="rounded-lg p-2 text-merah hover:bg-white" aria-label="Hapus kartu">
+                  <button type="button" onClick={() => setDaftar((d) => d.filter((x) => x.id !== k.id))} className="rounded-lg p-2 text-blue-teks hover:bg-white" aria-label="Hapus kartu">
                     <Trash2 size={16} />
                   </button>
                 </span>
@@ -294,7 +220,7 @@ export function FormBento({ kartu }: { kartu: KartuBento[] }) {
                         className="w-full text-xs"
                       />
                       {k.gambar && !k.hapusGambar && (
-                        <button type="button" onClick={() => ubah(k.id, { hapusGambar: true })} className="text-left text-xs text-merah underline">
+                        <button type="button" onClick={() => ubah(k.id, { hapusGambar: true })} className="text-left text-xs text-blue-teks underline">
                           hapus gambar
                         </button>
                       )}
@@ -311,7 +237,7 @@ export function FormBento({ kartu }: { kartu: KartuBento[] }) {
         <button
           type="button"
           onClick={() => setDaftar((d) => [...d, { id: idBaru(), label: "", judul: "Kartu baru", teks: "", tautan: "/profil", ikon: "Sparkles", gambar: "", ukuran: "biasa", isi: "" }])}
-          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-brand-700 ring-1 ring-brand-700/30 hover:bg-white"
+          className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-blue/30 hover:bg-white"
         >
           <Plus size={16} /> Tambah kartu
         </button>

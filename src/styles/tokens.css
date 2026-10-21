@@ -1,0 +1,87 @@
+/*
+ * DESIGN TOKENS — "Langit cerah + Tur sekolah" (satu-satunya sumber token situs).
+ * Diimpor oleh app/globals.css; Tailwind v4 membaca bagian @theme di bawah sehingga kelas utilitas
+ * (bg-sky-1, text-ink, font-mono, rounded-kartu, …) mengambil nilai yang sama.
+ *
+ * Kontras (WCAG): --ink di atas putih 18,4:1 · --muted di atas putih 7,6:1 · --blue di atas putih 4,2:1
+ * (hanya untuk teks ≥ 18px/tebal & elemen grafis; teks kecil biru memakai --blue-teks 5,6:1) ·
+ * teks putih di atas --sky-1 4,6:1 · --ink di atas --lime 16:1.
+ * Marun hanya ada di berkas logo, tidak dipakai sebagai warna antarmuka.
+ */
+:root {
+  --sky-1: #1f6ff0;
+  --sky-2: #4b98ff;
+  --sky-3: #8ec4ff;
+  --haze: #bfe3ff;
+  --blue: #2f7df6;
+  --blue-teks: #1f5fd1;
+  --lime: #d7f56a;
+  --ink: #0b1220;
+  --muted: #4a5468;
+  --soft: #f2f4f7;
+  --line: #e6eaf0;
+  --white: #ffffff;
+
+  /* huruf (next/font, app/fonts.ts) */
+  --font-utama: var(--font-jakarta), "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
+  --font-kode: var(--font-jetbrains), ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* tipografi */
+  --judul-berat: 500;
+  --judul-spasi: -0.035em;
+  --label-spasi: 0.08em;
+  --text-hero: clamp(2.5rem, 1.4rem + 4.6vw, 5.25rem);
+  --text-h2: clamp(1.875rem, 1.3rem + 2.2vw, 3rem);
+  --text-isi: 1.0625rem;
+  --leading-isi: 1.7;
+  --lebar-paragraf: 68ch;
+
+  /* bentuk */
+  --radius-kartu: 20px;
+  --radius-kartu-besar: 24px;
+  --radius-blok: 32px;
+  --radius-input: 14px;
+  --radius-pil: 999px;
+  --bayangan-kartu: 0 1px 2px rgb(11 18 32 / 0.06), 0 8px 24px rgb(11 18 32 / 0.06);
+  --bayangan-tegas: 0 2px 6px rgb(11 18 32 / 0.1), 0 24px 48px rgb(11 18 32 / 0.18);
+  --cincin-fokus: 0 0 0 3px color-mix(in srgb, var(--blue) 45%, transparent);
+
+  /* tinggi header situs (SiteHeader mengukur ulang tinggi nyatanya lewat JS) */
+  --tinggi-header-min: 72px;
+  --tinggi-header: var(--tinggi-header-min);
+
+  /* gerak: easing tunggal, tanpa bounce */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --durasi-ui: 240ms;
+  --durasi-blok: 850ms;
+}
+
+/* Tailwind v4: token yang sama sebagai utilitas */
+@theme inline {
+  --color-sky-1: var(--sky-1);
+  --color-sky-2: var(--sky-2);
+  --color-sky-3: var(--sky-3);
+  --color-haze: var(--haze);
+  --color-blue: var(--blue);
+  --color-blue-teks: var(--blue-teks);
+  --color-white: var(--white);
+  --color-lime: var(--lime);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-soft: var(--soft);
+  --color-line: var(--line);
+  --font-sans: var(--font-utama);
+  --font-mono: var(--font-kode);
+  --radius-kartu: var(--radius-kartu);
+  --radius-pil: var(--radius-pil);
+  --ease-utama: var(--ease);
+}
+
+/* label kecil KAPITAL (JetBrains Mono) */
+.label-mono {
+  font-family: var(--font-kode);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: var(--label-spasi);
+  text-transform: uppercase;
+}

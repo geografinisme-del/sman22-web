@@ -13,7 +13,7 @@ export function FormJenis({ j }: { j?: { id: string; kode: string; nama: string;
       <Pilihan label="Kategori" nama="kategori" nilai={j?.kategori ?? "ringan"} opsi={[{ nilai: "ringan", label: "Ringan" }, { nilai: "sedang", label: "Sedang" }, { nilai: "berat", label: "Berat" }]} />
       <Input label="Poin" nama="poin" tipe="number" nilai={j?.poin ?? 5} />
       <TombolSimpan>{j ? "Simpan" : "Tambah"}</TombolSimpan>
-      {j && <button name="aktif" value="off" className="mb-1 text-sm text-merah underline">nonaktifkan</button>}
+      {j && <button name="aktif" value="off" className="mb-1 text-sm text-blue-teks underline">nonaktifkan</button>}
     </FormAksi>
   );
 }

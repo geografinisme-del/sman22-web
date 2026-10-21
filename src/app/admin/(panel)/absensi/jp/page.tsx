@@ -48,7 +48,7 @@ export default async function RekapJp({ searchParams }: { searchParams: Promise<
           {kelas.map((k) => <option key={k.id} value={k.id}>{k.nama}</option>)}
         </select>
         <input type="date" name="tanggal" defaultValue={tanggal} max={hariIniWIB()} aria-label="Tanggal" className="rounded-xl border border-black/15 bg-white px-3 py-2" />
-        <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
+        <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
         <span className="self-center text-sm text-black/60">{formatTanggal(tanggal, { weekday: "long" })}</span>
       </form>
 
@@ -65,10 +65,10 @@ export default async function RekapJp({ searchParams }: { searchParams: Promise<
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr>
-                  <th className="sticky left-0 border-b border-black/10 bg-krem px-3 py-2 text-sm">Siswa</th>
-                  <th className="border-b border-black/10 bg-krem px-2 py-2 text-center">Harian</th>
+                  <th className="sticky left-0 border-b border-black/10 bg-soft px-3 py-2 text-sm">Siswa</th>
+                  <th className="border-b border-black/10 bg-soft px-2 py-2 text-center">Harian</th>
                   {jadwal.map((j) => (
-                    <th key={j.id} className="border-b border-black/10 bg-krem px-2 py-2 text-center" title={`${j.mapel} · ${j.guru ?? ""}`}>
+                    <th key={j.id} className="border-b border-black/10 bg-soft px-2 py-2 text-center" title={`${j.mapel} · ${j.guru ?? ""}`}>
                       JP {j.jp_ke}<span className="block font-normal text-black/50">{j.kode_mapel || j.mapel.slice(0, 8)}</span>
                     </th>
                   ))}
@@ -93,7 +93,7 @@ export default async function RekapJp({ searchParams }: { searchParams: Promise<
               </tbody>
             </table>
           </div>
-          <h2 className="mt-8 font-serif text-2xl">Jurnal mengajar</h2>
+          <h2 className="mt-8 text-2xl">Jurnal mengajar</h2>
           <ul className="mt-3 divide-y divide-black/5 rounded-2xl bg-white ring-1 ring-black/5">
             {jadwal.map((j) => {
               const r = petaJurnal.get(j.id);

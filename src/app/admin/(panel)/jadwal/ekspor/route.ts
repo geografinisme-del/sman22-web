@@ -19,7 +19,7 @@ type Sel = {
 } | null;
 
 const GARIS = { borderColor: "#D9DEE8", borderStyle: "thin" as const };
-const KEPALA = { fontWeight: "bold" as const, color: "#FFFFFF", backgroundColor: "#284FD7", borderColor: "#284FD7", borderStyle: "thin" as const, alignVertical: "center" as const, height: 24 };
+const KEPALA = { fontWeight: "bold" as const, color: "#FFFFFF", backgroundColor: "var(--blue-teks)", borderColor: "var(--blue-teks)", borderStyle: "thin" as const, alignVertical: "center" as const, height: 24 };
 
 export async function GET(req: NextRequest) {
   const { supabase, akses } = await getAkses();

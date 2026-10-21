@@ -47,11 +47,11 @@ export default async function KehadiranGuru({ searchParams }: { searchParams: Pr
                     <td className={`${kelasTd} tabular-nums`}>
                       {jam(a?.jam_masuk)}
                       {a?.jarak_masuk != null && <span className="block text-xs text-black/40">±{a.jarak_masuk} m</span>}
-                      {a?.foto_masuk && <a href={`/berkas/swafoto-masuk/${a.id}`} target="_blank" rel="noopener" className="block text-xs text-brand-700 underline">swafoto</a>}
+                      {a?.foto_masuk && <a href={`/berkas/swafoto-masuk/${a.id}`} target="_blank" rel="noopener" className="block text-xs text-blue-teks underline">swafoto</a>}
                     </td>
                     <td className={`${kelasTd} tabular-nums`}>
                       {jam(a?.jam_pulang)}
-                      {a?.foto_pulang && <a href={`/berkas/swafoto-pulang/${a.id}`} target="_blank" rel="noopener" className="block text-xs text-brand-700 underline">swafoto</a>}
+                      {a?.foto_pulang && <a href={`/berkas/swafoto-pulang/${a.id}`} target="_blank" rel="noopener" className="block text-xs text-blue-teks underline">swafoto</a>}
                     </td>
                     <td className={kelasTd}>{a?.keterangan || "—"}</td>
                   </tr>
@@ -62,7 +62,7 @@ export default async function KehadiranGuru({ searchParams }: { searchParams: Pr
         </div>
         {punya(akses, "absensi_pegawai.kelola") && (
           <Kartu>
-            <h2 className="mb-4 font-serif text-2xl">Catat izin / sakit / dinas</h2>
+            <h2 className="mb-4 text-2xl">Catat izin / sakit / dinas</h2>
             <FormAbsenPegawai pegawai={pegawai ?? []} tanggal={tgl} />
           </Kartu>
         )}

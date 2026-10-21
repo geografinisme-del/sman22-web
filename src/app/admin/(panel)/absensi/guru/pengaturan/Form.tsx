@@ -21,7 +21,7 @@ export function FormKelompok({ k }: { k: Kelompok }) {
         <legend className="mb-1 text-sm font-semibold">Hari kerja</legend>
         <div className="flex flex-wrap gap-2">
           {[1, 2, 3, 4, 5, 6, 7].map((h) => (
-            <label key={h} className="cursor-pointer rounded-full px-3 py-1.5 text-sm ring-1 ring-black/15 has-[:checked]:bg-brand-900 has-[:checked]:text-white">
+            <label key={h} className="cursor-pointer rounded-full px-3 py-1.5 text-sm ring-1 ring-black/15 has-[:checked]:bg-ink has-[:checked]:text-white">
               <input type="checkbox" name="hari_kerja" value={h} defaultChecked={k.hari_kerja.includes(h)} className="sr-only" /> {HARI[h]}
             </label>
           ))}
@@ -60,7 +60,7 @@ export function FormLokasi({ lat, lng, radius, retensi }: { lat: number | null; 
           📍 Pakai lokasi saya sekarang (berdiri di halaman sekolah)
         </button>
         {info && <span className="text-sm text-black/60">{info}</span>}
-        {la && ln && <a href={`https://www.openstreetmap.org/?mlat=${la}&mlon=${ln}#map=18/${la}/${ln}`} target="_blank" rel="noopener" className="text-sm text-brand-700 underline">Cek di peta ↗</a>}
+        {la && ln && <a href={`https://www.openstreetmap.org/?mlat=${la}&mlon=${ln}#map=18/${la}/${ln}`} target="_blank" rel="noopener" className="text-sm text-blue-teks underline">Cek di peta ↗</a>}
       </div>
       <TombolSimpan>Simpan lokasi</TombolSimpan>
     </FormAksi>
@@ -71,10 +71,10 @@ export function TombolHapusSwafoto() {
   const [hasil, jalankan, proses] = useActionState(hapusSwafotoLama, { ok: false, pesan: "" });
   return (
     <form action={jalankan} onSubmit={(e) => { if (!confirm("Hapus permanen swafoto yang melewati masa simpan?")) e.preventDefault(); }}>
-      <button disabled={proses} className="rounded-full px-4 py-2 text-sm font-semibold text-merah ring-1 ring-red-200 disabled:opacity-50">
+      <button disabled={proses} className="rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-red-200 disabled:opacity-50">
         {proses ? "Menghapus…" : "Hapus swafoto lama sekarang"}
       </button>
-      {hasil.pesan && <span className={`ml-3 text-sm ${hasil.ok ? "text-emerald-700" : "text-merah"}`}>{hasil.pesan}</span>}
+      {hasil.pesan && <span className={`ml-3 text-sm ${hasil.ok ? "text-emerald-700" : "text-blue-teks"}`}>{hasil.pesan}</span>}
     </form>
   );
 }

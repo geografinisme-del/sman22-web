@@ -1,0 +1,263 @@
+/*
+ * Portal Digital 22 — desain "Langit cerah" di dalam kerangka publik (SiteHeader/SiteFooter, PageHero).
+ * Kartu peran = kartu yang sama dengan InfoCard; daftar ruang kerja = baris bergaris --line. Nilai dari tokens.css.
+ */
+
+/* ---------- status akun ---------- */
+.pd-akun {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-bottom: 40px;
+  padding: 14px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-kartu);
+  background: var(--soft);
+  font-size: 0.9375rem;
+}
+
+/* ---------- 3 kartu peran ---------- */
+.pd-peran {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .pd-peran {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.pd-peran a {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-kartu-besar);
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: var(--bayangan-kartu);
+  transition:
+    translate var(--durasi-ui) var(--ease),
+    box-shadow var(--durasi-ui) var(--ease);
+}
+.pd-peran a:hover {
+  box-shadow: var(--bayangan-tegas);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pd-peran a:hover {
+    translate: 0 -2px;
+  }
+}
+.pd-peran a:hover .media-slot img,
+.pd-peran a:focus-visible .media-slot img {
+  scale: 1.04;
+}
+.pd-peran h3 {
+  margin: 18px 22px 0;
+  font-size: 1.5rem;
+  font-weight: var(--judul-berat);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.pd-peran p {
+  margin: 6px 22px 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.pd-masuk {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: auto 22px 22px;
+  padding-top: 16px;
+  font-weight: 700;
+  color: var(--blue-teks);
+}
+.pd-masuk svg {
+  transition: translate var(--durasi-ui) var(--ease);
+}
+.pd-peran a:hover .pd-masuk svg,
+.pd-peran a:focus-visible .pd-masuk svg {
+  translate: 3px 0;
+}
+.pd-status {
+  display: inline-flex;
+  margin-left: 8px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pil);
+  background: var(--lime);
+  color: var(--ink);
+  font-family: var(--font-kode);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: var(--label-spasi);
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+/* ---------- daftar ruang kerja & layanan umum ---------- */
+.pd-daftar {
+  display: grid;
+  margin-top: 28px;
+  border-top: 1px solid var(--line);
+}
+@media (min-width: 900px) {
+  .pd-daftar {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+  }
+}
+.pd-daftar > li {
+  border-bottom: 1px solid var(--line);
+}
+.pd-baris {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  color: var(--ink);
+}
+.pd-inisial {
+  display: grid;
+  position: relative;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(160deg, var(--sky-1), var(--sky-2));
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.pd-baris strong {
+  display: block;
+  font-size: 1.0625rem;
+  transition: color var(--durasi-ui) var(--ease);
+}
+.pd-baris small {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.pd-pj {
+  margin-top: 2px;
+  color: var(--ink) !important;
+}
+.pd-panah {
+  color: var(--blue-teks);
+  transition: translate var(--durasi-ui) var(--ease);
+}
+.pd-baris:hover strong,
+.pd-baris:focus-visible strong {
+  color: var(--blue-teks);
+}
+.pd-baris:hover .pd-panah,
+.pd-baris:focus-visible .pd-panah {
+  translate: 3px 0;
+}
+.lgt-bagian:not(.lgt-bagian-soft) .pd-daftar .pd-baris {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.pd-tindakan {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--blue-teks);
+  white-space: nowrap;
+}
+
+/* ---------- halaman keputusan akses ---------- */
+.pd-kotak {
+  max-width: 640px;
+  padding: 32px;
+  border-radius: var(--radius-kartu-besar);
+  background: var(--white);
+  box-shadow: var(--bayangan-kartu);
+}
+.pd-kotak h1 {
+  font-size: 1.75rem;
+  font-weight: var(--judul-berat);
+  letter-spacing: var(--judul-spasi);
+}
+.pd-tautan {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pil);
+  background: var(--white);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.pd-tautan:hover {
+  border-color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pd *,
+  .pd *:hover {
+    transition: none !important;
+  }
+  .pd-peran a:hover .media-slot img,
+  .pd-peran a:focus-visible .media-slot img {
+    scale: none;
+  }
+}
+
+/* pemberitahuan halaman untuk peran lain (akses-lain) */
+.pd-akses-lain {
+  max-width: 640px;
+  padding: 32px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-kartu-besar);
+  background: var(--white);
+  box-shadow: var(--bayangan-kartu);
+}
+.pd-akses-lain .label-mono {
+  color: var(--blue-teks);
+}
+.pd-akses-lain h1 {
+  margin-top: 8px;
+  font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+  font-weight: var(--judul-berat);
+  letter-spacing: var(--judul-spasi);
+  line-height: 1.1;
+}
+.pd-akses-lain > p:not(.label-mono) {
+  margin-top: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.pd-akses-lain-aksi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  margin-top: 24px;
+}
+.pd-tombol {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  padding: 0 22px;
+  border-radius: var(--radius-pil);
+  background: var(--ink);
+  color: var(--white);
+  font-weight: 700;
+}
+.pd-tombol:hover {
+  background: color-mix(in srgb, var(--ink) 85%, var(--white));
+}
+.pd-akses-lain .pd-akses-lain-kecil {
+  font-size: 0.875rem;
+}
+.pd-akses-lain-kecil a {
+  color: var(--blue-teks);
+  text-decoration: underline;
+}

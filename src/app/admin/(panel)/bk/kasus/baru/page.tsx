@@ -23,7 +23,7 @@ export default async function KasusBaru({ searchParams }: { searchParams: Promis
       <NavBk konselor agregat={punya(akses, "bk.agregat")} />
       {!bkSiap && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-800">BK_KUNCI belum dipasang — asesmen belum bisa disimpan (kosongkan kolom asesmen).</p>}
       <Kartu className="max-w-2xl">
-        {rujukan && <p className="mb-4 rounded-xl bg-krem p-3 text-sm"><strong>Alasan rujukan:</strong> {rujukan.alasan}</p>}
+        {rujukan && <p className="mb-4 rounded-xl bg-soft p-3 text-sm"><strong>Alasan rujukan:</strong> {rujukan.alasan}</p>}
         <FormKasusBaru kategori={(kat ?? []).map((k) => ({ id: k.kode, nama: k.nama }))} siswa={siswa} rujukan_id={rujukan?.id} asal={rujukan ? "rujukan_guru" : "inisiatif_bk"} />
       </Kartu>
     </>

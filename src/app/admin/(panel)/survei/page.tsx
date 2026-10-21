@@ -30,7 +30,7 @@ export default async function Survei({ searchParams }: { searchParams: Promise<{
             );
           })}
         </div>
-        <Kartu className="self-start"><h2 className="mb-4 font-serif text-2xl">Survei baru</h2><FormSurveiAdmin hari={hari} /></Kartu>
+        <Kartu className="self-start"><h2 className="mb-4 text-2xl">Survei baru</h2><FormSurveiAdmin hari={hari} /></Kartu>
       </div>
     </>
   );

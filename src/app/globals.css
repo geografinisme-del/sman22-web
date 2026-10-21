@@ -1,31 +1,9 @@
-@import "@fontsource-variable/source-sans-3";
-@import "@fontsource-variable/dm-sans";
 @import "tailwindcss";
 
-/*
- * Design token — diambil dari logo resmi SMAN 22 Bandung.
- * Aksen sementara: merah bingkai logo (#db224c). Untuk teks & tombol dipakai varian lebih gelap
- * (#b3123c, kontras 6,8:1 terhadap putih) agar memenuhi WCAG AA. Ganti bila sekolah punya panduan warna resmi.
- */
+@import "../styles/tokens.css";
+
+/* ukuran judul utilitas (text-4xl…8xl) disetel ke skala "Langit cerah" */
 @theme {
-  /* netral hangat (dulu biru tua) — dipakai portal & admin */
-  --color-brand-50: #f6f5f2;
-  --color-brand-100: #e9e6e0;
-  --color-brand-600: #5b6270;
-  --color-brand-700: #3b414b;
-  --color-brand-800: #2a2f36;
-  --color-brand-900: #1f2328;
-  /* kuning sayap logo — hanya untuk penanda kecil */
-  --color-accent-400: #f2c14e;
-  --color-accent-500: #d9a514;
-  --color-merah: #b3123c;
-  --color-krem: #faf8f5;
-  --color-krem-tua: #efebe5;
-  --color-tinta: #1f2328;
-  /* satu keluarga huruf sans-serif humanis untuk situs, portal, dan admin.
-     --font-serif sengaja diarahkan ke huruf yang sama agar kelas lama "font-serif" ikut seragam. */
-  --font-sans: "Source Sans 3 Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
-  --font-serif: "Source Sans 3 Variable", "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, sans-serif;
   --text-4xl: 2rem;
   --text-4xl--line-height: 1.2;
   --text-5xl: 2.375rem;
@@ -38,11 +16,11 @@
   --text-8xl--line-height: 1.08;
 }
 
-/* Warna tema situs — bawaan; ditimpa dari Admin → Tema & Tampilan (lihat app/layout.tsx) */
 :root {
-  --tema-utama: #b3123c;
-  --tema-aksen: #db224c;
-  --tema-gelap: #1f2328;
+  /* warna tema situs — ditimpa dari Admin → Tema & Tampilan (lihat app/layout.tsx) */
+  --tema-utama: var(--blue);
+  --tema-aksen: var(--lime);
+  --tema-gelap: var(--ink);
   color-scheme: light;
 }
 
@@ -52,28 +30,26 @@ html {
 }
 
 body {
-  background: var(--color-krem);
-  color: var(--color-tinta);
-  font-family: var(--font-sans);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-utama);
   font-size: 16px;
   line-height: 1.6;
 }
 
-/* judul: tebal secukupnya, tanpa jarak huruf rapat dan tanpa miring dekoratif */
+/* judul besar: weight 500, letter-spacing -0.035em */
 h1,
-h2,
-h3,
-.font-serif {
-  letter-spacing: -0.005em;
+h2 {
+  font-weight: var(--judul-berat);
+  letter-spacing: var(--judul-spasi);
   text-wrap: balance;
 }
-.font-serif {
-  font-weight: 600;
+h3 {
+  text-wrap: balance;
 }
 h1 em,
 h2 em,
-h3 em,
-.font-serif em {
+h3 em {
   font-style: normal;
   color: inherit;
 }
@@ -96,44 +72,10 @@ h3 em,
   --gerak-panel: 280ms;
   --gerak-muncul: 500ms;
   --gerak-jeda: 70ms;
-  --ease-keluar: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-keluar: var(--ease);
 }
 
-/*
- * Muncul saat di-scroll. Atribut data-muncul hanya penanda; kelas .akan-muncul dipasang oleh
- * PengamatMuncul (JS) khusus untuk elemen yang masih di bawah layar. Tanpa JS → konten langsung terlihat.
- *   data-muncul            judul/teks: pudar + naik 16px
- *   data-muncul="foto"     foto: terbuka dari bingkainya
- *   data-muncul="kelompok" anak-anaknya muncul bertahap (maks. 4 jeda)
- */
-.akan-muncul {
-  opacity: 0;
-  transform: translateY(16px);
-}
-.akan-muncul.muncul {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity var(--gerak-muncul) var(--ease-keluar),
-    transform var(--gerak-muncul) var(--ease-keluar);
-  transition-delay: var(--jeda, 0ms);
-}
-[data-muncul="foto"].akan-muncul {
-  opacity: 1;
-  transform: none;
-  clip-path: inset(7% 5% 7% 5% round 10px);
-}
-[data-muncul="foto"].akan-muncul img {
-  transform: scale(1.06);
-}
-[data-muncul="foto"].akan-muncul.muncul {
-  clip-path: inset(0 round 10px);
-  transition: clip-path 550ms var(--ease-keluar);
-}
-[data-muncul="foto"].akan-muncul.muncul img {
-  transform: none;
-  transition: transform 550ms var(--ease-keluar);
-}
+/* Kemunculan blok saat digulir: GSAP + ScrollTrigger di components/langit/MesinLangit.tsx (keadaan awal diset di JS). */
 
 /* kompatibilitas kelas lama: tanpa gerak berulang */
 .naik {
@@ -169,11 +111,9 @@ a:hover .panah,
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .akan-muncul,
-  [data-muncul="foto"].akan-muncul,
-  [data-muncul="foto"].akan-muncul img {
-    opacity: 1;
-    transform: none;
-    clip-path: none;
-  }
+}
+
+/* Aksen bidang di area kerja admin: tombol utama & indikator memakai warna bidang (teks putih ≥ 4,5:1, diuji) */
+.ruang-bidang[data-bidang] {
+  --tema-utama: var(--bidang);
 }

@@ -38,7 +38,7 @@ export default async function BerandaPortal() {
         </Link>
       ))}
       {anak.length === 0 && (
-        <p className="rounded-2xl bg-white p-6 text-[#5b6270] ring-1 ring-black/5">
+        <p className="rounded-2xl bg-white p-6 text-[var(--muted)] ring-1 ring-black/5">
           Akun Anda belum terhubung dengan data siswa. Silakan hubungi wali kelas atau tata usaha.
         </p>
       )}
@@ -47,8 +47,8 @@ export default async function BerandaPortal() {
         const perlu = sp.filter((d) => !d.dikonfirmasi);
         return (
           <section key={a.id} className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-black/5">
-            <div className="bg-brand-800 px-5 py-5 text-white">
-              <p className="font-serif text-3xl leading-tight">{a.nama}</p>
+            <div className="bg-ink/85 px-5 py-5 text-white">
+              <p className="text-3xl leading-tight">{a.nama}</p>
               <p className="mt-1 text-sm text-white/70">
                 {a.kelas ? `Kelas ${a.kelas}` : "Belum ada kelas"}
                 {wali && ` · Wali kelas: ${wali}`}
@@ -56,10 +56,10 @@ export default async function BerandaPortal() {
               </p>
             </div>
             <div className="p-5">
-              <p className="text-xs font-semibold text-[#5b6270]">Kehadiran bulan ini</p>
+              <p className="text-xs font-semibold text-[var(--muted)]">Kehadiran bulan ini</p>
               <div className="mt-3 grid grid-cols-4 gap-2 text-center sm:grid-cols-5">
                 <div className="col-span-4 rounded-2xl bg-emerald-50 p-3 sm:col-span-1">
-                  <p className="font-serif text-4xl text-emerald-800">{r?.persen_hadir == null ? "—" : `${r.persen_hadir}%`}</p>
+                  <p className="text-4xl text-emerald-800">{r?.persen_hadir == null ? "—" : `${r.persen_hadir}%`}</p>
                   <p className="text-xs text-emerald-800">hadir ({r?.hari_efektif ?? 0} hari)</p>
                 </div>
                 {[
@@ -68,9 +68,9 @@ export default async function BerandaPortal() {
                   ["Alpa", r?.alpa],
                   ["Terlambat", r?.terlambat],
                 ].map(([l, n]) => (
-                  <div key={l as string} className="rounded-2xl bg-krem p-3">
-                    <p className={`font-serif text-3xl ${l === "Alpa" && Number(n) > 0 ? "text-red-700" : ""}`}>{n ?? 0}</p>
-                    <p className="text-xs text-[#5b6270]">{l}</p>
+                  <div key={l as string} className="rounded-2xl bg-soft p-3">
+                    <p className={`text-3xl ${l === "Alpa" && Number(n) > 0 ? "text-red-700" : ""}`}>{n ?? 0}</p>
+                    <p className="text-xs text-[var(--muted)]">{l}</p>
                   </div>
                 ))}
               </div>
@@ -81,17 +81,17 @@ export default async function BerandaPortal() {
                 </div>
               )}
               {sp.some((d) => d.dikonfirmasi) && (
-                <p className="mt-3 text-sm text-[#5b6270]">Sudah ditindaklanjuti: {sp.filter((d) => d.dikonfirmasi).map((d) => d.label).join(", ")}</p>
+                <p className="mt-3 text-sm text-[var(--muted)]">Sudah ditindaklanjuti: {sp.filter((d) => d.dikonfirmasi).map((d) => d.label).join(", ")}</p>
               )}
 
-              <p className="mt-6 text-xs font-semibold text-[#5b6270]">Catatan terakhir</p>
+              <p className="mt-6 text-xs font-semibold text-[var(--muted)]">Catatan terakhir</p>
               {terakhir.length === 0 ? (
-                <p className="mt-2 text-sm text-[#5b6270]">Belum ada catatan ketidakhadiran. Bagus!</p>
+                <p className="mt-2 text-sm text-[var(--muted)]">Belum ada catatan ketidakhadiran. Bagus!</p>
               ) : (
                 <ul className="mt-2 divide-y divide-black/5 text-sm">
                   {terakhir.map((t) => (
                     <li key={t.tanggal} className="flex items-center justify-between gap-3 py-2">
-                      <span>{formatTanggal(t.tanggal, { weekday: "short" })}{t.keterangan && <span className="text-[#5b6270]"> · {t.keterangan}</span>}</span>
+                      <span>{formatTanggal(t.tanggal, { weekday: "short" })}{t.keterangan && <span className="text-[var(--muted)]"> · {t.keterangan}</span>}</span>
                       <span className={`shrink-0 rounded-lg px-2 py-0.5 text-xs font-bold text-white ${STATUS_SISWA_ABSEN[t.status as KodeAbsen].warna}`}>
                         {STATUS_SISWA_ABSEN[t.status as KodeAbsen].label}
                       </span>
@@ -101,18 +101,18 @@ export default async function BerandaPortal() {
               )}
               {jp.length > 0 && (
                 <>
-                  <p className="mt-6 text-xs font-semibold text-[#5b6270]">Catatan per jam pelajaran (bulan ini)</p>
+                  <p className="mt-6 text-xs font-semibold text-[var(--muted)]">Catatan per jam pelajaran (bulan ini)</p>
                   <ul className="mt-2 divide-y divide-black/5 text-sm">
                     {jp.map((x, i) => (
                       <li key={i} className="flex justify-between gap-3 py-2">
-                        <span>{formatTanggal(x.tanggal, { weekday: "short" })} · JP {x.jadwal?.jp_ke} {x.jadwal?.penugasan?.mapel?.nama}{x.keterangan && <span className="text-[#5b6270]"> · {x.keterangan}</span>}</span>
+                        <span>{formatTanggal(x.tanggal, { weekday: "short" })} · JP {x.jadwal?.jp_ke} {x.jadwal?.penugasan?.mapel?.nama}{x.keterangan && <span className="text-[var(--muted)]"> · {x.keterangan}</span>}</span>
                         <span className="shrink-0 font-semibold">{({ S: "Sakit", I: "Izin", A: "Tidak di kelas", T: "Terlambat", D: "Dispensasi" } as Record<string, string>)[x.status]}</span>
                       </li>
                     ))}
                   </ul>
                 </>
               )}
-              <Link href={`/portal/anak/${a.id}`} className="mt-5 inline-block rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">
+              <Link href={`/portal/anak/${a.id}`} className="mt-5 inline-block rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">
                 Lihat kalender kehadiran →
               </Link>
             </div>
@@ -122,12 +122,12 @@ export default async function BerandaPortal() {
 
       {pengumuman.length > 0 && (
         <section className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
-          <h2 className="font-serif text-2xl">Pengumuman sekolah</h2>
+          <h2 className="text-2xl">Pengumuman sekolah</h2>
           <ul className="mt-3 space-y-3">
             {pengumuman.map((p) => (
               <li key={p.id} className="text-sm">
-                <p className="font-semibold">{p.penting && <span className="mr-2 rounded bg-accent-400 px-1.5 text-xs">PENTING</span>}{p.judul}</p>
-                {p.isi && <p className="text-[#5b6270]">{p.isi}</p>}
+                <p className="font-semibold">{p.penting && <span className="mr-2 rounded bg-lime px-1.5 text-xs">PENTING</span>}{p.judul}</p>
+                {p.isi && <p className="text-[var(--muted)]">{p.isi}</p>}
               </li>
             ))}
           </ul>

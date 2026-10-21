@@ -63,8 +63,8 @@ function InputBerkas() {
   return (
     <div>
       <label htmlFor="berkas" className="mb-1.5 block text-sm font-semibold">Berkas</label>
-      <input id="berkas" name="berkas" type="file" accept=".pdf,.docx,.pptx,.xlsx,image/*" className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-900 file:px-4 file:py-2 file:text-white" />
-      <p className={`mt-1.5 text-xs ${error ? "text-merah" : "text-black/50"}`}>{error ?? "PDF, Word, PowerPoint, Excel, atau foto — maksimal 4 MB. Lebih besar? Pakai tautan Google Drive di bawah."}</p>
+      <input id="berkas" name="berkas" type="file" accept=".pdf,.docx,.pptx,.xlsx,image/*" className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-white" />
+      <p className={`mt-1.5 text-xs ${error ? "text-blue-teks" : "text-black/50"}`}>{error ?? "PDF, Word, PowerPoint, Excel, atau foto — maksimal 4 MB. Lebih besar? Pakai tautan Google Drive di bawah."}</p>
     </div>
   );
 }
@@ -81,7 +81,7 @@ export function FormPerangkat({ tugas, semester }: { tugas: { mapel_id: string; 
       <InputBerkas />
       <Input label="Tautan (opsional)" nama="tautan" placeholder="https://drive.google.com/…" bantuan="Pastikan tautan Google Drive bisa dibuka oleh pemeriksa." />
       <div className="flex flex-wrap gap-3">
-        <button type="submit" name="ajukan" value="1" className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white">Unggah & ajukan</button>
+        <button type="submit" name="ajukan" value="1" className="rounded-full bg-ink px-6 py-3 font-semibold text-white">Unggah & ajukan</button>
         <button type="submit" name="ajukan" value="0" className="rounded-full px-6 py-3 font-semibold ring-1 ring-black/15">Simpan draf</button>
       </div>
     </FormAksi>
@@ -135,11 +135,11 @@ export function FormProjek({ data, guru, kelas, semester }: { data?: DataProjek;
         <div className="grid gap-1.5 sm:grid-cols-2">
           {Object.entries(DIMENSI).map(([k, v]) => (
             <label key={k} className="flex items-center gap-2 text-sm">
-              <input type="checkbox" name="dimensi" value={k} defaultChecked={data?.dimensi.includes(k)} className="h-4 w-4 accent-brand-800" /> {v}
+              <input type="checkbox" name="dimensi" value={k} defaultChecked={data?.dimensi.includes(k)} className="h-4 w-4 accent-ink" /> {v}
             </label>
           ))}
         </div>
-        {err && <p className="mt-1 text-sm text-merah">{err}</p>}
+        {err && <p className="mt-1 text-sm text-blue-teks">{err}</p>}
       </fieldset>
       <Pilihan label="Koordinator" nama="koordinator_id" nilai={data?.koordinator_id ?? ""} opsi={opsi(guru, "— belum ditentukan —")} />
       <TextArea label="Deskripsi & alur kegiatan" nama="deskripsi" nilai={data?.deskripsi} baris={4} maks={3000} />

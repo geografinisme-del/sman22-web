@@ -41,7 +41,7 @@ export default async function Supervisi({ searchParams }: { searchParams: Promis
       </Link>
       {s.nilai != null && <span className="tabular-nums">{Number(s.nilai).toFixed(0)} · {predikatSupervisi(Number(s.nilai))}</span>}
       {aksi && s.status === "terjadwal" && (
-        <form action={batalSupervisi}><input type="hidden" name="id" value={s.id} /><button className="text-xs font-semibold text-merah underline">Batalkan</button></form>
+        <form action={batalSupervisi}><input type="hidden" name="id" value={s.id} /><button className="text-xs font-semibold text-blue-teks underline">Batalkan</button></form>
       )}
     </li>
   );
@@ -52,8 +52,8 @@ export default async function Supervisi({ searchParams }: { searchParams: Promis
       <NavKurikulum />
       <Notifikasi kode={sp.pesan} />
       {tugas.length > 0 && (
-        <Kartu className="mb-6 ring-2 ring-accent-400">
-          <h2 className="font-serif text-2xl">Tugas Anda sebagai supervisor</h2>
+        <Kartu className="mb-6 ring-2 ring-lime">
+          <h2 className="text-2xl">Tugas Anda sebagai supervisor</h2>
           <ul className="divide-y divide-black/5">{tugas.map((s) => <Baris key={s.id} s={s} />)}</ul>
         </Kartu>
       )}
@@ -61,14 +61,14 @@ export default async function Supervisi({ searchParams }: { searchParams: Promis
         <div className="space-y-6">
           {saya && (
             <Kartu>
-              <h2 className="font-serif text-2xl">Supervisi saya</h2>
+              <h2 className="text-2xl">Supervisi saya</h2>
               {milik.length === 0 ? <p className="mt-2 text-sm text-black/50">Belum dijadwalkan.</p> : <ul className="divide-y divide-black/5">{milik.map((s) => <Baris key={s.id} s={s} />)}</ul>}
             </Kartu>
           )}
           {kelola && (
             <Kartu>
               <div className="flex flex-wrap items-baseline gap-3">
-                <h2 className="flex-1 font-serif text-2xl">Semua supervisi tahun ini</h2>
+                <h2 className="flex-1 text-2xl">Semua supervisi tahun ini</h2>
                 <span className="text-sm text-black/60">{selesai.length}/{semua.filter((s) => s.status !== "batal").length} selesai{rata != null && ` · rata-rata ${rata.toFixed(1)}`}</span>
               </div>
               {semua.length === 0 ? <KosongAdmin teks="Belum ada jadwal supervisi." /> : <ul className="divide-y divide-black/5">{semua.map((s) => <Baris key={s.id} s={s} aksi />)}</ul>}
@@ -77,7 +77,7 @@ export default async function Supervisi({ searchParams }: { searchParams: Promis
         </div>
         {kelola && (
           <Kartu className="self-start">
-            <h2 className="mb-4 font-serif text-2xl">Jadwalkan supervisi</h2>
+            <h2 className="mb-4 text-2xl">Jadwalkan supervisi</h2>
             <FormJadwalSupervisi guru={guru} semester={semesterSekarang(hari)} hariIni={hari} />
             <p className="mt-3 text-xs text-black/50">Supervisor bisa kepala sekolah, wakasek, atau guru senior. Keduanya diberi tahu otomatis.</p>
           </Kartu>

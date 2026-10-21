@@ -12,7 +12,7 @@ const STATUS: Record<string, string> = {
   menunggu: "bg-amber-100 text-amber-900",
   diterima: "bg-emerald-100 text-emerald-900",
   ditolak: "bg-red-100 text-red-800",
-  dibatalkan: "bg-black/5 text-[#5b6270]",
+  dibatalkan: "bg-black/5 text-[var(--muted)]",
 };
 
 export default async function IzinPortal({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
@@ -29,23 +29,23 @@ export default async function IzinPortal({ searchParams }: { searchParams: Promi
   return (
     <div className="space-y-6">
       <section className="rounded-3xl bg-white p-5 ring-1 ring-black/5 sm:p-6">
-        <h1 className="font-serif text-3xl">Kirim pemberitahuan sakit / izin</h1>
-        <p className="mt-1 text-sm text-[#5b6270]">
+        <h1 className="text-3xl">Kirim pemberitahuan sakit / izin</h1>
+        <p className="mt-1 text-sm text-[var(--muted)]">
           Wali kelas akan memeriksa. Setelah diterima, absensi anak otomatis tercatat Sakit/Izin — tidak perlu surat kertas.
           Bisa dikirim paling lambat 3 hari setelah tanggalnya.
         </p>
         {anak.length === 0 ? (
-          <p className="mt-4 text-sm text-[#5b6270]">Akun belum terhubung dengan data siswa.</p>
+          <p className="mt-4 text-sm text-[var(--muted)]">Akun belum terhubung dengan data siswa.</p>
         ) : (
           <FormIzin anak={anak.map((a) => ({ id: a.id, nama: a.nama }))} hariIni={hariIniWIB()} />
         )}
       </section>
 
       <section>
-        <h2 className="mb-3 font-serif text-2xl">Riwayat</h2>
+        <h2 className="mb-3 text-2xl">Riwayat</h2>
         <Notifikasi kode={sp.pesan} />
         {!data?.length ? (
-          <p className="text-sm text-[#5b6270]">Belum ada pemberitahuan.</p>
+          <p className="text-sm text-[var(--muted)]">Belum ada pemberitahuan.</p>
         ) : (
           <ul className="space-y-3">
             {data.map((z) => (
@@ -56,16 +56,16 @@ export default async function IzinPortal({ searchParams }: { searchParams: Promi
                       {z.jenis === "S" ? "Sakit" : "Izin"} · {formatTanggal(z.tanggal_mulai, { weekday: "short" })}
                       {z.tanggal_selesai !== z.tanggal_mulai && <> – {formatTanggal(z.tanggal_selesai, { weekday: "short" })}</>}
                     </p>
-                    {anak.length > 1 && <p className="text-sm text-[#5b6270]">{namaAnak.get(z.siswa_id)}</p>}
-                    <p className="mt-1 text-sm text-[#3b414b]">{z.alasan}</p>
-                    {z.catatan && <p className="mt-1 text-sm text-[#5b6270]">Catatan sekolah: {z.catatan}</p>}
+                    {anak.length > 1 && <p className="text-sm text-[var(--muted)]">{namaAnak.get(z.siswa_id)}</p>}
+                    <p className="mt-1 text-sm text-[var(--muted)]">{z.alasan}</p>
+                    {z.catatan && <p className="mt-1 text-sm text-[var(--muted)]">Catatan sekolah: {z.catatan}</p>}
                   </div>
                   <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${STATUS[z.status] ?? ""}`}>{z.status}</span>
                 </div>
                 {z.status === "menunggu" && (
                   <form action={batalkanIzin} className="mt-3">
                     <input type="hidden" name="id" value={z.id} />
-                    <button className="text-sm text-merah underline">Batalkan</button>
+                    <button className="text-sm text-blue-teks underline">Batalkan</button>
                   </form>
                 )}
               </li>

@@ -9,7 +9,7 @@ import { PALET } from "./token.ts";
 test("konfigurasi kosong/rusak → bawaan lengkap, tidak melempar", () => {
   for (const raw of [undefined, null, "teks", 42, [], { tema: 5, beranda: "x" }]) {
     const k = bacaKonfigurasi(raw);
-    assert.equal(k.tema, "akademik");
+    assert.equal(k.tema, "langit");
     assert.equal(k.beranda[0].jenis, "hero");
     assert.ok(k.beranda.length >= 5);
   }
@@ -17,9 +17,9 @@ test("konfigurasi kosong/rusak → bawaan lengkap, tidak melempar", () => {
 
 test("nilai di luar pilihan terkurasi ditolak (tidak ada warna/font bebas)", () => {
   const k = bacaKonfigurasi({ versi: 1, tema: "editorial", palet: "#ff00ff", font: "Comic Sans", gerak: "liar", slideshow: { gaya: "otomatis", detik: 2 } });
-  assert.equal(k.tema, "akademik", "tema yang belum tersedia tidak bisa dipilih");
-  assert.equal(k.palet, "merah");
-  assert.equal(k.font, "source-sans");
+  assert.equal(k.tema, "langit", "tema yang belum tersedia tidak bisa dipilih → bawaan");
+  assert.equal(k.palet, "cerah");
+  assert.equal(k.font, "jakarta");
   assert.equal(k.gerak, "standar");
   assert.equal(k.slideshow.gaya, "otomatis");
   assert.equal(k.slideshow.detik, 8, "jeda autoplay < 7 detik ditolak");
@@ -27,7 +27,7 @@ test("nilai di luar pilihan terkurasi ditolak (tidak ada warna/font bebas)", () 
 
 test("widget: jenis tak dikenal dibuang, instans tunggal tidak digandakan, pengaturan dibatasi", () => {
   const k = bacaKonfigurasi({
-    versi: 1,
+    versi: 2,
     beranda: [
       { id: "x", jenis: "skrip", tampil: true, pengaturan: { html: "<script>" } },
       { id: "galeri", jenis: "galeri", tampil: true, pengaturan: { jumlah: 999, tata: "acak" } },
@@ -52,10 +52,10 @@ test("pembuka wajib: selalu ada, selalu pertama, tidak bisa disembunyikan atau d
   assert.equal(pindahkan(k.beranda, 0, 1)[0].jenis, "hero");
 });
 
-test("versi lama (tanpa versi & susunan) dimigrasikan ke susunan bawaan", () => {
+test("versi lama (tanpa versi & susunan) dimigrasikan ke susunan bawaan; tema arsip → Langit cerah", () => {
   const k = bacaKonfigurasi({ tema: "modern" });
-  assert.equal(k.versi, 1);
-  assert.equal(k.tema, "modern");
+  assert.equal(k.versi, 2);
+  assert.equal(k.tema, "langit", "tema lama yang diarsipkan tidak pernah tampil lagi");
   assert.deepEqual(k.beranda.map((w) => w.jenis), KONFIGURASI_BAWAAN.beranda.map((w) => w.jenis));
 });
 
@@ -63,7 +63,8 @@ test("versi lama (tanpa versi & susunan) dimigrasikan ke susunan bawaan", () => 
 
 test("pindah & lepas widget hanya mengubah susunan", () => {
   const awal = KONFIGURASI_BAWAAN.beranda;
-  const pindah = pindahkan(awal, awal.length - 1, 1);
+  const iKontak = awal.findIndex((w) => w.jenis === "kontak");
+  const pindah = pindahkan(awal, iKontak, 1);
   assert.equal(pindah[1].jenis, "kontak");
   assert.equal(pindah.length, awal.length);
   const lepas = lepasWidget(awal, "galeri");
@@ -84,19 +85,19 @@ test("tambah widget: instans tunggal ditolak, berita boleh beberapa dengan id un
 
 /* ---------------- tema & fallback ---------------- */
 
-test("ganti tema mempertahankan konfigurasi widget; tata letak tak didukung → fallback + peringatan", () => {
-  const modern = bacaKonfigurasi({ versi: 1, tema: "modern", beranda: [{ id: "hero", jenis: "hero", pengaturan: { tata: "penuh" } }] });
-  assert.equal(tataEfektif("modern", modern.beranda[0]), "penuh");
-  assert.deepEqual(periksaKompatibilitas(modern), []);
-  const akademik = { ...modern, tema: "akademik" as const };
-  assert.equal(akademik.beranda[0].pengaturan.tata, "penuh", "pilihan widget tetap tersimpan");
-  assert.equal(tataEfektif("akademik", akademik.beranda[0]), "berdampingan");
-  assert.equal(periksaKompatibilitas(akademik).length, 1);
+test("konfigurasi dari tema lama dipertahankan; tata letak tak didukung → fallback + peringatan", () => {
+  const lama = bacaKonfigurasi({ versi: 1, tema: "modern", beranda: [{ id: "hero", jenis: "hero", pengaturan: { tata: "penuh" } }] });
+  assert.equal(lama.tema, "langit");
+  assert.equal(lama.beranda[0].pengaturan.tata, "penuh", "pilihan widget tetap tersimpan");
+  assert.equal(tataEfektif("langit", lama.beranda[0]), "langit");
+  assert.equal(periksaKompatibilitas(lama).length, 1);
+  const baru = bacaKonfigurasi({ versi: 1, beranda: [{ id: "hero", jenis: "hero", pengaturan: { tata: "langit" } }] });
+  assert.deepEqual(periksaKompatibilitas(baru), []);
 });
 
 test("pasangan bersebelahan digabung, yang tersembunyi tidak ikut", () => {
   const k = bacaKonfigurasi({
-    versi: 1,
+    versi: 2,
     beranda: [
       { id: "hero", jenis: "hero" },
       { id: "pengumuman", jenis: "pengumuman" },
@@ -114,7 +115,7 @@ test("palet terkurasi lolos kontras WCAG AA (≥ 4,5:1) untuk teks di atas putih
     const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
-  for (const [k, p] of Object.entries(PALET)) {
+  for (const [k, p] of Object.entries(PALET).filter(([k]) => k === "cerah")) {
     const rasio = (1 + 0.05) / (lum(p.utama) + 0.05);
     assert.ok(rasio >= 4.5, `${k}: ${rasio.toFixed(2)}`);
   }
@@ -158,4 +159,12 @@ test("lambaian pemandu sekali per sesi, hanya di bagian atas & bila tak ada yang
 
 test("tanpa data: tidak ada popup kosong", () => {
   assert.equal(pilihOverlay({ prioritas: false, rutin: false, pemandu: false }, sesiBaru, { ...atas, lewatPembuka: true, progres: 0.9 }), null);
+});
+
+test("konfigurasi versi 1 mendapat widget tur setelah hero; versi 2 menghormati tur yang dilepas", () => {
+  const lama = bacaKonfigurasi({ versi: 1, beranda: [{ id: "hero", jenis: "hero" }, { id: "berita", jenis: "berita" }] });
+  assert.deepEqual(lama.beranda.map((w) => w.jenis), ["hero", "tur", "berita"]);
+  assert.equal(lama.versi, 2);
+  const baru = bacaKonfigurasi({ versi: 2, beranda: [{ id: "hero", jenis: "hero" }, { id: "berita", jenis: "berita" }] });
+  assert.deepEqual(baru.beranda.map((w) => w.jenis), ["hero", "berita"]);
 });

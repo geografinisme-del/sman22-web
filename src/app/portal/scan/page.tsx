@@ -6,8 +6,8 @@ export default async function HalamanScan({ searchParams }: { searchParams: Prom
   const { t } = await searchParams;
   return (
     <div className="mx-auto max-w-md py-6">
-      <h1 className="mb-5 text-center font-serif text-3xl">Kehadiran di kelas</h1>
-      {t ? <Scan token={t} /> : <p className="text-center text-[#5b6270]">Buka halaman ini dengan memindai QR dari guru menggunakan kamera HP.</p>}
+      <h1 className="mb-5 text-center text-3xl">Kehadiran di kelas</h1>
+      {t ? <Scan token={t} /> : <p className="text-center text-[var(--muted)]">Buka halaman ini dengan memindai QR dari guru menggunakan kamera HP.</p>}
     </div>
   );
 }

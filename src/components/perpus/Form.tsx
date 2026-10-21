@@ -14,7 +14,7 @@ function KotakPindai({ nama, label, placeholder, fokus }: { nama: string; label:
   return (
     <label className="block text-sm font-semibold">{label}
       <input name={nama} autoFocus={fokus} autoComplete="off" placeholder={placeholder}
-        className="mt-1.5 block w-full rounded-xl border border-black/15 bg-white px-4 py-3 font-mono text-lg uppercase tracking-wider outline-none focus:border-brand-600 focus:ring-4 focus:ring-brand-600/10" />
+        className="mt-1.5 block w-full rounded-xl border border-black/15 bg-white px-4 py-3 font-mono text-lg uppercase tracking-wider outline-none focus:border-muted focus:ring-4 focus:ring-muted/10" />
     </label>
   );
 }

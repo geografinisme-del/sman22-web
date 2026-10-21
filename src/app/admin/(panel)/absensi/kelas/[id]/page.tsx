@@ -90,7 +90,7 @@ export default async function AbsensiKelas({ params, searchParams }: { params: P
           </ol>
           {waliKelasIni && (
             <Kartu className="mt-6">
-              <h2 className="mb-4 font-serif text-2xl">Ajukan koreksi</h2>
+              <h2 className="mb-4 text-2xl">Ajukan koreksi</h2>
               <FormKoreksi tanggal={tgl} siswa={baris.map((b) => ({ id: b.id, nama: b.nama, status: STATUS_SISWA_ABSEN[b.status].label }))} />
               <p className="mt-3 text-xs text-black/50">
                 Lihat status pengajuan di <Link href="/admin/absensi/pengajuan" className="underline">Pengajuan Koreksi</Link>.

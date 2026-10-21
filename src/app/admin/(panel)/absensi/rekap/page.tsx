@@ -52,7 +52,7 @@ export default async function Rekap({ searchParams }: { searchParams: Promise<{ 
           <span className="mb-1 block font-semibold">Sampai</span>
           <input type="date" name="sampai" defaultValue={sampai} max={hariIni} className="w-full rounded-xl border border-black/15 px-3 py-2" />
         </label>
-        <button className="self-end rounded-full bg-brand-900 px-5 py-2.5 font-semibold text-white">Tampilkan</button>
+        <button className="self-end rounded-full bg-ink px-5 py-2.5 font-semibold text-white">Tampilkan</button>
       </form>
       {!pilih ? (
         <KosongAdmin teks="Belum ada kelas." />

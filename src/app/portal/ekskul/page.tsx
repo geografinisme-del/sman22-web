@@ -31,7 +31,7 @@ export default async function EkskulPortal({ searchParams }: { searchParams: Pro
     : { data: [] };
   return (
     <div className="space-y-8">
-      <div><h1 className="font-serif text-3xl">Ekskul & OSIS</h1><p className="text-sm text-[#5b6270]">Pendaftaran, kegiatan, kehadiran, dan sertifikat{ortu ? " anak" : ""}.</p></div>
+      <div><h1 className="text-3xl">Ekskul & OSIS</h1><p className="text-sm text-[var(--muted)]">Pendaftaran, kegiatan, kehadiran, dan sertifikat{ortu ? " anak" : ""}.</p></div>
       {sp.pesan && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">{sp.pesan === "terdaftar" ? "Pendaftaran terkirim. Pembina akan memeriksa; hasilnya muncul di notifikasi." : "Tersimpan."}</p>}
       {sp.galat && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{sp.galat}</p>}
       {anak.map((a, i) => {
@@ -43,7 +43,7 @@ export default async function EkskulPortal({ searchParams }: { searchParams: Pro
         const aktif = p.keanggotaan.filter((k) => k.status === "aktif");
         return (
           <section key={a.id} className="space-y-4">
-            {ortu && <h2 className="font-serif text-2xl">{a.nama}</h2>}
+            {ortu && <h2 className="text-2xl">{a.nama}</h2>}
             {aktif.length > 0 && (
               <div className="grid gap-3 sm:grid-cols-2">{aktif.map((k) => {
                 const h = p.kehadiran.find((x) => x.organisasi === k.organisasi);
@@ -51,7 +51,7 @@ export default async function EkskulPortal({ searchParams }: { searchParams: Pro
                   <Link key={k.organisasi_id} href={`/portal/ekskul/${k.organisasi_id}`} className="block overflow-hidden rounded-2xl bg-white ring-1 ring-black/5 hover:ring-black/20">
                     <div className="h-1.5" style={{ background: k.warna }} />
                     <div className="p-4"><p className="font-semibold">{k.organisasi}</p>
-                      <p className="text-sm text-[#5b6270]">{JABATAN[k.jabatan]}{k.bidang && ` · ${k.bidang}`} · kehadiran {h?.kegiatan ? `${Math.round((100 * h.hadir) / h.kegiatan)}% (${h.hadir}/${h.kegiatan})` : "—"}</p></div>
+                      <p className="text-sm text-[var(--muted)]">{JABATAN[k.jabatan]}{k.bidang && ` · ${k.bidang}`} · kehadiran {h?.kegiatan ? `${Math.round((100 * h.hadir) / h.kegiatan)}% (${h.hadir}/${h.kegiatan})` : "—"}</p></div>
                   </Link>);
               })}</div>
             )}
@@ -59,18 +59,18 @@ export default async function EkskulPortal({ searchParams }: { searchParams: Pro
               <ul className="space-y-2">{milik.filter((d) => d.status !== "diterima").map((d) => (
                 <li key={d.id} className="flex flex-wrap items-center gap-2 rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5">
                   <span className="flex-1 font-medium">Pendaftaran {nama.get(d.organisasi_id)?.nama}</span><Lencana s={d.status} peta={STATUS_DAFTAR} />
-                  {d.catatan && <span className="w-full text-[#5b6270]">{d.catatan}</span>}
-                  {!ortu && ["menunggu", "daftar_tunggu"].includes(d.status) && <form action={mundurEkskul}><input type="hidden" name="id" value={d.id} /><button className="text-xs font-semibold text-merah underline">Batalkan</button></form>}
+                  {d.catatan && <span className="w-full text-[var(--muted)]">{d.catatan}</span>}
+                  {!ortu && ["menunggu", "daftar_tunggu"].includes(d.status) && <form action={mundurEkskul}><input type="hidden" name="id" value={d.id} /><button className="text-xs font-semibold text-blue-teks underline">Batalkan</button></form>}
                 </li>))}</ul>
             )}
             {!ortu && terbuka.length > 0 && (
               <div className="space-y-3">
-                <h2 className="font-serif text-2xl">Pendaftaran dibuka</h2>
+                <h2 className="text-2xl">Pendaftaran dibuka</h2>
                 {terbuka.map((o) => (
                   <details key={o.id} className="overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
-                    <summary className="flex cursor-pointer items-center gap-3 p-4"><span className="h-8 w-1.5 rounded" style={{ background: o.warna }} /><span className="flex-1"><strong>{o.nama}</strong> <span className="text-sm text-[#5b6270]">· {JENIS_ORG[o.jenis]} · sampai {tgl(o.daftar_selesai ?? o.daftar_mulai!)}{o.kuota ? ` · kuota ${o.kuota}` : ""}</span></span></summary>
+                    <summary className="flex cursor-pointer items-center gap-3 p-4"><span className="h-8 w-1.5 rounded" style={{ background: o.warna }} /><span className="flex-1"><strong>{o.nama}</strong> <span className="text-sm text-[var(--muted)]">· {JENIS_ORG[o.jenis]} · sampai {tgl(o.daftar_selesai ?? o.daftar_mulai!)}{o.kuota ? ` · kuota ${o.kuota}` : ""}</span></span></summary>
                     <div className="space-y-3 border-t border-black/5 p-4">
-                      {o.deskripsi && <p className="text-sm text-[#3b414b]">{o.deskripsi.slice(0, 400)}</p>}
+                      {o.deskripsi && <p className="text-sm text-[var(--muted)]">{o.deskripsi.slice(0, 400)}</p>}
                       {o.jadwal_rutin && <p className="text-sm"><strong>Jadwal:</strong> {o.jadwal_rutin}</p>}
                       {o.syarat && <p className="text-sm"><strong>Syarat:</strong> {o.syarat}</p>}
                       <FormDaftar org={o.id} isian={o.field_tambahan} maks={o.jenis === "ekskul" ? cfg?.maks_pilihan ?? 2 : 1} />
@@ -80,10 +80,10 @@ export default async function EkskulPortal({ searchParams }: { searchParams: Pro
               </div>
             )}
             {p.sertifikat.length > 0 && (
-              <div><h2 className="mb-2 font-serif text-2xl">Sertifikat</h2>
+              <div><h2 className="mb-2 text-2xl">Sertifikat</h2>
                 <ul className="divide-y divide-black/5 rounded-2xl bg-white px-4 text-sm ring-1 ring-black/5">{p.sertifikat.map((c) => (
-                  <li key={c.id} className={`flex flex-wrap items-center gap-2 py-2 ${c.dicabut ? "opacity-50" : ""}`}><span className="flex-1">{c.judul} <span className="text-[#5b6270]">· {c.organisasi} · {tgl(c.tanggal)}</span></span>
-                    {!c.dicabut && <a href={`/cetak/sertifikat/${c.id}`} target="_blank" className="font-semibold text-brand-700 underline">Unduh / cetak</a>}</li>))}</ul></div>
+                  <li key={c.id} className={`flex flex-wrap items-center gap-2 py-2 ${c.dicabut ? "opacity-50" : ""}`}><span className="flex-1">{c.judul} <span className="text-[var(--muted)]">· {c.organisasi} · {tgl(c.tanggal)}</span></span>
+                    {!c.dicabut && <a href={`/cetak/sertifikat/${c.id}`} target="_blank" className="font-semibold text-blue-teks underline">Unduh / cetak</a>}</li>))}</ul></div>
             )}
             {p.keanggotaan.length > aktif.length && (
               <details className="rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5"><summary className="cursor-pointer font-semibold">Riwayat organisasi (portofolio)</summary>
@@ -95,9 +95,9 @@ export default async function EkskulPortal({ searchParams }: { searchParams: Pro
         );
       })}
       {(kg ?? []).length > 0 && (
-        <section><h2 className="mb-2 font-serif text-2xl">Kegiatan mendatang</h2>
+        <section><h2 className="mb-2 text-2xl">Kegiatan mendatang</h2>
           <ul className="divide-y divide-black/5 rounded-2xl bg-white px-4 text-sm ring-1 ring-black/5">{(kg ?? []).map((k) => (
-            <li key={k.id} className="py-2"><strong>{k.judul}</strong> <span className="text-[#5b6270]">· {nama.get(k.organisasi_id)?.nama} · {waktuWIB(k.mulai, true)}{k.tempat && ` · ${k.tempat}`}</span></li>))}</ul></section>
+            <li key={k.id} className="py-2"><strong>{k.judul}</strong> <span className="text-[var(--muted)]">· {nama.get(k.organisasi_id)?.nama} · {waktuWIB(k.mulai, true)}{k.tempat && ` · ${k.tempat}`}</span></li>))}</ul></section>
       )}
     </div>
   );

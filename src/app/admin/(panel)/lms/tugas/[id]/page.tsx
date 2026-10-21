@@ -32,15 +32,15 @@ export default async function DetailTugas({ params, searchParams }: { params: Pr
   return (
     <>
       <JudulHalaman judul={t.judul} deskripsi={`Tenggat ${waktuWIB(t.tenggat, true)} WIB · nilai maks ${t.nilai_maks}${t.terbit ? "" : " · DRAF"}`}
-        aksi={<form action={arsipLms}><input type="hidden" name="jenis" value="tugas" /><input type="hidden" name="id" value={t.id} /><button className="rounded-full px-4 py-2.5 text-sm font-semibold text-merah ring-1 ring-merah/30">Arsipkan</button></form>} />
+        aksi={<form action={arsipLms}><input type="hidden" name="jenis" value="tugas" /><input type="hidden" name="id" value={t.id} /><button className="rounded-full px-4 py-2.5 text-sm font-semibold text-blue-teks ring-1 ring-blue/30">Arsipkan</button></form>} />
       <Notifikasi kode={sp.pesan} />
       <div className="mb-4 flex flex-wrap gap-2 text-sm">
         {(["belum", "dikumpulkan", "dikembalikan", "dinilai"] as const).map((s) => <span key={s} className="rounded-full bg-white px-3 py-1.5 ring-1 ring-black/10">{STATUS_KUMPUL[s].label}: <strong>{hit(s)}</strong></span>)}
-        <a href={sp.filter === "nilai" ? "?" : "?filter=nilai"} className="rounded-full px-3 py-1.5 font-semibold text-brand-700 underline">{sp.filter === "nilai" ? "Tampilkan semua" : "Hanya yang perlu dinilai"}</a>
+        <a href={sp.filter === "nilai" ? "?" : "?filter=nilai"} className="rounded-full px-3 py-1.5 font-semibold text-blue-teks underline">{sp.filter === "nilai" ? "Tampilkan semua" : "Hanya yang perlu dinilai"}</a>
       </div>
       <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Pengumpulan</h2>
+          <h2 className="mb-3 text-2xl">Pengumpulan</h2>
           {tampil.length === 0 ? <p className="text-sm text-black/50">Tidak ada.</p> : (
             <ul className="divide-y divide-black/5">
               {tampil.map((r) => {
@@ -56,10 +56,10 @@ export default async function DetailTugas({ params, searchParams }: { params: Pr
                     </div>
                     {k && (
                       <>
-                        {k.jawaban && <p className="whitespace-pre-line rounded-lg bg-krem p-3">{k.jawaban}</p>}
+                        {k.jawaban && <p className="whitespace-pre-line rounded-lg bg-soft p-3">{k.jawaban}</p>}
                         <div className="flex gap-3 text-xs font-semibold">
-                          {k.tautan && <a href={k.tautan} target="_blank" rel="noopener noreferrer" className="text-brand-700 underline">Buka tautan</a>}
-                          {k.berkas_path && <a href={`/berkas/tugas/${k.id}`} target="_blank" rel="noopener" className="text-brand-700 underline">Buka berkas ({k.berkas_nama || "lampiran"})</a>}
+                          {k.tautan && <a href={k.tautan} target="_blank" rel="noopener noreferrer" className="text-blue-teks underline">Buka tautan</a>}
+                          {k.berkas_path && <a href={`/berkas/tugas/${k.id}`} target="_blank" rel="noopener" className="text-blue-teks underline">Buka berkas ({k.berkas_nama || "lampiran"})</a>}
                         </div>
                         <FormNilai id={k.id} nilai={k.nilai} komentar={k.komentar} maks={t.nilai_maks} />
                       </>
@@ -71,7 +71,7 @@ export default async function DetailTugas({ params, searchParams }: { params: Pr
           )}
         </Kartu>
         <Kartu className="self-start">
-          <h2 className="mb-4 font-serif text-2xl">Pengaturan tugas</h2>
+          <h2 className="mb-4 text-2xl">Pengaturan tugas</h2>
           <FormTugas mapel_id={t.mapel_id} kelas={kelasMapel} tenggatAwal=""
             data={{ id: t.id, judul: t.judul, instruksi: t.instruksi, tautan: t.tautan, tenggat: keLokalWIB(t.tenggat), nilai_maks: t.nilai_maks, terima_terlambat: t.terima_terlambat, terbit: t.terbit, kelas: (t.tugas_kelas as { kelas_id: string }[]).map((x) => x.kelas_id) }} />
         </Kartu>

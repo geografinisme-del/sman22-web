@@ -25,7 +25,7 @@ export default async function AdminPengumuman({ searchParams }: { searchParams: 
       <JudulHalaman judul="Pengumuman" deskripsi="Pengumuman aktif tampil di pita kuning beranda dan halaman Agenda." />
       <Notifikasi kode={pesan} />
       <Kartu className="mb-8">
-        <h2 className="mb-5 font-serif text-2xl">{diubah ? "Ubah pengumuman" : "Tambah pengumuman"}</h2>
+        <h2 className="mb-5 text-2xl">{diubah ? "Ubah pengumuman" : "Tambah pengumuman"}</h2>
         <FormPengumuman
           key={diubah?.id ?? "baru"}
           data={diubah ? { ...diubah, tayang_mulai: keInputWaktu(diubah.tayang_mulai), tayang_selesai: keInputWaktu(diubah.tayang_selesai) } : { judul: "", isi: "", tanggal: hariIni, penting: false, aktif: true }}
@@ -42,6 +42,7 @@ export default async function AdminPengumuman({ searchParams }: { searchParams: 
                 <p className="flex flex-wrap items-center gap-2 font-medium">
                   {p.judul}
                   {p.penting && <Lencana warna="kuning">Penting</Lencana>}
+                  {p.sasaran === "pegawai" && <Lencana>Internal GTK</Lencana>}
                   {!p.aktif && <Lencana>Disembunyikan</Lencana>}
                   {p.tayang_mulai && new Date(p.tayang_mulai) > new Date() && <Lencana warna="kuning">Terjadwal {formatWaktu(p.tayang_mulai)}</Lencana>}
                   {p.tayang_selesai && new Date(p.tayang_selesai) <= new Date() && <Lencana>Sudah berakhir</Lencana>}

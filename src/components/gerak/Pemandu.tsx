@@ -25,7 +25,7 @@ const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: st
     kunci: "siswa",
     label: "Siswa",
     tautan: [
-      { href: "/admin/login?sebagai=siswa", label: "Masuk Portal Sekolah" },
+      { href: "/portal-digital", label: "Portal Digital 22" },
       { href: "/perpustakaan", label: "E-Library" },
       { href: "/agenda", label: "Agenda & kegiatan" },
       { href: "/ekskul", label: "Ekskul & OSIS" },
@@ -35,7 +35,7 @@ const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: st
     kunci: "ortu",
     label: "Orang tua",
     tautan: [
-      { href: "/admin/login?sebagai=orang_tua", label: "Masuk Portal Orang Tua" },
+      { href: "/portal-digital/masuk/orang-tua", label: "Masuk Portal Orang Tua" },
       { href: "/agenda", label: "Agenda & pengumuman" },
       { href: "/pengaduan", label: "Pengaduan & aspirasi" },
     ],
@@ -43,7 +43,10 @@ const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: st
   {
     kunci: "guru",
     label: "Guru & manajemen",
-    tautan: [{ href: "/admin/login?sebagai=staf", label: "Masuk Portal Manajemen (ruang kerja sesuai tugas)" }],
+    tautan: [
+      { href: "/portal-digital", label: "Portal Digital 22 (pilih bidang)" },
+      { href: "/portal-digital/masuk/gtk", label: "Masuk (ruang kerja sesuai tugas)" },
+    ],
   },
   {
     kunci: "tamu",
@@ -97,8 +100,8 @@ export function Pemandu({ melambai, tersembunyi, onMati }: { melambai: boolean; 
         <div ref={panel} id={id} className="pemandu-panel" role="region" aria-label="Pemandu bantuan">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="font-bold text-[#1f2328]">{grup ? grup.label : "Butuh bantuan?"}</p>
-              <p className="text-sm text-[#5b6270]">{grup ? "Pilih halaman tujuan." : "Pilih yang paling sesuai dengan Anda."}</p>
+              <p className="font-bold text-[var(--ink)]">{grup ? grup.label : "Butuh bantuan?"}</p>
+              <p className="text-sm text-[var(--muted)]">{grup ? "Pilih halaman tujuan." : "Pilih yang paling sesuai dengan Anda."}</p>
             </div>
             <button type="button" className="tombol-tutup" aria-label="Tutup pemandu" onClick={() => (setBuka(false), tombol.current?.focus())}>
               <X size={18} aria-hidden />
@@ -116,7 +119,7 @@ export function Pemandu({ melambai, tersembunyi, onMati }: { melambai: boolean; 
                   </li>
                 ))}
               </ul>
-              <button type="button" className="mt-2 inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-[#3b414b] hover:underline" onClick={() => setPilih(null)}>
+              <button type="button" className="mt-2 inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-[var(--muted)] hover:underline" onClick={() => setPilih(null)}>
                 <ArrowLeft size={16} aria-hidden /> Pilihan lain
               </button>
             </>
@@ -132,7 +135,7 @@ export function Pemandu({ melambai, tersembunyi, onMati }: { melambai: boolean; 
               ))}
             </ul>
           )}
-          <p className="mt-3 border-t border-[#e5e1da] pt-2 text-[0.8125rem] text-[#5b6270]">
+          <p className="mt-3 border-t border-[var(--line)] pt-2 text-[0.8125rem] text-[var(--muted)]">
             Pilihan ini hanya membantu menemukan halaman; akses tetap mengikuti akun Anda.{" "}
             <button type="button" className="font-semibold underline" onClick={() => (setBuka(false), onMati())}>
               Sembunyikan pemandu

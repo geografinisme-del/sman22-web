@@ -27,9 +27,9 @@ export function PilihSiswa({ awal }: { awal?: S }) {
         id="cari-siswa" value={pilih ? `${pilih.nama} — ${pilih.kelas ?? "tanpa kelas"}` : q} autoComplete="off" role="combobox"
         aria-expanded={tampil.length > 0} aria-controls="hasil-siswa" aria-invalid={Boolean(err)} readOnly={Boolean(awal)}
         onChange={(e) => { setPilih(null); setQ(e.target.value); }} placeholder="Ketik nama siswa (min. 3 huruf)…"
-        className="w-full rounded-xl border border-black/15 bg-white px-4 py-3 aria-[invalid=true]:border-merah"
+        className="w-full rounded-xl border border-black/15 bg-white px-4 py-3 aria-[invalid=true]:border-blue-teks"
       />
-      {err && <p className="mt-1 text-sm text-merah">{err}</p>}
+      {err && <p className="mt-1 text-sm text-blue-teks">{err}</p>}
       {tampil.length > 0 && (
         <ul id="hasil-siswa" role="listbox" className="absolute z-10 mt-1 w-full overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/10">
           {tampil.map((s) => (
@@ -59,7 +59,7 @@ export function FormPelanggaran({ jenis, hariIni }: { jenis: { id: string; nama:
             </optgroup>
           ))}
         </select>
-        {err && <span className="block text-sm font-normal text-merah">{err}</span>}
+        {err && <span className="block text-sm font-normal text-blue-teks">{err}</span>}
       </label>
       <div className="grid gap-4 sm:grid-cols-2">
         <Input label="Tanggal kejadian" nama="tanggal" tipe="date" nilai={hariIni} wajib />

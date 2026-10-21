@@ -51,7 +51,7 @@ export function KerjakanKuis({ kuisId, durasi }: { kuisId: string; durasi: numbe
     return (
       <div className="rounded-2xl bg-white p-6 ring-1 ring-black/5">
         <p className="text-black/70">Waktu mengerjakan <strong>{durasi} menit</strong> sejak tombol ditekan dan tidak bisa dijeda. Jawaban tersimpan otomatis; kuis terkirim sendiri saat waktu habis.</p>
-        {pesan && <p role="alert" className="mt-3 text-sm text-merah">{pesan}</p>}
+        {pesan && <p role="alert" className="mt-3 text-sm text-blue-teks">{pesan}</p>}
         <button type="button" disabled={proses} onClick={() => mulai(async () => {
           const r = await mulaiKuis(kuisId);
           if (!r.ok) return setPesan(r.pesan);
@@ -59,7 +59,7 @@ export function KerjakanKuis({ kuisId, durasi }: { kuisId: string; durasi: numbe
           setSoal(r.soal);
           setJawab(Object.fromEntries(r.soal.filter((s) => s.jawaban != null).map((s) => [s.id, s.jawaban!])));
           setBatas(new Date(r.batas).getTime());
-        })} className="mt-4 rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Menyiapkan…" : "Mulai mengerjakan"}</button>
+        })} className="mt-4 rounded-full bg-ink px-6 py-3 font-semibold text-white disabled:opacity-60">{proses ? "Menyiapkan…" : "Mulai mengerjakan"}</button>
       </div>
     );
 
@@ -67,8 +67,8 @@ export function KerjakanKuis({ kuisId, durasi }: { kuisId: string; durasi: numbe
   const mm = String(Math.floor(sisa / 60)).padStart(2, "0"), ss = String(sisa % 60).padStart(2, "0");
   return (
     <div className="space-y-4 pb-24">
-      <div className="sticky top-0 z-10 -mx-5 flex items-center gap-3 bg-krem/95 px-5 py-3 backdrop-blur">
-        <span className={`font-mono text-2xl tabular-nums ${sisa <= 60 ? "text-merah" : ""}`} aria-live="polite">{mm}:{ss}</span>
+      <div className="sticky top-0 z-10 -mx-5 flex items-center gap-3 bg-soft/95 px-5 py-3 backdrop-blur">
+        <span className={`font-mono text-2xl tabular-nums ${sisa <= 60 ? "text-blue-teks" : ""}`} aria-live="polite">{mm}:{ss}</span>
         <span className="flex-1 text-sm text-black/60">{terjawab}/{soal.length} terjawab{tersimpan && ` · tersimpan ${tersimpan}`}</span>
       </div>
       {pesan && <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-800">{pesan}</p>}
@@ -78,7 +78,7 @@ export function KerjakanKuis({ kuisId, durasi }: { kuisId: string; durasi: numbe
             <p className="mb-3 font-medium">{i + 1}. {s.pertanyaan}</p>
             <div className="space-y-2" role="radiogroup" aria-label={`Soal ${i + 1}`}>
               {s.pilihan.map((p, j) => (
-                <label key={j} className="flex cursor-pointer items-start gap-3 rounded-xl px-3 py-2.5 ring-1 ring-black/10 has-[:checked]:bg-brand-50 has-[:checked]:ring-brand-600">
+                <label key={j} className="flex cursor-pointer items-start gap-3 rounded-xl px-3 py-2.5 ring-1 ring-black/10 has-[:checked]:bg-soft has-[:checked]:ring-muted">
                   <input type="radio" name={s.id} checked={jawab[s.id] === j} onChange={() => setJawab((x) => ({ ...x, [s.id]: j }))} className="mt-1" />
                   <span><strong>{String.fromCharCode(65 + j)}.</strong> {p}</span>
                 </label>
@@ -91,7 +91,7 @@ export function KerjakanKuis({ kuisId, durasi }: { kuisId: string; durasi: numbe
         <div className="mx-auto flex max-w-3xl items-center gap-3">
           <span className="flex-1 text-sm text-black/60">{terjawab < soal.length ? `${soal.length - terjawab} soal belum dijawab` : "Semua soal terjawab"}</span>
           <button type="button" disabled={proses} onClick={() => { if (terjawab === soal.length || confirm("Masih ada soal kosong. Kirim sekarang?")) kirim(true); }}
-            className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:opacity-60">Kirim jawaban</button>
+            className="rounded-full bg-ink px-6 py-3 font-semibold text-white disabled:opacity-60">Kirim jawaban</button>
         </div>
       </div>
     </div>

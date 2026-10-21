@@ -4,6 +4,8 @@ import { berperan, NAMA_PERAN, punya, wajibLogin } from "@/lib/admin/auth";
 import { redirect } from "next/navigation";
 import { keluar } from "../actions";
 import { ruangKerjaUntuk } from "@/lib/ruang-kerja";
+import { AksenBidang } from "@/components/admin/AksenBidang";
+import { MenungguVerifikasi } from "@/components/admin/MenungguVerifikasi";
 
 export const dynamic = "force-dynamic";
 
@@ -13,14 +15,27 @@ const WEBSITE = [
   { href: "/admin/pengumuman", label: "Pengumuman" },
   { href: "/admin/agenda", label: "Agenda" },
   { href: "/admin/galeri", label: "Galeri" },
+  { href: "/admin/kartu-beranda", label: "Kartu Beranda" },
+  { href: "/admin/staf-publik", label: "Guru & Tendik (publik)" },
+  { href: "/admin/menu", label: "Menu navigasi" },
+  { href: "/admin/portal-masuk", label: "Halaman masuk portal" },
+  { href: "/admin/fasilitas", label: "Fasilitas" },
+  { href: "/admin/halaman", label: "Halaman teks" },
+  { href: "/admin/tur-sekolah", label: "Tur Sekolah" },
+  { href: "/admin/prestasi", label: "Prestasi & Alumni" },
+  { href: "/admin/spmb", label: "SPMB Beranda" },
+  { href: "/admin/portal-bidang", label: "Penanggung Jawab Portal" },
 ];
 
-const PERAN_PANEL = ["super_admin", "kepala_sekolah", "wakasek", "kurikulum", "sarpras", "pustakawan", "literasi", "keuangan", "admin_alumni", "tim_mutu", "auditor", "operator", "humas", "kesiswaan", "piket", "bk", "wali_kelas", "guru"];
+const PERAN_PANEL = ["super_admin", "kepala_sekolah", "wakasek", "kurikulum", "sarpras", "pustakawan", "literasi", "keuangan", "admin_alumni", "tim_mutu", "auditor", "operator", "humas", "kesiswaan", "piket", "bk", "wali_kelas", "guru", "laboran", "pegawai"];
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const { supabase, user, akses } = await wajibLogin();
   // peran yang wajib verifikasi dua langkah: izinnya ditahan database sampai kode autentikator dimasukkan
   if (akses?.peranTertunda.length) redirect("/admin/mfa");
+  // akun aktif TANPA peran = belum diverifikasi: hanya profilnya sendiri + kontak operator (di semua alamat /admin/*).
+  // Dasbor dasar GTK baru terbuka setelah admin memberi peran (minimal "Pegawai umum").
+  if (akses?.tanpaPeran) return <MenungguVerifikasi supabase={supabase} nama={akses.nama} email={akses.email} keluar={keluar} />;
   const bolehPanel = akses?.peran.some((p) => PERAN_PANEL.includes(p));
 
   if (akses && !bolehPanel && (berperan(akses, "siswa") || berperan(akses, "orang_tua"))) redirect("/portal");
@@ -29,13 +44,13 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     return (
       <main className="grid min-h-screen place-items-center px-5">
         <div className="max-w-md text-center">
-          <h1 className="font-serif text-4xl">Akun belum diberi akses</h1>
+          <h1 className="text-4xl">Akun belum diberi akses</h1>
           <p className="mt-3 text-black/60">
             Anda masuk sebagai <strong>{user.email}</strong>, tetapi akun ini belum diberi peran atau sedang dinonaktifkan.
             Hubungi super admin sekolah.
           </p>
           <form action={keluar}>
-            <button type="submit" className="mt-6 rounded-full bg-brand-900 px-6 py-3 font-semibold text-white">
+            <button type="submit" className="mt-6 rounded-full bg-ink px-6 py-3 font-semibold text-white">
               Keluar
             </button>
           </form>
@@ -229,9 +244,30 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (punya(akses, "akun_portal.kelola")) pengaturan.push({ href: "/admin/akun-portal", label: "Akun Portal Siswa & Ortu" });
   if (punya(akses, "pengguna.kelola")) pengaturan.push({ href: "/admin/pengguna", label: "Pengguna & Peran" });
   if (punya(akses, "pengguna.kelola")) pengaturan.push({ href: "/admin/notifikasi/kanal", label: "WhatsApp & Email" });
-  pengaturan.push({ href: "/admin/keamanan", label: "Keamanan Akun" });
+  pengaturan.push({ href: "/admin/profil-saya", label: "Profil Saya" }, { href: "/admin/direktori", label: "Direktori GTK" }, { href: "/admin/keamanan", label: "Keamanan Akun" });
   if (punya(akses, "audit.baca")) pengaturan.push({ href: "/admin/log", label: "Log Aktivitas" });
   if (pengaturan.length) grup.push({ judul: "Pengaturan", item: pengaturan });
+
+  // Pegawai umum (satpam, caraka, sopir, …), akun tanpa peran, dan laboran: menu dasbor dasar saja
+  // (+ inventaris & jadwal lab untuk laboran). Hak akses tetap dijaga RLS; ini hanya merapikan menu.
+  if (akses.tanpaPeran || akses.peran.every((p) => p === "pegawai" || p === "laboran")) {
+    const dasar: GrupMenu[] = [
+      { item: [{ href: "/admin", label: "Ringkasan" }] },
+      {
+        judul: "Saya",
+        item: [
+          { href: "/admin/profil-saya", label: "Profil Saya" },
+          { href: "/admin/direktori", label: "Direktori GTK" },
+          { href: "/admin/kalender", label: "Kalender Sekolah" },
+          ...(pegawaiSaya ? [{ href: "/admin/presensi", label: "Presensi Saya" }] : []),
+        ],
+      },
+    ];
+    if (punya(akses, "sarpras.inventaris"))
+      dasar.push({ judul: "Laboratorium", item: [{ href: "/admin/sarpras", label: "Inventaris" }, { href: "/admin/sarpras/peminjaman", label: "Jadwal & Peminjaman Lab" }] });
+    dasar.push({ judul: "Pengaturan", item: [{ href: "/admin/keamanan", label: "Keamanan Akun" }] });
+    grup.splice(0, grup.length, ...dasar);
+  }
 
   const { count: notif } = await supabase.from("notifikasi").select("id", { count: "exact", head: true }).is("dibaca_pada", null);
   return (
@@ -246,7 +282,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         keluar={keluar}
       />
       <main className="px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8 lg:py-7 print:m-0 print:p-0">
-        <div className="max-w-[1320px]">{children}</div>
+        <div className="max-w-[1320px]">
+          <AksenBidang ruang={ruangKerjaUntuk(akses)}>{children}</AksenBidang>
+        </div>
       </main>
     </>
   );

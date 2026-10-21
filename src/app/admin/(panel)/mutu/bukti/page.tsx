@@ -43,7 +43,7 @@ export default async function Bukti({ searchParams }: { searchParams: Promise<{ 
         </Kartu>
         {(log ?? []).length > 0 && (
           <Kartu className="self-start"><h2 className="mb-2 font-semibold">Akses berkas terakhir</h2>
-            <ul className="space-y-1 text-xs">{(log ?? []).map((l) => <li key={l.id} className={l.integritas_ok === false ? "font-semibold text-merah" : "text-black/60"}>{waktuWIB(l.waktu)} · {judul.get(l.bukti_id) ?? "bukti"} · {l.integritas_ok === false ? "INTEGRITAS GAGAL" : "utuh"}</li>)}</ul></Kartu>
+            <ul className="space-y-1 text-xs">{(log ?? []).map((l) => <li key={l.id} className={l.integritas_ok === false ? "font-semibold text-blue-teks" : "text-black/60"}>{waktuWIB(l.waktu)} · {judul.get(l.bukti_id) ?? "bukti"} · {l.integritas_ok === false ? "INTEGRITAS GAGAL" : "utuh"}</li>)}</ul></Kartu>
         )}
       </div>
     </>

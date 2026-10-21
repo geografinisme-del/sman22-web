@@ -61,7 +61,7 @@ export function ModalPrioritas({ info, buka, onTutup }: { info: InfoPrioritas; b
     >
       <div className="dialog-info-kotak">
         <div className="dialog-info-kepala">
-          <p className="text-sm text-[#5b6270]">
+          <p className="text-sm text-[var(--muted)]">
             <span className="font-semibold text-[var(--lp-utama)]">{info.kategori}</span> · <time dateTime={info.tanggal}>{formatTanggal(info.tanggal)}</time>
           </p>
           <button type="button" className="tombol-tutup" onClick={() => ref.current?.close()} aria-label="Tutup pengumuman">
@@ -83,7 +83,7 @@ export function ModalPrioritas({ info, buka, onTutup }: { info: InfoPrioritas; b
             </figure>
           )}
           {info.isi && (
-            <p id="prioritas-isi" className="mt-3 whitespace-pre-line text-[#3b414b]">
+            <p id="prioritas-isi" className="mt-3 whitespace-pre-line text-[var(--muted)]">
               {info.isi}
             </p>
           )}

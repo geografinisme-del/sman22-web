@@ -17,7 +17,7 @@ function FormVerifikasi({ tipe, id, label }: { tipe: string; id: string; label: 
       <input name="catatan" maxLength={500} placeholder="Catatan (wajib bila ditolak)" aria-label={`Catatan ${label}`} className="rounded-xl border border-black/15 px-3 py-2 text-sm" />
       <div className="flex gap-2">
         <button name="keputusan" value="sah" className="flex-1 rounded-full bg-emerald-700 px-3 py-2 text-sm font-semibold text-white">Verifikasi</button>
-        <button name="keputusan" value="tolak" className="flex-1 rounded-full px-3 py-2 text-sm font-semibold text-merah ring-1 ring-red-200">Tolak</button>
+        <button name="keputusan" value="tolak" className="flex-1 rounded-full px-3 py-2 text-sm font-semibold text-blue-teks ring-1 ring-red-200">Tolak</button>
       </div>
     </form>
   );
@@ -53,7 +53,7 @@ export default async function Kesiswaan({ searchParams }: { searchParams: Promis
 
       {kelola && (pelList.length > 0 || preList.length > 0) && (
         <section className="mb-10">
-          <h2 className="mb-3 font-serif text-3xl">Perlu verifikasi ({pelList.length + preList.length})</h2>
+          <h2 className="mb-3 text-3xl">Perlu verifikasi ({pelList.length + preList.length})</h2>
           <ul className="space-y-3">
             {pelList.map((p) => (
               <li key={p.id} className="flex flex-wrap items-start justify-between gap-4 rounded-2xl bg-white p-5 ring-1 ring-black/5">
@@ -61,7 +61,7 @@ export default async function Kesiswaan({ searchParams }: { searchParams: Promis
                   <p className="font-semibold"><Link href={`/admin/kesiswaan/siswa/${p.siswa_id}`} className="hover:underline">{p.siswa?.nama}</Link> <span className="ml-1 rounded bg-red-100 px-1.5 text-xs font-bold text-red-800">{p.nama_pelanggaran} · {p.poin} poin</span></p>
                   <p className="mt-1 text-sm text-black/50">{formatTanggal(p.tanggal, { weekday: "short" })}{p.tempat && ` · ${p.tempat}`}{p.saksi && ` · saksi: ${p.saksi}`}</p>
                   <p className="mt-2 text-sm text-black/70">“{p.kronologi}”</p>
-                  {p.bukti_path && <a href={`/berkas/pelanggaran/${p.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-brand-700 underline">Lihat bukti ↗</a>}
+                  {p.bukti_path && <a href={`/berkas/pelanggaran/${p.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-blue-teks underline">Lihat bukti ↗</a>}
                 </div>
                 <FormVerifikasi tipe="pelanggaran" id={p.id} label={p.siswa?.nama ?? ""} />
               </li>
@@ -72,7 +72,7 @@ export default async function Kesiswaan({ searchParams }: { searchParams: Promis
                   <p className="font-semibold"><Link href={`/admin/kesiswaan/siswa/${p.siswa_id}`} className="hover:underline">{p.siswa?.nama}</Link> <span className="ml-1 rounded bg-emerald-100 px-1.5 text-xs font-bold text-emerald-800">🏆 {PERINGKAT[p.peringkat]} {TINGKAT[p.tingkat]} · {p.poin} poin</span></p>
                   <p className="mt-1 text-sm">{p.nama_kegiatan}</p>
                   <p className="text-sm text-black/50">{BIDANG[p.bidang]} · {p.peserta} · {p.penyelenggara || "—"} · {formatTanggal(p.tanggal)}</p>
-                  {p.bukti_path ? <a href={`/berkas/prestasi/${p.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-brand-700 underline">Lihat piagam ↗</a> : <p className="mt-1 text-xs text-amber-700">Tanpa bukti</p>}
+                  {p.bukti_path ? <a href={`/berkas/prestasi/${p.id}`} target="_blank" rel="noopener" className="mt-1 inline-block text-sm font-semibold text-blue-teks underline">Lihat piagam ↗</a> : <p className="mt-1 text-xs text-amber-700">Tanpa bukti</p>}
                 </div>
                 <FormVerifikasi tipe="prestasi" id={p.id} label={p.siswa?.nama ?? ""} />
               </li>
@@ -83,14 +83,14 @@ export default async function Kesiswaan({ searchParams }: { searchParams: Promis
 
       <section>
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-          <h2 className="font-serif text-3xl">Rekap poin tahun ini</h2>
+          <h2 className="text-3xl">Rekap poin tahun ini</h2>
           {kelasList.length > 1 && (
             <form className="flex gap-2">
               <select name="kelas" defaultValue={sp.kelas ?? ""} aria-label="Filter kelas" className="rounded-xl border border-black/15 bg-white px-3 py-2">
                 <option value="">Semua kelas</option>
                 {kelasList.map(([id, n]) => <option key={id} value={id}>{n}</option>)}
               </select>
-              <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
+              <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
             </form>
           )}
         </div>

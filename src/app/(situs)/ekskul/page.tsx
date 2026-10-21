@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { InfoCard } from "@/components/langit/Komponen";
 import { Kosong, PageHeader, Section } from "@/components/ui";
 import { BIDANG_ORG, JENIS_ORG } from "@/lib/ekskul";
 import { supabaseAktif } from "@/lib/supabase/config";
@@ -14,29 +14,29 @@ export default async function DaftarEkskul() {
   const list = (data ?? []) as O[];
   return (
     <>
-      <PageHeader judul="Ekstrakurikuler & OSIS" deskripsi="Wadah siswa mengembangkan minat, bakat, dan kepemimpinan." />
+      <PageHeader judul="Ekskul dan OSIS" label="Kehidupan siswa" deskripsi="Wadah siswa mengembangkan minat, bakat, dan kepemimpinan." />
       <Section>
-        {list.length === 0 ? <Kosong teks="Daftar organisasi segera tersedia." /> : (
-          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {list.length === 0 ? (
+          <Kosong teks="Daftar organisasi segera tersedia." />
+        ) : (
+          <div className="lgt-kisi">
             {list.map((o) => (
-              <li key={o.id}>
-                <Link href={`/ekskul/${o.slug}`} className="group block h-full overflow-hidden kartu transition hover:-translate-y-0.5 hover:shadow-lg">
-                  <div className="flex items-center gap-3 p-5 text-white" style={{ background: o.warna }}>
-                    {o.logo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={o.logo_url} alt="" className="h-12 w-12 rounded-full bg-white object-contain p-1" referrerPolicy="no-referrer" loading="lazy" />
-                    ) : <span className="grid h-12 w-12 place-items-center rounded-full bg-white/20 font-serif text-xl">{(o.singkatan || o.nama).slice(0, 2)}</span>}
-                    <div><p className="text-xs opacity-80">{JENIS_ORG[o.jenis]} · {BIDANG_ORG[o.bidang]}</p><h2 className="font-serif text-2xl leading-tight">{o.nama}</h2></div>
-                  </div>
-                  <div className="p-5">
-                    <p className="line-clamp-3 text-sm text-[#3b414b]">{o.deskripsi || "—"}</p>
-                    <p className="mt-3 text-xs text-[#5b6270]">{o.jadwal_rutin}{o.jadwal_rutin && " · "}{o.jumlah_anggota} anggota</p>
-                    {o.pendaftaran_buka && <p className="mt-2 inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800">Pendaftaran dibuka — daftar lewat portal siswa</p>}
-                  </div>
-                </Link>
-              </li>
+              <InfoCard
+                key={o.id}
+                href={`/ekskul/${o.slug}`}
+                foto={o.logo_url || undefined}
+                alt={`Logo ${o.nama}`}
+                label={[JENIS_ORG[o.jenis], BIDANG_ORG[o.bidang]].filter(Boolean).join(" · ")}
+                judul={o.nama}
+                deskripsi={o.deskripsi || undefined}
+              >
+                <span className="mt-2 text-[0.8125rem] text-[var(--muted)]">
+                  {[o.jadwal_rutin, `${o.jumlah_anggota} anggota`].filter(Boolean).join(" · ")}
+                </span>
+                {o.pendaftaran_buka && <span className="lgt-pil-tingkat mt-2 self-start">Pendaftaran dibuka</span>}
+              </InfoCard>
             ))}
-          </ul>
+          </div>
         )}
       </Section>
     </>

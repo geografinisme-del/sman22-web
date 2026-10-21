@@ -9,7 +9,7 @@ const kotak = "rounded-xl border border-black/15 bg-white px-3 py-2";
 
 function Galat({ nama }: { nama: string }) {
   const e = useErrorKolom(nama);
-  return e ? <p className="mt-1 text-sm text-merah">{e}</p> : null;
+  return e ? <p className="mt-1 text-sm text-blue-teks">{e}</p> : null;
 }
 
 type Jeda = { setelah: string; menit: string; jenis: "istirahat" | "ibadah" | "kegiatan"; label: string };
@@ -50,7 +50,7 @@ export function FormJam() {
         <legend className="mb-2 text-sm font-semibold">Berlaku untuk hari</legend>
         <div className="flex flex-wrap gap-2">
           {[1, 2, 3, 4, 5, 6].map((h) => (
-            <label key={h} className="flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 text-sm ring-1 ring-black/15 has-[:checked]:bg-brand-900 has-[:checked]:text-white">
+            <label key={h} className="flex cursor-pointer items-center gap-2 rounded-full px-3 py-1.5 text-sm ring-1 ring-black/15 has-[:checked]:bg-ink has-[:checked]:text-white">
               <input type="checkbox" name="hari" value={h} defaultChecked={h >= 2 && h <= 4} className="sr-only" /> {HARI[h]}
             </label>
           ))}
@@ -105,7 +105,7 @@ export function FormJam() {
         </div>
       </fieldset>
 
-      <div className="rounded-2xl bg-krem p-4">
+      <div className="rounded-2xl bg-soft p-4">
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-black/50">Pratinjau</p>
         <ol className="grid gap-x-6 gap-y-0.5 text-sm sm:grid-cols-2">
           {(() => {

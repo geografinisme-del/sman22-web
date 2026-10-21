@@ -59,9 +59,9 @@ export default async function JadwalSaya() {
       <JudulHalaman judul="Jadwal Saya" deskripsi={`${entri.length} JP per minggu${piket?.length ? ` · Piket hari ${piket.map((p) => namaHari(p.hari)).join(", ")}` : ""}`} aksi={<div className="flex gap-2 print:hidden"><Link href="/admin/tukar-jam" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15 hover:bg-black/5">Tukar jam</Link><TombolCetak /></div>} />
 
       <section className="mb-8 rounded-2xl bg-white p-5 ring-1 ring-black/5 print:hidden">
-        <h2 className="font-serif text-2xl">Hari ini · {formatTanggal(hari, { weekday: "long" })}</h2>
+        <h2 className="text-2xl">Hari ini · {formatTanggal(hari, { weekday: "long" })}</h2>
         {libur && <p className="mt-2 rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-800 ring-1 ring-red-200">Hari ini libur: {libur.keterangan}</p>}
-        {piket?.some((p) => p.hari === isoHari) && <p className="mt-2 inline-block rounded-full bg-accent-400/30 px-3 py-1 text-sm font-semibold">Anda bertugas piket hari ini</p>}
+        {piket?.some((p) => p.hari === isoHari) && <p className="mt-2 inline-block rounded-full bg-lime/30 px-3 py-1 text-sm font-semibold">Anda bertugas piket hari ini</p>}
         {hariIni.length === 0 ? <p className="mt-2 text-sm text-black/50">Tidak ada jam mengajar hari ini.</p> : (
           <ul className="mt-3 divide-y divide-black/5">
             {hariIni.map((h, i) => (
@@ -69,7 +69,7 @@ export default async function JadwalSaya() {
                 <span className="w-28 shrink-0 text-black/50">JP {h.jp} · {waktu.get(`${isoHari}-${h.jp}`)}</span>
                 <span className="flex-1">{h.teks}{h.ket && <span className="block text-amber-800">{h.ket}</span>}</span>
                 {h.absen && (
-                  <Link href={`/admin/absen-jp/${h.id}`} className={`shrink-0 self-center rounded-full px-3 py-1.5 text-xs font-semibold ${terisi.has(h.id) ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200" : "bg-brand-900 text-white"}`}>
+                  <Link href={`/admin/absen-jp/${h.id}`} className={`shrink-0 self-center rounded-full px-3 py-1.5 text-xs font-semibold ${terisi.has(h.id) ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200" : "bg-ink text-white"}`}>
                     {terisi.has(h.id) ? "✓ Absen & jurnal" : "Absen kelas"}
                   </Link>
                 )}

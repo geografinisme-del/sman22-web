@@ -30,22 +30,22 @@ export default async function Kerangka({ params, searchParams }: { params: Promi
         <div className="space-y-4">
           {standar.map((s) => (
             <Kartu key={s.id}>
-              <p className="font-serif text-2xl">{s.kode}. {s.nama}</p>
+              <p className="text-2xl">{s.kode}. {s.nama}</p>
               <p className="text-sm text-black/60">Koordinator: {s.koordinator_id ? nama.get(s.koordinator_id) : "—"}</p>
-              <details className="mt-1"><summary className="cursor-pointer text-xs font-semibold text-brand-700">Ubah standar</summary><div className="mt-2"><FormStandar kerangka={id} d={s} staf={staf} /></div></details>
+              <details className="mt-1"><summary className="cursor-pointer text-xs font-semibold text-blue-teks">Ubah standar</summary><div className="mt-2"><FormStandar kerangka={id} d={s} staf={staf} /></div></details>
               <ul className="mt-3 divide-y divide-black/5 text-sm">{[...s.indikator_mutu].sort((a, b) => a.urutan - b.urutan || a.kode.localeCompare(b.kode)).map((i) => (
                 <li key={i.id} className="py-2">
-                  <p><span className="font-mono text-xs text-black/50">{i.kode}</span> {i.nama} <span className="text-black/50">· {i.pemilik_id ? nama.get(i.pemilik_id) : <span className="text-merah">tanpa pemilik</span>}</span></p>
-                  <details><summary className="cursor-pointer text-xs font-semibold text-brand-700">Ubah</summary><div className="mt-2"><FormIndikator standar={s.id} d={{ ...i, bobot: Number(i.bobot) }} staf={staf} /></div></details>
+                  <p><span className="font-mono text-xs text-black/50">{i.kode}</span> {i.nama} <span className="text-black/50">· {i.pemilik_id ? nama.get(i.pemilik_id) : <span className="text-blue-teks">tanpa pemilik</span>}</span></p>
+                  <details><summary className="cursor-pointer text-xs font-semibold text-blue-teks">Ubah</summary><div className="mt-2"><FormIndikator standar={s.id} d={{ ...i, bobot: Number(i.bobot) }} staf={staf} /></div></details>
                 </li>))}</ul>
               <details className="mt-3 border-t border-black/5 pt-3"><summary className="cursor-pointer text-sm font-semibold">+ Indikator</summary><div className="mt-3"><FormIndikator standar={s.id} staf={staf} /></div></details>
             </Kartu>
           ))}
-          <Kartu><h2 className="mb-3 font-serif text-xl">Standar / komponen baru</h2><FormStandar kerangka={id} staf={staf} /></Kartu>
+          <Kartu><h2 className="mb-3 text-xl">Standar / komponen baru</h2><FormStandar kerangka={id} staf={staf} /></Kartu>
         </div>
         <div className="space-y-6 self-start">
-          <Kartu><h2 className="mb-3 font-serif text-xl">Data kerangka</h2><FormKerangka d={k as DataKerangka} /></Kartu>
-          <Kartu><h2 className="mb-2 font-serif text-xl">Versi baru</h2><p className="mb-3 text-sm text-black/60">Saat regulasi berubah, salin kerangka ini menjadi versi baru (standar, indikator, dan pemilik ikut tersalin; evaluasi & bukti versi lama tetap utuh).</p><FormSalin id={id} /></Kartu>
+          <Kartu><h2 className="mb-3 text-xl">Data kerangka</h2><FormKerangka d={k as DataKerangka} /></Kartu>
+          <Kartu><h2 className="mb-2 text-xl">Versi baru</h2><p className="mb-3 text-sm text-black/60">Saat regulasi berubah, salin kerangka ini menjadi versi baru (standar, indikator, dan pemilik ikut tersalin; evaluasi & bukti versi lama tetap utuh).</p><FormSalin id={id} /></Kartu>
         </div>
       </div>
     </>

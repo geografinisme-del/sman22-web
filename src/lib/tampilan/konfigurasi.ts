@@ -9,12 +9,13 @@ import { z } from "zod";
 import { FONT, GERAK, PALET, TEMA, type KunciTema } from "./token.ts";
 import { DEFINISI_WIDGET, JENIS_WIDGET, PASANGAN, SUSUNAN_BAWAAN, pengaturanBawaan, type JenisWidget, type WidgetInstans } from "./widget.ts";
 
-export const VERSI_KONFIGURASI = 1;
+/** 2 = sejak widget "tur" (Langit cerah). Konfigurasi versi 1 mendapat widget tur otomatis setelah hero. */
+export const VERSI_KONFIGURASI = 2;
 const MAKS_WIDGET = 20;
 
 export type Konfigurasi = {
   versi: number;
-  tema: Exclude<KunciTema, "editorial">;
+  tema: KunciTema;
   palet: keyof typeof PALET;
   font: keyof typeof FONT;
   gerak: keyof typeof GERAK;
@@ -26,9 +27,9 @@ export type Konfigurasi = {
 
 export const KONFIGURASI_BAWAAN: Konfigurasi = {
   versi: VERSI_KONFIGURASI,
-  tema: "akademik",
-  palet: "merah",
-  font: "source-sans",
+  tema: "langit",
+  palet: "cerah",
+  font: "jakarta",
   gerak: "standar",
   slideshow: { gaya: "manual", detik: 8 },
   popup: { prioritas: true, rutin: true },
@@ -88,6 +89,11 @@ export function bacaKonfigurasi(raw: unknown): Konfigurasi {
   const hero = beranda.findIndex((b) => b.jenis === "hero");
   if (hero === -1) beranda.unshift({ id: "hero", jenis: "hero", tampil: true, pengaturan: pengaturanBawaan("hero") });
   else if (hero > 0) beranda.unshift(...beranda.splice(hero, 1));
+  // konfigurasi yang tersimpan sebelum widget "tur" ada (versi < 2): sisipkan tepat setelah hero (tampil).
+  // Versi 2+ menghormati pilihan admin (tur yang sengaja dilepas tidak muncul lagi).
+  const versiMasuk = typeof r.versi === "number" ? r.versi : 1;
+  if (Array.isArray(r.beranda) && versiMasuk < 2 && !beranda.some((b) => b.jenis === "tur") && beranda.length < MAKS_WIDGET)
+    beranda.splice(1, 0, { id: "tur", jenis: "tur", tampil: true, pengaturan: pengaturanBawaan("tur") });
   return { versi: VERSI_KONFIGURASI, ...atas, beranda };
 }
 

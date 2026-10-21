@@ -31,7 +31,7 @@ export default async function DetailSurvei({ params, searchParams }: { params: P
       <div className="grid gap-6 xl:grid-cols-[1fr_480px]">
         <div className="space-y-4">
           <Kartu>
-            <h2 className="mb-1 font-serif text-2xl">Rekap jawaban</h2>
+            <h2 className="mb-1 text-2xl">Rekap jawaban</h2>
             {tracer && Object.keys(hasil.per_angkatan ?? {}).length > 0 && <p className="mb-1 text-sm text-black/60">Per angkatan: {Object.entries(hasil.per_angkatan ?? {}).map(([k, v]) => `${k}: ${v ?? "< 3"}`).join(" · ")}</p>}
             <p className="mb-4 text-sm text-black/60">{Object.entries(hasil.per_peran).map(([k, v]) => `${PERAN[k] ?? k}: ${v}`).join(" · ") || "Belum ada jawaban."}</p>
             <ol className="space-y-5">
@@ -46,10 +46,10 @@ export default async function DetailSurvei({ params, searchParams }: { params: P
                     {q.jenis !== "teks" && (
                       <ul className="mt-2 space-y-1 text-sm">{(q.jenis === "skala" ? ["1", "2", "3", "4", "5"] : q.pilihan ?? []).map((o) => {
                         const v = r?.sebaran?.[o] ?? 0;
-                        return <li key={o} className="grid grid-cols-[120px_1fr_40px] items-center gap-2"><span className="truncate">{o}</span><span className="h-2 rounded-full bg-black/5"><span className="block h-full rounded-full bg-brand-600" style={{ width: `${(100 * v) / total}%` }} /></span><span className="text-right tabular-nums">{v}</span></li>;
+                        return <li key={o} className="grid grid-cols-[120px_1fr_40px] items-center gap-2"><span className="truncate">{o}</span><span className="h-2 rounded-full bg-black/5"><span className="block h-full rounded-full bg-muted" style={{ width: `${(100 * v) / total}%` }} /></span><span className="text-right tabular-nums">{v}</span></li>;
                       })}</ul>
                     )}
-                    {q.jenis === "teks" && (daftarTeks.length ? <ul className="mt-2 max-h-64 space-y-1 overflow-auto text-sm">{daftarTeks.map((t, j) => <li key={j} className="rounded-lg bg-krem px-3 py-1.5">{t}</li>)}</ul> : <p className="text-sm text-black/50">Belum ada.</p>)}
+                    {q.jenis === "teks" && (daftarTeks.length ? <ul className="mt-2 max-h-64 space-y-1 overflow-auto text-sm">{daftarTeks.map((t, j) => <li key={j} className="rounded-lg bg-soft px-3 py-1.5">{t}</li>)}</ul> : <p className="text-sm text-black/50">Belum ada.</p>)}
                   </li>
                 );
               })}
@@ -57,8 +57,8 @@ export default async function DetailSurvei({ params, searchParams }: { params: P
           </Kartu>
         </div>
         <div className="space-y-4 self-start">
-          {bolehUbah && <Kartu><h2 className="mb-4 font-serif text-2xl">Pengaturan</h2><FormSurveiAdmin d={s as DataSurvei} terkunci={hasil.responden > 0} hari={hariIniWIB()} tracer={tracer && !punya(akses, "humas.kelola")} /></Kartu>}
-          {bolehUbah && <form action={arsipSurvei}><input type="hidden" name="id" value={s.id} />{tracer && <input type="hidden" name="kembali" value="alumni" />}<button className="text-sm font-semibold text-merah underline">Arsipkan survei</button></form>}
+          {bolehUbah && <Kartu><h2 className="mb-4 text-2xl">Pengaturan</h2><FormSurveiAdmin d={s as DataSurvei} terkunci={hasil.responden > 0} hari={hariIniWIB()} tracer={tracer && !punya(akses, "humas.kelola")} /></Kartu>}
+          {bolehUbah && <form action={arsipSurvei}><input type="hidden" name="id" value={s.id} />{tracer && <input type="hidden" name="kembali" value="alumni" />}<button className="text-sm font-semibold text-blue-teks underline">Arsipkan survei</button></form>}
         </div>
       </div>
     </>

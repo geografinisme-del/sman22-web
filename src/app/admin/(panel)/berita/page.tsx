@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FotoSementara } from "@/components/admin/FotoSementara";
 import { FormArsip, JudulHalaman, KosongAdmin, Lencana, Notifikasi, TombolLink } from "@/components/admin/ui";
 import { wajibIzin } from "@/lib/admin/auth";
 import { formatTanggal, formatWaktu } from "@/lib/format";
@@ -10,7 +11,7 @@ export default async function AdminBerita({ searchParams }: { searchParams: Prom
   const { supabase } = await wajibIzin("konten.kelola");
   let q = supabase
     .from("berita")
-    .select("id, judul, slug, kategori, tanggal, status, gambar_url, tayang_mulai")
+    .select("*")
     .is("deleted_at", null)
     .order("tanggal", { ascending: false })
     .order("created_at", { ascending: false })
@@ -33,7 +34,7 @@ export default async function AdminBerita({ searchParams }: { searchParams: Prom
           name="cari"
           defaultValue={kataKunci}
           placeholder="Cari judul berita…"
-          className="w-full rounded-full border border-black/15 bg-white px-5 py-3 outline-none focus:border-brand-600 sm:max-w-sm"
+          className="w-full rounded-full border border-black/15 bg-white px-5 py-3 outline-none focus:border-muted sm:max-w-sm"
         />
       </form>
 
@@ -48,14 +49,14 @@ export default async function AdminBerita({ searchParams }: { searchParams: Prom
         <ul className="divide-y divide-black/5 overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
           {list.map((b) => (
             <li key={b.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-5">
-              <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-krem-tua">
+              <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-line">
                 {b.gambar_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={b.gambar_url} alt="" className="h-full w-full object-cover" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <Link href={`/admin/berita/${b.id}`} className="font-semibold hover:text-brand-700 hover:underline">
+                <Link href={`/admin/berita/${b.id}`} className="font-semibold hover:text-blue-teks hover:underline">
                   {b.judul}
                 </Link>
                 <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-black/50">
@@ -85,6 +86,7 @@ export default async function AdminBerita({ searchParams }: { searchParams: Prom
                 <Link href={`/admin/berita/${b.id}`} className="rounded-full px-3 py-1.5 text-sm font-medium hover:bg-black/5">
                   Ubah
                 </Link>
+                <FotoSementara tabel="berita" id={b.id} sementara={b.is_placeholder === true} kembali="/admin/berita" />
                 <FormArsip tabel="berita" id={b.id} judul={b.judul} kembali="/admin/berita" />
               </div>
             </li>

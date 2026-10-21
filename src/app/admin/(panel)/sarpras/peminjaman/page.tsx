@@ -36,19 +36,19 @@ export default async function Peminjaman({ searchParams }: { searchParams: Promi
       <Notifikasi kode={sp.pesan} />
       {sp.galat && <p role="alert" className="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800 ring-1 ring-red-200">{sp.galat}</p>}
       {kelola && (
-        <Kartu className="mb-6 ring-2 ring-accent-400">
-          <h2 className="mb-3 font-serif text-2xl">Menunggu persetujuan ({(menunggu ?? []).length})</h2>
+        <Kartu className="mb-6 ring-2 ring-lime">
+          <h2 className="mb-3 text-2xl">Menunggu persetujuan ({(menunggu ?? []).length})</h2>
           {(menunggu ?? []).length === 0 ? <p className="text-sm text-black/50">Tidak ada.</p> : (
             <ul className="space-y-3">
               {((menunggu ?? []) as unknown as P[]).map((p) => (
-                <li key={p.id} className="rounded-xl bg-krem p-3 text-sm">
+                <li key={p.id} className="rounded-xl bg-soft p-3 text-sm">
                   <p className="font-semibold">{nama(p)} · {waktuWIB(p.mulai)}–{waktuWIB(p.selesai).split(" ").pop()}</p>
                   <p className="text-black/60">{peminjam.get(p.peminjam_id) ?? "—"}: {p.keperluan}</p>
                   <form action={prosesPinjam} className="mt-2 flex flex-wrap gap-2">
                     <input type="hidden" name="id" value={p.id} />
                     <input name="catatan" maxLength={300} placeholder="Catatan (wajib bila ditolak)" aria-label="Catatan" className="min-w-48 flex-1 rounded-xl border border-black/15 bg-white px-3 py-2" />
                     <button name="aksi" value="setuju" className="rounded-full bg-emerald-700 px-4 py-2 font-semibold text-white">Setujui</button>
-                    <button name="aksi" value="tolak" className="rounded-full px-4 py-2 font-semibold text-merah ring-1 ring-merah/30">Tolak</button>
+                    <button name="aksi" value="tolak" className="rounded-full px-4 py-2 font-semibold text-blue-teks ring-1 ring-blue/30">Tolak</button>
                   </form>
                 </li>
               ))}
@@ -59,7 +59,7 @@ export default async function Peminjaman({ searchParams }: { searchParams: Promi
       <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
         <div className="space-y-6">
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Jadwal pemakaian 2 minggu</h2>
+            <h2 className="mb-3 text-2xl">Jadwal pemakaian 2 minggu</h2>
             {(jadwal ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada peminjaman disetujui.</p> : (
               <ul className="divide-y divide-black/5 text-sm">
                 {((jadwal ?? []) as unknown as P[]).map((p) => (
@@ -81,7 +81,7 @@ export default async function Peminjaman({ searchParams }: { searchParams: Promi
             )}
           </Kartu>
           <Kartu>
-            <h2 className="mb-3 font-serif text-2xl">Pengajuan saya</h2>
+            <h2 className="mb-3 text-2xl">Pengajuan saya</h2>
             {(milik ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
               <ul className="divide-y divide-black/5 text-sm">
                 {((milik ?? []) as unknown as P[]).map((p) => (
@@ -89,7 +89,7 @@ export default async function Peminjaman({ searchParams }: { searchParams: Promi
                     <Lencana s={p.status} peta={STATUS_PINJAM} />
                     <span className="flex-1">{nama(p)} · {waktuWIB(p.mulai)}{p.catatan && <span className="block text-black/60">{p.catatan}</span>}</span>
                     {["diajukan", "disetujui"].includes(p.status) && (
-                      <form action={prosesPinjam}><input type="hidden" name="id" value={p.id} /><button name="aksi" value="batal" className="text-xs font-semibold text-merah underline">Batalkan</button></form>
+                      <form action={prosesPinjam}><input type="hidden" name="id" value={p.id} /><button name="aksi" value="batal" className="text-xs font-semibold text-blue-teks underline">Batalkan</button></form>
                     )}
                   </li>
                 ))}
@@ -98,7 +98,7 @@ export default async function Peminjaman({ searchParams }: { searchParams: Promi
           </Kartu>
         </div>
         <Kartu className="self-start">
-          <h2 id="form" className="mb-4 font-serif text-2xl">Ajukan peminjaman</h2>
+          <h2 id="form" className="mb-4 text-2xl">Ajukan peminjaman</h2>
           {(ruang ?? []).length + (barang ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada ruang/barang yang ditandai bisa dipinjam.</p> : (
             <FormPinjam ruang={(ruang ?? []) as { id: string; nama: string }[]} barang={(barang ?? []) as { id: string; nama: string; jumlah: number }[]} hariIni={hari} awal={sp.objek} />
           )}

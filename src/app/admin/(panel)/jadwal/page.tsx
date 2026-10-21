@@ -70,7 +70,7 @@ export default async function LihatJadwal({ searchParams }: { searchParams: Prom
         <div className="flex rounded-full bg-white p-1 ring-1 ring-black/10" role="tablist">
           {TAB.map((t) => (
             <a key={t.k} href={`/admin/jadwal?lihat=${t.k}`} role="tab" aria-selected={lihat === t.k}
-               className={`rounded-full px-4 py-1.5 text-sm ${lihat === t.k ? "bg-brand-900 text-white" : "hover:bg-black/5"}`}>
+               className={`rounded-full px-4 py-1.5 text-sm ${lihat === t.k ? "bg-ink text-white" : "hover:bg-black/5"}`}>
               {t.l}
             </a>
           ))}
@@ -86,11 +86,11 @@ export default async function LihatJadwal({ searchParams }: { searchParams: Prom
               {opsi.map((o) => <option key={o.id} value={o.id}>{o.nama}</option>)}
             </select>
           )}
-          <button className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
+          <button className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
         </form>
       </div>
 
-      <h2 className="mb-3 font-serif text-3xl">{judulCetak}</h2>
+      <h2 className="mb-3 text-3xl">{judulCetak}</h2>
       {lihat === "hari" ? (
         <JadwalSatuHari jam={jam.filter((j) => j.hari === hariPilih)} entri={entri} kelas={kelasList ?? []} catatan={hariPilih === isoHariIni ? catatan : {}} />
       ) : !pilih ? (

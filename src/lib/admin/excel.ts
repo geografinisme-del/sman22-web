@@ -16,7 +16,7 @@ export type KolomXlsx = { judul: string; jenis?: JenisKolom; lebar?: number };
 export type NilaiXlsx = string | number | boolean | Date | null | undefined;
 export type LembarXlsx = { nama: string; kolom: KolomXlsx[]; baris: NilaiXlsx[][] };
 
-const WARNA_JUDUL = "#284FD7";
+const WARNA_JUDUL = "var(--blue-teks)";
 const WARNA_GARIS = "#D9DEE8";
 const WARNA_SELANG = "#F5F7FC";
 

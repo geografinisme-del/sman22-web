@@ -83,10 +83,10 @@ export function TombolPresensi({ jenis, wajibLokasi, wajibSwafoto, utama }: { je
         </div>
       )}
       <button type="button" onClick={kirim} disabled={proses}
-              className={`w-full rounded-full px-6 py-4 text-lg font-semibold disabled:opacity-60 ${utama ? "bg-brand-900 text-white hover:bg-brand-700" : "border-2 border-brand-900 text-brand-900 hover:bg-brand-50"}`}>
+              className={`w-full rounded-full px-6 py-4 text-lg font-semibold disabled:opacity-60 ${utama ? "bg-ink text-white hover:bg-ink/85" : "border-2 border-ink text-ink hover:bg-soft"}`}>
         {proses ? tahap || "Memproses…" : `Presensi ${jenis}`}
       </button>
-      {hasil?.pesan && <p role={hasil.ok ? "status" : "alert"} className={`text-sm font-medium ${hasil.ok ? "text-emerald-700" : "text-merah"}`}>{hasil.pesan}</p>}
+      {hasil?.pesan && <p role={hasil.ok ? "status" : "alert"} className={`text-sm font-medium ${hasil.ok ? "text-emerald-700" : "text-blue-teks"}`}>{hasil.pesan}</p>}
     </div>
   );
 }
@@ -96,7 +96,7 @@ function Tgl({ nama, label, nilai }: { nama: string; label: string; nilai: strin
   return (
     <label className="block text-sm font-semibold">{label}
       <input type="date" name={nama} defaultValue={nilai} className="mt-1 block w-full rounded-xl border border-black/15 bg-white px-3 py-2.5 font-normal" />
-      {err && <span className="block text-sm font-normal text-merah">{err}</span>}
+      {err && <span className="block text-sm font-normal text-blue-teks">{err}</span>}
     </label>
   );
 }
@@ -108,7 +108,7 @@ export function FormIzinPegawai({ hariIni }: { hariIni: string }) {
         <legend className="mb-1.5 text-sm font-semibold">Jenis</legend>
         <div className="flex flex-wrap gap-2">
           {[["S", "Sakit"], ["I", "Izin"], ["DL", "Dinas luar"], ["C", "Cuti"]].map(([v, l]) => (
-            <label key={v} className="cursor-pointer rounded-full px-4 py-2 text-sm ring-1 ring-black/15 has-[:checked]:bg-brand-900 has-[:checked]:text-white">
+            <label key={v} className="cursor-pointer rounded-full px-4 py-2 text-sm ring-1 ring-black/15 has-[:checked]:bg-ink has-[:checked]:text-white">
               <input type="radio" name="jenis" value={v} defaultChecked={v === "S"} className="sr-only" /> {l}
             </label>
           ))}

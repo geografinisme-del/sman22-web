@@ -46,7 +46,7 @@ export default async function RaporSiswa({ params, searchParams }: { params: Pro
           ["Tindak lanjut", r?.tindakan ?? "—", "text-amber-800 text-2xl"],
         ].map(([l, n, w]) => (
           <div key={l as string} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
-            <p className={`font-serif text-4xl leading-tight ${w}`}>{n}</p>
+            <p className={`text-4xl leading-tight ${w}`}>{n}</p>
             <p className="mt-1 text-sm text-black/60">{l}</p>
           </div>
         ))}
@@ -59,21 +59,21 @@ export default async function RaporSiswa({ params, searchParams }: { params: Pro
 
       <div className="grid gap-8 lg:grid-cols-2">
         <section>
-          <h2 className="mb-3 font-serif text-2xl">Prestasi</h2>
+          <h2 className="mb-3 text-2xl">Prestasi</h2>
           {!pre?.length ? <p className="text-sm text-black/50">Belum ada.</p> : (
             <ul className="space-y-2">
               {pre.map((p) => (
                 <li key={p.id} className="rounded-xl bg-white p-3 text-sm ring-1 ring-black/5">
                   <div className="flex justify-between gap-2"><strong>🏆 {p.nama_kegiatan}</strong><Lencana warna={p.status === "terverifikasi" ? "hijau" : p.status === "diajukan" ? "kuning" : "abu"}>{STATUS_LAPORAN[p.status]}</Lencana></div>
                   <p className="text-black/60">{PERINGKAT[p.peringkat]} · {TINGKAT[p.tingkat]} · {BIDANG[p.bidang]} · {formatTanggal(p.tanggal)} · {p.poin} poin</p>
-                  {p.bukti_path && <a href={`/berkas/prestasi/${p.id}`} target="_blank" rel="noopener" className="text-xs text-brand-700 underline print:hidden">piagam</a>}
+                  {p.bukti_path && <a href={`/berkas/prestasi/${p.id}`} target="_blank" rel="noopener" className="text-xs text-blue-teks underline print:hidden">piagam</a>}
                 </li>
               ))}
             </ul>
           )}
         </section>
         <section>
-          <h2 className="mb-3 font-serif text-2xl">Pelanggaran</h2>
+          <h2 className="mb-3 text-2xl">Pelanggaran</h2>
           {!pel?.length ? <p className="text-sm text-black/50">Tidak ada catatan.</p> : (
             <ul className="space-y-2">
               {pel.map((p) => (
@@ -86,7 +86,7 @@ export default async function RaporSiswa({ params, searchParams }: { params: Pro
                     <form action={batalkanPelanggaran} className="mt-2 flex gap-2 print:hidden">
                       <input type="hidden" name="id" value={p.id} /><input type="hidden" name="siswa_id" value={id} />
                       <input name="catatan" placeholder="Alasan pembatalan" aria-label="Alasan pembatalan" className="flex-1 rounded-lg border border-black/10 px-2 py-1 text-xs" />
-                      <button className="text-xs text-merah underline">batalkan</button>
+                      <button className="text-xs text-blue-teks underline">batalkan</button>
                     </form>
                   )}
                 </li>
@@ -97,9 +97,9 @@ export default async function RaporSiswa({ params, searchParams }: { params: Pro
       </div>
 
       <section className="mt-10">
-        <h2 className="mb-3 font-serif text-2xl">Pembinaan</h2>
+        <h2 className="mb-3 text-2xl">Pembinaan</h2>
         {!pembinaan?.length ? <p className="text-sm text-black/50">Belum ada catatan pembinaan.</p> : (
-          <ol className="relative space-y-3 border-l-2 border-brand-100 pl-5">
+          <ol className="relative space-y-3 border-l-2 border-line pl-5">
             {pembinaan.map((b) => (
               <li key={b.id} className="text-sm">
                 <p className="font-semibold">{JENIS_BINA[b.jenis]} <span className="font-normal text-black/50">· {formatTanggal(b.tanggal)} · {b.status}</span></p>
@@ -113,8 +113,8 @@ export default async function RaporSiswa({ params, searchParams }: { params: Pro
 
       {bina && (
         <div className="mt-10 grid gap-6 print:hidden lg:grid-cols-2">
-          <Kartu><h3 className="mb-3 font-serif text-2xl">Catat pembinaan</h3><FormPembinaan siswaId={id} hariIni={hari} /></Kartu>
-          <Kartu><h3 className="mb-3 font-serif text-2xl">Rujuk ke BK</h3><FormRujuk siswaId={id} /></Kartu>
+          <Kartu><h3 className="mb-3 text-2xl">Catat pembinaan</h3><FormPembinaan siswaId={id} hariIni={hari} /></Kartu>
+          <Kartu><h3 className="mb-3 text-2xl">Rujuk ke BK</h3><FormRujuk siswaId={id} /></Kartu>
         </div>
       )}
     </>

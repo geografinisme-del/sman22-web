@@ -1,5 +1,6 @@
 "use client";
 
+import { MediaSlot } from "@/components/MediaSlot";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
@@ -49,7 +50,7 @@ export function DialogInformasi({ info, onTutup }: { info: Informasi | null; onT
       {info && (
         <div className="dialog-info-kotak">
           <div className="dialog-info-kepala">
-            <p className="text-sm text-[#5b6270]">
+            <p className="text-sm text-[var(--muted)]">
               <span className="font-semibold text-[var(--lp-utama)]">{info.jenis}</span> · <time dateTime={info.tanggal}>{formatTanggal(info.tanggal)}</time>
             </p>
             <button type="button" className="tombol-tutup" onClick={() => ref.current?.close()} aria-label="Tutup detail informasi">
@@ -59,10 +60,9 @@ export function DialogInformasi({ info, onTutup }: { info: Informasi | null; onT
           <div className="dialog-info-isi">
             <h2 id="dialog-info-judul">{info.judul}</h2>
             {info.gambar && (
-              // eslint-disable-next-line @next/next/no-img-element -- ukuran tak diketahui, gambar opsional dari CMS
-              <img src={info.gambar} alt="" className="mt-4 aspect-[3/2] w-full rounded-lg object-cover" />
+              <MediaSlot src={info.gambar} alt="" ratio="3/2" sizes="(min-width: 640px) 560px, 100vw" className="mt-4 rounded-lg" />
             )}
-            {ringkas && <p className="mt-3 whitespace-pre-line text-[#3b414b]">{ringkas}</p>}
+            {ringkas && <p className="mt-3 whitespace-pre-line text-[var(--muted)]">{ringkas}</p>}
           </div>
           <div className="dialog-info-kaki">
             <Link href={info.href} className="btn btn-primary" onClick={() => ref.current?.close()}>

@@ -87,7 +87,7 @@ export default async function DaftarSiswa({ searchParams }: { searchParams: Prom
             <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>
           ))}
         </select>
-        <button type="submit" className="rounded-full bg-brand-900 px-5 py-2 font-semibold text-white hover:bg-brand-700">Terapkan</button>
+        <button type="submit" className="rounded-full bg-ink px-5 py-2 font-semibold text-white hover:bg-ink/85">Terapkan</button>
       </form>
 
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
@@ -112,14 +112,14 @@ export default async function DaftarSiswa({ searchParams }: { searchParams: Prom
                   {bisaUbah && !q && !sp.kelas && (
                     <>
                       {" "}
-                      <Link href="/admin/siswa/impor" className="font-semibold text-brand-700 underline">Impor dari Excel/Dapodik</Link>
+                      <Link href="/admin/siswa/impor" className="font-semibold text-blue-teks underline">Impor dari Excel/Dapodik</Link>
                     </>
                   )}
                 </td>
               </tr>
             )}
             {list?.map((s) => (
-              <tr key={s.id} className="hover:bg-krem/50">
+              <tr key={s.id} className="hover:bg-soft/50">
                 <td className={`${kelasTd} tabular-nums`}>{s.nisn ?? <span className="text-black/40">—</span>}</td>
                 <td className={kelasTd}>
                   <Link href={`/admin/siswa/${s.id}`} className="font-medium hover:underline">{s.nama}</Link>

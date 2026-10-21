@@ -34,7 +34,7 @@ function PanelQr({ jadwalId, tanggal, onScan }: { jadwalId: string; tanggal: str
   }, [jadwalId, tanggal, onScan]);
   return (
     <div className="rounded-2xl bg-white p-5 text-center ring-1 ring-black/10">
-      {galat ? <p className="text-sm text-merah">{galat}</p> : qr ? (
+      {galat ? <p className="text-sm text-blue-teks">{galat}</p> : qr ? (
         <>
           <div className="mx-auto w-full max-w-sm" aria-label="Kode QR kehadiran" dangerouslySetInnerHTML={{ __html: qr.svg }} />
           <p className="mt-2 text-sm text-black/60">Siswa memindai dengan kamera HP (akun siswa). Kode berganti tiap 20 detik — foto QR yang dikirim ke teman tidak berlaku lama.</p>
@@ -71,7 +71,7 @@ export function FormJp({ jadwalId, tanggal, siswa, materi, catatan, boleh }: { j
           <button
             type="button"
             onClick={() => setStatus((s) => Object.fromEntries(Object.entries(s).map(([id, v]) => [id, !scan[id] && v === "H" ? "A" : v])))}
-            className="text-sm font-semibold text-merah underline"
+            className="text-sm font-semibold text-blue-teks underline"
           >
             Tandai yang belum memindai & masih &quot;Hadir&quot; sebagai Alpa
           </button>
@@ -91,7 +91,7 @@ export function FormJp({ jadwalId, tanggal, siswa, materi, catatan, boleh }: { j
                 <label key={p.k} className="cursor-pointer">
                   <input type="radio" name={`st_${s.siswa_id}`} value={p.k} checked={status[s.siswa_id] === p.k}
                          onChange={() => setStatus((x) => ({ ...x, [s.siswa_id]: p.k }))} className="peer sr-only" />
-                  <span className={`block rounded-lg px-2.5 py-1 text-xs font-semibold ring-1 ring-black/10 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-700 ${p.w}`}>{p.l}</span>
+                  <span className={`block rounded-lg px-2.5 py-1 text-xs font-semibold ring-1 ring-black/10 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-blue ${p.w}`}>{p.l}</span>
                 </label>
               ))}
             </fieldset>

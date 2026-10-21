@@ -56,7 +56,7 @@ export default async function DaftarPegawai({ searchParams }: { searchParams: Pr
           <option value="semua">Semua status</option>
           {STATUS_PEGAWAI.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
         </select>
-        <button type="submit" className="rounded-full bg-brand-900 px-5 py-2 font-semibold text-white">Terapkan</button>
+        <button type="submit" className="rounded-full bg-ink px-5 py-2 font-semibold text-white">Terapkan</button>
       </form>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className={kelasTabel}>
@@ -74,7 +74,7 @@ export default async function DaftarPegawai({ searchParams }: { searchParams: Pr
               <tr><td colSpan={5} className="px-4 py-10 text-center text-black/50">Belum ada data.</td></tr>
             )}
             {list?.map((p) => (
-              <tr key={p.id} className="hover:bg-krem/50">
+              <tr key={p.id} className="hover:bg-soft/50">
                 <td className={kelasTd}>
                   <Link href={`/admin/pegawai/${p.id}`} className="font-medium hover:underline">{p.nama}</Link>
                   {p.status !== "aktif" && <span className="ml-2"><Lencana>{p.status}</Lencana></span>}

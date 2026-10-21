@@ -5,26 +5,23 @@
  * Modul murni (tanpa impor server) agar bisa diuji dengan `node --test`.
  */
 
-/** Palet terkurasi dari warna logo resmi (merah mahkota, biru dongker cincin, biru langit sayap). */
+/** Palet tema publik: satu palet "Langit cerah" (nilai sama dengan styles/tokens.css). */
 export const PALET = {
-  merah: { label: "Merah logo", utama: "#b3123c", aksen: "#db224c", gelap: "#1f2328" },
-  dongker: { label: "Biru dongker logo", utama: "#3b5070", aksen: "#b3123c", gelap: "#1f2328" },
-  langit: { label: "Biru langit logo", utama: "#0f6a9c", aksen: "#b3123c", gelap: "#1f2328" },
+  cerah: { label: "Langit cerah", utama: "#1f5fd1", aksen: "#d7f56a", gelap: "#0b1220" },
 } as const;
 export type KunciPalet = keyof typeof PALET;
 
-/** Font terkurasi (sudah terpasang lewat @fontsource; tidak memuat font eksternal). */
+/** Font terkurasi (next/font, lihat app/fonts.ts): Plus Jakarta Sans untuk semua teks. */
 export const FONT = {
-  "source-sans": { label: "Source Sans 3", css: '"Source Sans 3 Variable", system-ui, sans-serif' },
-  "dm-sans": { label: "DM Sans", css: '"DM Sans Variable", system-ui, sans-serif' },
+  jakarta: { label: "Plus Jakarta Sans", css: "var(--font-jakarta), system-ui, sans-serif" },
 } as const;
 export type KunciFont = keyof typeof FONT;
 
 /** Tingkat gerak situs publik (reduced motion pengguna selalu menang). */
 export const GERAK = {
-  minimal: { label: "Minimal", keterangan: "Tanpa animasi gulir & parallax; hanya respons tombol." },
-  standar: { label: "Standar", keterangan: "Kemunculan bagian sekali saat digulir, sorotan program." },
-  dinamis: { label: "Dinamis", keterangan: "Standar + jarak gerak lebih besar & parallax foto." },
+  minimal: { label: "Minimal", keterangan: "Tanpa animasi gulir & parallax; hanya respons tombol, kartu putar, dan tur." },
+  standar: { label: "Standar", keterangan: "Blok muncul sekali saat digulir; angka beranda menghitung naik." },
+  dinamis: { label: "Dinamis", keterangan: "Standar + jarak gerak lebih besar & parallax foto (desktop)." },
 } as const;
 export type TingkatGerak = keyof typeof GERAK;
 
@@ -38,49 +35,22 @@ export type DefinisiTema = {
   bawaan: { palet: KunciPalet; font: KunciFont; gerak: TingkatGerak };
 };
 
-export const TEMA: Record<"akademik" | "modern" | "editorial", DefinisiTema> = {
-  akademik: {
-    label: "Akademik",
-    keterangan: "Dasar terang & informatif: foto berdampingan dengan teks, kartu bergaris tipis, gerak tenang.",
+export const TEMA: Record<"langit", DefinisiTema> = {
+  // satu-satunya tema: "Langit cerah + Tur sekolah" (token di styles/tokens.css). Tema lama sudah dihapus;
+  // konfigurasi lama (buku, warna, akademik, modern, editorial) otomatis jatuh ke tema ini saat dibaca.
+  langit: {
+    label: "Langit cerah",
+    keterangan: "Langit biru bergradasi, kartu putar 3D, tur sekolah, kartu putih membulat, aksen lime.",
     tersedia: true,
-    tata: {
-      hero: ["berdampingan"],
-      layanan: ["kisi", "daftar"],
-      profil: ["foto-kiri", "foto-kanan"],
-      berita: ["utama-pendamping", "daftar"],
-      program: ["sorot", "daftar"],
-      galeri: ["mozaik", "kisi"],
-    },
-    bawaan: { palet: "merah", font: "source-sans", gerak: "standar" },
-  },
-  modern: {
-    label: "Modern Interaktif",
-    keterangan: "Foto pembuka penuh dengan lapisan teks, bidang warna solid, sudut lebih bulat, gerak lebih ekspresif.",
-    tersedia: true,
-    tata: {
-      hero: ["penuh", "berdampingan"],
-      layanan: ["kisi", "daftar"],
-      profil: ["foto-kanan", "foto-kiri"],
-      berita: ["utama-pendamping", "daftar"],
-      program: ["sorot", "daftar"],
-      galeri: ["mozaik", "kisi"],
-    },
-    bawaan: { palet: "merah", font: "dm-sans", gerak: "dinamis" },
-  },
-  // disiapkan: tema Editorial dapat diaktifkan setelah komponen & CSS-nya selesai
-  editorial: {
-    label: "Editorial (segera)",
-    keterangan: "Tipografi besar ala majalah sekolah. Belum dapat dipilih.",
-    tersedia: false,
-    tata: { hero: ["berdampingan"], berita: ["utama-pendamping"] },
-    bawaan: { palet: "dongker", font: "source-sans", gerak: "standar" },
+    tata: { hero: ["langit"] },
+    bawaan: { palet: "cerah", font: "jakarta", gerak: "standar" },
   },
 };
 export type KunciTema = keyof typeof TEMA;
 
 /** Variabel CSS publik dari pilihan terkurasi (nilai berasal dari tabel di atas, bukan masukan bebas). */
 export function cssToken(palet: KunciPalet, font: KunciFont) {
-  const p = PALET[palet] ?? PALET.merah;
-  const f = FONT[font] ?? FONT["source-sans"];
+  const p = PALET[palet] ?? PALET.cerah;
+  const f = FONT[font] ?? FONT.jakarta;
   return `--tema-utama:${p.utama};--tema-aksen:${p.aksen};--tema-gelap:${p.gelap};--font-publik:${f.css}`;
 }

@@ -50,7 +50,7 @@ export function FormAksi({
 }
 
 const kelasInput =
-  "w-full rounded-lg border border-black/20 bg-white px-4 py-2.5 text-base outline-none transition-colors focus:border-[var(--tema-utama)] focus:ring-[3px] focus:ring-[color-mix(in_srgb,var(--tema-utama)_18%,transparent)] aria-[invalid=true]:border-merah";
+  "w-full rounded-lg border border-black/20 bg-white px-4 py-2.5 text-base outline-none transition-colors focus:border-[var(--tema-utama)] focus:ring-[3px] focus:ring-[color-mix(in_srgb,var(--tema-utama)_18%,transparent)] aria-[invalid=true]:border-blue-teks";
 
 export function Kolom({
   label,
@@ -69,13 +69,13 @@ export function Kolom({
   error = error ?? errorServer;
   return (
     <div>
-      <label htmlFor={nama} className="mb-1.5 block text-sm font-semibold text-tinta">
+      <label htmlFor={nama} className="mb-1.5 block text-sm font-semibold text-ink">
         {label}
       </label>
       {children}
       {bantuan && !error && <p className="mt-1.5 text-xs text-black/50">{bantuan}</p>}
       {error && (
-        <p id={`${nama}-error`} className="mt-1.5 text-sm text-merah">
+        <p id={`${nama}-error`} className="mt-1.5 text-sm text-blue-teks">
           {error}
         </p>
       )}
@@ -166,7 +166,7 @@ export function Pilihan({
 export function Centang({ label, nama, nilai, bantuan }: { label: string; nama: string; nilai?: boolean; bantuan?: string }) {
   return (
     <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-black/10 bg-white p-4">
-      <input type="checkbox" name={nama} defaultChecked={nilai} className="mt-1 h-5 w-5 accent-brand-800" />
+      <input type="checkbox" name={nama} defaultChecked={nilai} className="mt-1 h-5 w-5 accent-ink" />
       <span>
         <span className="block font-semibold">{label}</span>
         {bantuan && <span className="block text-sm text-black/50">{bantuan}</span>}
@@ -197,7 +197,7 @@ export function InputGambar({
   return (
     <Kolom label={label} nama={nama} error={error ?? peringatan ?? undefined} bantuan="JPG, PNG, atau WEBP. Maksimal 4 MB.">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="grid h-32 w-full shrink-0 place-items-center overflow-hidden rounded-xl bg-krem-tua sm:w-48">
+        <div className="grid h-32 w-full shrink-0 place-items-center overflow-hidden rounded-xl bg-line sm:w-48">
           {tampil ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={tampil} alt="Pratinjau foto" className="h-full w-full object-cover" />
@@ -223,7 +223,7 @@ export function InputGambar({
             }
             setPratinjau(URL.createObjectURL(f));
           }}
-          className="block w-full text-sm file:mr-4 file:rounded-full file:border-0 file:bg-brand-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700"
+          className="block w-full text-sm file:mr-4 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-ink/85"
         />
       </div>
     </Kolom>
@@ -236,7 +236,7 @@ export function TombolSimpan({ children = "Simpan", teksProses = "Menyimpan…" 
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-brand-900 px-5 py-2.5 font-semibold text-white transition-colors duration-150 hover:bg-brand-700 disabled:cursor-wait disabled:opacity-60"
+      className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-ink px-5 py-2.5 font-semibold text-white transition-colors duration-150 hover:bg-ink/85 disabled:cursor-wait disabled:opacity-60"
     >
       {pending && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-hidden />}
       {pending ? teksProses : children}
@@ -259,6 +259,11 @@ export function PesanHasil({ hasil }: { hasil: HasilAksi }) {
       }`}
     >
       {hasil.pesan}
+      {hasil.tautan && (
+        <a href={hasil.tautan.href} className="mt-2 block font-bold underline underline-offset-4">
+          {hasil.tautan.label} →
+        </a>
+      )}
     </div>
   );
 }
@@ -273,7 +278,7 @@ export function TombolArsip({ judul }: { judul: string }) {
       onClick={(e) => {
         if (!window.confirm(`Arsipkan "${judul}"? Data tidak tampil lagi di situs, tetapi tetap tersimpan di database.`)) e.preventDefault();
       }}
-      className="rounded-full px-3 py-1.5 text-sm font-medium text-merah hover:bg-red-50 disabled:opacity-50"
+      className="rounded-full px-3 py-1.5 text-sm font-medium text-blue-teks hover:bg-red-50 disabled:opacity-50"
     >
       {pending ? "Mengarsipkan…" : "Arsipkan"}
     </button>
@@ -290,7 +295,7 @@ export function InputBukti({ label = "Bukti (opsional)", nama = "bukti", bantuan
         name={nama}
         type="file"
         accept="image/jpeg,image/png,image/webp,application/pdf"
-        className="block w-full text-sm file:mr-4 file:rounded-full file:border-0 file:bg-brand-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700"
+        className="block w-full text-sm file:mr-4 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-ink/85"
       />
     </Kolom>
   );

@@ -32,7 +32,7 @@ function TeksSlide({ teks, besar }: { teks: string; besar?: boolean }) {
 export function TampilSlide({ s, besar }: { s: Slide; besar?: boolean }) {
   const [buka, setBuka] = useState(false);
   const [pilih, setPilih] = useState<number | null>(null);
-  const judul = s.judul && <h2 className={`font-serif ${besar ? "mb-[2vh] text-[clamp(1.8rem,4.5vw,4rem)] leading-tight" : "mb-3 text-3xl"}`}>{s.judul}</h2>;
+  const judul = s.judul && <h2 className={`${besar ? "mb-[2vh] text-[clamp(1.8rem,4.5vw,4rem)] leading-tight" : "mb-3 text-3xl"}`}>{s.judul}</h2>;
   if (s.jenis === "isi") return <div>{judul}<TeksSlide teks={s.isi} besar={besar} /></div>;
   if (s.jenis === "gambar")
     return (
@@ -76,7 +76,7 @@ export function TampilSlide({ s, besar }: { s: Slide; besar?: boolean }) {
         })}
       </ol>
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button type="button" onClick={() => setBuka((v) => !v)} className="rounded-full bg-brand-900 px-5 py-2.5 font-semibold text-white">{buka ? "Sembunyikan jawaban" : "Tampilkan jawaban"}</button>
+        <button type="button" onClick={() => setBuka((v) => !v)} className="rounded-full bg-ink px-5 py-2.5 font-semibold text-white">{buka ? "Sembunyikan jawaban" : "Tampilkan jawaban"}</button>
         {buka && <span className="font-semibold text-emerald-800">Jawaban: {String.fromCharCode(65 + s.kunci)}</span>}
       </div>
       {buka && s.pembahasan && <p className={`mt-3 rounded-xl bg-emerald-50 p-4 ${besar ? "text-[clamp(1rem,1.8vw,1.6rem)]" : "text-sm"}`}>{s.pembahasan}</p>}

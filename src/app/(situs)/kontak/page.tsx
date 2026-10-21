@@ -24,25 +24,27 @@ export default async function Kontak() {
 
   return (
     <>
-      <PageHeader judul="Kontak" deskripsi="Hubungi sekolah untuk informasi, layanan, saran, atau pengaduan." />
+      <PageHeader judul="Kontak" label="Kunjungi kami" deskripsi="Hubungi sekolah untuk informasi, layanan, saran, atau pengaduan." />
 
-      <section className="bagian">
-        <div className="lp-wadah grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+      <section className="lgt-bagian">
+        <div className="lgt-wadah grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
           <div>
-            <dl className="divide-y divide-[#e5e1da] border-y border-[#e5e1da]">
+            <dl className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
               {ada.map((r) => (
                 <div key={r.judul} className="py-4">
-                  <dt className="text-sm text-[#5b6270]">{r.judul}</dt>
+                  <dt className="label-mono text-[var(--blue-teks)]">{r.judul}</dt>
                   <dd className="mt-0.5 text-[1.0625rem] font-semibold">{r.isi}</dd>
                   {r.href && (
-                    <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="tautan mt-1 inline-block text-[0.9375rem]">
-                      {r.aksi}
-                    </a>
+                    <dd>
+                      <a href={r.href} target={r.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="lgt-tautan-panah mt-1 text-[0.9375rem]">
+                        {r.aksi} <span aria-hidden>→</span>
+                      </a>
+                    </dd>
                   )}
                 </div>
               ))}
             </dl>
-            {belum.length > 0 && <p className="mt-3 text-[0.9375rem] text-[#5b6270]">Informasi {belum.join(", ")} sekolah sedang dilengkapi.</p>}
+            {belum.length > 0 && <p className="mt-3 text-[0.9375rem] text-[var(--muted)]">Informasi {belum.join(", ")} sekolah sedang dilengkapi.</p>}
 
             {sosmed.length > 0 && (
               <div className="mt-6">
@@ -61,7 +63,7 @@ export default async function Kontak() {
 
             <div className="mt-8">
               <h2 className="text-[1.125rem]">Layanan pengaduan</h2>
-              <p className="mt-1 text-[#3b414b]">Sampaikan saran atau laporan; setiap laporan mendapat nomor tiket.</p>
+              <p className="mt-1 text-[var(--muted)]">Sampaikan saran atau laporan; setiap laporan mendapat nomor tiket.</p>
               <div className="mt-3 flex flex-wrap gap-3">
                 <Link href="/pengaduan" className="btn">
                   Kirim pengaduan
@@ -72,7 +74,7 @@ export default async function Kontak() {
               </div>
             </div>
           </div>
-          <div className="foto relative min-h-[360px] border border-[#e5e1da]">
+          <div className="lgt-peta relative !mt-0 min-h-[360px] !aspect-auto">
             <iframe title={`Peta lokasi ${sekolah.nama}`} src={mapsSrc} className="absolute inset-0 h-full w-full" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
           </div>
         </div>

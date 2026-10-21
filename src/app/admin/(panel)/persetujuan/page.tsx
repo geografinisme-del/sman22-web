@@ -37,21 +37,21 @@ export default async function Persetujuan({ searchParams }: { searchParams: Prom
         <ul className="space-y-4">
           {menunggu.map((b) => (
             <li key={b.id} className="flex flex-col gap-4 rounded-2xl bg-white p-5 ring-1 ring-black/5 lg:flex-row">
-              <div className="h-28 w-full shrink-0 overflow-hidden rounded-xl bg-krem-tua lg:w-44">
+              <div className="h-28 w-full shrink-0 overflow-hidden rounded-xl bg-line lg:w-44">
                 {b.gambar_url && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={b.gambar_url} alt="" className="h-full w-full object-cover" />
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-serif text-2xl leading-tight">{b.judul}</p>
+                <p className="text-2xl leading-tight">{b.judul}</p>
                 <p className="mt-1 text-sm text-black/60">{b.ringkasan}</p>
                 <p className="mt-2 text-xs text-black/50">
                   {b.kategori} · {formatTanggal(b.tanggal)} · diajukan {nama.get(b.diajukan_oleh ?? "") ?? "humas"}
                   {b.diajukan_pada && `, ${formatWaktu(b.diajukan_pada)}`}
                   {b.tayang_mulai && ` · dijadwalkan tayang ${formatWaktu(b.tayang_mulai)}`}
                 </p>
-                <a href={`/pratinjau/berita/${b.id}`} target="_blank" rel="noopener" className="mt-2 inline-block text-sm font-semibold text-brand-700 underline">
+                <a href={`/pratinjau/berita/${b.id}`} target="_blank" rel="noopener" className="mt-2 inline-block text-sm font-semibold text-blue-teks underline">
                   Baca pratinjau lengkap ↗
                 </a>
               </div>
@@ -60,7 +60,7 @@ export default async function Persetujuan({ searchParams }: { searchParams: Prom
                 <textarea name="catatan" rows={2} maxLength={500} placeholder="Catatan (wajib bila dikembalikan)" aria-label={`Catatan untuk ${b.judul}`} className="rounded-xl border border-black/15 px-3 py-2 text-sm" />
                 <div className="flex gap-2">
                   <button name="keputusan" value="setuju" className="flex-1 rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800">Setujui & terbitkan</button>
-                  <button name="keputusan" value="kembalikan" className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-merah ring-1 ring-red-200 hover:bg-red-50">Kembalikan</button>
+                  <button name="keputusan" value="kembalikan" className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-red-200 hover:bg-red-50">Kembalikan</button>
                 </div>
               </form>
             </li>
@@ -69,7 +69,7 @@ export default async function Persetujuan({ searchParams }: { searchParams: Prom
       )}
       {!!terakhir?.length && (
         <section className="mt-10">
-          <h2 className="font-serif text-2xl">Keputusan terakhir</h2>
+          <h2 className="text-2xl">Keputusan terakhir</h2>
           <ul className="mt-3 divide-y divide-black/5 rounded-2xl bg-white ring-1 ring-black/5">
             {terakhir.map((b) => (
               <li key={b.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">

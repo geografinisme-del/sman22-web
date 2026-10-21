@@ -116,7 +116,7 @@ export function FormPresensiOrg({ org, kegiatan, anggota, awal }: { org: string;
         <li key={a.siswa_id} className="flex flex-wrap items-center gap-2 py-1.5">
           <span className="min-w-40 flex-1">{a.nama} <span className="text-black/50">{a.kelas}</span></span>
           {["hadir", "izin", "sakit", "alpa"].map((s) => (
-            <label key={s} className={`cursor-pointer rounded-full px-3 py-1 text-xs font-semibold ring-1 ${semua[a.siswa_id] === s ? "bg-brand-900 text-white ring-brand-900" : "ring-black/15"}`}>
+            <label key={s} className={`cursor-pointer rounded-full px-3 py-1 text-xs font-semibold ring-1 ${semua[a.siswa_id] === s ? "bg-ink text-white ring-ink" : "ring-black/15"}`}>
               <input type="radio" name={`s_${a.siswa_id}`} value={s} checked={semua[a.siswa_id] === s} onChange={() => setSemua({ ...semua, [a.siswa_id]: s })} className="sr-only" />{s}
             </label>
           ))}
@@ -155,10 +155,10 @@ function RincianAnggaran({ awal }: { awal: ItemAnggaran[] }) {
     <div>
       <label htmlFor="anggaran" className="mb-1.5 block text-sm font-semibold">Rincian anggaran</label>
       <textarea id="anggaran" name="anggaran" value={teks} onChange={(e) => setTeks(e.target.value)} rows={5} aria-invalid={Boolean(err)}
-        placeholder={"Cetak foto A3; 20; lembar; 15000\nKonsumsi panitia; 15; kotak; 20000"} className="w-full rounded-xl border border-black/15 px-4 py-3 font-mono text-sm aria-[invalid=true]:border-merah" />
+        placeholder={"Cetak foto A3; 20; lembar; 15000\nKonsumsi panitia; 15; kotak; 20000"} className="w-full rounded-xl border border-black/15 px-4 py-3 font-mono text-sm aria-[invalid=true]:border-blue-teks" />
       <p className="mt-1 text-xs text-black/50">Satu baris per item: uraian; volume; satuan; harga satuan.</p>
-      {err && <p className="text-sm text-merah">{err}</p>}
-      <p className="mt-1 text-sm font-semibold">{h.ok ? `Total: ${rp(totalAnggaran(h.data))}` : <span className="text-merah">{h.pesan}</span>}</p>
+      {err && <p className="text-sm text-blue-teks">{err}</p>}
+      <p className="mt-1 text-sm font-semibold">{h.ok ? `Total: ${rp(totalAnggaran(h.data))}` : <span className="text-blue-teks">{h.pesan}</span>}</p>
     </div>
   );
 }
@@ -227,7 +227,7 @@ export function FormSertifikat({ org, anggota, hari }: { org: string; anggota: {
             <input type="checkbox" name="siswa" value={a.siswa_id} checked={pilih.includes(a.siswa_id)} onChange={(e) => setPilih(e.target.checked ? [...pilih, a.siswa_id] : pilih.filter((x) => x !== a.siswa_id))} className="h-4 w-4" />
             {a.nama} <span className="text-black/50">{JABATAN[a.jabatan]}</span>
           </label>))}</div>
-        {err && <p className="text-sm text-merah">{err}</p>}
+        {err && <p className="text-sm text-blue-teks">{err}</p>}
       </fieldset>
       <TombolSimpan>Terbitkan</TombolSimpan>
     </FormAksi>

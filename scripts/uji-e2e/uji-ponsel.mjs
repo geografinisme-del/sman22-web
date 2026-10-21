@@ -49,7 +49,7 @@ const cek = (n, l, d) => {
 };
 
 // 1. keyboard ponsel terbuka: tinggi viewport ±390px
-for (const u of ["/admin/login?sebagai=siswa", "/admin/login?sebagai=staf"]) {
+for (const u of ["/portal-digital/masuk/siswa", "/portal-digital/masuk/gtk"]) {
   await layar(390, 844, true);
   await buka(u);
   await layar(390, 390, true);
@@ -65,8 +65,8 @@ await kirim("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-
 await layar(1280, 800, false);
 await buka("/", 3000);
 await js(`sessionStorage.setItem("sman22:overlay:prioritas","1");1`);
-const rm = await js(`(async()=>{window.scrollTo({top:document.documentElement.scrollHeight*0.5,behavior:"instant"}); await new Promise(r=>setTimeout(r,400)); return {akan:document.querySelectorAll(".akan-muncul").length, tema:document.querySelector(".situs-publik").dataset.tema, animPembuka:getComputedStyle(document.querySelector(".pembuka-isi > h1")).animationDuration}})()`);
-cek("reduced motion (tema Modern): konten langsung tampil", rm.akan === 0 && (rm.animPembuka === "1e-05s" || parseFloat(rm.animPembuka) < 0.01), rm);
+const rm = await js(`(async()=>{window.scrollTo({top:document.documentElement.scrollHeight*0.5,behavior:"instant"}); await new Promise(r=>setTimeout(r,400)); return {akan:document.querySelectorAll(".akan-muncul").length, tema:document.querySelector(".situs-publik").dataset.tema, animPembuka:getComputedStyle(document.querySelector("#judul-hero")).animationDuration}})()`);
+cek("reduced motion (beranda Langit): konten langsung tampil", rm.akan === 0 && (rm.animPembuka === "1e-05s" || parseFloat(rm.animPembuka) < 0.01), rm);
 await kirim("Emulation.setEmulatedMedia", { features: [] });
 
 // 3. rekaman gulir nyata (screencast)

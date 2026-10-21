@@ -30,12 +30,12 @@ export default async function CetakSertifikat({ params }: { params: Promise<{ id
         <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {d.logo_url && <img src={d.logo_url} alt="" className="h-16 w-16 object-contain" referrerPolicy="no-referrer" />}
-          <div><p className="text-sm uppercase tracking-[0.3em] text-black/60">{sekolah.nama}</p><p className="font-serif text-2xl" style={{ color: d.warna }}>{d.organisasi}</p></div>
+          <div><p className="text-sm uppercase tracking-[0.3em] text-black/60">{sekolah.nama}</p><p className="text-2xl" style={{ color: d.warna }}>{d.organisasi}</p></div>
         </div>
         <div className="flex flex-1 flex-col items-center justify-center text-center">
           <p className="text-sm uppercase tracking-[0.5em] text-black/50">Sertifikat {JENIS_SERTIF[d.jenis]}</p>
           <p className="mt-6 text-lg">diberikan kepada</p>
-          <p className="mt-2 font-serif text-[34pt] leading-tight">{d.nama}</p>
+          <p className="mt-2 text-[34pt] leading-tight">{d.nama}</p>
           <p className="text-sm text-black/50">NISN {d.nisn}</p>
           <p className="mt-6 max-w-[200mm] text-xl">{d.judul}</p>
           {d.keterangan && <p className="mt-2 max-w-[200mm] text-black/70">{d.keterangan}</p>}

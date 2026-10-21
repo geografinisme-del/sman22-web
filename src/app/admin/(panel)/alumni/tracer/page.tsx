@@ -26,7 +26,7 @@ export default async function Tracer({ searchParams }: { searchParams: Promise<{
             <Kartu key={s.id}><Link href={`/admin/survei/${s.id}`} className="font-semibold hover:underline">{s.judul}</Link>
               <p className="text-sm text-black/60">{(s.angkatan as number[]).length ? `Angkatan ${(s.angkatan as number[]).join(", ")}` : "Semua angkatan"} · {s.mulai} – {s.selesai} · {s.terbit ? "terbit" : "draf"}</p></Kartu>))}
         </div>
-        {kelola && <Kartu className="self-start"><h2 className="mb-4 font-serif text-2xl">Tracer study baru</h2><FormSurveiAdmin hari={hariIniWIB()} tracer /></Kartu>}
+        {kelola && <Kartu className="self-start"><h2 className="mb-4 text-2xl">Tracer study baru</h2><FormSurveiAdmin hari={hariIniWIB()} tracer /></Kartu>}
       </div>
     </>
   );

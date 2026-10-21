@@ -6,11 +6,11 @@ import { TombolArsip } from "./form";
 /** Header kerja: judul halaman (24–28px), konteks singkat, dan tindakan yang relevan. */
 export function JudulHalaman({ judul, deskripsi, aksi, konteks }: { judul: string; deskripsi?: string; aksi?: ReactNode; konteks?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-col gap-3 border-b border-[#e3e5e8] pb-5 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-6 flex flex-col gap-3 border-b border-[var(--line)] pb-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        {konteks && <p className="mb-1 text-sm text-[#5b6270]">{konteks}</p>}
-        <h1 className="text-[1.625rem] font-semibold leading-tight text-[#1f2328]">{judul}</h1>
-        {deskripsi && <p className="mt-1 max-w-3xl text-[0.9375rem] text-[#5b6270]">{deskripsi}</p>}
+        {konteks && <p className="mb-1 text-sm text-[var(--muted)]">{konteks}</p>}
+        <h1 className="text-[1.625rem] font-semibold leading-tight text-[var(--ink)]">{judul}</h1>
+        {deskripsi && <p className="mt-1 max-w-3xl text-[0.9375rem] text-[var(--muted)]">{deskripsi}</p>}
       </div>
       {aksi}
     </div>
@@ -22,7 +22,7 @@ export function TombolLink({ href, children, sekunder }: { href: string; childre
     <Link
       href={href}
       className={`inline-flex min-h-10 shrink-0 items-center rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150 ${
-        sekunder ? "border border-[#d9dce1] bg-white hover:border-[#9aa1ab]" : "bg-brand-900 text-white hover:bg-brand-700"
+        sekunder ? "border border-[var(--line)] bg-white hover:border-[var(--muted)]" : "bg-ink text-white hover:bg-ink/85"
       }`}
     >
       {children}
@@ -31,11 +31,13 @@ export function TombolLink({ href, children, sekunder }: { href: string; childre
 }
 
 export function Kartu({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`rounded-[10px] border border-[#e3e5e8] bg-white p-5 sm:p-6 ${className}`}>{children}</div>;
+  return <div className={`rounded-[10px] border border-[var(--line)] bg-white p-5 sm:p-6 ${className}`}>{children}</div>;
 }
 
 const PESAN: Record<string, { teks: string; ok: boolean }> = {
   tersimpan: { teks: "Perubahan berhasil disimpan.", ok: true },
+  "tur-minimal": { teks: "Minimal 3 titik tur harus aktif. Aktifkan titik lain sebelum menonaktifkan yang ini.", ok: false },
+  "tur-maksimal": { teks: "Maksimal 8 titik tur aktif. Nonaktifkan titik lain dulu.", ok: false },
   "pesanan-siap": { teks: "Buku dipesan dan sudah disiapkan. Ambil di perpustakaan dalam 3 hari.", ok: true },
   "pesanan-antre": { teks: "Buku dipesan. Anda masuk antrean dan akan diberi tahu saat buku siap diambil.", ok: true },
   "pesanan-batal": { teks: "Pesanan buku dibatalkan.", ok: true },
@@ -190,5 +192,5 @@ export function TabelKosong({ kolom, teks }: { kolom: number; teks: string }) {
 }
 
 export const kelasTabel = "w-full min-w-[640px] text-left text-sm";
-export const kelasTh = "border-b border-black/10 bg-krem px-4 py-3 text-xs font-semibold uppercase tracking-wider text-black/50";
+export const kelasTh = "border-b border-black/10 bg-soft px-4 py-3 text-xs font-semibold uppercase tracking-wider text-black/50";
 export const kelasTd = "border-b border-black/5 px-4 py-3";

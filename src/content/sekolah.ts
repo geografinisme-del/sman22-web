@@ -81,7 +81,7 @@ export const ceritaHero = [
     label: "Setiap potensi, punya ruang",
     judul: "Ruang untuk jadi dirimu.",
     teks: "Temukan pengalaman belajar, kebiasaan baik, dan kesempatan untuk memberi arti.",
-    warna: "#284fd7",
+    warna: "var(--blue-teks)",
   },
   {
     label: "Belajar dengan tujuan",

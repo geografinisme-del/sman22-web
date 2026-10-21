@@ -37,7 +37,7 @@ export default async function BukuTamu({ searchParams }: { searchParams: Promise
           </form>
           <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
             <table className="w-full min-w-[680px] text-left text-sm">
-              <thead><tr className="bg-krem text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Masuk</th><th className="px-4 py-2">Tamu</th><th className="px-4 py-2">Keperluan</th><th className="px-4 py-2">Bertemu</th><th className="px-4 py-2">Keluar</th></tr></thead>
+              <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Masuk</th><th className="px-4 py-2">Tamu</th><th className="px-4 py-2">Keperluan</th><th className="px-4 py-2">Bertemu</th><th className="px-4 py-2">Keluar</th></tr></thead>
               <tbody>
                 {list.length === 0 ? <tr><td colSpan={5} className="px-4 py-4 text-center text-black/50">Belum ada tamu pada tanggal ini.</td></tr> : list.map((t) => (
                   <tr key={t.id} className="border-t border-black/5">
@@ -54,7 +54,7 @@ export default async function BukuTamu({ searchParams }: { searchParams: Promise
             </table>
           </div>
         </div>
-        {catat && <Kartu className="self-start"><h2 className="mb-4 font-serif text-2xl">Tamu datang</h2><FormTamu guru={guru} /></Kartu>}
+        {catat && <Kartu className="self-start"><h2 className="mb-4 text-2xl">Tamu datang</h2><FormTamu guru={guru} /></Kartu>}
       </div>
     </>
   );

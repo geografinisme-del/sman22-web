@@ -105,7 +105,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
           <li
             key={t}
             aria-current={tahap === t ? "step" : undefined}
-            className={`rounded-full px-4 py-1.5 ${tahap === t ? "bg-brand-900 text-white" : "bg-white text-black/50 ring-1 ring-black/10"}`}
+            className={`rounded-full px-4 py-1.5 ${tahap === t ? "bg-ink text-white" : "bg-white text-black/50 ring-1 ring-black/10"}`}
           >
             {i + 1}. {{ pilih: "Pilih file", petakan: "Cocokkan kolom", periksa: "Periksa", selesai: "Selesai" }[t]}
           </li>
@@ -120,8 +120,8 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
 
       {tahap === "pilih" && (
         <div className={kartu}>
-          <h2 className="font-serif text-2xl">Pilih file Excel atau CSV</h2>
-          <div className="mt-4 flex flex-col gap-4 rounded-2xl bg-brand-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-2xl">Pilih file Excel atau CSV</h2>
+          <div className="mt-4 flex flex-col gap-4 rounded-2xl bg-soft p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-semibold">Belum punya file? Mulai dari template.</p>
               <p className="mt-1 text-sm text-black/60">
@@ -129,7 +129,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              <a href={templateHref} download className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700">
+              <a href={templateHref} download className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white hover:bg-ink/85">
                 Unduh template Excel
               </a>
               <a href={`${templateHref}?format=csv`} download className="rounded-full px-5 py-2.5 text-sm font-semibold ring-1 ring-black/15 hover:bg-white">
@@ -145,7 +145,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
             {jenis === "siswa" && <li>Kelas dicocokkan dengan nama kelas di tahun ajaran aktif (X-1, X 1, dan X.1 dianggap sama).</li>}
             <li>NIK dan data sensitif lain tidak diimpor.</li>
           </ul>
-          <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-black/15 bg-krem p-10 text-center hover:border-brand-600">
+          <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-black/15 bg-soft p-10 text-center hover:border-muted">
             <span className="font-semibold">Klik untuk memilih file</span>
             <span className="mt-1 text-sm text-black/50">.xlsx atau .csv, maksimal 10 MB / 3.000 baris</span>
             <input type="file" accept=".xlsx,.csv" className="sr-only" onChange={(e) => pilihFile(e.target.files?.[0])} />
@@ -155,7 +155,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
 
       {tahap === "petakan" && (
         <div className={kartu}>
-          <h2 className="font-serif text-2xl">Cocokkan kolom</h2>
+          <h2 className="text-2xl">Cocokkan kolom</h2>
           <p className="mt-2 text-black/60">
             File <strong>{namaFile}</strong> berisi {baris.length} baris data. Kolom sudah dicocokkan otomatis. Periksa dan ubah bila perlu.
           </p>
@@ -163,7 +163,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
             {kolom.map((k) => (
               <label key={k.kunci} className="block">
                 <span className="mb-1 block text-sm font-semibold">
-                  {k.label} {k.wajib && <span className="text-merah">*</span>}
+                  {k.label} {k.wajib && <span className="text-blue-teks">*</span>}
                 </span>
                 <select
                   value={peta[k.kunci] ?? -1}
@@ -183,7 +183,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
           <h3 className="mt-8 text-sm font-semibold">Contoh 3 baris pertama setelah dirapikan</h3>
           <div className="mt-2 overflow-x-auto rounded-xl ring-1 ring-black/10">
             <table className="w-full text-left text-xs">
-              <thead className="bg-krem">
+              <thead className="bg-soft">
                 <tr>{kolom.filter((k) => (peta[k.kunci] ?? -1) >= 0).map((k) => <th key={k.kunci} className="px-3 py-2">{k.label}</th>)}</tr>
               </thead>
               <tbody>
@@ -196,7 +196,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
             </table>
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
-            <button type="button" onClick={periksa} disabled={proses} className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:opacity-60">
+            <button type="button" onClick={periksa} disabled={proses} className="rounded-full bg-ink px-6 py-3 font-semibold text-white disabled:opacity-60">
               {proses ? "Memeriksa…" : "Periksa data"}
             </button>
             <button type="button" onClick={() => setTahap("pilih")} className="rounded-full px-5 py-3 text-sm hover:bg-black/5">
@@ -208,18 +208,18 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
 
       {tahap === "periksa" && pratinjau && (
         <div className={kartu}>
-          <h2 className="font-serif text-2xl">Periksa sebelum menyimpan</h2>
+          <h2 className="text-2xl">Periksa sebelum menyimpan</h2>
           <div className="mt-4 grid grid-cols-3 gap-3 text-center">
             <button type="button" onClick={() => setSaring("baru")} className="rounded-xl bg-emerald-50 p-4 ring-1 ring-emerald-200">
-              <p className="font-serif text-4xl text-emerald-800">{pratinjau.ringkas.baru}</p>
+              <p className="text-4xl text-emerald-800">{pratinjau.ringkas.baru}</p>
               <p className="text-sm text-emerald-800">Data baru</p>
             </button>
             <button type="button" onClick={() => setSaring("ada")} className="rounded-xl bg-amber-50 p-4 ring-1 ring-amber-200">
-              <p className="font-serif text-4xl text-amber-800">{pratinjau.ringkas.ada}</p>
+              <p className="text-4xl text-amber-800">{pratinjau.ringkas.ada}</p>
               <p className="text-sm text-amber-800">Sudah ada di sistem</p>
             </button>
             <button type="button" onClick={() => setSaring("galat")} className="rounded-xl bg-red-50 p-4 ring-1 ring-red-200">
-              <p className="font-serif text-4xl text-red-800">{pratinjau.ringkas.galat}</p>
+              <p className="text-4xl text-red-800">{pratinjau.ringkas.galat}</p>
               <p className="text-sm text-red-800">Bermasalah</p>
             </button>
           </div>
@@ -263,7 +263,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
                 key={s}
                 type="button"
                 onClick={() => setSaring(s)}
-                className={`rounded-full px-3 py-1 ${saring === s ? "bg-brand-900 text-white" : "ring-1 ring-black/10"}`}
+                className={`rounded-full px-3 py-1 ${saring === s ? "bg-ink text-white" : "ring-1 ring-black/10"}`}
               >
                 {{ semua: "Semua", baru: "Baru", ada: "Sudah ada", galat: "Bermasalah" }[s]}
               </button>
@@ -271,7 +271,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
           </div>
           <div className="mt-3 max-h-[420px] overflow-auto rounded-xl ring-1 ring-black/10">
             <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 bg-krem">
+              <thead className="sticky top-0 bg-soft">
                 <tr>
                   <th className="px-3 py-2">Baris</th>
                   <th className="px-3 py-2">Nama</th>
@@ -306,7 +306,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
               type="button"
               onClick={impor}
               disabled={proses || akanDiimpor.length === 0 || (adaGalat && !lewatiGalat)}
-              className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-full bg-ink px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {proses ? "Menyimpan…" : `Impor ${akanDiimpor.length} data`}
             </button>
@@ -320,7 +320,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
 
       {tahap === "selesai" && hasil?.ok && (
         <div className={kartu} role="status">
-          <h2 className="font-serif text-3xl">Impor berhasil</h2>
+          <h2 className="text-3xl">Impor berhasil</h2>
           <ul className="mt-4 space-y-1 text-black/70">
             <li>Data baru: <strong>{hasil.hasil?.baru ?? 0}</strong></li>
             <li>Diperbarui: <strong>{hasil.hasil?.diperbarui ?? 0}</strong></li>
@@ -329,7 +329,7 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
             {jenis === "siswa" && <li>Data orang tua baru: <strong>{hasil.hasil?.orang_tua_baru ?? 0}</strong></li>}
           </ul>
           <div className="mt-6 flex gap-3">
-            <Link href={kembali} className="rounded-full bg-brand-900 px-6 py-3 font-semibold text-white">Lihat data</Link>
+            <Link href={kembali} className="rounded-full bg-ink px-6 py-3 font-semibold text-white">Lihat data</Link>
             <button
               type="button"
               onClick={() => {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FotoSementara } from "@/components/admin/FotoSementara";
 import { FormArsip, JudulHalaman, Kartu, KosongAdmin, Notifikasi } from "@/components/admin/ui";
 import { wajibIzin } from "@/lib/admin/auth";
 import { uuid } from "@/lib/admin/schema";
@@ -11,7 +12,7 @@ export default async function AdminGaleri({ searchParams }: { searchParams: Prom
   const { supabase } = await wajibIzin("konten.kelola");
   const { data: list } = await supabase
     .from("galeri")
-    .select("id, judul, gambar_url, urutan")
+    .select("*")
     .is("deleted_at", null)
     .order("urutan", { ascending: true })
     .order("created_at", { ascending: false })
@@ -24,7 +25,7 @@ export default async function AdminGaleri({ searchParams }: { searchParams: Prom
       <JudulHalaman judul="Galeri" deskripsi="Foto tampil di halaman Galeri sesuai urutan." />
       <Notifikasi kode={pesan} />
       <Kartu className="mb-8">
-        <h2 className="mb-5 font-serif text-2xl">{diubah ? "Ubah foto" : "Unggah foto baru"}</h2>
+        <h2 className="mb-5 text-2xl">{diubah ? "Ubah foto" : "Unggah foto baru"}</h2>
         <FormFoto key={diubah?.id ?? "baru"} data={diubah ?? { judul: "", urutan: urutanBerikut, gambar_url: "" }} />
       </Kartu>
 
@@ -43,7 +44,8 @@ export default async function AdminGaleri({ searchParams }: { searchParams: Prom
                   <Link href={`/admin/galeri?ubah=${g.id}`} className="rounded-full px-3 py-1.5 text-sm font-medium hover:bg-black/5">
                     Ubah
                   </Link>
-                  <FormArsip tabel="galeri" id={g.id} judul={g.judul} kembali="/admin/galeri" />
+                  <FotoSementara tabel="galeri" id={g.id} sementara={g.is_placeholder === true} kembali="/admin/galeri" />
+                <FormArsip tabel="galeri" id={g.id} judul={g.judul} kembali="/admin/galeri" />
                 </div>
               </div>
             </li>

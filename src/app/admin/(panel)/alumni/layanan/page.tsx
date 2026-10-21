@@ -30,7 +30,7 @@ export default async function Layanan({ searchParams }: { searchParams: Promise<
       <JudulHalaman judul="Layanan & moderasi alumni" deskripsi="Semua kiriman alumni (peluang, cerita, tawaran mentor & kontribusi) tampil setelah ditinjau." />
       <NavAlumni kelola />
       <Notifikasi kode={sp.pesan} />
-      <nav className="mb-5 flex gap-2 overflow-x-auto pb-1 text-sm">{TAB.map(([k, l]) => <Link key={k} href={`?tab=${k}`} className={`shrink-0 rounded-full px-3 py-1.5 font-semibold ${tab === k ? "bg-brand-900 text-white" : "ring-1 ring-black/15"}`}>{l}</Link>)}</nav>
+      <nav className="mb-5 flex gap-2 overflow-x-auto pb-1 text-sm">{TAB.map(([k, l]) => <Link key={k} href={`?tab=${k}`} className={`shrink-0 rounded-full px-3 py-1.5 font-semibold ${tab === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>)}</nav>
       {tab === "peluang" && <Peluang />}
       {tab === "acara" && <Acara />}
       {tab === "mentor" && <Mentor />}
@@ -48,10 +48,10 @@ export default async function Layanan({ searchParams }: { searchParams: Promise<
           <Kartu key={x.id}>
             <div className="flex flex-wrap items-center gap-2"><p className="flex-1 font-semibold">{x.judul}</p><Lencana s={x.status} peta={STATUS_MODERASI} /></div>
             <p className="text-sm text-black/60">{JENIS_PELUANG[x.jenis]} · {SASARAN_PELUANG[x.sasaran]}{x.penyedia && ` · ${x.penyedia}`}{x.tenggat && ` · tenggat ${x.tenggat}`}</p>
-            {x.tautan && <a href={x.tautan} target="_blank" rel="noreferrer" className="text-sm text-brand-700 underline">tautan</a>}
+            {x.tautan && <a href={x.tautan} target="_blank" rel="noreferrer" className="text-sm text-blue-teks underline">tautan</a>}
             <Tombol tabel="peluang" id={x.id} tab="peluang" status={x.status === "tayang" ? ["arsip"] : ["tayang", "ditolak"]} label={x.status === "tayang" ? ["Arsipkan"] : ["Tayangkan", "Tolak"]} />
           </Kartu>))}</div>
-        <Kartu className="self-start"><h2 className="mb-3 font-serif text-2xl">Peluang baru</h2><FormPeluang admin /></Kartu>
+        <Kartu className="self-start"><h2 className="mb-3 text-2xl">Peluang baru</h2><FormPeluang admin /></Kartu>
       </div>
     );
   }
@@ -63,7 +63,7 @@ export default async function Layanan({ searchParams }: { searchParams: Promise<
         <div className="space-y-3">{(data ?? []).map((a) => (
           <Kartu key={a.id}><p className="font-semibold">{a.judul}</p><p className="text-sm text-black/60">{waktuWIB(a.mulai, true)}{a.tempat && ` · ${a.tempat}`}{(a.untuk_angkatan as number[]).length > 0 && ` · angkatan ${(a.untuk_angkatan as number[]).join(", ")}`}{a.publik && " · di website"}</p>
             <p className="text-sm"><strong>{(rs ?? []).filter((r) => r.acara_id === a.id && r.hadir).length}</strong> akan hadir{a.kuota ? ` / kuota ${a.kuota}` : ""}</p></Kartu>))}</div>
-        <Kartu className="self-start"><h2 className="mb-3 font-serif text-2xl">Acara baru</h2><FormAcaraAlumni /></Kartu>
+        <Kartu className="self-start"><h2 className="mb-3 text-2xl">Acara baru</h2><FormAcaraAlumni /></Kartu>
       </div>
     );
   }

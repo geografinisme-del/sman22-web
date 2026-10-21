@@ -20,13 +20,13 @@ export default async function LayananBk() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-serif text-3xl">Layanan BK</h1>
-        <p className="text-sm text-[#5b6270]">{ortu ? "Ajukan konsultasi dengan guru BK tentang anak Anda." : "Butuh teman cerita atau saran? Guru BK siap membantu."} Isi percakapan bersifat rahasia — wali kelas dan guru lain tidak dapat membacanya.</p>
+        <h1 className="text-3xl">Layanan BK</h1>
+        <p className="text-sm text-[var(--muted)]">{ortu ? "Ajukan konsultasi dengan guru BK tentang anak Anda." : "Butuh teman cerita atau saran? Guru BK siap membantu."} Isi percakapan bersifat rahasia — wali kelas dan guru lain tidak dapat membacanya.</p>
       </div>
       <p className="rounded-2xl bg-violet-50 p-4 text-sm text-violet-900 ring-1 ring-violet-200">Dalam keadaan darurat (misalnya merasa tidak aman), segera temui guru BK, wali kelas, atau guru piket, atau hubungi layanan SAPA 129.</p>
       {akanDatang.length > 0 && (
         <section className="space-y-2">
-          <h2 className="font-serif text-2xl">Jadwal</h2>
+          <h2 className="text-2xl">Jadwal</h2>
           {akanDatang.map((j) => (
             <div key={j.id} className="rounded-2xl bg-sky-50 p-4 text-sm ring-1 ring-sky-200">
               <p className="font-semibold">{waktuWIB(j.mulai, true)} · {j.durasi_menit} menit</p>
@@ -42,12 +42,12 @@ export default async function LayananBk() {
         </details>
       )}
       <section className="space-y-2">
-        <h2 className="font-serif text-2xl">Permintaan saya</h2>
-        {permintaan.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Belum ada.</p> : permintaan.map((p) => (
+        <h2 className="text-2xl">Permintaan saya</h2>
+        {permintaan.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[var(--muted)] ring-1 ring-black/5">Belum ada.</p> : permintaan.map((p) => (
           <div key={p.id} className="rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5">
-            <div className="flex flex-wrap items-center gap-2"><Lencana s={p.status} peta={STATUS_PERMINTAAN} /><span className="text-[#5b6270]">{p.kategori} · {waktuWIB(p.dibuat)}</span></div>
-            <p className="mt-1 font-semibold">{p.topik}{ortu && <span className="font-normal text-[#5b6270]"> · {p.siswa}</span>}</p>
-            {p.catatan_untuk_pemohon && <p className="mt-2 rounded-xl bg-krem p-3"><strong>Guru BK:</strong> {p.catatan_untuk_pemohon}</p>}
+            <div className="flex flex-wrap items-center gap-2"><Lencana s={p.status} peta={STATUS_PERMINTAAN} /><span className="text-[var(--muted)]">{p.kategori} · {waktuWIB(p.dibuat)}</span></div>
+            <p className="mt-1 font-semibold">{p.topik}{ortu && <span className="font-normal text-[var(--muted)]"> · {p.siswa}</span>}</p>
+            {p.catatan_untuk_pemohon && <p className="mt-2 rounded-xl bg-soft p-3"><strong>Guru BK:</strong> {p.catatan_untuk_pemohon}</p>}
           </div>
         ))}
       </section>

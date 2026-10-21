@@ -21,7 +21,7 @@ export const DEFINISI_WIDGET = {
     instans: "satu",
     wajib: true,
     kosong: "Foto bawaan sekolah dipakai bila belum ada slide.",
-    skema: z.object({ tata: pilihan(["berdampingan", "penuh"], "berdampingan") }),
+    skema: z.object({ tata: pilihan(["langit", "berdampingan", "penuh", "panel", "majalah"], "langit") }),
   },
   pengumuman: {
     label: "Pengumuman",
@@ -58,6 +58,42 @@ export const DEFINISI_WIDGET = {
     wajib: false,
     kosong: "Menampilkan “Belum ada berita yang diterbitkan.”",
     skema: z.object({ judul, jumlah: jumlah(1, 7, 4), kategori: z.string().trim().max(40).catch(""), tata: pilihan(["utama-pendamping", "daftar"], "utama-pendamping") }),
+  },
+  tur: {
+    label: "Tur sekolah",
+    sumber: "Admin → Tur Sekolah (3–8 titik foto/video)",
+    area: "beranda",
+    instans: "satu",
+    wajib: false,
+    kosong: "Disembunyikan bila tidak ada titik tur aktif.",
+    skema: z.object({}),
+  },
+  angka: {
+    label: "SMAN 22 dalam angka",
+    sumber: "Profil sekolah (tahun berdiri, siswa aktif, ekskul, persen lulusan ke PT, kutipan kepala sekolah)",
+    area: "beranda",
+    instans: "satu",
+    wajib: false,
+    kosong: "Disembunyikan bila kurang dari dua angka terisi.",
+    skema: z.object({}),
+  },
+  spmb: {
+    label: "SPMB",
+    sumber: "Pengaturan SPMB (Admin → SPMB)",
+    area: "beranda",
+    instans: "satu",
+    wajib: false,
+    kosong: "Tampil hanya bila SPMB diaktifkan.",
+    skema: z.object({ judul }),
+  },
+  prestasi: {
+    label: "Prestasi & alumni",
+    sumber: "Tabel prestasi + angka alumni PTN (profil); tema lain: berita kategori Prestasi",
+    area: "beranda",
+    instans: "satu",
+    wajib: false,
+    kosong: "Disembunyikan bila belum ada prestasi atau angka alumni.",
+    skema: z.object({ judul, jumlah: jumlah(2, 8, 4) }),
   },
   agenda: {
     label: "Agenda",
@@ -121,11 +157,14 @@ export const pengaturanBawaan = (jenis: JenisWidget) => DEFINISI_WIDGET[jenis].s
 
 /** Susunan beranda bawaan (urutan sesuai panduan isi beranda). */
 export const SUSUNAN_BAWAAN: WidgetInstans[] = (
-  ["hero", "pengumuman", "layanan", "profil", "berita", "agenda", "program", "galeri", "perpus", "kontak"] as JenisWidget[]
-).map((jenis) => ({ id: jenis, jenis, tampil: jenis !== "perpus", pengaturan: pengaturanBawaan(jenis) }));
+  ["hero", "tur", "angka", "berita", "pengumuman", "agenda", "prestasi", "galeri", "program", "layanan", "kontak", "spmb", "profil", "perpus"] as JenisWidget[]
+).map((jenis) => ({ id: jenis, jenis, tampil: jenis !== "perpus" && jenis !== "profil", pengaturan: pengaturanBawaan(jenis) }));
 
 /** Widget berpasangan: bila bersebelahan & keduanya tampil, dirender dalam satu bagian dua kolom. */
 export const PASANGAN: [JenisWidget, JenisWidget][] = [
   ["pengumuman", "layanan"],
   ["berita", "agenda"],
+  ["pengumuman", "agenda"],
+  ["galeri", "program"],
+  ["layanan", "kontak"],
 ];

@@ -37,13 +37,13 @@ export default async function RuangKelas({ params, searchParams }: { params: Pro
           <a href={`/admin/lms/${p.id}/nilai`} className="rounded-full px-4 py-2.5 text-sm font-semibold ring-1 ring-black/15">Unduh rekap nilai (Excel)</a></div>} />
       <Notifikasi kode={sp.pesan} />
       <div className="mb-6 flex flex-wrap gap-2">
-        <Link href="?buat=tugas#buat" className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">+ Tugas</Link>
-        <Link href="?buat=kuis#buat" className="rounded-full bg-brand-900 px-5 py-2.5 text-sm font-semibold text-white">+ Kuis</Link>
+        <Link href="?buat=tugas#buat" className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">+ Tugas</Link>
+        <Link href="?buat=kuis#buat" className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">+ Kuis</Link>
         <Link href="/admin/materi" className="rounded-full px-5 py-2.5 text-sm font-semibold ring-1 ring-black/15">+ Materi (slide)</Link>
       </div>
       {(sp.buat === "tugas" || sp.buat === "kuis") && (
         <Kartu className="mb-6">
-          <h2 id="buat" className="mb-4 font-serif text-2xl">{sp.buat === "tugas" ? "Tugas baru" : "Kuis baru"}</h2>
+          <h2 id="buat" className="mb-4 text-2xl">{sp.buat === "tugas" ? "Tugas baru" : "Kuis baru"}</h2>
           {sp.buat === "tugas"
             ? <FormTugas mapel_id={p.mapel_id} kelas={kelasMapel} kelasAwal={p.kelas_id} tenggatAwal={`${geserTanggal(hariIniWIB(), 7)}T23:59`} />
             : <FormKuis mapel_id={p.mapel_id} kelas={kelasMapel} kelasAwal={p.kelas_id} mulaiAwal={keLokalWIB()} selesaiAwal={`${geserTanggal(hariIniWIB(), 1)}${keLokalWIB().slice(10)}`} />}
@@ -51,7 +51,7 @@ export default async function RuangKelas({ params, searchParams }: { params: Pro
       )}
       <div className="grid gap-6 xl:grid-cols-2">
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Tugas</h2>
+          <h2 className="mb-3 text-2xl">Tugas</h2>
           {(tugas ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada tugas.</p> : (
             <ul className="divide-y divide-black/5">
               {((tugas ?? []) as T[]).map((t) => (
@@ -67,7 +67,7 @@ export default async function RuangKelas({ params, searchParams }: { params: Pro
           )}
         </Kartu>
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Kuis</h2>
+          <h2 className="mb-3 text-2xl">Kuis</h2>
           {(kuis ?? []).length === 0 ? <p className="text-sm text-black/50">Belum ada kuis.</p> : (
             <ul className="divide-y divide-black/5">
               {((kuis ?? []) as K[]).map((k) => (

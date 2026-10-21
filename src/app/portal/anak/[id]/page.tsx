@@ -42,16 +42,16 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
 
   return (
     <div className="space-y-5">
-      <Link href="/portal" className="text-sm text-brand-700">← Beranda</Link>
+      <Link href="/portal" className="text-sm text-blue-teks">← Beranda</Link>
       <div>
-        <h1 className="font-serif text-3xl leading-tight">{a.nama}</h1>
-        <p className="text-sm text-[#5b6270]">{a.kelas ? `Kelas ${a.kelas}` : ""}</p>
+        <h1 className="text-3xl leading-tight">{a.nama}</h1>
+        <p className="text-sm text-[var(--muted)]">{a.kelas ? `Kelas ${a.kelas}` : ""}</p>
       </div>
 
       <section className="rounded-3xl bg-white p-4 ring-1 ring-black/5 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <Link href={`/portal/anak/${a.id}?bulan=${geserBulan(bulan, -1)}`} className="rounded-full px-3 py-1.5 text-sm ring-1 ring-black/10" aria-label="Bulan sebelumnya">←</Link>
-          <h2 className="font-serif text-2xl">{BULAN[m - 1]} {y}</h2>
+          <h2 className="text-2xl">{BULAN[m - 1]} {y}</h2>
           {bulan < bulanIni ? (
             <Link href={`/portal/anak/${a.id}?bulan=${geserBulan(bulan, 1)}`} className="rounded-full px-3 py-1.5 text-sm ring-1 ring-black/10" aria-label="Bulan berikutnya">→</Link>
           ) : (
@@ -60,7 +60,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-xs" role="grid" aria-label={`Kalender ${BULAN[m - 1]} ${y}`}>
           {["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map((h) => (
-            <div key={h} className="pb-1 font-semibold text-[#5b6270]">{h}</div>
+            <div key={h} className="pb-1 font-semibold text-[var(--muted)]">{h}</div>
           ))}
           {sel.map((t, i) => {
             if (!t) return <div key={`k${i}`} />;
@@ -69,7 +69,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
             const lib = libMap.get(t);
             const masaDepan = t > hari;
             const sekolah = hariSekolah.has(isodow) && !lib;
-            let kelas = "bg-krem text-black/30";
+            let kelas = "bg-soft text-black/30";
             let isi = "";
             if (r) {
               kelas = `${STATUS_SISWA_ABSEN[r.status as KodeAbsen].warna} text-white`;
@@ -83,7 +83,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
               <div
                 key={t}
                 title={r ? `${STATUS_SISWA_ABSEN[r.status as KodeAbsen].label}${r.keterangan ? ` – ${r.keterangan}` : ""}` : lib ?? undefined}
-                className={`flex aspect-square flex-col items-center justify-center rounded-xl ${kelas} ${t === hari ? "ring-2 ring-brand-700" : ""}`}
+                className={`flex aspect-square flex-col items-center justify-center rounded-xl ${kelas} ${t === hari ? "ring-2 ring-blue" : ""}`}
               >
                 <span className="text-sm font-semibold">{Number(t.slice(8))}</span>
                 {isi && <span className="text-[10px] font-bold leading-none">{isi}</span>}
@@ -91,7 +91,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
             );
           })}
         </div>
-        <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#5b6270]">
+        <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--muted)]">
           <li><span className="mr-1 inline-block h-3 w-3 rounded bg-emerald-50 align-middle ring-1 ring-emerald-200" />Hadir</li>
           {(["T", "S", "I", "A", "PC"] as KodeAbsen[]).map((k) => (
             <li key={k}><span className={`mr-1 inline-block h-3 w-3 rounded align-middle ${STATUS_SISWA_ABSEN[k].warna}`} />{STATUS_SISWA_ABSEN[k].label}</li>
@@ -101,16 +101,16 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
       </section>
 
       <section className="rounded-3xl bg-white p-5 ring-1 ring-black/5">
-        <h2 className="font-serif text-2xl">Catatan bulan ini</h2>
+        <h2 className="text-2xl">Catatan bulan ini</h2>
         {daftar.length === 0 ? (
-          <p className="mt-2 text-sm text-[#5b6270]">Tidak ada catatan ketidakhadiran atau keterlambatan.</p>
+          <p className="mt-2 text-sm text-[var(--muted)]">Tidak ada catatan ketidakhadiran atau keterlambatan.</p>
         ) : (
           <ul className="mt-2 divide-y divide-black/5 text-sm">
             {daftar.map((r) => (
               <li key={r.tanggal} className="flex justify-between gap-3 py-2">
                 <span>
                   {new Date(r.tanggal + "T00:00:00Z").toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })}
-                  {r.keterangan && <span className="block text-xs text-[#5b6270]">{r.keterangan}</span>}
+                  {r.keterangan && <span className="block text-xs text-[var(--muted)]">{r.keterangan}</span>}
                 </span>
                 <span className="shrink-0 font-semibold">{STATUS_SISWA_ABSEN[r.status as KodeAbsen].label}</span>
               </li>
@@ -118,7 +118,7 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
           </ul>
         )}
         {libMap.size > 0 && (
-          <p className="mt-3 text-xs text-[#5b6270]">Libur: {[...libMap.entries()].map(([t, k]) => `${Number(t.slice(8))} (${k})`).join(", ")}</p>
+          <p className="mt-3 text-xs text-[var(--muted)]">Libur: {[...libMap.entries()].map(([t, k]) => `${Number(t.slice(8))} (${k})`).join(", ")}</p>
         )}
       </section>
     </div>

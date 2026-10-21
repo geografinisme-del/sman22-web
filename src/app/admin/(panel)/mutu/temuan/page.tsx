@@ -41,8 +41,8 @@ export default async function Temuan({ searchParams }: { searchParams: Promise<{
                 <span className="text-sm text-black/50">· {SUMBER_TEMUAN[t.sumber]} · {t.periode}{t.indikator_mutu && ` · ${t.indikator_mutu.kode}`}{t.pj_id && ` · PJ ${nama.get(t.pj_id)}`}{t.tenggat && ` · tenggat ${t.tenggat}`}</span></div>
               <p className="mt-2 text-sm">{t.uraian}</p>
               <ul className="mt-2 space-y-1 text-sm">{t.rencana_perbaikan.map((r) => (
-                <li key={r.id} className="rounded-lg bg-krem/60 p-2">↳ {r.kegiatan} · {STATUS_RENCANA[r.status]}{r.pj_id && ` · ${nama.get(r.pj_id)}`}{r.tenggat && ` · ${r.tenggat}`}{r.hasil && <span className="block text-black/60">{r.hasil}</span>}
-                  <details><summary className="cursor-pointer text-xs font-semibold text-brand-700">Perbarui</summary><div className="mt-2"><FormRencana temuan={t.id} d={r} staf={staf} /></div></details></li>))}</ul>
+                <li key={r.id} className="rounded-lg bg-soft/60 p-2">↳ {r.kegiatan} · {STATUS_RENCANA[r.status]}{r.pj_id && ` · ${nama.get(r.pj_id)}`}{r.tenggat && ` · ${r.tenggat}`}{r.hasil && <span className="block text-black/60">{r.hasil}</span>}
+                  <details><summary className="cursor-pointer text-xs font-semibold text-blue-teks">Perbarui</summary><div className="mt-2"><FormRencana temuan={t.id} d={r} staf={staf} /></div></details></li>))}</ul>
               <details className="mt-2"><summary className="cursor-pointer text-xs font-semibold">+ Rencana perbaikan</summary><div className="mt-2"><FormRencana temuan={t.id} staf={staf} /></div></details>
               {tim && (
                 <form action={simpanTemuanStatus} className="mt-2 flex flex-wrap gap-2 text-xs">
@@ -53,7 +53,7 @@ export default async function Temuan({ searchParams }: { searchParams: Promise<{
             </Kartu>
           ))}
         </div>
-        {tim && kini && <Kartu className="self-start"><h2 className="mb-3 font-serif text-2xl">Catat temuan</h2>
+        {tim && kini && <Kartu className="self-start"><h2 className="mb-3 text-2xl">Catat temuan</h2>
           <FormTemuan kerangka={kini.id} periode={periode} staf={staf} indikatorOpsi={((ind ?? []) as { id: string; kode: string; nama: string }[]).map((x) => ({ id: x.id, nama: `${x.kode} ${x.nama.slice(0, 60)}` }))} /></Kartu>}
       </div>
     </>

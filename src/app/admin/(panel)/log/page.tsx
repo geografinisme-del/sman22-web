@@ -42,7 +42,7 @@ export default async function Log({ searchParams }: { searchParams: Promise<{ ta
           <option value="">Semua aksi</option>
           {Object.entries(AKSI).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <button className="rounded-full bg-brand-900 px-5 py-2 font-semibold text-white">Terapkan</button>
+        <button className="rounded-full bg-ink px-5 py-2 font-semibold text-white">Terapkan</button>
       </form>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className={kelasTabel}>

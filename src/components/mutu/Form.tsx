@@ -112,7 +112,7 @@ function PilihBerkas() {
     <div>
       <label htmlFor="berkas" className="mb-1.5 block text-sm font-semibold">Berkas (PDF, Word, Excel, PowerPoint, foto — maks. 4 MB)</label>
       <input id="berkas" name="berkas" type="file" accept=".pdf,.docx,.xlsx,.pptx,.jpg,.jpeg,.png,.webp" className="block w-full text-sm" />
-      {err && <p className="mt-1 text-sm text-merah">{err}</p>}
+      {err && <p className="mt-1 text-sm text-blue-teks">{err}</p>}
       <p className="mt-1 text-xs text-black/50">Sidik jari SHA-256 dicatat saat diunggah untuk memeriksa keutuhan berkas.</p>
     </div>
   );
@@ -127,7 +127,7 @@ export function FormBukti({ indikator, periode, versiDari, judulAwal }: { indika
       {versiDari && <input type="hidden" name="versi_dari" value={versiDari} />}
       <div className="flex flex-wrap gap-2 text-sm" role="radiogroup" aria-label="Jenis bukti">
         {[["tautan", "Tautan (Drive)"], ["berkas", "Unggah berkas"], ["modul", "Dari modul lain"]].map(([k, l]) => (
-          <label key={k} className={`cursor-pointer rounded-full px-3 py-1.5 font-semibold ring-1 ${jenis === k ? "bg-brand-900 text-white ring-brand-900" : "ring-black/15"}`}>
+          <label key={k} className={`cursor-pointer rounded-full px-3 py-1.5 font-semibold ring-1 ${jenis === k ? "bg-ink text-white ring-ink" : "ring-black/15"}`}>
             <input type="radio" name="jenis" value={k} checked={jenis === k} onChange={() => setJenis(k)} className="sr-only" />{l}</label>
         ))}
       </div>

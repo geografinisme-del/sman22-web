@@ -24,7 +24,7 @@ export const RUANG_KERJA: RuangKerja[] = [
   { kunci: "kesiswaan", label: "Kesiswaan", href: "/admin/kesiswaan", awalan: ["/admin/kesiswaan", "/admin/absensi/disiplin", "/admin/ekskul"], izin: ["kesiswaan.kelola", "disiplin.kelola", "ekskul.kelola"], keterangan: "Prestasi, poin, disiplin, ekskul & OSIS." },
   { kunci: "sarpras", label: "Sarpras", href: "/admin/sarpras", awalan: ["/admin/sarpras"], izin: ["sarpras.kelola"], keterangan: "Inventaris, peminjaman ruang/barang, laporan kerusakan." },
   { kunci: "humas", label: "Humas", href: "/admin/humas", awalan: ["/admin/humas", "/admin/pengaduan", "/admin/kemitraan", "/admin/survei", "/admin/kontak-media", "/admin/buku-tamu"], izin: ["humas.kelola", "pengaduan.kelola"], keterangan: "Pengaduan, kemitraan, survei, kontak media." },
-  { kunci: "website", label: "Website", href: "/admin/berita", awalan: ["/admin/berita", "/admin/pengumuman", "/admin/agenda", "/admin/galeri", "/admin/profil", "/admin/persetujuan", "/admin/situs", "/admin/tampilan"], izin: ["konten.kelola", "konten.terbitkan"], keterangan: "Berita, pengumuman, agenda, galeri, tampilan website." },
+  { kunci: "website", label: "Website", href: "/admin/berita", awalan: ["/admin/berita", "/admin/pengumuman", "/admin/agenda", "/admin/galeri", "/admin/kartu-beranda", "/admin/tur-sekolah", "/admin/staf-publik", "/admin/fasilitas", "/admin/halaman", "/admin/menu", "/admin/portal-masuk", "/admin/prestasi", "/admin/spmb", "/admin/portal-bidang", "/admin/profil", "/admin/persetujuan", "/admin/situs", "/admin/tampilan"], izin: ["konten.kelola", "konten.terbitkan"], keterangan: "Berita, pengumuman, agenda, galeri, tampilan website." },
   { kunci: "tata_usaha", label: "Tata Usaha", href: "/admin/siswa", awalan: ["/admin/siswa", "/admin/pegawai", "/admin/kelas", "/admin/tahun-ajaran", "/admin/akun-portal"], izin: ["data_induk.kelola", "akun_portal.kelola"], keterangan: "Data induk siswa, pegawai, kelas, akun portal." },
   { kunci: "tpmps", label: "Penjaminan Mutu (TPMPS)", href: "/admin/mutu", awalan: ["/admin/mutu"], izin: ["mutu.kelola", "mutu.audit"], keterangan: "Indikator mutu, temuan & perbaikan, repositori bukti." },
   { kunci: "perpustakaan", label: "Perpustakaan", href: "/admin/perpus", awalan: ["/admin/perpus"], izin: ["perpus.kelola", "literasi.kelola"], keterangan: "Sirkulasi, katalog, literasi, pojok baca." },
@@ -52,6 +52,8 @@ export function ruangKerjaUntuk(akses: AksesMinimal | null): RuangKerja[] {
 export function tujuanAwal(akses: AksesMinimal | null): string {
   if (!akses) return "/admin";
   if (akses.peran.some((p) => PERAN_PIMPINAN.includes(p))) return "/admin";
+  // pegawai umum, laboran, dan akun tanpa peran mulai di Ringkasan (dasbor dasar GTK)
+  if (akses.peran.length === 0 || akses.peran.some((p) => p === "pegawai" || p === "laboran")) return "/admin";
   const r = ruangKerjaUntuk(akses);
   return r.length === 1 ? r[0].href : "/admin";
 }

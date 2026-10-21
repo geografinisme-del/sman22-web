@@ -30,7 +30,7 @@ export default async function PerpusPortal({ searchParams }: { searchParams: Pro
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end gap-3">
-        <div className="flex-1"><h1 className="font-serif text-3xl">Perpustakaan</h1><p className="text-sm text-[#5b6270]">Pinjaman buku{ortu ? " anak" : ""} dan riwayatnya.</p></div>
+        <div className="flex-1"><h1 className="text-3xl">Perpustakaan</h1><p className="text-sm text-[var(--muted)]">Pinjaman buku{ortu ? " anak" : ""} dan riwayatnya.</p></div>
         <Link href="/perpustakaan" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Cari buku</Link>
       </div>
       {sp.pesan && PESAN[sp.pesan] && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">{PESAN[sp.pesan]}</p>}
@@ -49,14 +49,14 @@ export default async function PerpusPortal({ searchParams }: { searchParams: Pro
                   <button className="rounded-full px-3 py-1.5 font-semibold ring-1 ring-black/15">Batalkan</button></form>
               </div>
             ))}
-            {aktif.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Tidak ada buku yang sedang dipinjam.</p> : (
+            {aktif.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[var(--muted)] ring-1 ring-black/5">Tidak ada buku yang sedang dipinjam.</p> : (
               <ul className="space-y-2">
                 {aktif.map((p) => {
                   const telat = p.jatuh_tempo < hari;
                   return (
                     <li key={p.id} className={`rounded-2xl bg-white p-4 ring-1 ${telat ? "ring-red-300" : "ring-black/5"}`}>
                       <p className="font-semibold">{p.eksemplar?.buku?.judul}</p>
-                      <p className={`text-sm ${telat ? "font-semibold text-merah" : "text-[#5b6270]"}`}>Kembalikan paling lambat {tgl(p.jatuh_tempo)}{telat && " — terlambat"}</p>
+                      <p className={`text-sm ${telat ? "font-semibold text-blue-teks" : "text-[var(--muted)]"}`}>Kembalikan paling lambat {tgl(p.jatuh_tempo)}{telat && " — terlambat"}</p>
                       {!telat && (
                         <form action={perpanjangBuku} className="mt-2"><input type="hidden" name="id" value={p.id} /><input type="hidden" name="kembali" value="/portal/perpus" />
                           <button className="rounded-full px-4 py-1.5 text-sm font-semibold ring-1 ring-black/15">Perpanjang</button></form>
@@ -70,8 +70,8 @@ export default async function PerpusPortal({ searchParams }: { searchParams: Pro
               <details className="rounded-2xl bg-white p-4 text-sm ring-1 ring-black/5">
                 <summary className="cursor-pointer font-semibold">Riwayat ({milik.filter((p) => p.kembali_pada).length})</summary>
                 <ul className="mt-2 divide-y divide-black/5">{milik.filter((p) => p.kembali_pada).map((p) => (
-                  <li key={p.id} className="flex gap-2 py-1.5"><span className="flex-1">{p.eksemplar?.buku?.judul}</span><span className="text-[#5b6270]">{tgl(p.pinjam_pada)}</span>
-                    {!p.denda_lunas && <span className="font-semibold text-merah">denda Rp{Number(p.denda).toLocaleString("id-ID")}</span>}</li>))}</ul>
+                  <li key={p.id} className="flex gap-2 py-1.5"><span className="flex-1">{p.eksemplar?.buku?.judul}</span><span className="text-[var(--muted)]">{tgl(p.pinjam_pada)}</span>
+                    {!p.denda_lunas && <span className="font-semibold text-blue-teks">denda Rp{Number(p.denda).toLocaleString("id-ID")}</span>}</li>))}</ul>
               </details>
             )}
           </section>
@@ -80,38 +80,38 @@ export default async function PerpusPortal({ searchParams }: { searchParams: Pro
 
       {tantangan.length > 0 && (
         <section className="space-y-3">
-          <h2 className="font-serif text-2xl">Tantangan literasi</h2>
+          <h2 className="text-2xl">Tantangan literasi</h2>
           {tantangan.map((t) => {
             const pb = t.target_buku ? Math.min(100, Math.round((100 * t.buku) / t.target_buku)) : 100;
             const pm = t.target_menit ? Math.min(100, Math.round((100 * t.menit) / t.target_menit)) : 100;
             const p = Math.min(pb, pm);
             return (
               <div key={t.id + t.siswa_id} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
-                <p className="font-semibold">{t.judul}{ortu && <span className="font-normal text-[#5b6270]"> · {anak.find((a) => a.id === t.siswa_id)?.nama}</span>}</p>
-                {t.deskripsi && <p className="text-sm text-[#5b6270]">{t.deskripsi}</p>}
+                <p className="font-semibold">{t.judul}{ortu && <span className="font-normal text-[var(--muted)]"> · {anak.find((a) => a.id === t.siswa_id)?.nama}</span>}</p>
+                {t.deskripsi && <p className="text-sm text-[var(--muted)]">{t.deskripsi}</p>}
                 <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/10" role="progressbar" aria-valuenow={p} aria-valuemin={0} aria-valuemax={100}><div className="h-full bg-emerald-600" style={{ width: `${p}%` }} /></div>
-                <p className="mt-1 text-xs text-[#5b6270]">{t.target_buku > 0 && `${t.buku}/${t.target_buku} buku`}{t.target_buku > 0 && t.target_menit > 0 && " · "}{t.target_menit > 0 && `${t.menit}/${t.target_menit} menit`} · sampai {tgl(t.selesai)}{p >= 100 && " — tuntas! 🎉"}</p>
+                <p className="mt-1 text-xs text-[var(--muted)]">{t.target_buku > 0 && `${t.buku}/${t.target_buku} buku`}{t.target_buku > 0 && t.target_menit > 0 && " · "}{t.target_menit > 0 && `${t.menit}/${t.target_menit} menit`} · sampai {tgl(t.selesai)}{p >= 100 && " — tuntas! 🎉"}</p>
               </div>
             );
           })}
-          <p className="text-xs text-[#5b6270]">Dihitung dari jurnal baca yang sudah disetujui pembina.</p>
+          <p className="text-xs text-[var(--muted)]">Dihitung dari jurnal baca yang sudah disetujui pembina.</p>
         </section>
       )}
 
       <section id="jurnal" className="space-y-3">
-        <h2 className="font-serif text-2xl">Jurnal baca</h2>
+        <h2 className="text-2xl">Jurnal baca</h2>
         {!ortu && (
           <details className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
             <summary className="cursor-pointer font-semibold">+ Tulis jurnal baca</summary>
             <div className="mt-4"><FormJurnal hari={hari} /></div>
           </details>
         )}
-        {jurnal.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[#5b6270] ring-1 ring-black/5">Belum ada jurnal baca.</p> : (
+        {jurnal.length === 0 ? <p className="rounded-2xl bg-white p-4 text-sm text-[var(--muted)] ring-1 ring-black/5">Belum ada jurnal baca.</p> : (
           <ul className="divide-y divide-black/5 rounded-2xl bg-white px-4 text-sm ring-1 ring-black/5">
             {jurnal.map((j) => (
               <li key={j.id} className="py-3">
-                <p><strong>{j.judul}</strong> <span className="text-[#5b6270]">· {tgl(j.tanggal)} · {[j.halaman ? `${j.halaman} hlm` : "", j.menit ? `${j.menit} menit` : ""].filter(Boolean).join(", ")}</span></p>
-                <p className={j.status === "revisi" ? "text-merah" : j.status === "disetujui" ? "text-emerald-700" : "text-[#5b6270]"}>{STJ[j.status]}{j.catatan_pembina && ` — ${j.catatan_pembina}`}</p>
+                <p><strong>{j.judul}</strong> <span className="text-[var(--muted)]">· {tgl(j.tanggal)} · {[j.halaman ? `${j.halaman} hlm` : "", j.menit ? `${j.menit} menit` : ""].filter(Boolean).join(", ")}</span></p>
+                <p className={j.status === "revisi" ? "text-blue-teks" : j.status === "disetujui" ? "text-emerald-700" : "text-[var(--muted)]"}>{STJ[j.status]}{j.catatan_pembina && ` — ${j.catatan_pembina}`}</p>
               </li>
             ))}
           </ul>

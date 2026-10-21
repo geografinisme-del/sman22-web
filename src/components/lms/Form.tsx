@@ -13,12 +13,12 @@ function PilihKelas({ kelas, terpilih }: { kelas: Kelas[]; terpilih: string[] })
       <legend className="mb-1.5 text-sm font-semibold">Kelas</legend>
       <div className="flex flex-wrap gap-2">
         {kelas.map((k) => (
-          <label key={k.id} className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm ring-1 ring-black/10 has-[:checked]:bg-brand-50 has-[:checked]:ring-brand-600">
+          <label key={k.id} className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm ring-1 ring-black/10 has-[:checked]:bg-soft has-[:checked]:ring-muted">
             <input type="checkbox" name="kelas" value={k.id} defaultChecked={terpilih.includes(k.id)} /> {k.nama}
           </label>
         ))}
       </div>
-      {err && <p className="mt-1 text-sm text-merah">{err}</p>}
+      {err && <p className="mt-1 text-sm text-blue-teks">{err}</p>}
     </fieldset>
   );
 }
@@ -153,7 +153,7 @@ export function FormNilai({ id, nilai, komentar, maks }: { id: string; nilai: nu
       <input type="hidden" name="id" value={id} />
       <label className="text-xs font-semibold">Nilai /{maks}<input name="nilai" defaultValue={nilai ?? ""} inputMode="decimal" className="mt-1 block w-20 rounded-lg border border-black/15 px-2 py-1.5 text-sm" /></label>
       <label className="min-w-48 flex-1 text-xs font-semibold">Komentar<input name="komentar" defaultValue={komentar} maxLength={2000} className="mt-1 block w-full rounded-lg border border-black/15 px-2 py-1.5 text-sm font-normal" /></label>
-      <button name="aksi" value="nilai" className="rounded-full bg-brand-900 px-4 py-2 text-xs font-semibold text-white">Simpan nilai</button>
+      <button name="aksi" value="nilai" className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-white">Simpan nilai</button>
       <button name="aksi" value="kembalikan" className="rounded-full px-3 py-2 text-xs font-semibold text-amber-900 ring-1 ring-amber-300">Kembalikan</button>
     </FormAksi>
   );
@@ -168,8 +168,8 @@ export function FormKumpul({ tugas_id, jawaban, tautan }: { tugas_id: string; ja
       <Input label="Tautan (opsional)" nama="tautan" nilai={tautan} placeholder="https://drive.google.com/…" />
       <div>
         <label htmlFor="berkas" className="mb-1.5 block text-sm font-semibold">Unggah berkas (opsional)</label>
-        <input id="berkas" name="berkas" type="file" accept=".pdf,.docx,.pptx,.xlsx,image/*" className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-900 file:px-4 file:py-2 file:text-white" />
-        <p className={`mt-1 text-xs ${err ? "text-merah" : "text-black/50"}`}>{err ?? "PDF, Word, PowerPoint, Excel, atau foto — maks. 4 MB."}</p>
+        <input id="berkas" name="berkas" type="file" accept=".pdf,.docx,.pptx,.xlsx,image/*" className="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-white" />
+        <p className={`mt-1 text-xs ${err ? "text-blue-teks" : "text-black/50"}`}>{err ?? "PDF, Word, PowerPoint, Excel, atau foto — maks. 4 MB."}</p>
       </div>
       <TombolSimpan>Kumpulkan</TombolSimpan>
     </FormAksi>

@@ -27,7 +27,7 @@ export default async function Literasi({ searchParams }: { searchParams: Promise
       <NavPerpus kelola={punya(akses, "perpus.kelola")} />
       <Notifikasi kode={sp.pesan} />
       <div className="mb-5 flex flex-wrap gap-2 text-sm">
-        {TAB.map(([k, l]) => <Link key={k} href={`?tab=${k}`} className={`rounded-full px-3 py-1.5 font-semibold ${tab === k ? "bg-brand-900 text-white" : "ring-1 ring-black/15"}`}>{l}</Link>)}
+        {TAB.map(([k, l]) => <Link key={k} href={`?tab=${k}`} className={`rounded-full px-3 py-1.5 font-semibold ${tab === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>)}
       </div>
       {tab === "jurnal" && <Jurnal status={sp.status === "semua" ? "semua" : "diajukan"} bina={bina} />}
       {tab === "ulasan" && <Ulasan bina={bina} />}
@@ -37,7 +37,7 @@ export default async function Literasi({ searchParams }: { searchParams: Promise
             {tantangan.length === 0 && <Kartu><p className="text-black/50">Belum ada tantangan.</p></Kartu>}
             {tantangan.map((t) => <Tantangan key={t.id} t={t} buka={sp.t === t.id} bina={bina} />)}
           </div>
-          {bina && <Kartu className="self-start"><h2 className="mb-4 font-serif text-2xl">{sp.ubah ? "Ubah tantangan" : "Tantangan baru"}</h2><FormTantangan key={sp.ubah ?? "baru"} d={tantangan.find((t) => t.id === sp.ubah)} /></Kartu>}
+          {bina && <Kartu className="self-start"><h2 className="mb-4 text-2xl">{sp.ubah ? "Ubah tantangan" : "Tantangan baru"}</h2><FormTantangan key={sp.ubah ?? "baru"} d={tantangan.find((t) => t.id === sp.ubah)} /></Kartu>}
         </div>
       )}
       {tab === "duta" && <Duta bina={bina} />}
@@ -85,7 +85,7 @@ export default async function Literasi({ searchParams }: { searchParams: Promise
             {bina && (
               <form action={moderasiUlasan} className="mt-3 flex gap-2"><input type="hidden" name="id" value={u.id} />
                 <button name="status" value="tampil" className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white">Tampilkan</button>
-                <button name="status" value="ditolak" className="rounded-full px-4 py-2 text-sm font-semibold text-merah ring-1 ring-merah/30">Tolak</button>
+                <button name="status" value="ditolak" className="rounded-full px-4 py-2 text-sm font-semibold text-blue-teks ring-1 ring-blue/30">Tolak</button>
               </form>
             )}
           </Kartu>
@@ -108,7 +108,7 @@ export default async function Literasi({ searchParams }: { searchParams: Promise
           <div className="flex gap-2 text-sm">
             <Link href={buka ? "?tab=tantangan" : `?tab=tantangan&t=${t.id}`} className="rounded-full px-3 py-1.5 font-semibold ring-1 ring-black/15">{buka ? "Tutup" : "Lihat progres"}</Link>
             {bina && <Link href={`?tab=tantangan&ubah=${t.id}`} className="rounded-full px-3 py-1.5 font-semibold ring-1 ring-black/15">Ubah</Link>}
-            {bina && <form action={arsipTantangan}><input type="hidden" name="id" value={t.id} /><button className="rounded-full px-3 py-1.5 font-semibold text-merah ring-1 ring-merah/30">Arsipkan</button></form>}
+            {bina && <form action={arsipTantangan}><input type="hidden" name="id" value={t.id} /><button className="rounded-full px-3 py-1.5 font-semibold text-blue-teks ring-1 ring-blue/30">Arsipkan</button></form>}
           </div>
         </div>
         {buka && (
@@ -133,15 +133,15 @@ export default async function Literasi({ searchParams }: { searchParams: Promise
     return (
       <div className="grid gap-6 xl:grid-cols-[1fr_400px]">
         <Kartu>
-          <h2 className="mb-3 font-serif text-2xl">Duta literasi tahun ini</h2>
+          <h2 className="mb-3 text-2xl">Duta literasi tahun ini</h2>
           {list.length === 0 ? <p className="text-sm text-black/50">Belum ada.</p> : (
             <ul className="divide-y divide-black/5 text-sm">{list.map((d) => (
               <li key={d.id} className="flex items-center gap-3 py-2"><span className="flex-1"><strong>{d.nama}</strong> · {d.kelas} · {d.peran}</span>
-                {bina && <form action={hapusDuta}><input type="hidden" name="id" value={d.id} /><button className="text-xs font-semibold text-merah underline">Lepas</button></form>}</li>
+                {bina && <form action={hapusDuta}><input type="hidden" name="id" value={d.id} /><button className="text-xs font-semibold text-blue-teks underline">Lepas</button></form>}</li>
             ))}</ul>
           )}
         </Kartu>
-        {bina && <Kartu className="self-start"><h2 className="mb-4 font-serif text-2xl">Tetapkan duta</h2><FormDuta /></Kartu>}
+        {bina && <Kartu className="self-start"><h2 className="mb-4 text-2xl">Tetapkan duta</h2><FormDuta /></Kartu>}
       </div>
     );
   }

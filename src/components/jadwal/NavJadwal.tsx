@@ -17,7 +17,7 @@ export function NavJadwal({ akses, aktif }: { akses: Akses | null; aktif: string
           key={i.href}
           href={i.href}
           aria-current={aktif === i.href ? "page" : undefined}
-          className={`shrink-0 rounded-full px-4 py-2 ${aktif === i.href ? "bg-brand-900 text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}
+          className={`shrink-0 rounded-full px-4 py-2 ${aktif === i.href ? "bg-ink text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}
         >
           {i.label}
         </Link>

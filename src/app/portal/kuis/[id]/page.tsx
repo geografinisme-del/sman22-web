@@ -28,25 +28,25 @@ export default async function KuisPortal({ params }: { params: Promise<{ id: str
 
   return (
     <div className="space-y-6">
-      <Link href="/portal/kelas" className="text-sm text-[#5b6270] hover:text-black">← Tugas & kuis</Link>
+      <Link href="/portal/kelas" className="text-sm text-[var(--muted)] hover:text-black">← Tugas & kuis</Link>
       <div>
-        <p className="text-xs text-[#5b6270]">{(k.mapel as unknown as { nama: string } | null)?.nama}</p>
-        <h1 className="font-serif text-3xl">{k.judul}</h1>
-        <p className="text-sm text-[#5b6270]">Dibuka {waktuWIB(k.mulai)} – {waktuWIB(k.selesai)} WIB · {k.durasi_menit} menit</p>
+        <p className="text-xs text-[var(--muted)]">{(k.mapel as unknown as { nama: string } | null)?.nama}</p>
+        <h1 className="text-3xl">{k.judul}</h1>
+        <p className="text-sm text-[var(--muted)]">Dibuka {waktuWIB(k.mulai)} – {waktuWIB(k.selesai)} WIB · {k.durasi_menit} menit</p>
       </div>
       {k.petunjuk && <p className="whitespace-pre-line rounded-2xl bg-white p-5 ring-1 ring-black/5">{k.petunjuk}</p>}
       {status?.selesai_pada ? (
         <section className="rounded-2xl bg-white p-5 ring-1 ring-black/5">
-          <p className="text-sm text-[#5b6270]">Selesai {waktuWIB(status.selesai_pada)}</p>
+          <p className="text-sm text-[var(--muted)]">Selesai {waktuWIB(status.selesai_pada)}</p>
           {h.length ? (
             <>
-              <p className="font-serif text-5xl tabular-nums">{Number(h[0].skor)}<span className="text-lg text-[#5b6270]"> · {h[0].benar}/{h[0].total} benar</span></p>
+              <p className="text-5xl tabular-nums">{Number(h[0].skor)}<span className="text-lg text-[var(--muted)]"> · {h[0].benar}/{h[0].total} benar</span></p>
               <ol className="mt-4 space-y-3 text-sm">
                 {h.map((x, i) => (
                   <li key={x.soal_id} className={`rounded-xl p-3 ring-1 ${x.jawaban === x.kunci ? "bg-emerald-50 ring-emerald-200" : "bg-red-50 ring-red-200"}`}>
                     <p className="font-medium">{i + 1}. {x.pertanyaan}</p>
                     <p>Jawaban: {x.jawaban != null ? `${String.fromCharCode(65 + x.jawaban)}. ${x.pilihan[x.jawaban]}` : "—"} · Kunci: {String.fromCharCode(65 + x.kunci)}. {x.pilihan[x.kunci]}</p>
-                    {x.pembahasan && <p className="mt-1 text-[#3b414b]">{x.pembahasan}</p>}
+                    {x.pembahasan && <p className="mt-1 text-[var(--muted)]">{x.pembahasan}</p>}
                   </li>
                 ))}
               </ol>
