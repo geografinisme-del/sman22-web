@@ -444,3 +444,11 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   .env.local; Docker image `postgres:17`). Hasil di `backup/<waktu>/` (diabaikan git): `skema_public.sql`, `data.sql`
   (public + auth + storage), `lengkap_public.dump`. Pulihkan schema public: `pg_restore --clean --if-exists --no-owner
   -d <url> lengkap_public.dump` (dump lengkap menghindari masalah FK melingkar `bukti_mutu` pada dump data-only).
+
+## Rilis production langit-cerah (21 Okt 2026)
+- **Titik kembali (instant rollback Vercel)**: deployment production sebelum rilis `dpl_9CoHmrTUKLr3Nf1CwLdrCYxuXJKj`
+  (`sman22-bgta0zeaq-geo-bbba.vercel.app`, commit `cabf925`). Bila ada masalah serius: Vercel → Deployments → deployment
+  itu → "Instant Rollback" (kode saja). Database TIDAK di-rollback tanpa izin pemilik (migrasi 20261210–20261225 aditif &
+  kompatibel dengan kode lama; rollback DB darurat: `supabase/rollback/rollback_20261210_20261225.sql`, backup 21 Okt).
+- Rilis = merge `langit-cerah` → `main` (merge commit, tanpa konflik). Signup Supabase Auth ditutup sebelum rilis.
+- Domain sekolah (smanegeri22bandung.sch.id) & DNS belum diubah — langkah terpisah.
