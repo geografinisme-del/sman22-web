@@ -81,7 +81,7 @@ export default async function DetailBuku({ params, searchParams }: { params: Pro
                   <button className="btn btn-primary w-full">{b.tersedia ? "Pesan & ambil nanti" : "Masuk antrean pesanan"}</button>
                   <p className="mt-2 text-xs text-[var(--muted)]">Buku ditahan 3 hari setelah siap. Untuk siswa dan guru/staf.</p>
                 </form>
-              ) : <p className="mt-2 text-sm text-[var(--muted)]"><Link href="/masuk" className="underline">Masuk</Link> untuk memesan buku ini.</p>)}
+              ) : <p className="mt-2 text-sm text-[var(--muted)]"><Link href={`/masuk?lanjut=${encodeURIComponent(`/perpustakaan/${id}`)}`} className="underline">Masuk</Link> untuk memesan buku ini.</p>)}
               {b.tautan_digital ? (
                 <a href={b.tautan_digital} target="_blank" rel="noopener noreferrer" className="mt-4 block rounded-lg px-5 py-3 text-center font-semibold ring-1 ring-blue text-[var(--tema-utama)]">Baca versi digital ↗</a>
               ) : b.akses_digital === "warga" && b.lisensi && !masuk ? <p className="mt-3 text-sm text-[var(--muted)]">Versi digital tersedia untuk warga sekolah — masuk untuk membaca.</p> : null}

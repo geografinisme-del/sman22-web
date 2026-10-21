@@ -414,3 +414,20 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   akses-lain, pegawai/laboran, akun tanpa peran, MFA admin, ganti foto tanpa deploy). `uji-portal`, `uji-alur`,
   `uji-tur`, `uji-ponsel`, `uji-konsol`, `tangkap-*` memakai alamat masuk baru. RLS: `rls_gtk_portal_test.sql`.
   Akun uji lokal tambahan (siswa/ortu NISN fiktif 9990000001, pegawai, laboran) dibuat dengan service key LOKAL saja.
+
+### Lanjutan Tahap 3 (21 Okt 2026)
+- **/masuk** = tautan "masuk portal" umum (ekskul, detail buku, survei, menu tampilan) → kini ke `/portal-digital`
+  (Pilih pintu), `?lanjut=` aman dibawa (sebelumnya ke login orang tua).
+- **Alumni (sementara)**: /alumni/akun & tombol "Masuk area alumni" → `/portal-digital/masuk/gtk?lanjut=/alumni/akun`;
+  halaman GTK menampilkan "Alumni: masuk dengan email terdaftar Anda." hanya bila `lanjut` diawali /alumni.
+  **TODO: jalur masuk alumni terpisah dibuat nanti** (mis. /portal-digital/masuk/alumni + pintu ke-4).
+- **Konten contoh** ("Contoh:" di content/sekolah.ts) hanya dipakai bila database belum tersambung DAN bukan production
+  (`bolehKontenContoh()` di lib/data.ts: `VERCEL_ENV !== "production"`, bisa dimatikan `KONTEN_CONTOH=0`). Di production
+  bagian kosong disembunyikan (beranda) atau menampilkan "Belum ada kabar terbaru." / "Belum ada …".
+- **Bantuan lupa kata sandi per peran**: kolom `portal_login.bantuan_sandi` (migrasi 20261224, ≤200 karakter), diubah di
+  Admin → Halaman masuk portal. Bawaan: GTK "Hubungi operator/Tim TIK sekolah.", Siswa "Hubungi wali kelas atau
+  operator sekolah.", Orang Tua "Hubungi wali kelas putra/putri Anda."
+- **Rollback darurat** migrasi 20261210–20261225: `supabase/rollback/rollback_20261210_20261225.sql` (diuji lokal).
+  Jangan memakai `supabase db push` ke produksi: riwayat migrasi produksi hanya mencatat 3 entri (migrasi lama dijalankan
+  lewat SQL Editor) sehingga db push akan mencoba menjalankan ulang migrasi lama.
+- Daftar kebutuhan foto/konten untuk sekolah: `docs/kebutuhan-konten.md`.

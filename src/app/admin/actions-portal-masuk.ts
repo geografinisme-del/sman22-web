@@ -32,15 +32,16 @@ const fotoSchema = z.object({
   peran: z.enum(["gtk", "siswa", "orang_tua"]),
   caption: z.string().trim().max(80, "Maksimal 80 karakter"),
   alt_text: z.string().trim().max(160, "Maksimal 160 karakter"),
+  bantuan_sandi: z.string().trim().max(200, "Maksimal 200 karakter"),
   fokus_x: z.coerce.number().int().min(0).max(100),
   fokus_y: z.coerce.number().int().min(0).max(100),
 });
 
-/** Simpan foto/caption/alt/titik fokus satu peran. "Pakai foto bawaan" mengosongkan foto (tanpa menghapus berkas). */
+/** Simpan foto/caption/alt/titik fokus/teks bantuan lupa kata sandi satu peran. "Pakai foto bawaan" mengosongkan foto (tanpa menghapus berkas). */
 export async function simpanFotoPortal(_prev: HasilAksi, form: FormData): Promise<HasilAksi> {
   const ctx = await aksesAksi("konten.kelola");
   if (!ctx) return GAGAL_AKSES;
-  const parsed = fotoSchema.safeParse(Object.fromEntries(["peran", "caption", "alt_text", "fokus_x", "fokus_y"].map((k) => [k, String(form.get(k) ?? "")])));
+  const parsed = fotoSchema.safeParse(Object.fromEntries(["peran", "caption", "alt_text", "bantuan_sandi", "fokus_x", "fokus_y"].map((k) => [k, String(form.get(k) ?? "")])));
   if (!parsed.success) return { ok: false, pesan: "Periksa kembali isian yang ditandai.", errors: pesanError(parsed.error) };
   const baris: Record<string, unknown> = { ...parsed.data, is_placeholder: form.get("is_placeholder") === "on", updated_at: new Date().toISOString() };
 

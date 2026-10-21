@@ -96,6 +96,7 @@ export function MenuHp({ terbuka, onTutup, data }: { terbuka: boolean; onTutup: 
                       </li>
                     ))}
                   </ul>
+                  {g.jenis === "kabar" && data.kabar.Semua.length === 0 && <p className="lgt-akordeon-kosong">Belum ada kabar terbaru.</p>}
                   {g.jenis === "kabar" && data.kabar.Semua.length > 0 && (
                     <ul className="lgt-akordeon-kabar" aria-label="Kabar terbaru">
                       {data.kabar.Semua.map((k) => (

@@ -97,7 +97,7 @@ export function PanelMega({ g, data, onPilih }: { g: GrupLangit; data: DataMenu;
                 ))}
               </ul>
             ) : (
-              <p className="lgt-mega-kosong">Belum ada kabar untuk kategori {kategori.toLowerCase()}.</p>
+              <p className="lgt-mega-kosong">{kategori === "Semua" ? "Belum ada kabar terbaru." : `Belum ada kabar terbaru untuk kategori ${kategori.toLowerCase()}.`}</p>
             ))}
 
           {g.jenis === "layanan" && (

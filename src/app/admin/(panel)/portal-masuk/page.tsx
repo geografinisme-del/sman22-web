@@ -2,7 +2,7 @@ import { Centang, FormAksi, Input, TombolSimpan } from "@/components/admin/form"
 import { FotoFokus } from "@/components/admin/FotoFokus";
 import { JudulHalaman, Kartu, Lencana, Notifikasi } from "@/components/admin/ui";
 import { wajibIzin } from "@/lib/admin/auth";
-import { FOTO_PORTAL_BAWAAN, type PeranFoto } from "@/lib/data";
+import { BANTUAN_SANDI_BAWAAN, FOTO_PORTAL_BAWAAN, type PeranFoto } from "@/lib/data";
 import { simpanFotoPortal, simpanTautanGuruLama } from "../../actions-portal-masuk";
 
 export const metadata = { title: "Halaman masuk portal" };
@@ -13,7 +13,7 @@ const PERAN: { kunci: PeranFoto; label: string; alamat: string }[] = [
   { kunci: "orang_tua", label: "Orang Tua", alamat: "/portal-digital/masuk/orang-tua" },
 ];
 
-type Baris = { peran: PeranFoto; foto_url: string; caption: string; alt_text: string; fokus_x: number; fokus_y: number; is_placeholder: boolean };
+type Baris = { peran: PeranFoto; foto_url: string; caption: string; alt_text: string; fokus_x: number; fokus_y: number; is_placeholder: boolean; bantuan_sandi?: string };
 
 /**
  * CMS foto halaman masuk per peran (juga dipakai kartu "Pilih pintu Anda.") + tautan aplikasi guru lama.
@@ -62,6 +62,14 @@ export default async function AdminPortalMasuk({ searchParams }: { searchParams:
                   <Input label="Teks alternatif (alt) — wajib bila ada foto" nama="alt_text" nilai={d?.alt_text ?? ""} maks={160} placeholder={bawaan.alt} />
                   <Input label="Caption kecil di atas foto" nama="caption" nilai={d?.caption ?? ""} maks={80} placeholder={bawaan.caption} />
                 </div>
+                <Input
+                  label="Bantuan lupa kata sandi (tampil di bawah formulir masuk)"
+                  nama="bantuan_sandi"
+                  nilai={d?.bantuan_sandi ?? ""}
+                  maks={200}
+                  placeholder={BANTUAN_SANDI_BAWAAN[r.kunci]}
+                  bantuan="Kosongkan untuk memakai teks bawaan."
+                />
                 <Centang label="Ilustrasi sementara (foto stok — tampil label “Ilustrasi sementara”)" nama="is_placeholder" nilai={d?.is_placeholder ?? false} />
                 {pakaiCms && <Centang label={`Kembalikan ke foto awal (${bawaan.caption})`} nama="bawaan" bantuan="Berkas yang sudah diunggah tidak dihapus." />}
                 <div>

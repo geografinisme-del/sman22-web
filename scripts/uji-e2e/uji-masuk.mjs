@@ -211,6 +211,7 @@ if ((await url()).startsWith("/admin/mfa")) {
   const node = (await kirim("DOM.querySelector", { nodeId: root.nodeId, selector: "form:has(input[name=peran][value=gtk]) input[name=foto]" })).result.nodeId;
   await kirim("DOM.setFileInputFiles", { nodeId: node, files: [fotoUji] });
   await ketik(`document.querySelector("form:has(input[name=peran][value=gtk]) input[name=alt_text]")`, "Foto uji halaman masuk Guru & Tendik");
+  await ketik(`document.querySelector("form:has(input[name=peran][value=gtk]) input[name=bantuan_sandi]")`, "Uji: hubungi Tim TIK di ruang 101.");
   await klik(`document.querySelector("form:has(input[name=peran][value=gtk]) button[type=submit]")`);
   await sampai(`location.search.includes("pesan=tersimpan")`, 20000);
   // kartu "Pilih pintu" (tetap bisa dibuka saat masuk) memakai foto baru
@@ -230,6 +231,8 @@ if ((await url()).startsWith("/admin/mfa")) {
   await buka("/portal-digital/masuk/gtk");
   const src = await js(`decodeURIComponent(document.querySelector(".masuk-foto img")?.getAttribute("src") ?? "")`);
   cek("halaman masuk GTK kembali ke foto aula", src.includes("kegiatan-aula"), src);
+  const bantuan = await js(`document.querySelector(".masuk-bawah")?.innerText ?? ""`);
+  cek("teks bantuan lupa kata sandi dari CMS tampil tanpa deploy ulang", bantuan.includes("Uji: hubungi Tim TIK di ruang 101."), bantuan.slice(0, 120));
 }
 
 fs.writeFileSync(path.join(keluar, "hasil-masuk.json"), JSON.stringify(hasil, null, 1));

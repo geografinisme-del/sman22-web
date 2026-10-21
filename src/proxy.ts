@@ -28,8 +28,9 @@ export async function proxy(request: NextRequest) {
 
   if (!user && !isLogin) {
     const { pathname, search } = request.nextUrl;
-    // /alumni/akun: tetap seperti sebelumnya (halaman masuk email = Guru & Tendik; alumni diteruskan ke akunnya)
-    if (pathname.startsWith("/alumni/akun")) return NextResponse.redirect(new URL("/admin/login", request.url));
+    // /alumni/akun: sementara lewat halaman masuk Guru & Tendik (email); ?lanjut=/alumni/… memunculkan catatan alumni.
+    // Jalur masuk alumni terpisah menyusul (lihat HANDOFF.md).
+    if (pathname.startsWith("/alumni/akun")) return NextResponse.redirect(new URL(urlMasuk(pathname + search, "gtk"), request.url));
     // peta terpusat (lib/masuk.ts): /admin, /papan, /cetak, /pratinjau → GTK; /portal milik siswa/orang tua → halaman
     // perannya; /portal lain → pilih pintu. Tujuan dibawa sebagai ?lanjut= (divalidasi: hanya jalur internal).
     return NextResponse.redirect(new URL(urlMasuk(pathname + search), request.url));

@@ -1,6 +1,7 @@
 -- Portal Digital 22 — halaman masuk per peran (gtk | siswa | orang_tua): foto khusus peran yang bisa diganti admin,
 -- dan pengaturan opsional "tautan aplikasi guru lama". Objek BARU; tidak mengubah/menghapus data lama.
---   portal_login            → foto, caption, alt, titik fokus, is_placeholder per peran (kosong = foto bawaan di kode)
+--   portal_login            → foto, caption, alt, titik fokus, is_placeholder, teks bantuan lupa kata sandi per peran
+--                             (kosong = foto/teks bawaan di kode)
 --   bucket "portal"         → berkas foto unggahan admin (publik baca; tulis hanya pengelola konten)
 --   portal_pengaturan (id=1)→ tautan aplikasi guru lama (judul + URL https, bawaan kosong)
 -- Publik membaca; menulis hanya pengelola konten (izin konten.kelola). Hapus permanen baris ditolak. Tanpa isi awal.
@@ -13,10 +14,14 @@ create table if not exists public.portal_login (
   fokus_x        smallint not null default 50 check (fokus_x between 0 and 100),
   fokus_y        smallint not null default 50 check (fokus_y between 0 and 100),
   is_placeholder boolean not null default false,
+  bantuan_sandi  text not null default '' check (char_length(bantuan_sandi) <= 200),
   updated_at     timestamptz not null default now(),
   -- foto wajib punya teks alternatif
   constraint portal_login_alt check (foto_url = '' or char_length(alt_text) >= 3)
 );
+
+-- idempotent bila tabel sudah ada dari versi sebelumnya berkas ini
+alter table public.portal_login add column if not exists bantuan_sandi text not null default '' check (char_length(bantuan_sandi) <= 200);
 
 create table if not exists public.portal_pengaturan (
   id                   smallint primary key default 1 check (id = 1),

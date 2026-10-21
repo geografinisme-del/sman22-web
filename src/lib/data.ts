@@ -172,8 +172,16 @@ const keBerita = (b: BarisBerita): BeritaItem => ({
 // "*" agar tetap berjalan sebelum migrasi Fase 20 (kolom is_placeholder)
 const KOLOM_BERITA = "*";
 
+/**
+ * Konten contoh (berita/agenda/pengumuman berlabel "Contoh:" di content/sekolah.ts) hanya dipakai saat database belum
+ * tersambung DAN bukan production (lokal & pratinjau). Di production TIDAK PERNAH tampil: bagian kosong disembunyikan /
+ * menampilkan "Belum ada …". Bisa dimatikan juga di pratinjau dengan env KONTEN_CONTOH=0.
+ */
+export const bolehKontenContoh = () => process.env.VERCEL_ENV !== "production" && process.env.KONTEN_CONTOH !== "0";
+
 export const getBerita = cache(async (limit?: number): Promise<BeritaItem[]> => {
   if (!supabaseAktif) {
+    if (!bolehKontenContoh()) return [];
     const list = [...statis.berita].sort((a, b) => b.tanggal.localeCompare(a.tanggal));
     return list.slice(0, limit ?? list.length).map((b) => ({ ...b, id: b.slug }));
   }
@@ -195,6 +203,7 @@ export const getBerita = cache(async (limit?: number): Promise<BeritaItem[]> => 
 
 export const getBeritaBySlug = cache(async (slug: string): Promise<BeritaItem | null> => {
   if (!supabaseAktif) {
+    if (!bolehKontenContoh()) return null;
     const b = statis.berita.find((x) => x.slug === slug);
     return b ? { ...b, id: b.slug } : null;
   }
@@ -211,6 +220,7 @@ export const getBeritaBySlug = cache(async (slug: string): Promise<BeritaItem | 
 
 export const getAgenda = cache(async (limit?: number): Promise<AgendaItem[]> => {
   if (!supabaseAktif) {
+    if (!bolehKontenContoh()) return [];
     const list = [...statis.agenda].sort((a, b) => a.tanggal.localeCompare(b.tanggal));
     return list.slice(0, limit ?? list.length).map((a, i) => ({ ...a, id: String(i) }));
   }
@@ -239,6 +249,7 @@ export const getAgenda = cache(async (limit?: number): Promise<AgendaItem[]> => 
 
 export const getPengumuman = cache(async (limit?: number): Promise<PengumumanItem[]> => {
   if (!supabaseAktif) {
+    if (!bolehKontenContoh()) return [];
     return statis.pengumuman.slice(0, limit).map((p, i) => ({ ...p, id: String(i), penting: Boolean(p.penting), prioritas: false }));
   }
   let q = supabasePublik()
@@ -631,16 +642,38 @@ export const FOTO_PORTAL_BAWAAN: Record<PeranFoto, FotoPortal> = {
   orang_tua: { src: "/images/gedung.jpg", alt: "Gedung utama SMA Negeri 22 Bandung", caption: "Gedung utama", fokus: { x: 50, y: 50 }, sementara: false },
 };
 
-/** Foto halaman masuk & kartu "Pilih pintu Anda." per peran. Foto kosong di CMS → foto awal peran itu (aula / apel / gedung). */
-export const getFotoPortal = cache(async (): Promise<Record<PeranFoto, FotoPortal>> => {
-  if (!supabaseAktif) return FOTO_PORTAL_BAWAAN;
+/** Baris CMS halaman masuk (satu per peran); [] bila tabel belum ada / database belum tersambung. */
+const barisPortalLogin = cache(async (): Promise<Record<string, unknown>[]> => {
+  if (!supabaseAktif) return [];
   const { data, error } = await supabasePublik().from("portal_login").select("*");
   if (error) {
-    if (!tabelBelumAda(error)) logGagal("foto portal", error);
-    return FOTO_PORTAL_BAWAAN;
+    if (!tabelBelumAda(error)) logGagal("halaman masuk portal", error);
+    return [];
   }
+  return data ?? [];
+});
+
+/** Teks bantuan lupa kata sandi bawaan per peran (bisa diganti admin lewat CMS). */
+export const BANTUAN_SANDI_BAWAAN: Record<PeranFoto, string> = {
+  gtk: "Hubungi operator/Tim TIK sekolah.",
+  siswa: "Hubungi wali kelas atau operator sekolah.",
+  orang_tua: "Hubungi wali kelas putra/putri Anda.",
+};
+
+/** Teks bantuan lupa kata sandi per peran: isi CMS bila ada, selain itu teks bawaan. */
+export const getBantuanSandi = cache(async (): Promise<Record<PeranFoto, string>> => {
+  const hasil = { ...BANTUAN_SANDI_BAWAAN };
+  for (const r of await barisPortalLogin()) {
+    const k = r.peran as PeranFoto;
+    if (k in hasil && typeof r.bantuan_sandi === "string" && r.bantuan_sandi.trim()) hasil[k] = r.bantuan_sandi.trim();
+  }
+  return hasil;
+});
+
+/** Foto halaman masuk & kartu "Pilih pintu Anda." per peran. Foto kosong di CMS → foto awal peran itu (aula / apel / gedung). */
+export const getFotoPortal = cache(async (): Promise<Record<PeranFoto, FotoPortal>> => {
   const hasil = { ...FOTO_PORTAL_BAWAAN };
-  for (const r of data ?? []) {
+  for (const r of (await barisPortalLogin()) as { peran: string; foto_url: string; alt_text: string; caption: string; fokus_x: number; fokus_y: number; is_placeholder: boolean }[]) {
     const k = r.peran as PeranFoto;
     if (!(k in hasil)) continue;
     hasil[k] = r.foto_url

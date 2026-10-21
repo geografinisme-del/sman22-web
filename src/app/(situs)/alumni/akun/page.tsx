@@ -17,7 +17,7 @@ type D = { id: string; nama: string; tahun_lulus: number; jurusan: string | null
 export default async function AreaAlumni({ searchParams }: { searchParams: Promise<{ tab?: string; q?: string; tahun?: string; pesan?: string; galat?: string }> }) {
   const sp = await searchParams;
   const { supabase, user } = await getAkses();
-  if (!supabase || !user) redirect("/admin/login");
+  if (!supabase || !user) redirect("/portal-digital/masuk/gtk?lanjut=%2Falumni%2Fakun");
   const { data: p } = await supabase.from("profil_alumni").select("*").eq("user_id", user.id).is("deleted_at", null).maybeSingle();
   if (!p || !p.terverifikasi) {
     return <Section><div className="max-w-xl kartu p-6"><h1 className="text-3xl">Area Alumni</h1><p className="mt-2 text-[var(--muted)]">Akun ini belum terhubung dengan profil alumni terverifikasi. Bila Anda alumni, <Link href="/alumni/daftar" className="underline">daftar di sini</Link>.</p></div></Section>;

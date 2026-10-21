@@ -878,3 +878,9 @@
 .lgt-merek-gelap {
   color: var(--ink);
 }
+/* menu HP: Kabar & Agenda tanpa kabar */
+.lgt-akordeon-kosong {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}

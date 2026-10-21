@@ -27,7 +27,10 @@ const KASUS = [
   ["/portal/tugas", null, "/portal-digital/masuk/siswa?lanjut=%2Fportal%2Ftugas"],
   ["/portal/izin", null, "/portal-digital/masuk/orang-tua?lanjut=%2Fportal%2Fizin"],
   ["/portal", null, "/portal-digital?lanjut=%2Fportal"],
-  ["/alumni/akun", null, "/admin/login"],
+  ["/alumni/akun", null, "/portal-digital/masuk/gtk?lanjut=%2Falumni%2Fakun"],
+  ["/masuk", null, "/portal-digital"],
+  ["/masuk?lanjut=%2Fperpustakaan%2Fabc", null, "/portal-digital?lanjut=%2Fperpustakaan%2Fabc"],
+  ["/masuk?lanjut=%2F%2Fevil.com", null, "/portal-digital"],
 ];
 
 for (const [path, status, tujuan] of KASUS) {
@@ -60,6 +63,17 @@ cek("lanjut aman diteruskan (/admin/berita)", /name="lanjut" value="\/admin\/ber
 const pintu = await (await fetch(`${BASE}/portal-digital?lanjut=%2Fportal`)).text();
 for (const p of ["gtk", "siswa", "orang-tua"]) cek(`pintu ${p} membawa ?lanjut=`, pintu.includes(`/portal-digital/masuk/${p}?lanjut=%2Fportal`));
 cek("teks pintu GTK resmi", pintu.includes("Untuk guru, manajemen sekolah, TU, pustakawan, laboran, satpam, caraka, dan pegawai lainnya."));
+
+// catatan alumni hanya bila datang dari /alumni
+const alumni = await (await fetch(`${BASE}/portal-digital/masuk/gtk?lanjut=%2Falumni%2Fakun`)).text();
+cek("catatan 'Alumni: masuk dengan email terdaftar Anda.' bila lanjut=/alumni/…", alumni.includes("Alumni: masuk dengan email terdaftar Anda."));
+const bukanAlumni = await (await fetch(`${BASE}/portal-digital/masuk/gtk?lanjut=%2Fadmin`)).text();
+cek("catatan alumni tidak tampil bila lanjut bukan /alumni", !bukanAlumni.includes("Alumni: masuk dengan email"));
+// teks bantuan lupa kata sandi bawaan per peran
+for (const [p, t] of [["gtk", "Hubungi operator/Tim TIK sekolah."], ["siswa", "Hubungi wali kelas atau operator sekolah."], ["orang-tua", "Hubungi wali kelas putra/putri Anda."]]) {
+  const h = (await (await fetch(`${BASE}/portal-digital/masuk/${p}`)).text()).replace(/<!-- -->/g, "");
+  cek(`bantuan lupa kata sandi bawaan (${p})`, h.includes(t));
+}
 
 console.log(gagal ? `\n${gagal} GAGAL` : "\nSemua LULUS");
 process.exit(gagal ? 1 : 0);

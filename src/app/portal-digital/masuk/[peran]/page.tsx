@@ -4,19 +4,18 @@ import { notFound, redirect } from "next/navigation";
 import { FormMasuk } from "@/components/akun/FormMasuk";
 import { HalamanMasuk } from "@/components/akun/HalamanMasuk";
 import { getAkses } from "@/lib/admin/auth";
-import { getFotoPortal } from "@/lib/data";
+import { getBantuanSandi, getFotoPortal } from "@/lib/data";
 import { alamatMasuk, cocokHalaman, dasborPeran, LABEL_PERAN_MASUK, lanjutAman, PERAN_MASUK, peranAkun, type PeranMasuk } from "@/lib/masuk";
 import { supabaseAktif } from "@/lib/supabase/config";
 
 export const dynamic = "force-dynamic";
 
-const TEKS: Record<PeranMasuk, { label: string; judul: string; tab: string; pengantar: string; bantuan: string; foto: "gtk" | "siswa" | "orang_tua" }> = {
+const TEKS: Record<PeranMasuk, { label: string; judul: string; tab: string; pengantar: string; foto: "gtk" | "siswa" | "orang_tua" }> = {
   gtk: {
     label: "Guru & Tendik",
     judul: "Masuk sebagai Guru & Tendik",
     tab: "Masuk Guru & Tendik",
     pengantar: "Untuk guru, manajemen sekolah, TU, pustakawan, laboran, satpam, caraka, dan pegawai lainnya.",
-    bantuan: "Akun guru dan tenaga kependidikan dibuat oleh admin sekolah. Lupa email akun? Hubungi Tim TIK sekolah.",
     foto: "gtk",
   },
   siswa: {
@@ -24,7 +23,6 @@ const TEKS: Record<PeranMasuk, { label: string; judul: string; tab: string; peng
     judul: "Masuk ke Portal Siswa",
     tab: "Masuk Portal Siswa",
     pengantar: "Portal Siswa, E-Learning, dan E-Library.",
-    bantuan: "Lupa kata sandi? Minta wali kelas atau operator sekolah mencetak ulang kartu akun Anda.",
     foto: "siswa",
   },
   "orang-tua": {
@@ -32,7 +30,6 @@ const TEKS: Record<PeranMasuk, { label: string; judul: string; tab: string; peng
     judul: "Masuk ke Portal Orang Tua",
     tab: "Masuk Portal Orang Tua",
     pengantar: "Pantau perkembangan dan informasi anak.",
-    bantuan: "Lupa kata sandi? Hubungi wali kelas putra/putri Anda untuk mencetak ulang kartu akun orang tua.",
     foto: "orang_tua",
   },
 };
@@ -62,7 +59,9 @@ export default async function MasukPeran({ params, searchParams }: Props) {
   if (user && akses && cocokHalaman(peran, peranSaya)) redirect(lanjut ?? dasborPeran(peranSaya));
   const sedangMasukLain = user && akses ? peranAkun(peranSaya) : null;
 
-  const [foto] = await Promise.all([getFotoPortal()]);
+  const [foto, bantuanSandi] = await Promise.all([getFotoPortal(), getBantuanSandi()]);
+  // datang dari area alumni (sementara masuk lewat halaman Guru & Tendik; jalur alumni terpisah menyusul)
+  const dariAlumni = peran === "gtk" && Boolean(lanjut?.startsWith("/alumni"));
   const lain = PERAN_MASUK.filter((p) => p !== peran);
   const kecil = (p: PeranMasuk) => (p === "gtk" ? "guru & tendik" : LABEL_PERAN_MASUK[p].pendek.toLowerCase());
   const keLain = (p: PeranMasuk) => (lanjut ? `${alamatMasuk(p)}?lanjut=${encodeURIComponent(lanjut)}` : alamatMasuk(p));
@@ -75,7 +74,9 @@ export default async function MasukPeran({ params, searchParams }: Props) {
       pengantar={<p>{t.pengantar}</p>}
       bawah={
         <>
-          <p>{t.bantuan}</p>
+          <p>
+            <strong>Lupa kata sandi?</strong> {bantuanSandi[t.foto]}
+          </p>
           <p>
             Bukan {peran === "gtk" ? "Guru & Tendik" : LABEL_PERAN_MASUK[peran].pendek.toLowerCase()}? Masuk sebagai{" "}
             {lain.map((p, i) => (
@@ -94,6 +95,11 @@ export default async function MasukPeran({ params, searchParams }: Props) {
       {pesan === "keluar-semua" && (
         <p role="status" className="masuk-pemberitahuan">
           Anda sudah keluar dari semua perangkat.
+        </p>
+      )}
+      {dariAlumni && (
+        <p role="note" className="masuk-pemberitahuan">
+          Alumni: masuk dengan email terdaftar Anda.
         </p>
       )}
       {sedangMasukLain && (
