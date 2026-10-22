@@ -507,6 +507,9 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Ukur pindah menu di production (Chrome, admin asli, median 3×, konten tampil): sebelum (iad1, kode lama) Data Induk 3.261 /
   Ekskul 1.950 / Perpus 2.088 / Sarpras 1.998 / Alumni 1.997 ms tanpa umpan balik; sesudah (sin1) 524 / 415 / 419 / 437 / 649 ms
   dengan reaksi 30–38 ms. Skrip: `scripts/uji-e2e/ukur-konsol-admin.js`.
-- Catatan: tombol "Keluar" mengakhiri SEMUA sesi akun itu (preview & production berbagi Supabase; perangkat lain ikut keluar).
+- Catatan rilis ini: tombol "Keluar" masih mengakhiri SEMUA sesi akun (scope global bawaan). Diperbaiki di langit-cerah
+  (22 Okt, belum dirilis): "Keluar" = `signOut({ scope: "local" })` (juga keluar otomatis saat akun salah halaman masuk);
+  "Keluar dari semua perangkat" (scope global, konfirmasi `TombolKeluarSemua.tsx`) di Profil saya & Keamanan akun.
+  Uji: `scripts/uji-e2e/uji-keluar.mjs` (2 browser + jumlah auth.sessions).
 - Domain sekolah smanegeri22bandung.sch.id & DNS belum diubah (keputusan terpisah).
 

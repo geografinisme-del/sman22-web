@@ -96,7 +96,7 @@ export async function masuk(_prev: HasilAksi, form: FormData): Promise<HasilAksi
   const peran = [...(a.peran ?? []), ...(a.peran_tertunda ?? [])];
   // akun tidak cocok dengan halaman ini → keluar lagi & arahkan ke halaman masuk yang benar
   if (halaman && !cocokHalaman(halaman, peran)) {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: "local" });
     const benar = peranAkun(peran);
     return {
       ok: false,
@@ -124,7 +124,8 @@ export async function keluarDanMasuk(form: FormData) {
   if (supabaseAktif) {
     const supabase = await supabaseServer();
     await supabase.rpc("catat_aktivitas", { nama_tabel: "auth", aksi: "LOGOUT" });
-    await supabase.auth.signOut();
+    // hanya sesi di perangkat ini; "Keluar dari semua perangkat" ada di Profil saya / Keamanan akun
+    await supabase.auth.signOut({ scope: "local" });
   }
   redirect(lanjut ? `${alamatMasuk(untuk)}?lanjut=${encodeURIComponent(lanjut)}` : alamatMasuk(untuk));
 }
@@ -145,7 +146,8 @@ export async function keluar() {
   if (supabaseAktif) {
     const supabase = await supabaseServer();
     await supabase.rpc("catat_aktivitas", { nama_tabel: "auth", aksi: "LOGOUT" });
-    await supabase.auth.signOut();
+    // hanya sesi di perangkat ini; "Keluar dari semua perangkat" ada di Profil saya / Keamanan akun
+    await supabase.auth.signOut({ scope: "local" });
   }
   redirect("/portal-digital");
 }

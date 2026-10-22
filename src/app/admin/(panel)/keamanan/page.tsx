@@ -3,7 +3,8 @@ import { DaftarMfa, FormTantangan } from "@/components/keamanan/Mfa";
 import { FormGantiSandi } from "@/components/keamanan/FormSandi";
 import { berperan, NAMA_PERAN, wajibLogin } from "@/lib/admin/auth";
 import { formatTanggal } from "@/lib/format";
-import { aturWajibMfa, hapusFaktorMfa, keluarSemuaPerangkat } from "../../actions-keamanan";
+import { aturWajibMfa, hapusFaktorMfa } from "../../actions-keamanan";
+import { TombolKeluarSemua } from "@/components/keamanan/TombolKeluarSemua";
 
 export const metadata = { title: "Keamanan Akun" };
 
@@ -75,13 +76,11 @@ export default async function Keamanan({ searchParams }: { searchParams: Promise
         <Kartu>
           <h2 className="text-2xl">Sesi login</h2>
           <p className="mt-1 text-sm text-black/60">
-            Lupa keluar di komputer sekolah/warnet, atau curiga akun dipakai orang lain? Akhiri semua sesi, lalu ganti kata sandi.
+            Tombol “Keluar” hanya mengakhiri sesi di perangkat ini. Lupa keluar di komputer sekolah/warnet, HP hilang, atau curiga akun dipakai orang lain? Akhiri semua sesi, lalu ganti kata sandi.
           </p>
-          <form action={keluarSemuaPerangkat} className="mt-4">
-            <button type="submit" className="rounded-full bg-blue-teks px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90">
-              Keluar dari semua perangkat
-            </button>
-          </form>
+          <div className="mt-4">
+            <TombolKeluarSemua />
+          </div>
         </Kartu>
 
         {superAdmin && (
