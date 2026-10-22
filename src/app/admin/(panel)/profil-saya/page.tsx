@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { JudulHalaman, Kartu, Lencana } from "@/components/admin/ui";
 import { NAMA_PERAN, wajibLogin } from "@/lib/admin/auth";
+import { TombolKeluarSemua } from "@/components/keamanan/TombolKeluarSemua";
 
 export const metadata = { title: "Profil saya" };
 
@@ -57,6 +58,15 @@ export default async function ProfilSaya() {
           <Link href="/admin/keamanan" className="mt-4 inline-flex min-h-10 items-center rounded-full bg-[var(--ink)] px-4 text-sm font-semibold text-white">
             Buka keamanan akun
           </Link>
+          <div className="mt-6 border-t border-[var(--line)] pt-4">
+            <h3 className="font-semibold">Sesi login</h3>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              Tombol &ldquo;Keluar&rdquo; hanya mengakhiri sesi di perangkat ini. Pernah masuk di komputer umum atau HP hilang? Keluarkan akun dari semua perangkat.
+            </p>
+            <div className="mt-3">
+              <TombolKeluarSemua />
+            </div>
+          </div>
           <p className="mt-6 border-t border-[var(--line)] pt-4 text-sm text-[var(--muted)]">
             Data salah? Hubungi Tim TIK sekolah atau admin pengguna.{" "}
             <Link href="/admin/direktori" className="font-semibold text-[var(--ink)] underline underline-offset-2">

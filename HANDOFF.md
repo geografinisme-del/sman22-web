@@ -493,3 +493,23 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   `proxy-latensi.mjs`, `tangkap-tab.mjs`, `uji-impor.mjs`, `uji-ekspor.mjs`.
 - Catatan uji lokal: `uji-masuk.mjs` mengubah teks bantuan GTK & mendaftarkan TOTP admin → sebelum `uji-alur` hapus
   faktor MFA admin; kosongkan `portal_login.bantuan_sandi` (cache data publik 60 detik) sebelum `uji-pengalihan`.
+
+## Rilis production perbaikan CMS (22 Okt 2026)
+- Rilis = merge `langit-cerah` → `main` (merge commit `cb57b00`, 6 commit). Alamat: **https://sman22-web.vercel.app**.
+- **Deployment baru**: `dpl_CWZjmJdmbqWGvKtQP16LhjeqrkqJ` (`sman22-io2ax97w2-geo-bbba.vercel.app`), region fungsi **sin1**.
+- **Titik kembali (instant rollback Vercel)**: `dpl_A5HQotUmD4ZR2KRwCV3eiecpguT3` (commit `409a45d`, region iad1). Kode saja;
+  database TIDAK di-rollback tanpa izin pemilik (migrasi indeks 20261226 aditif, aman untuk kode lama).
+- Dicek setelah rilis: 27 halaman sitemap 200 tanpa galat; tanpa noindex kecuali 3 halaman masuk & /sertifikat (disengaja);
+  robots.txt & sitemap normal; /admin/login → 308 halaman masuk GTK; mega menu desktop & menu HP normal (di panel browser
+  Claude yang tersembunyi animasi dialog tidak berjalan sehingga tampak transparan — bukan masalah situs); login admin,
+  Ringkasan (9 panel), 5 menu CMS, template Excel/CSV (siswa & pegawai) dan ekspor Excel 200 & valid (mutu/jadwal: pesan
+  "belum ada data" karena datanya belum diisi); log Vercel deployment baru & Supabase tanpa error.
+- Ukur pindah menu di production (Chrome, admin asli, median 3×, konten tampil): sebelum (iad1, kode lama) Data Induk 3.261 /
+  Ekskul 1.950 / Perpus 2.088 / Sarpras 1.998 / Alumni 1.997 ms tanpa umpan balik; sesudah (sin1) 524 / 415 / 419 / 437 / 649 ms
+  dengan reaksi 30–38 ms. Skrip: `scripts/uji-e2e/ukur-konsol-admin.js`.
+- Catatan rilis ini: tombol "Keluar" masih mengakhiri SEMUA sesi akun (scope global bawaan). Diperbaiki di langit-cerah
+  (22 Okt, belum dirilis): "Keluar" = `signOut({ scope: "local" })` (juga keluar otomatis saat akun salah halaman masuk);
+  "Keluar dari semua perangkat" (scope global, konfirmasi `TombolKeluarSemua.tsx`) di Profil saya & Keamanan akun.
+  Uji: `scripts/uji-e2e/uji-keluar.mjs` (2 browser + jumlah auth.sessions).
+- Domain sekolah smanegeri22bandung.sch.id & DNS belum diubah (keputusan terpisah).
+
