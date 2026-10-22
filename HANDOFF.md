@@ -471,7 +471,8 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   tab-statistik/kartu/formulir); Ringkasan dipindah ke grup `(ringkasan)` agar kerangkanya sendiri. Sidebar menandai
   menu yang diklik seketika (optimistis). `fetchTahan` (`src/lib/supabase/fetch-tahan.ts`) mengulang sekali bila koneksi
   keep-alive putus (`fetch failed`/ECONNRESET di log produksi); metode non-GET hanya diulang bila pasti belum terkirim.
-  Region fungsi Vercel `sin1` = Supabase ap-southeast-1.
+  Region fungsi Vercel sebelumnya `iad1` (bawaan, AS) — jauh dari Supabase ap-southeast-1; sejak 22 Okt `vercel.json`
+  `"regions": ["sin1"]` (Singapura). Catatan: `region=` di log runtime Vercel = edge penerima, bukan lokasi fungsi.
 - **Usulan indeks** `supabase/migrations/20261226000000_index_admin.sql` (7 indeks `create index if not exists`) —
   BELUM disetujui, BELUM di-commit, & BELUM dijalankan di produksi (hanya di DB uji lokal).
 - **Template impor**: penulis XLSX sendiri `src/lib/admin/xlsx-template.ts` (fflate; lembar Data/Petunjuk/Daftar
