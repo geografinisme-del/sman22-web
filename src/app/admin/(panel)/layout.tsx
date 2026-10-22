@@ -1,6 +1,7 @@
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { Sidebar, type GrupMenu } from "@/components/admin/Sidebar";
 import { berperan, NAMA_PERAN, punya, wajibLogin } from "@/lib/admin/auth";
+import { hitungBersama, pegawaiSaya as cariPegawaiSaya, statusDisiplin, tugasPerluNilai, tukarUntukSaya, type NamaHitungan } from "@/lib/admin/hitungan";
 import { redirect } from "next/navigation";
 import { keluar } from "../actions";
 import { ruangKerjaUntuk } from "@/lib/ruang-kerja";
@@ -68,6 +69,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const hitung = (q: PromiseLike<{ count: number | null }>) => Promise.resolve(q).then((r) => r.count ?? 0);
   const nol = Promise.resolve(0);
   const jika = (syarat: boolean, q: () => PromiseLike<{ count: number | null }>) => (!dasarSaja && syarat ? hitung(q()) : nol);
+  // hitungan yang juga dipakai halaman Ringkasan: satu query per permintaan (lihat lib/admin/hitungan.ts)
+  const bersama = (syarat: boolean, nama: NamaHitungan) => jika(syarat, () => hitungBersama(supabase, nama));
   const kepala = { count: "exact" as const, head: true };
   const kelolaEkskul = punya(akses, "ekskul.kelola");
   const lihatEkskul = kelolaEkskul || punya(akses, "ekskul.lihat");
@@ -77,7 +80,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const bisaIzinOrtu = punya(akses, "absensi.kelola") || berperan(akses, "wali_kelas");
   const awalHari = new Date(Date.parse(`${hariIniWIB()}T00:00:00+07:00`)).toISOString();
   const statEkskul = () => Promise.resolve(supabase.rpc("statistik_ekskul")).then(({ data }) => ((data ?? []) as { menunggu: number }[]).reduce((t, x) => t + x.menunggu, 0));
-  const ajuanEkskul = () => supabase.from("pengajuan_kegiatan").select("id", kepala).in("status", kelolaEkskul ? ["disetujui_pembina", "lpj_diajukan"] : ["diajukan"]);
+  const ajuanEkskul = () => (kelolaEkskul ? hitungBersama(supabase, "kegiatanMenungguKelola") : supabase.from("pengajuan_kegiatan").select("id", kepala).eq("status", "diajukan"));
 
   // tahap 1: tidak bergantung pada data lain
   const [
@@ -85,40 +88,40 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     aduanBaru, aduanAda, tamuAda, mintaBk, ekskulMenunggu, ajuEkskulJumlah, daftarAlumni, mutuDiajukan, pelanggaranBaru, prestasiBaru,
     rujukanBaru, koreksiMenunggu, perluTindakan, izinOrtuMenunggu, izinPegawaiMenunggu,
   ] = await Promise.all([
-    Promise.resolve(supabase.rpc("pegawai_saya")).then((r) => (r.data as string | null) ?? null),
+    cariPegawaiSaya(supabase),
     dasarSaja ? Promise.resolve(false) : Promise.resolve(supabase.rpc("pemilik_mutu")).then((r) => Boolean(r.data)),
     hitung(supabase.from("notifikasi").select("id", kepala).is("dibaca_pada", null)),
-    jika(punya(akses, "konten.terbitkan"), () => supabase.from("berita").select("id", kepala).eq("status", "diajukan").is("deleted_at", null)),
-    jika(punya(akses, "jadwal.kelola"), () => supabase.from("pengajuan_tukar_jadwal").select("id", kepala).eq("status", "menunggu_kurikulum")),
-    jika(punya(akses, "kurikulum.kelola"), () => supabase.from("perangkat_ajar").select("id", kepala).eq("status", "diajukan").is("deleted_at", null)),
-    jika(punya(akses, "sarpras.kelola"), () => supabase.from("peminjaman").select("id", kepala).eq("status", "diajukan")),
-    jika(punya(akses, "sarpras.kelola"), () => supabase.from("laporan_kerusakan").select("id", kepala).eq("status", "dilaporkan")),
+    bersama(punya(akses, "konten.terbitkan"), "beritaDiajukan"),
+    bersama(punya(akses, "jadwal.kelola"), "tukarMenungguKurikulum"),
+    bersama(punya(akses, "kurikulum.kelola"), "perangkatDiajukan"),
+    bersama(punya(akses, "sarpras.kelola"), "peminjamanDiajukan"),
+    bersama(punya(akses, "sarpras.kelola"), "kerusakanBaru"),
     jika(bina, () => supabase.from("jurnal_baca").select("id", kepala).eq("status", "diajukan")),
-    jika(true, () => supabase.from("pengaduan").select("id", kepala).eq("status", "baru")),
+    bersama(true, "aduanBaru"),
     jika(true, () => supabase.from("pengaduan").select("id", kepala)),
     jika(true, () => supabase.from("buku_tamu").select("id", kepala).is("keluar", null).gte("masuk", awalHari)),
-    jika(punya(akses, "bk.konseling"), () => supabase.from("permintaan_konseling").select("id", kepala).eq("status", "baru")),
+    bersama(punya(akses, "bk.konseling"), "konselingBaru"),
     !dasarSaja && lihatEkskul ? statEkskul() : nol,
     jika(ajuEkskul, ajuanEkskul),
-    jika(punya(akses, "alumni.kelola"), () => supabase.from("pendaftaran_alumni").select("id", kepala).eq("status", "menunggu")),
-    jika(punya(akses, "mutu.kelola") || punya(akses, "mutu.audit"), () => supabase.from("evaluasi_indikator").select("id", kepala).eq("persetujuan", "diajukan")),
-    jika(punya(akses, "kesiswaan.kelola") && (punya(akses, "kesiswaan.lihat") || berperan(akses, "wali_kelas")), () => supabase.from("pelanggaran_siswa").select("id", kepala).eq("status", "dilaporkan")),
-    jika(punya(akses, "kesiswaan.kelola") && (punya(akses, "kesiswaan.lihat") || berperan(akses, "wali_kelas")), () => supabase.from("prestasi_siswa").select("id", kepala).eq("status", "diajukan")),
-    jika(punya(akses, "bk.rujukan"), () => supabase.from("rujukan_bk").select("id", kepala).eq("status", "baru")),
-    jika(punya(akses, "absensi.kelola") || berperan(akses, "wali_kelas"), () => supabase.from("pengajuan_koreksi").select("id", kepala).eq("status", "menunggu")),
+    bersama(punya(akses, "alumni.kelola"), "alumniMenunggu"),
+    bersama(punya(akses, "mutu.kelola") || punya(akses, "mutu.audit"), "mutuDiajukan"),
+    bersama(punya(akses, "kesiswaan.kelola") && (punya(akses, "kesiswaan.lihat") || berperan(akses, "wali_kelas")), "pelanggaranBaru"),
+    bersama(punya(akses, "kesiswaan.kelola") && (punya(akses, "kesiswaan.lihat") || berperan(akses, "wali_kelas")), "prestasiDiajukan"),
+    bersama(punya(akses, "bk.rujukan"), "rujukanBaru"),
+    bersama(punya(akses, "absensi.kelola") || berperan(akses, "wali_kelas"), "koreksiMenunggu"),
     !dasarSaja && punya(akses, "disiplin.kelola")
-      ? Promise.resolve(supabase.rpc("status_disiplin")).then(({ data }) => ((data ?? []) as { dikonfirmasi: boolean }[]).filter((d) => !d.dikonfirmasi).length)
+      ? statusDisiplin(supabase).then(({ data }) => data.filter((d) => !d.dikonfirmasi).length)
       : nol,
-    jika(bisaIzinOrtu, () => supabase.from("izin_ortu").select("id", kepala).eq("status", "menunggu")),
-    jika(punya(akses, "izin_pegawai.setujui") || punya(akses, "absensi_pegawai.lihat"), () => supabase.from("pengajuan_izin_pegawai").select("id", kepala).eq("status", "menunggu")),
+    bersama(bisaIzinOrtu, "izinOrtuMenunggu"),
+    bersama(punya(akses, "izin_pegawai.setujui") || punya(akses, "absensi_pegawai.lihat"), "izinPegawaiMenunggu"),
   ]);
 
   // tahap 2: butuh data pegawai milik akun ini
   const pg = pegawaiSaya;
   const [tukarMasuk, supervisiTugas, perluNilai, pjPojok, binaan] = await Promise.all([
-    jika(Boolean(pg), () => supabase.from("pengajuan_tukar_jadwal").select("id", kepala).eq("mitra_id", pg!).eq("status", "menunggu_mitra")),
+    jika(Boolean(pg), () => tukarUntukSaya(supabase, pg!)),
     jika(Boolean(pg), () => supabase.from("supervisi_akademik").select("id", kepala).eq("supervisor_id", pg!).eq("status", "terjadwal")),
-    jika(Boolean(pg), () => supabase.from("pengumpulan_tugas").select("id, tugas!inner(pegawai_id)", kepala).eq("status", "dikumpulkan").eq("tugas.pegawai_id", pg!)),
+    jika(Boolean(pg), () => tugasPerluNilai(supabase, pg!)),
     jika(Boolean(pg) && !(bina || perpusKelola), () => supabase.from("pojok_baca").select("id", kepala).eq("penanggung_jawab_id", pg!).is("deleted_at", null)),
     jika(Boolean(pg) && !kelolaEkskul, () => supabase.from("pembina_organisasi").select("organisasi_id", kepala).eq("pegawai_id", pg!)),
   ]);

@@ -1,10 +1,13 @@
 import Link from "next/link";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { JudulHalaman, Notifikasi } from "@/components/admin/ui";
 import { BagianHariIni, Keadaan, Panel } from "@/components/dashboard/HariIni";
 import { DasborDasar } from "@/components/dashboard/DasborDasar";
 import { hariIniWIB } from "@/lib/admin/absensi";
-import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
+import { berperan, punya, wajibLogin, type Akses } from "@/lib/admin/auth";
+import { tahunAjaranAktif, type TahunAjaran } from "@/lib/admin/hitungan";
 import { kalimatAktivitas, waktuWIB } from "@/lib/admin/label-audit";
+import { statistikSingkat } from "@/lib/admin/statistik-singkat";
 
 export const metadata = { title: "Ringkasan" };
 
@@ -24,67 +27,11 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
   const { pesan } = await searchParams;
   const { supabase, akses } = await wajibLogin();
   if (!akses) return null;
-  const hitung = (tabel: string) => supabase.from(tabel).select("id", { count: "exact", head: true }).is("deleted_at", null);
   const tanggal = new Intl.DateTimeFormat("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(new Date(`${hariIniWIB()}T12:00:00+07:00`));
-
-  const { data: ta } = await supabase.from("tahun_ajaran").select("id, nama, semester").eq("aktif", true).maybeSingle();
-
-  const konten = punya(akses, "konten.kelola")
-    ? await Promise.all([
-        hitung("berita").eq("status", "terbit"),
-        hitung("berita").eq("status", "draft"),
-        hitung("pengumuman").eq("aktif", true),
-        hitung("agenda").gte("tanggal", new Date().toISOString().slice(0, 10)),
-        supabase.from("profil_sekolah").select("*").eq("id", 1).maybeSingle(),
-      ])
-    : null;
-
-  // media yang masih ilustrasi sementara (kolom is_placeholder dari migrasi 20261210; galat = dianggap 0)
-  const mediaSementara = punya(akses, "konten.kelola")
-    ? (
-        await Promise.all(
-          (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda", "tur_sekolah", "staf_publik", "fasilitas", "menu_sorotan"] as const).map((t) => {
-            const q = supabase.from(t).select("id", { count: "exact", head: true }).eq("is_placeholder", true);
-            // tabel tanpa kolom deleted_at (nonaktif = aktif false); galat (tabel belum dimigrasi) dihitung 0
-            return t === "berita" || t === "galeri" || t === "prestasi" ? q.is("deleted_at", null) : q;
-          }),
-        )
-      ).reduce((n, r) => n + (r.error ? 0 : (r.count ?? 0)), 0)
-    : 0;
-
-  let induk: null | { gagal: boolean; siswa: number; pegawai: number; kelas: number; tingkat: Record<string, number>; tanpaKelas: number } = null;
-  if (punya(akses, "data_induk.baca")) {
-    const hasil = await Promise.all([
-      hitung("siswa").eq("status", "aktif"),
-      hitung("pegawai").eq("status", "aktif"),
-      ta ? hitung("kelas").eq("tahun_ajaran_id", ta.id) : Promise.resolve({ count: 0, error: null }),
-      ...(["X", "XI", "XII"] as const).map((t) =>
-        supabase.from("siswa_kelas_aktif").select("id", { count: "exact", head: true }).is("deleted_at", null).eq("status", "aktif").eq("tingkat", t),
-      ),
-      supabase.from("siswa_kelas_aktif").select("id", { count: "exact", head: true }).is("deleted_at", null).eq("status", "aktif").is("kelas_id", null),
-    ]);
-    const [s, p, k, X, XI, XII, tk] = hasil;
-    induk = {
-      gagal: hasil.some((h) => h.error),
-      siswa: s.count ?? 0,
-      pegawai: p.count ?? 0,
-      kelas: k.count ?? 0,
-      tingkat: { X: X.count ?? 0, XI: XI.count ?? 0, XII: XII.count ?? 0 },
-      tanpaKelas: tk.count ?? 0,
-    };
-  }
-
-  const bolehAudit = punya(akses, "audit.baca");
-  const auditRes = bolehAudit ? await supabase.from("audit_log").select("id, waktu, user_id, tabel, aksi, data_baru").order("waktu", { ascending: false }).limit(5) : null;
-  const audit = auditRes?.data ?? null;
-  const ids = [...new Set((audit ?? []).map((a) => a.user_id).filter(Boolean))];
-  const { data: orang } = ids.length ? await supabase.from("pengguna").select("user_id, nama, email").in("user_id", ids) : { data: [] };
-  const namaPelaku = new Map((orang ?? []).map((o) => [o.user_id, o.nama || o.email]));
-
-  const profil = konten?.[4].data as Record<string, unknown> | null | undefined;
-  const profilGagal = Boolean(konten?.[4].error);
-  const profilKosong = konten && !profilGagal ? KOLOM_PROFIL.filter(([k]) => !String(profil?.[k] ?? "").trim()) : [];
-  const kontenGagal = konten ? konten.slice(0, 4).some((r) => r.error) : false;
+  // Halaman hanya menunggu tahun ajaran (judul). Setiap panel memuat datanya sendiri sebagai komponen terpisah,
+  // sehingga semua panel berjalan BERSAMAAN (sebelumnya ±10 tahap berurutan). Angka statistik di-cache 60 detik per akun.
+  const { data: ta } = await tahunAjaranAktif(supabase);
+  const kelolaKonten = punya(akses, "konten.kelola");
 
   return (
     <>
@@ -111,167 +58,238 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
         </div>
       )}
       <Notifikasi kode={pesan === "tanpa-akses" ? undefined : pesan} />
-      {mediaSementara > 0 && (
-        <div role="status" className="mb-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
-          <strong>{mediaSementara} media</strong> di website masih berupa ilustrasi sementara (berlabel &ldquo;Ilustrasi sementara&rdquo;). Ganti dengan foto asli sekolah
-          melalui <Link href="/admin/berita" className="font-semibold underline">Berita</Link>, <Link href="/admin/galeri" className="font-semibold underline">Galeri</Link>,{" "}
-          <Link href="/admin/prestasi" className="font-semibold underline">Prestasi</Link>, <Link href="/admin/kartu-beranda" className="font-semibold underline">Kartu Beranda</Link>, <Link href="/admin/tur-sekolah" className="font-semibold underline">Tur Sekolah</Link>, <Link href="/admin/staf-publik" className="font-semibold underline">Guru &amp; Tendik</Link>, <Link href="/admin/fasilitas" className="font-semibold underline">Fasilitas</Link>, atau <Link href="/admin/situs" className="font-semibold underline">Tampilan Website</Link>.
-        </div>
-      )}
+      {kelolaKonten && <PengingatMedia supabase={supabase} akses={akses} />}
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
         <DasborDasar supabase={supabase} akses={akses} />
         <BagianHariIni supabase={supabase} akses={akses} />
 
-        {induk && (
-          <Panel
-            judul="Data induk"
-            aksi={
-              <Link href="/admin/siswa" className="text-sm font-semibold underline underline-offset-2">
-                Data siswa
-              </Link>
-            }
-          >
-            {induk.gagal ? (
-              <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
-                Data induk gagal dimuat.
-              </Keadaan>
-            ) : (
-              <>
-                {!ta && (
-                  <div className="mb-3">
-                    <Keadaan jenis="info" aksi={punya(akses, "data_induk.kelola") ? <Link href="/admin/tahun-ajaran" className="font-semibold underline underline-offset-2">Atur</Link> : undefined}>
-                      Tahun ajaran aktif belum diatur.
-                    </Keadaan>
-                  </div>
-                )}
-                <dl className="grid grid-cols-3 gap-4">
-                  {[
-                    ["Siswa aktif", induk.siswa],
-                    ["Guru & pegawai", induk.pegawai],
-                    ["Kelas", induk.kelas],
-                  ].map(([l, v]) => (
-                    <div key={l}>
-                      <dt className="text-sm text-[var(--muted)]">{l}</dt>
-                      <dd className="text-[1.625rem] font-semibold leading-none tabular-nums">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="mt-4 border-t border-[var(--line)] pt-3 text-sm text-[var(--muted)]">
-                  {Object.entries(induk.tingkat)
-                    .map(([t, v]) => `Kelas ${t}: ${v}`)
-                    .join(" · ")}
-                  {induk.tanpaKelas > 0 && <span className="font-semibold text-[#8a4b00]"> · Belum punya kelas: {induk.tanpaKelas}</span>}
-                </p>
-              </>
-            )}
-          </Panel>
-        )}
-
-        {konten && (
-          <Panel
-            judul="Kelengkapan website"
-            className="lg:col-span-2"
-            aksi={
-              <Link href="/admin/berita" className="text-sm font-semibold underline underline-offset-2">
-                Kelola berita
-              </Link>
-            }
-          >
-            {profilGagal ? (
-              <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
-                Profil sekolah gagal dimuat.
-              </Keadaan>
-            ) : profilKosong.length > 0 ? (
-              <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg bg-[#fff8e8] px-4 py-3">
-                <div className="min-w-0 text-sm">
-                  <p className="font-semibold text-[#5c3d00]">
-                    {profilKosong.length} dari {KOLOM_PROFIL.length} isian profil sekolah belum diisi
-                  </p>
-                  <p className="mt-0.5 text-[#5c3d00]">{profilKosong.map(([, l]) => l).join(", ")}.</p>
-                </div>
-                <Link href="/admin/profil" className="inline-flex min-h-9 shrink-0 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white hover:bg-ink/85">
-                  Lengkapi profil sekolah
-                </Link>
-              </div>
-            ) : (
-              <p className="text-sm text-[var(--muted)]">Semua isian profil sekolah sudah terisi.</p>
-            )}
-            {kontenGagal ? (
-              <div className="mt-3">
-                <Keadaan jenis="gagal">Ringkasan konten gagal dimuat.</Keadaan>
-              </div>
-            ) : (
-              <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-[var(--line)] pt-4 sm:grid-cols-4">
-                {[
-                  ["Berita terbit", konten[0].count ?? 0, "/admin/berita"],
-                  ["Draf berita", konten[1].count ?? 0, "/admin/berita"],
-                  ["Pengumuman aktif", konten[2].count ?? 0, "/admin/pengumuman"],
-                  ["Agenda mendatang", konten[3].count ?? 0, "/admin/agenda"],
-                ].map(([l, v, href]) => (
-                  <div key={String(l)}>
-                    <dt className="text-sm text-[var(--muted)]">
-                      <Link href={String(href)} className="hover:underline">
-                        {l}
-                      </Link>
-                    </dt>
-                    <dd className="text-[1.625rem] font-semibold leading-none tabular-nums">{v}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
-          </Panel>
-        )}
-
-        {bolehAudit && (
-          <Panel
-            judul="Aktivitas terbaru"
-            className="lg:col-span-3"
-            aksi={
-              <Link href="/admin/log" className="text-sm font-semibold underline underline-offset-2">
-                Lihat semua aktivitas
-              </Link>
-            }
-          >
-            {auditRes?.error ? (
-              <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
-                Aktivitas gagal dimuat.
-              </Keadaan>
-            ) : !audit?.length ? (
-              <p className="text-sm text-[var(--muted)]">Belum ada aktivitas tercatat.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[520px] text-left text-sm">
-                  <thead className="border-b border-[var(--line)] text-[var(--muted)]">
-                    <tr>
-                      <th scope="col" className="py-2 pr-4 font-semibold">
-                        Aktivitas
-                      </th>
-                      <th scope="col" className="py-2 pr-4 font-semibold">
-                        Oleh
-                      </th>
-                      <th scope="col" className="py-2 font-semibold">
-                        Waktu (WIB)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--line)]">
-                    {audit.map((a) => (
-                      <tr key={a.id}>
-                        <td className="py-2.5 pr-4">{kalimatAktivitas(a)}</td>
-                        <td className="max-w-[220px] truncate py-2.5 pr-4 text-[var(--muted)]">{a.user_id ? (namaPelaku.get(a.user_id) ?? "Pengguna") : "Sistem"}</td>
-                        <td className="whitespace-nowrap py-2.5 tabular-nums text-[var(--muted)]">
-                          <time dateTime={a.waktu}>{waktuWIB(a.waktu)}</time>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Panel>
-        )}
+        {punya(akses, "data_induk.baca") && <PanelDataInduk supabase={supabase} akses={akses} ta={ta} />}
+        {kelolaKonten && <PanelKelengkapan supabase={supabase} akses={akses} />}
+        {punya(akses, "audit.baca") && <PanelAktivitas supabase={supabase} />}
       </div>
     </>
+  );
+}
+
+type PropsPanel = { supabase: SupabaseClient; akses: Akses };
+const kepala = { count: "exact" as const, head: true };
+/** jumlah yang aman disimpan di cache (galat → boolean, bukan objek galat) */
+const jumlah = (r: { count: number | null; error: unknown }) => ({ count: r.count ?? 0, gagal: Boolean(r.error) });
+
+/** Pengingat media yang masih ilustrasi sementara (kolom is_placeholder dari migrasi 20261210; galat = dianggap 0) */
+async function PengingatMedia({ supabase, akses }: PropsPanel) {
+  const mediaSementara = await statistikSingkat(supabase, akses, "media-sementara", async (db) =>
+    (
+      await Promise.all(
+        (["berita", "galeri", "prestasi", "hero_slide", "kartu_beranda", "tur_sekolah", "staf_publik", "fasilitas", "menu_sorotan"] as const).map((t) => {
+          const q = db.from(t).select("id", kepala).eq("is_placeholder", true);
+          // tabel tanpa kolom deleted_at (nonaktif = aktif false); galat (tabel belum dimigrasi) dihitung 0
+          return t === "berita" || t === "galeri" || t === "prestasi" ? q.is("deleted_at", null) : q;
+        }),
+      )
+    ).reduce((n, r) => n + (r.error ? 0 : (r.count ?? 0)), 0),
+  );
+  if (mediaSementara <= 0) return null;
+  return (
+    <div role="status" className="mb-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
+      <strong>{mediaSementara} media</strong> di website masih berupa ilustrasi sementara (berlabel &ldquo;Ilustrasi sementara&rdquo;). Ganti dengan foto asli sekolah
+      melalui <Link href="/admin/berita" className="font-semibold underline">Berita</Link>, <Link href="/admin/galeri" className="font-semibold underline">Galeri</Link>,{" "}
+      <Link href="/admin/prestasi" className="font-semibold underline">Prestasi</Link>, <Link href="/admin/kartu-beranda" className="font-semibold underline">Kartu Beranda</Link>, <Link href="/admin/tur-sekolah" className="font-semibold underline">Tur Sekolah</Link>, <Link href="/admin/staf-publik" className="font-semibold underline">Guru &amp; Tendik</Link>, <Link href="/admin/fasilitas" className="font-semibold underline">Fasilitas</Link>, atau <Link href="/admin/situs" className="font-semibold underline">Tampilan Website</Link>.
+    </div>
+  );
+}
+
+async function PanelDataInduk({ supabase, akses, ta }: PropsPanel & { ta: TahunAjaran | null }) {
+  const induk = await statistikSingkat(supabase, akses, `data-induk:${ta?.id ?? "-"}`, async (db) => {
+    const aktif = () => db.from("siswa_kelas_aktif").select("id", kepala).is("deleted_at", null).eq("status", "aktif");
+    const hasil = (
+      await Promise.all([
+        db.from("siswa").select("id", kepala).is("deleted_at", null).eq("status", "aktif"),
+        db.from("pegawai").select("id", kepala).is("deleted_at", null).eq("status", "aktif"),
+        ta ? db.from("kelas").select("id", kepala).is("deleted_at", null).eq("tahun_ajaran_id", ta.id) : Promise.resolve({ count: 0, error: null }),
+        ...(["X", "XI", "XII"] as const).map((t) => aktif().eq("tingkat", t)),
+        aktif().is("kelas_id", null),
+      ])
+    ).map(jumlah);
+    const [s, p, k, X, XI, XII, tk] = hasil;
+    return { gagal: hasil.some((h) => h.gagal), siswa: s.count, pegawai: p.count, kelas: k.count, tingkat: { X: X.count, XI: XI.count, XII: XII.count }, tanpaKelas: tk.count };
+  });
+  return (
+    <Panel
+      judul="Data induk"
+      aksi={
+        <Link href="/admin/siswa" className="text-sm font-semibold underline underline-offset-2">
+          Data siswa
+        </Link>
+      }
+    >
+      {induk.gagal ? (
+        <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
+          Data induk gagal dimuat.
+        </Keadaan>
+      ) : (
+        <>
+          {!ta && (
+            <div className="mb-3">
+              <Keadaan jenis="info" aksi={punya(akses, "data_induk.kelola") ? <Link href="/admin/tahun-ajaran" className="font-semibold underline underline-offset-2">Atur</Link> : undefined}>
+                Tahun ajaran aktif belum diatur.
+              </Keadaan>
+            </div>
+          )}
+          <dl className="grid grid-cols-3 gap-4">
+            {[
+              ["Siswa aktif", induk.siswa],
+              ["Guru & pegawai", induk.pegawai],
+              ["Kelas", induk.kelas],
+            ].map(([l, v]) => (
+              <div key={l}>
+                <dt className="text-sm text-[var(--muted)]">{l}</dt>
+                <dd className="text-[1.625rem] font-semibold leading-none tabular-nums">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-4 border-t border-[var(--line)] pt-3 text-sm text-[var(--muted)]">
+            {Object.entries(induk.tingkat)
+              .map(([t, v]) => `Kelas ${t}: ${v}`)
+              .join(" · ")}
+            {induk.tanpaKelas > 0 && <span className="font-semibold text-[#8a4b00]"> · Belum punya kelas: {induk.tanpaKelas}</span>}
+          </p>
+        </>
+      )}
+    </Panel>
+  );
+}
+
+async function PanelKelengkapan({ supabase, akses }: PropsPanel) {
+  const k = await statistikSingkat(supabase, akses, "kelengkapan-website", async (db) => {
+    const hitung = (t: string) => db.from(t).select("id", kepala).is("deleted_at", null);
+    const [terbit, draf, umum, agenda, profil] = await Promise.all([
+      hitung("berita").eq("status", "terbit"),
+      hitung("berita").eq("status", "draft"),
+      hitung("pengumuman").eq("aktif", true),
+      hitung("agenda").gte("tanggal", hariIniWIB()),
+      db.from("profil_sekolah").select(KOLOM_PROFIL.map(([kolom]) => kolom).join(", ")).eq("id", 1).maybeSingle(),
+    ]);
+    const isi = (profil.data ?? null) as Record<string, unknown> | null;
+    return {
+      angka: [terbit, draf, umum, agenda].map(jumlah),
+      profilGagal: Boolean(profil.error),
+      profilKosong: profil.error ? [] : KOLOM_PROFIL.filter(([kolom]) => !String(isi?.[kolom] ?? "").trim()).map(([, label]) => label),
+    };
+  });
+  const kontenGagal = k.angka.some((a) => a.gagal);
+  return (
+    <Panel
+      judul="Kelengkapan website"
+      className="lg:col-span-2"
+      aksi={
+        <Link href="/admin/berita" className="text-sm font-semibold underline underline-offset-2">
+          Kelola berita
+        </Link>
+      }
+    >
+      {k.profilGagal ? (
+        <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
+          Profil sekolah gagal dimuat.
+        </Keadaan>
+      ) : k.profilKosong.length > 0 ? (
+        <div className="flex flex-wrap items-start justify-between gap-3 rounded-lg bg-[#fff8e8] px-4 py-3">
+          <div className="min-w-0 text-sm">
+            <p className="font-semibold text-[#5c3d00]">
+              {k.profilKosong.length} dari {KOLOM_PROFIL.length} isian profil sekolah belum diisi
+            </p>
+            <p className="mt-0.5 text-[#5c3d00]">{k.profilKosong.join(", ")}.</p>
+          </div>
+          <Link href="/admin/profil" className="inline-flex min-h-9 shrink-0 items-center rounded-lg bg-ink px-3 text-sm font-semibold text-white hover:bg-ink/85">
+            Lengkapi profil sekolah
+          </Link>
+        </div>
+      ) : (
+        <p className="text-sm text-[var(--muted)]">Semua isian profil sekolah sudah terisi.</p>
+      )}
+      {kontenGagal ? (
+        <div className="mt-3">
+          <Keadaan jenis="gagal">Ringkasan konten gagal dimuat.</Keadaan>
+        </div>
+      ) : (
+        <dl className="mt-4 grid grid-cols-2 gap-4 border-t border-[var(--line)] pt-4 sm:grid-cols-4">
+          {(
+            [
+              ["Berita terbit", k.angka[0].count, "/admin/berita"],
+              ["Draf berita", k.angka[1].count, "/admin/berita"],
+              ["Pengumuman aktif", k.angka[2].count, "/admin/pengumuman"],
+              ["Agenda mendatang", k.angka[3].count, "/admin/agenda"],
+            ] as const
+          ).map(([l, v, href]) => (
+            <div key={l}>
+              <dt className="text-sm text-[var(--muted)]">
+                <Link href={href} className="hover:underline">
+                  {l}
+                </Link>
+              </dt>
+              <dd className="text-[1.625rem] font-semibold leading-none tabular-nums">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </Panel>
+  );
+}
+
+/** Aktivitas terbaru (tidak di-cache: harus selalu terbaru) */
+async function PanelAktivitas({ supabase }: { supabase: SupabaseClient }) {
+  const auditRes = await supabase.from("audit_log").select("id, waktu, user_id, tabel, aksi, data_baru").order("waktu", { ascending: false }).limit(5);
+  const audit = auditRes.data ?? null;
+  const ids = [...new Set((audit ?? []).map((a) => a.user_id).filter(Boolean))];
+  const { data: orang } = ids.length ? await supabase.from("pengguna").select("user_id, nama, email").in("user_id", ids) : { data: [] };
+  const namaPelaku = new Map((orang ?? []).map((o) => [o.user_id, o.nama || o.email]));
+  return (
+    <Panel
+      judul="Aktivitas terbaru"
+      className="lg:col-span-3"
+      aksi={
+        <Link href="/admin/log" className="text-sm font-semibold underline underline-offset-2">
+          Lihat semua aktivitas
+        </Link>
+      }
+    >
+      {auditRes.error ? (
+        <Keadaan jenis="gagal" aksi={<a href="/admin" className="font-semibold underline underline-offset-2">Coba lagi</a>}>
+          Aktivitas gagal dimuat.
+        </Keadaan>
+      ) : !audit?.length ? (
+        <p className="text-sm text-[var(--muted)]">Belum ada aktivitas tercatat.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[520px] text-left text-sm">
+            <thead className="border-b border-[var(--line)] text-[var(--muted)]">
+              <tr>
+                <th scope="col" className="py-2 pr-4 font-semibold">
+                  Aktivitas
+                </th>
+                <th scope="col" className="py-2 pr-4 font-semibold">
+                  Oleh
+                </th>
+                <th scope="col" className="py-2 font-semibold">
+                  Waktu (WIB)
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--line)]">
+              {audit.map((a) => (
+                <tr key={a.id}>
+                  <td className="py-2.5 pr-4">{kalimatAktivitas(a)}</td>
+                  <td className="max-w-[220px] truncate py-2.5 pr-4 text-[var(--muted)]">{a.user_id ? (namaPelaku.get(a.user_id) ?? "Pengguna") : "Sistem"}</td>
+                  <td className="whitespace-nowrap py-2.5 tabular-nums text-[var(--muted)]">
+                    <time dateTime={a.waktu}>{waktuWIB(a.waktu)}</time>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Panel>
   );
 }

@@ -475,6 +475,13 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   `"regions": ["sin1"]` (Singapura). Catatan: `region=` di log runtime Vercel = edge penerima, bukan lokasi fungsi.
 - **Indeks** `supabase/migrations/20261226000000_index_admin.sql` (7 indeks `create index if not exists`) — disetujui &
   dijalankan di produksi 22 Okt 2026 via psql (tercatat di supabase_migrations.schema_migrations).
+- **Ringkasan (/admin)**: `lib/admin/hitungan.ts` — hasil query yang sama dibagi dalam satu permintaan (React `cache`):
+  layout (badge) & Ringkasan memakai satu hitungan, `pegawai_saya` & tahun ajaran sekali. Panel Ringkasan = komponen
+  async terpisah (paralel). Angka statistik (data induk, kelengkapan website, media sementara, tren kehadiran, kesiswaan
+  bulan ini) di-cache 60 detik PER AKUN lewat `lib/admin/statistik-singkat.ts` (`unstable_cache`, kunci = user + peran/izin;
+  klien bertoken sesi karena cookie tidak boleh dibaca di dalam cache). Daftar "Perlu ditindaklanjuti" & aktivitas TIDAK
+  di-cache. Hitungan memakai `select("*", head)` — tabel `absensi_kelas_harian` & `jurnal_jp` tidak punya kolom `id`.
+  Ukur: `scripts/uji-e2e/ukur-ringkasan.mjs`.
 - **Template impor**: penulis XLSX sendiri `src/lib/admin/xlsx-template.ts` (fflate; lembar Data/Petunjuk/Daftar
   tersembunyi, judul beku, kolom teks `@`, tanggal dd/mm/yyyy, validasi daftar). CSV: `src/lib/admin/csv-impor.ts`
   (BOM, `;`, CRLF; pembaca mendeteksi `;`/`,` dan BOM). Baris bertanda `(contoh)` dilewati pengimpor. Label template
