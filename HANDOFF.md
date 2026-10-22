@@ -473,8 +473,8 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   keep-alive putus (`fetch failed`/ECONNRESET di log produksi); metode non-GET hanya diulang bila pasti belum terkirim.
   Region fungsi Vercel sebelumnya `iad1` (bawaan, AS) — jauh dari Supabase ap-southeast-1; sejak 22 Okt `vercel.json`
   `"regions": ["sin1"]` (Singapura). Catatan: `region=` di log runtime Vercel = edge penerima, bukan lokasi fungsi.
-- **Usulan indeks** `supabase/migrations/20261226000000_index_admin.sql` (7 indeks `create index if not exists`) —
-  BELUM disetujui, BELUM di-commit, & BELUM dijalankan di produksi (hanya di DB uji lokal).
+- **Indeks** `supabase/migrations/20261226000000_index_admin.sql` (7 indeks `create index if not exists`) — disetujui &
+  dijalankan di produksi 22 Okt 2026 via psql (tercatat di supabase_migrations.schema_migrations).
 - **Template impor**: penulis XLSX sendiri `src/lib/admin/xlsx-template.ts` (fflate; lembar Data/Petunjuk/Daftar
   tersembunyi, judul beku, kolom teks `@`, tanggal dd/mm/yyyy, validasi daftar). CSV: `src/lib/admin/csv-impor.ts`
   (BOM, `;`, CRLF; pembaca mendeteksi `;`/`,` dan BOM). Baris bertanda `(contoh)` dilewati pengimpor. Label template
