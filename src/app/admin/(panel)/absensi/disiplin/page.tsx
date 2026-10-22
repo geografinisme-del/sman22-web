@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { JudulHalaman, KosongAdmin, Lencana } from "@/components/admin/ui";
 import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
 import { FormKonfirmasi } from "./FormKonfirmasi";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "SP & Panggilan Orang Tua" };
 
@@ -32,14 +33,14 @@ export default async function Disiplin({ searchParams }: { searchParams: Promise
           ))}
         </ul>
       </details>
-      <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/absensi/disiplin" className={`rounded-full px-4 py-2 ${!selesai ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>
-          Perlu tindakan ({semua.filter((d) => !d.dikonfirmasi).length})
-        </a>
-        <a href="/admin/absensi/disiplin?lihat=selesai" className={`rounded-full px-4 py-2 ${selesai ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>
-          Sudah ditindaklanjuti ({semua.filter((d) => d.dikonfirmasi).length})
-        </a>
-      </nav>
+      <TabPills
+        label="Saring tindak lanjut disiplin"
+        item={[
+          { href: "/admin/absensi/disiplin", label: "Perlu tindakan", jumlah: semua.filter((d) => !d.dikonfirmasi).length },
+          { href: "/admin/absensi/disiplin?lihat=selesai", label: "Sudah ditindaklanjuti", jumlah: semua.filter((d) => d.dikonfirmasi).length },
+        ]}
+        aktif={selesai ? "/admin/absensi/disiplin?lihat=selesai" : "/admin/absensi/disiplin"}
+      />
       {list.length === 0 ? (
         <KosongAdmin teks={selesai ? "Belum ada tindak lanjut yang dikonfirmasi." : "Tidak ada siswa yang perlu ditindaklanjuti."} />
       ) : (

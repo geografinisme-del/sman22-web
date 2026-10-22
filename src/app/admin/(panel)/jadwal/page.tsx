@@ -7,6 +7,7 @@ import { punya, wajibLogin } from "@/lib/admin/auth";
 import { HARI, namaHari } from "@/lib/admin/jadwal";
 import { muatEntri, muatJam, muatPerubahan, namaUntukPerubahan, teksPerubahan } from "@/lib/admin/jadwal-data";
 import { formatTanggal } from "@/lib/format";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Jadwal Pelajaran" };
 
@@ -59,7 +60,7 @@ export default async function LihatJadwal({ searchParams }: { searchParams: Prom
         aksi={
           <div className="flex flex-wrap gap-2 print:hidden">
             <TombolCetak />
-            <TombolLink href={`/admin/jadwal/ekspor?lihat=${lihat === "hari" ? "kelas" : lihat}`} sekunder>Unduh Excel</TombolLink>
+            <TombolUnduh href={`/admin/jadwal/ekspor?lihat=${lihat === "hari" ? "kelas" : lihat}`} namaCadangan="jadwal.xlsx">Unduh Excel</TombolUnduh>
             {lihat === "kelas" && pilih && punya(akses, "jadwal.kelola") && <TombolLink href={`/admin/jadwal/susun?kelas=${pilih.id}`}>Ubah jadwal kelas ini</TombolLink>}
           </div>
         }

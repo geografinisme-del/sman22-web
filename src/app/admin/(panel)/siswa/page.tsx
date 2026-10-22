@@ -2,6 +2,7 @@ import Link from "next/link";
 import { JudulHalaman, Lencana, Notifikasi, Paginasi, TombolLink, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
 import { punya, wajibIzin } from "@/lib/admin/auth";
 import { STATUS_SISWA } from "@/lib/admin/induk";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Data Siswa" };
 const PER_HALAMAN = 25;
@@ -15,11 +16,6 @@ export default async function DaftarSiswa({ searchParams }: { searchParams: Prom
   const halaman = Math.max(1, Number(sp.hal) || 1);
   const status = sp.status === "semua" ? "" : (STATUS_SISWA as readonly string[]).includes(sp.status ?? "") ? sp.status! : "aktif";
   const q = (sp.q ?? "").trim().slice(0, 80);
-
-  const { data: ta } = await supabase.from("tahun_ajaran").select("id, nama").eq("aktif", true).maybeSingle();
-  const { data: daftarKelas } = ta
-    ? await supabase.from("kelas").select("id, nama, tingkat").eq("tahun_ajaran_id", ta.id).is("deleted_at", null).order("nama")
-    : { data: [] as { id: string; nama: string; tingkat: string }[] };
 
   let query = supabase
     .from("siswa_kelas_aktif")
@@ -35,7 +31,12 @@ export default async function DaftarSiswa({ searchParams }: { searchParams: Prom
     const aman = q.replace(/[%_,()*\\]/g, " ").trim();
     query = /^\d+$/.test(aman) ? query.ilike("nisn", `${aman}%`) : query.ilike("nama", `%${aman}%`);
   }
-  const { data: list, count, error } = await query;
+  // tahun ajaran aktif, daftar kelasnya, dan daftar siswa tidak saling bergantung → dimuat bersamaan
+  const [{ data: ta }, { data: daftarKelas }, { data: list, count, error }] = await Promise.all([
+    supabase.from("tahun_ajaran").select("id, nama").eq("aktif", true).maybeSingle(),
+    supabase.from("kelas").select("id, nama, tingkat, tahun_ajaran!inner(aktif)").eq("tahun_ajaran.aktif", true).is("deleted_at", null).order("nama"),
+    query,
+  ]);
   const total = count ?? 0;
   const ekspor = new URLSearchParams(Object.entries({ q, kelas: sp.kelas ?? "", status: status || "semua", tingkat: sp.tingkat ?? "" }).filter(([, v]) => v));
 
@@ -46,9 +47,9 @@ export default async function DaftarSiswa({ searchParams }: { searchParams: Prom
         deskripsi={ta ? `Kelas mengikuti tahun ajaran aktif ${ta.nama}.` : "Belum ada tahun ajaran aktif."}
         aksi={
           <div className="flex flex-wrap gap-2">
-            <TombolLink href={`/admin/siswa/ekspor?${ekspor}`} sekunder>
+            <TombolUnduh href={`/admin/siswa/ekspor?${ekspor}`} namaCadangan="data-siswa.xlsx">
               Unduh Excel
-            </TombolLink>
+            </TombolUnduh>
             {bisaUbah && (
               <>
                 <TombolLink href="/admin/siswa/impor" sekunder>

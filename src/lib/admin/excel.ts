@@ -16,7 +16,8 @@ export type KolomXlsx = { judul: string; jenis?: JenisKolom; lebar?: number };
 export type NilaiXlsx = string | number | boolean | Date | null | undefined;
 export type LembarXlsx = { nama: string; kolom: KolomXlsx[]; baris: NilaiXlsx[][] };
 
-const WARNA_JUDUL = "var(--blue-teks)";
+// Excel hanya menerima warna hex (bukan variabel CSS) — setara token --blue-teks
+const WARNA_JUDUL = "#1F5FD1";
 const WARNA_GARIS = "#D9DEE8";
 const WARNA_SELANG = "#F5F7FC";
 

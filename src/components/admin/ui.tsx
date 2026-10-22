@@ -2,17 +2,21 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { arsipkan } from "@/app/admin/actions";
 import { TombolArsip } from "./form";
+import "./judul-halaman.css";
 
-/** Header kerja: judul halaman (24–28px), konteks singkat, dan tindakan yang relevan. */
+/**
+ * Header kerja: judul halaman (24–28px), konteks singkat, dan tindakan yang relevan.
+ * Tombol aksi (tinggi 44px, pil) sejajar vertikal dengan JUDUL di layar lebar; di HP turun ke bawah deskripsi.
+ */
 export function JudulHalaman({ judul, deskripsi, aksi, konteks }: { judul: string; deskripsi?: string; aksi?: ReactNode; konteks?: ReactNode }) {
   return (
-    <div className="mb-6 flex flex-col gap-3 border-b border-[var(--line)] pb-5 sm:flex-row sm:items-end sm:justify-between">
-      <div className="min-w-0">
-        {konteks && <p className="mb-1 text-sm text-[var(--muted)]">{konteks}</p>}
-        <h1 className="text-[1.625rem] font-semibold leading-tight text-[var(--ink)]">{judul}</h1>
-        {deskripsi && <p className="mt-1 max-w-3xl text-[0.9375rem] text-[var(--muted)]">{deskripsi}</p>}
+    <div className="mb-6 border-b border-[var(--line)] pb-5">
+      {konteks && <p className="mb-1 text-sm text-[var(--muted)]">{konteks}</p>}
+      <div className="grid gap-x-6 gap-y-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <h1 className="min-w-0 text-[1.625rem] font-semibold leading-tight text-[var(--ink)]">{judul}</h1>
+        {aksi && <div className="aksi-halaman order-3 sm:order-none sm:justify-end">{aksi}</div>}
+        {deskripsi && <p className="order-2 -mt-2 max-w-3xl text-[0.9375rem] text-[var(--muted)] sm:order-none sm:col-span-2 sm:mt-0">{deskripsi}</p>}
       </div>
-      {aksi}
     </div>
   );
 }

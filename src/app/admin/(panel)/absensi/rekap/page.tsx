@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
-import { JudulHalaman, KosongAdmin, TombolLink, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
+import { JudulHalaman, KosongAdmin, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
 import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
 import { awalBulan, hariIniWIB, tanggalValid } from "@/lib/admin/absensi";
 import { kelasWaliSaya } from "@/lib/admin/kelas-wali";
 import { formatTanggal } from "@/lib/format";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Rekap Absensi" };
 
@@ -35,7 +36,7 @@ export default async function Rekap({ searchParams }: { searchParams: Promise<{ 
       <JudulHalaman
         judul="Rekap Absensi"
         deskripsi={pilih ? `${pilih.nama} · ${formatTanggal(dari)} – ${formatTanggal(sampai)} · ${he} hari efektif` : undefined}
-        aksi={pilih && <TombolLink href={ekspor} sekunder>Unduh Excel</TombolLink>}
+        aksi={pilih && <TombolUnduh href={ekspor} namaCadangan="rekap-absensi.xlsx">Unduh Excel</TombolUnduh>}
       />
       <form className="mb-5 grid gap-3 rounded-2xl bg-white p-4 ring-1 ring-black/5 sm:grid-cols-[1fr_1fr_1fr_auto]">
         <label className="text-sm">

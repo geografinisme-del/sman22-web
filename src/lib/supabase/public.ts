@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "./config";
+import { fetchTahan } from "./fetch-tahan";
 
 /**
  * Klien baca-saja untuk halaman publik (tanpa cookie, sehingga halaman bisa di-cache).
@@ -10,7 +11,7 @@ export function supabasePublik() {
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
     global: {
-      fetch: (input, init) => fetch(input, { ...init, next: { revalidate: 60 } }),
+      fetch: (input, init) => fetchTahan(input, { ...init, next: { revalidate: 60 } }),
     },
   });
 }
@@ -22,6 +23,6 @@ export function supabasePublik() {
 export function supabaseAnonSegar() {
   return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
-    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
+    global: { fetch: (input, init) => fetchTahan(input, { ...init, cache: "no-store" }) },
   });
 }

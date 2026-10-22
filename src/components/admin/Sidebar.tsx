@@ -152,10 +152,15 @@ export function Sidebar({
 
   // menu aktif = href terpanjang yang cocok dengan alamat sekarang
   const semua = useMemo(() => grup.flatMap((g) => g.item), [grup]);
-  const cocok = semua
+  const dariAlamat = semua
     .map((i) => i.href)
     .filter((h) => path === h || (h !== "/admin" && path.startsWith(h + "/")))
     .sort((a, b) => b.length - a.length)[0];
+  // optimistis: menu yang diklik langsung tampak aktif (& ditandai "memuat") sebelum halaman berikutnya tiba;
+  // begitu alamat berubah, aktif kembali mengikuti alamat
+  const [diklik, setDiklik] = useState<{ href: string; dari: string } | null>(null);
+  const menunggu = diklik && diklik.dari === path && diklik.href !== dariAlamat ? diklik.href : null;
+  const cocok = menunggu ?? dariAlamat;
   const aktif = (h: string) => h === cocok;
   const grupAktif = urut.find((g) => g.item.some((i) => i.href === cocok))?.judul;
 
@@ -234,11 +239,13 @@ export function Sidebar({
   const tautan = (m: GrupMenu["item"][number], kecil = false) => (
     <Link
       href={m.href}
-      onClick={() => {
+      onClick={(e) => {
         setCari("");
         tutupLaci(false);
+        if (!e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) setDiklik({ href: m.href, dari: path });
       }}
       aria-current={aktif(m.href) ? "page" : undefined}
+      data-memuat={menunggu === m.href ? "1" : undefined}
       className={`relative flex items-center justify-between gap-2 rounded-md py-2 pl-9 pr-3 transition-colors duration-150 ${kecil ? "text-[13.5px]" : "text-sm"} ${
         aktif(m.href)
           ? "bg-[color-mix(in_srgb,var(--tema-utama)_8%,#fff)] font-semibold text-[var(--ink)] before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-[var(--tema-utama)]"

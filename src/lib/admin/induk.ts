@@ -97,6 +97,9 @@ export const ortuSchema = z.object({
    IMPOR: definisi kolom, sinonim header (termasuk format Dapodik), normalisasi
    ===================================================================== */
 
+/** Penanda baris contoh pada template impor — baris dengan nama berakhiran ini dilewati saat impor. */
+export const PENANDA_CONTOH = "(contoh)";
+
 export type KolomImpor = { kunci: string; label: string; wajib?: boolean; sinonim: string[]; contoh: string };
 
 export const KOLOM_SISWA: KolomImpor[] = [
@@ -128,13 +131,15 @@ export const KOLOM_PEGAWAI: KolomImpor[] = [
 ];
 
 const rapikan = (s: string) => s.toLowerCase().replace(/[^a-z0-9/]+/g, " ").trim();
+/** Nama yang dikenali untuk satu kolom: sinonim + judul kolom template itu sendiri (mis. "Kelas / Rombel"). */
+const dikenali = (k: KolomImpor) => new Set([...k.sinonim.map(rapikan), rapikan(k.label)]);
 
 /** Cari baris header (Dapodik biasanya punya beberapa baris judul di atasnya). */
 export function cariBarisHeader(baris: unknown[][], kolom: KolomImpor[]) {
   let terbaik = 0, skor = -1;
   baris.slice(0, 20).forEach((r, i) => {
     const sel = r.map((c) => rapikan(String(c ?? "")));
-    const s = kolom.filter((k) => sel.some((c) => k.sinonim.includes(c))).length;
+    const s = kolom.filter((k) => sel.some((c) => dikenali(k).has(c))).length;
     if (s > skor) { skor = s; terbaik = i; }
   });
   return terbaik;
@@ -145,7 +150,8 @@ export function tebakPemetaan(header: string[], kolom: KolomImpor[]) {
   const hasil: Record<string, number> = {};
   const h = header.map((x) => rapikan(String(x ?? "")));
   for (const k of kolom) {
-    const idx = h.findIndex((c) => k.sinonim.includes(c));
+    const nama = dikenali(k);
+    const idx = h.findIndex((c, i) => nama.has(c) && !Object.values(hasil).includes(i));
     if (idx >= 0) hasil[k.kunci] = idx;
   }
   return hasil;
@@ -227,6 +233,12 @@ export function normalisasiBaris(
     else if (k.kunci === "jenis") {
       const s = String(v ?? "").toLowerCase();
       data.jenis = s.includes("tendik") || s.includes("tenaga") || s.includes("staf") || s.includes("tu") ? "tendik" : "guru";
+    } else if (k.kunci === "telepon" || k.kunci === "telepon_ortu") {
+      // Excel/CSV yang dibuka sebagai angka membuang 0 di depan (081… → 81…): nomor HP Indonesia dipulihkan
+      const s = String(v ?? "").replace(/[\s.-]/g, "").trim();
+      const pulih = /^8\d{8,12}$/.test(s);
+      data[k.kunci] = pulih ? `0${s}` : String(v ?? "").replace(/\s+/g, " ").trim();
+      if (pulih) catatan.push(`${k.label} dilengkapi angka 0 di depan`);
     } else if (k.kunci === "tahun_masuk") data.tahun_masuk = String(v ?? "").replace(/\D/g, "").slice(0, 4);
     else if (k.kunci === "agama") {
       const s = String(v ?? "").trim();

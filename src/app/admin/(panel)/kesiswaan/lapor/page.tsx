@@ -4,6 +4,7 @@ import { hariIniWIB } from "@/lib/admin/absensi";
 import { wajibLogin } from "@/lib/admin/auth";
 import { STATUS_LAPORAN } from "@/lib/kesiswaan/label";
 import { formatTanggal } from "@/lib/format";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Lapor Pelanggaran / Prestasi" };
 
@@ -24,10 +25,7 @@ export default async function Lapor({ searchParams }: { searchParams: Promise<{ 
   return (
     <>
       <JudulHalaman judul="Lapor" deskripsi="Semua guru dapat melaporkan pelanggaran maupun prestasi siswa. Poin baru dihitung setelah diverifikasi kesiswaan." />
-      <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/kesiswaan/lapor" className={`rounded-full px-4 py-2 ${!prestasi ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Pelanggaran</a>
-        <a href="/admin/kesiswaan/lapor?tab=prestasi" className={`rounded-full px-4 py-2 ${prestasi ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Prestasi</a>
-      </nav>
+      <TabPills label="Jenis laporan" item={[{ href: "/admin/kesiswaan/lapor", label: "Pelanggaran" }, { href: "/admin/kesiswaan/lapor?tab=prestasi", label: "Prestasi" }]} aktif={prestasi ? "/admin/kesiswaan/lapor?tab=prestasi" : "/admin/kesiswaan/lapor"} />
       <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
         <Kartu>{prestasi ? <FormPrestasi hariIni={hari} /> : <FormPelanggaran jenis={jenis ?? []} hariIni={hari} />}</Kartu>
         <div className="space-y-6">

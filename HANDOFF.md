@@ -436,7 +436,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Daftar kebutuhan foto/konten untuk sekolah: `docs/kebutuhan-konten.md`.
 
 ### Keamanan akun & backup (21 Okt 2026)
-- **Signup Supabase Auth produksi TERBUKA** (`disable_signup: false`, provider email). Aplikasi tidak memakai signUp;
+- **Signup Supabase Auth produksi SUDAH DITUTUP** (21 Okt 2026, `disable_signup: true`; sebelumnya terbuka). Aplikasi tidak memakai signUp;
   semua akun dibuat lewat Admin API (Pengguna & Peran, akun portal, alumni). Tutup di Supabase Dashboard →
   Authentication → Sign In / Providers → matikan "Allow new users to sign up" (login, atur ulang sandi, dan pembuatan
   akun oleh admin tetap berjalan). Akun yang mendaftar sendiri tidak punya baris `pengguna` → tidak mendapat akses apa pun.
@@ -461,3 +461,27 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   tanpa error. Login admin dicek pemilik (akun asli).
 - **Belum**: domain sekolah smanegeri22bandung.sch.id & DNS (keputusan terpisah) — setelah domain aktif, perbarui
   `sekolah.urlSitus` agar sitemap/robots memakai domain resmi. Supabase advisor: aktifkan "Leaked password protection".
+
+## Perbaikan CMS: kecepatan, template impor, tombol tab (22 Okt 2026, branch `langit-cerah`)
+- **Akar galat 500 semua ekspor & template Excel di produksi**: `WARNA_JUDUL = "var(--blue-teks)"` di
+  `src/lib/admin/excel.ts` (write-excel-file hanya menerima hex) → `#1F5FD1`. Jangan memakai variabel CSS di berkas Excel.
+- **Kecepatan**: `src/proxy.ts` tidak lagi berjalan untuk prefetch (matcher `missing` header `next-router-prefetch`/
+  `purpose: prefetch`; ditulis literal karena config dibaca statis). Badge sidebar di `(panel)/layout.tsx` dihitung
+  paralel (`Promise.all`, 2–3 tahap, bukan ±20 berurutan). `loading.tsx` + `Kerangka.tsx` (tabel/ringkasan/
+  tab-statistik/kartu/formulir); Ringkasan dipindah ke grup `(ringkasan)` agar kerangkanya sendiri. Sidebar menandai
+  menu yang diklik seketika (optimistis). `fetchTahan` (`src/lib/supabase/fetch-tahan.ts`) mengulang sekali bila koneksi
+  keep-alive putus (`fetch failed`/ECONNRESET di log produksi); metode non-GET hanya diulang bila pasti belum terkirim.
+  Region fungsi Vercel `sin1` = Supabase ap-southeast-1.
+- **Usulan indeks** `supabase/migrations/20261226000000_index_admin.sql` (7 indeks `create index if not exists`) —
+  BELUM disetujui, BELUM di-commit, & BELUM dijalankan di produksi (hanya di DB uji lokal).
+- **Template impor**: penulis XLSX sendiri `src/lib/admin/xlsx-template.ts` (fflate; lembar Data/Petunjuk/Daftar
+  tersembunyi, judul beku, kolom teks `@`, tanggal dd/mm/yyyy, validasi daftar). CSV: `src/lib/admin/csv-impor.ts`
+  (BOM, `;`, CRLF; pembaca mendeteksi `;`/`,` dan BOM). Baris bertanda `(contoh)` dilewati pengimpor. Label template
+  dikenali otomatis (`dikenali()` di `induk.ts`); No. HP/NISN yang kehilangan 0 di depan dipulihkan.
+- **Tombol unduh**: `TombolUnduh.tsx` (fetch + blob, "Menyiapkan…", pesan galat `role=alert`) untuk semua ekspor/template.
+- **Tab**: satu komponen `TabPills.tsx` + `tab-pills.css` (40px, pill, role tablist/tab, panah kiri/kanan/Home/End,
+  gulir horizontal di HP). Tombol aksi judul halaman 44px sejajar judul (`judul-halaman.css`, `JudulHalaman` grid).
+- **Alat ukur**: `scripts/uji-e2e/ukur-admin.mjs` (waktu pindah menu + jumlah permintaan DB dari log Kong),
+  `proxy-latensi.mjs`, `tangkap-tab.mjs`, `uji-impor.mjs`, `uji-ekspor.mjs`.
+- Catatan uji lokal: `uji-masuk.mjs` mengubah teks bantuan GTK & mendaftarkan TOTP admin → sebelum `uji-alur` hapus
+  faktor MFA admin; kosongkan `portal_login.bantuan_sandi` (cache data publik 60 detik) sebelum `uji-pengalihan`.

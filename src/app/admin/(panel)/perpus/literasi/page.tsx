@@ -6,6 +6,7 @@ import { NavPerpus } from "@/components/perpus/Nav";
 import { arsipTantangan, hapusDuta, moderasiUlasan, periksaJurnal } from "@/app/admin/actions-perpus";
 import { punya, wajibLogin } from "@/lib/admin/auth";
 import { tgl } from "@/lib/perpus";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Literasi" };
 const TAB = [["jurnal", "Jurnal baca"], ["ulasan", "Ulasan buku"], ["tantangan", "Tantangan"], ["duta", "Duta literasi"]] as const;
@@ -26,9 +27,7 @@ export default async function Literasi({ searchParams }: { searchParams: Promise
       <JudulHalaman judul="Literasi" deskripsi="Periksa jurnal baca siswa, moderasi ulasan buku, kelola tantangan literasi dan duta literasi." />
       <NavPerpus kelola={punya(akses, "perpus.kelola")} />
       <Notifikasi kode={sp.pesan} />
-      <div className="mb-5 flex flex-wrap gap-2 text-sm">
-        {TAB.map(([k, l]) => <Link key={k} href={`?tab=${k}`} className={`rounded-full px-3 py-1.5 font-semibold ${tab === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>)}
-      </div>
+      <TabPills label="Bagian literasi" item={TAB.map(([k, l]) => ({ href: `?tab=${k}`, label: l }))} aktif={`?tab=${tab}`} />
       {tab === "jurnal" && <Jurnal status={sp.status === "semua" ? "semua" : "diajukan"} bina={bina} />}
       {tab === "ulasan" && <Ulasan bina={bina} />}
       {tab === "tantangan" && (

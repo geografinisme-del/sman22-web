@@ -3,6 +3,7 @@ import { JudulHalaman, Kartu, Notifikasi } from "@/components/admin/ui";
 import { FormAngkatan, FormImporLulusan } from "@/components/alumni/Form";
 import { NavAlumni } from "@/components/alumni/Nav";
 import { punya, wajibLogin } from "@/lib/admin/auth";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Alumni" };
 type S = { tahun_lulus: number; total: number; berakun: number; mengisi: number; kuliah: number | null; bekerja: number | null; wirausaha: number | null; kuliah_bekerja: number | null; mencari_kerja: number | null; lainnya: number | null };
@@ -23,7 +24,7 @@ export default async function Alumni({ searchParams }: { searchParams: Promise<{
   return (
     <>
       <JudulHalaman judul="Alumni & Tracer Study" deskripsi="Statistik agregat per angkatan — tanpa data pribadi. Kelompok kurang dari 3 orang disamarkan."
-        aksi={<a href="/admin/alumni/ekspor" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Unduh statistik (Excel)</a>} />
+        aksi={<TombolUnduh href="/admin/alumni/ekspor" namaCadangan="statistik-alumni.xlsx">Unduh statistik (Excel)</TombolUnduh>} />
       <NavAlumni kelola={kelola} />
       <Notifikasi kode={sp.pesan} />
       <ul className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">

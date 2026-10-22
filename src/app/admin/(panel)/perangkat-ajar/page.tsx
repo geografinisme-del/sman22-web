@@ -7,6 +7,7 @@ import { punya, wajibLogin } from "@/lib/admin/auth";
 import { JENIS_PERANGKAT, semesterSekarang, type JenisPerangkat } from "@/lib/kurikulum";
 import { Status } from "@/components/kurikulum/Status";
 import { ubahStatusPerangkat } from "../../actions-kurikulum";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Perangkat Ajar" };
 
@@ -35,9 +36,7 @@ export default async function PerangkatAjar({ searchParams }: { searchParams: Pr
         aksi={punya(akses, "kurikulum.kelola") ? <Link href="/admin/perangkat-ajar/review" className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">Periksa perangkat guru →</Link> : undefined} />
       <NavKurikulum />
       <Notifikasi kode={sp.pesan} />
-      <div className="mb-4 flex gap-2">
-        {[1, 2].map((s) => <Link key={s} href={`?semester=${s}`} className={`rounded-full px-4 py-2 text-sm font-semibold ${s === semester ? "bg-ink text-white" : "bg-white ring-1 ring-black/10"}`}>Semester {s}</Link>)}
-      </div>
+      <TabPills label="Semester" item={[1, 2].map((s) => ({ href: `?semester=${s}`, label: `Semester ${s}` }))} aktif={`?semester=${semester}`} />
 
       <section className="mb-8">
         <h2 className="mb-3 text-2xl">Kelengkapan saya</h2>

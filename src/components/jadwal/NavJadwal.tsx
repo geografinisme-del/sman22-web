@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TabPills } from "@/components/admin/TabPills";
 import { punya, type Akses } from "@/lib/admin/auth";
 
 export function NavJadwal({ akses, aktif }: { akses: Akses | null; aktif: string }) {
@@ -10,18 +10,6 @@ export function NavJadwal({ akses, aktif }: { akses: Akses | null; aktif: string
     { href: "/admin/jadwal/pengaturan", label: "Mapel, jam & piket", boleh: punya(akses, "jadwal.kelola") },
   ].filter((i) => i.boleh);
   if (item.length < 2) return null;
-  return (
-    <nav aria-label="Menu jadwal" className="-mt-4 mb-6 flex gap-2 overflow-x-auto pb-1 text-sm print:hidden">
-      {item.map((i) => (
-        <Link
-          key={i.href}
-          href={i.href}
-          aria-current={aktif === i.href ? "page" : undefined}
-          className={`shrink-0 rounded-full px-4 py-2 ${aktif === i.href ? "bg-ink text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}
-        >
-          {i.label}
-        </Link>
-      ))}
-    </nav>
-  );
+  return <TabPills label="Menu jadwal" item={item.map(({ href, label }) => ({ href, label }))} aktif={aktif} />;
 }
+

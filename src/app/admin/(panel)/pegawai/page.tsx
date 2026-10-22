@@ -2,6 +2,7 @@ import Link from "next/link";
 import { JudulHalaman, Lencana, Notifikasi, Paginasi, TombolLink, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
 import { punya, wajibIzin } from "@/lib/admin/auth";
 import { STATUS_PEGAWAI } from "@/lib/admin/induk";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Guru & Pegawai" };
 const PER_HALAMAN = 25;
@@ -31,7 +32,7 @@ export default async function DaftarPegawai({ searchParams }: { searchParams: Pr
         judul="Guru & Pegawai"
         aksi={
           <div className="flex flex-wrap gap-2">
-            <TombolLink href="/admin/pegawai/ekspor" sekunder>Unduh Excel</TombolLink>
+            <TombolUnduh href="/admin/pegawai/ekspor" namaCadangan="data-guru-pegawai.xlsx">Unduh Excel</TombolUnduh>
             {bisaUbah && (
               <>
                 <TombolLink href="/admin/pegawai/impor" sekunder>Impor Excel</TombolLink>

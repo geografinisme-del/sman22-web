@@ -3,6 +3,7 @@ import { JudulHalaman, KosongAdmin, Lencana, Notifikasi } from "@/components/adm
 import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
 import { formatTanggal } from "@/lib/format";
 import { prosesIzin } from "../../actions-portal";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Izin dari Orang Tua" };
 
@@ -37,10 +38,7 @@ export default async function IzinOrtu({ searchParams }: { searchParams: Promise
         deskripsi="Pemberitahuan sakit/izin yang dikirim orang tua lewat portal. Bila diterima, absensi siswa terisi otomatis (tidak menimpa catatan terlambat)."
       />
       <Notifikasi kode={sp.pesan} />
-      <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/izin-ortu" className={`rounded-full px-4 py-2 ${!riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Menunggu</a>
-        <a href="/admin/izin-ortu?lihat=riwayat" className={`rounded-full px-4 py-2 ${riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Riwayat</a>
-      </nav>
+      <TabPills label="Saring izin orang tua" item={[{ href: "/admin/izin-ortu", label: "Menunggu" }, { href: "/admin/izin-ortu?lihat=riwayat", label: "Riwayat" }]} aktif={riwayat ? "/admin/izin-ortu?lihat=riwayat" : "/admin/izin-ortu"} />
       {list.length === 0 ? (
         <KosongAdmin teks={riwayat ? "Belum ada riwayat." : "Tidak ada pemberitahuan yang menunggu."} />
       ) : (

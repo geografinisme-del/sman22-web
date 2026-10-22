@@ -1,0 +1,49 @@
+/* Tombol aksi di header halaman (JudulHalaman): tinggi 44px, padding & radius sama, sejajar dengan judul */
+.aksi-halaman {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.aksi-halaman > div,
+.aksi-halaman > span:not([role="alert"]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.aksi-halaman :is(a, button):not(.aksi-bebas) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white, #fff);
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+.aksi-halaman :is(a, button)[class*="bg-ink"]:not(.aksi-bebas),
+.aksi-halaman :is(a, button)[data-utama]:not(.aksi-bebas) {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+@media (hover: hover) {
+  .aksi-halaman :is(a, button):not(.aksi-bebas):not([class*="bg-ink"]):not([data-utama]):hover {
+    background: var(--soft);
+  }
+  .aksi-halaman :is(a, button)[class*="bg-ink"]:not(.aksi-bebas):hover,
+  .aksi-halaman :is(a, button)[data-utama]:not(.aksi-bebas):hover {
+    background: color-mix(in srgb, var(--ink) 85%, #fff);
+  }
+}
+.aksi-halaman :is(a, button):not(.aksi-bebas):focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
