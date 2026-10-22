@@ -513,3 +513,10 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   Uji: `scripts/uji-e2e/uji-keluar.mjs` (2 browser + jumlah auth.sessions).
 - Domain sekolah smanegeri22bandung.sch.id & DNS belum diubah (keputusan terpisah).
 
+## Rilis production: cakupan Keluar (22 Okt 2026)
+- Merge `langit-cerah` → `main` (merge commit `1d48e07`). Deployment baru `dpl_3XkELAYDmoEtNSvFhPQdt24r1L2M` (sin1);
+  titik kembali `dpl_CWZjmJdmbqWGvKtQP16LhjeqrkqJ` (`cb57b00`). Tanpa perubahan database.
+- Dicek di production dengan akun admin di Chrome + Edge: 2 sesi → "Keluar" di Chrome → 1 sesi (Edge tetap masuk) →
+  Chrome masuk lagi (2 sesi) → "Keluar dari semua perangkat" (konfirmasi) → 0 sesi, pesan "Anda sudah keluar dari semua
+  perangkat." tampil. Halaman login ketiga peran 200; log Vercel & Supabase tanpa error.
+
