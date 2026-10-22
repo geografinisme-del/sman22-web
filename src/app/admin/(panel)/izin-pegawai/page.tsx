@@ -4,6 +4,7 @@ import { STATUS_PEGAWAI_ABSEN } from "@/lib/admin/absensi";
 import { punya, wajibLogin } from "@/lib/admin/auth";
 import { formatTanggal, formatWaktu } from "@/lib/format";
 import { putuskanIzinPegawai } from "../../actions-pegawai";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Izin Guru & Pegawai" };
 
@@ -29,10 +30,7 @@ export default async function IzinPegawai({ searchParams }: { searchParams: Prom
     <>
       <JudulHalaman judul="Izin Guru & Pegawai" deskripsi="Pengajuan sakit, izin, dinas luar, dan cuti dari guru/pegawai. Setelah disetujui, kehadiran terisi otomatis dan guru tersebut muncul di menu Guru Pengganti." />
       <Notifikasi kode={sp.pesan} />
-      <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/izin-pegawai" className={`rounded-full px-4 py-2 ${!riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Menunggu</a>
-        <a href="/admin/izin-pegawai?lihat=riwayat" className={`rounded-full px-4 py-2 ${riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Riwayat</a>
-      </nav>
+      <TabPills label="Saring izin guru & pegawai" item={[{ href: "/admin/izin-pegawai", label: "Menunggu" }, { href: "/admin/izin-pegawai?lihat=riwayat", label: "Riwayat" }]} aktif={riwayat ? "/admin/izin-pegawai?lihat=riwayat" : "/admin/izin-pegawai"} />
       {!list.length ? <KosongAdmin teks={riwayat ? "Belum ada riwayat." : "Tidak ada pengajuan yang menunggu."} /> : (
         <ul className="space-y-3">
           {list.map((z) => (

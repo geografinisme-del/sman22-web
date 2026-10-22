@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { ArrowUpRight, BookUser, CalendarDays, ShieldCheck, UserRound } from "lucide-react";
 import { Panel } from "@/components/dashboard/HariIni";
 import { berperan, type Akses } from "@/lib/admin/auth";
+import { pegawaiSaya } from "@/lib/admin/hitungan";
 import { getTautanGuruLama } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
 
@@ -14,7 +15,7 @@ const HARI = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"
  * dan kartu "aplikasi guru lama" (Ruang Guru) bila admin mengisinya. Tidak pernah layar kosong.
  */
 export async function DasborDasar({ supabase, akses }: { supabase: SupabaseClient; akses: Akses }) {
-  const { data: pid } = await supabase.rpc("pegawai_saya");
+  const pid = await pegawaiSaya(supabase);
   const [umumkan, piket, guruLama] = await Promise.all([
     // kolom sasaran ada setelah migrasi 20261225; galat = tidak ditampilkan
     supabase.from("pengumuman").select("id, judul, isi, tanggal, penting").eq("sasaran", "pegawai").is("deleted_at", null).eq("aktif", true).order("tanggal", { ascending: false }).limit(4),

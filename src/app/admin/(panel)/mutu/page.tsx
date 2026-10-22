@@ -7,6 +7,7 @@ import { punya, wajibLogin } from "@/lib/admin/auth";
 import { pilihKerangka, type BarisAnalisis } from "@/lib/admin/mutu-data";
 import { Lencana } from "@/lib/lms";
 import { CELAH, PERSETUJUAN, STATUS_CAPAIAN, STATUS_KERANGKA } from "@/lib/mutu";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Mutu & Akreditasi" };
 const persen = (a: number, b: number) => (b ? Math.round((100 * a) / b) : 0);
@@ -43,7 +44,7 @@ export default async function Mutu({ searchParams }: { searchParams: Promise<{ k
             <button className="rounded-full px-4 py-2 font-semibold ring-1 ring-black/15">Tampilkan</button>
             <span className="flex-1" />
             {kelola && <Link href={`/admin/mutu/kerangka/${kini.id}`} className="rounded-full px-4 py-2 font-semibold ring-1 ring-black/15">Atur standar & indikator</Link>}
-            <a href={`/admin/mutu/ekspor${q({})}`} className="rounded-full px-4 py-2 font-semibold ring-1 ring-black/15">Paket laporan (Excel)</a>
+            <TombolUnduh href={`/admin/mutu/ekspor${q({})}`} namaCadangan="paket-laporan-mutu.xlsx">Paket laporan (Excel)</TombolUnduh>
             <a href={`/cetak/mutu${q({})}`} target="_blank" className="rounded-full px-4 py-2 font-semibold ring-1 ring-black/15">Cetak laporan</a>
           </form>
           <p className="mb-4 text-sm text-black/60"><strong>{kini.nama}</strong> · versi {kini.versi}{kini.sumber_regulasi && ` · ${kini.sumber_regulasi}`}</p>

@@ -6,6 +6,7 @@ import { NavSarpras } from "@/components/sarpras/Nav";
 import { punya, wajibLogin } from "@/lib/admin/auth";
 import { uuid } from "@/lib/admin/schema";
 import { KONDISI, Lencana, rupiah } from "@/lib/lms";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Inventaris Sarpras" };
 const PER = 50;
@@ -39,7 +40,7 @@ export default async function Inventaris({ searchParams }: { searchParams: Promi
   return (
     <>
       <JudulHalaman judul="Sarana & Prasarana" deskripsi="Inventaris barang sekolah: kode otomatis, lokasi, kondisi, nilai aset, dan label QR."
-        aksi={<div className="flex gap-2"><a href="/admin/sarpras/ekspor" className="rounded-full px-4 py-2.5 text-sm font-semibold ring-1 ring-black/15">Unduh Excel</a>
+        aksi={<div className="flex gap-2"><TombolUnduh href="/admin/sarpras/ekspor" namaCadangan="inventaris-sarpras.xlsx">Unduh Excel</TombolUnduh>
           {kelolaBarang && <Link href="?tambah=1#tambah" className="rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-white">+ Barang</Link>}</div>} />
       <NavSarpras lihat={lihat} kelola={kelola} />
       <Notifikasi kode={sp.pesan} />

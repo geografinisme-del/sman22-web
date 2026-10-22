@@ -4,6 +4,7 @@ import { NavJadwal } from "@/components/jadwal/NavJadwal";
 import { wajibIzin } from "@/lib/admin/auth";
 import { arsipPenugasan } from "../../../actions-jadwal";
 import { TambahPenugasan, TempelPenugasan, UbahPenugasan } from "./Form";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Penugasan Mengajar" };
 
@@ -39,10 +40,7 @@ export default async function Penugasan({ searchParams }: { searchParams: Promis
       <JudulHalaman judul="Penugasan Mengajar" deskripsi={`Guru, mapel, dan JP per minggu tiap kelas (TA ${ta.nama}). Jadwal hanya bisa diisi dari penugasan ini.`} />
       <NavJadwal akses={akses} aktif="/admin/jadwal/penugasan" />
       <Notifikasi kode={sp.pesan} />
-      <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/jadwal/penugasan" className={`rounded-full px-4 py-2 ${!beban ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Per kelas</a>
-        <a href="/admin/jadwal/penugasan?lihat=beban" className={`rounded-full px-4 py-2 ${beban ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Beban mengajar guru</a>
-      </nav>
+      <TabPills label="Tampilan penugasan" item={[{ href: "/admin/jadwal/penugasan", label: "Per kelas" }, { href: "/admin/jadwal/penugasan?lihat=beban", label: "Beban mengajar guru" }]} aktif={beban ? "/admin/jadwal/penugasan?lihat=beban" : "/admin/jadwal/penugasan"} />
 
       {beban ? (
         <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">

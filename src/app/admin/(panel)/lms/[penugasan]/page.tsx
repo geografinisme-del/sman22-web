@@ -7,6 +7,7 @@ import { wajibLogin } from "@/lib/admin/auth";
 import { penugasanSaya } from "@/lib/admin/lms-data";
 import { uuid } from "@/lib/admin/schema";
 import { keLokalWIB, waktuWIB } from "@/lib/lms";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 
 export const metadata = { title: "Kelas Digital" };
 
@@ -34,7 +35,7 @@ export default async function RuangKelas({ params, searchParams }: { params: Pro
     <>
       <JudulHalaman judul={`${p.mapel} · ${p.kelas}`} deskripsi="Tugas, kuis, dan materi untuk kelas ini."
         aksi={<div className="flex flex-wrap gap-2"><TombolLink href="/admin/lms" sekunder>← Semua kelas</TombolLink>
-          <a href={`/admin/lms/${p.id}/nilai`} className="rounded-full px-4 py-2.5 text-sm font-semibold ring-1 ring-black/15">Unduh rekap nilai (Excel)</a></div>} />
+          <TombolUnduh href={`/admin/lms/${p.id}/nilai`} namaCadangan="rekap-nilai.xlsx">Unduh rekap nilai (Excel)</TombolUnduh></div>} />
       <Notifikasi kode={sp.pesan} />
       <div className="mb-6 flex flex-wrap gap-2">
         <Link href="?buat=tugas#buat" className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white">+ Tugas</Link>

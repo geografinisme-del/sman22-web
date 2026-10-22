@@ -6,6 +6,7 @@ import { wajibIzin } from "@/lib/admin/auth";
 import { JENIS_PERANGKAT, semesterSekarang, type JenisPerangkat } from "@/lib/kurikulum";
 import { reviewPerangkat } from "../../../actions-kurikulum";
 import { Status } from "@/components/kurikulum/Status";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Periksa Perangkat Ajar" };
 
@@ -56,7 +57,7 @@ export default async function ReviewPerangkat({ searchParams }: { searchParams: 
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <h2 className="flex-1 text-2xl">Rekap kelengkapan semester {semester}</h2>
         <span className="text-sm text-black/60">{lengkap}/{r.length} penugasan lengkap (prota, promes, ≥1 modul disetujui)</span>
-        {[1, 2].map((s) => <Link key={s} href={`?semester=${s}`} className={`rounded-full px-3 py-1.5 text-xs font-semibold ${s === semester ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Smt {s}</Link>)}
+        <TabPills label="Semester" rapat item={[1, 2].map((s) => ({ href: `?semester=${s}`, label: `Smt ${s}` }))} aktif={`?semester=${semester}`} />
       </div>
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className="w-full min-w-[720px] text-left text-sm">

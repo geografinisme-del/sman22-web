@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { TabPills } from "@/components/admin/TabPills";
 
 const ITEM = [
   { href: "/admin/kurikulum", label: "Struktur" },
@@ -13,16 +12,5 @@ const ITEM = [
 ];
 
 export function NavKurikulum() {
-  const p = usePathname();
-  const aktif = ITEM.map((i) => i.href).filter((h) => p === h || p.startsWith(h + "/")).sort((a, b) => b.length - a.length)[0];
-  return (
-    <nav aria-label="Menu kurikulum" className="-mt-4 mb-6 flex gap-2 overflow-x-auto pb-1 text-sm print:hidden">
-      {ITEM.map((i) => (
-        <Link key={i.href} href={i.href} aria-current={aktif === i.href ? "page" : undefined}
-          className={`shrink-0 rounded-full px-4 py-2 ${aktif === i.href ? "bg-ink text-white" : "ring-1 ring-black/10 hover:bg-black/5"}`}>
-          {i.label}
-        </Link>
-      ))}
-    </nav>
-  );
+  return <TabPills label="Menu kurikulum" item={ITEM} cocok="awalan" />;
 }

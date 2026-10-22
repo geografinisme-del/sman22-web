@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Papa from "papaparse";
 import { useMemo, useState, useTransition } from "react";
 import { jalankanImpor, pratinjauImpor, type HasilPratinjau } from "@/app/admin/actions-induk";
+import { TombolUnduh } from "@/components/admin/TombolUnduh";
 import {
   KOLOM_PEGAWAI,
   KOLOM_SISWA,
+  PENANDA_CONTOH,
   cariBarisHeader,
   normalisasiBaris,
   tebakPemetaan,
@@ -18,9 +19,9 @@ type Tahap = "pilih" | "petakan" | "periksa" | "selesai";
 async function bacaFile(file: File): Promise<unknown[][]> {
   const nama = file.name.toLowerCase();
   if (nama.endsWith(".csv") || nama.endsWith(".txt")) {
-    const teks = await file.text();
-    const hasil = Papa.parse<string[]>(teks.replace(/^﻿/, ""), { skipEmptyLines: "greedy" });
-    return hasil.data;
+    // pemisah ; atau , dideteksi otomatis; BOM UTF-8 boleh ada atau tidak. Pembaca CSV dimuat hanya saat dibutuhkan.
+    const { bacaCsv } = await import("@/lib/admin/csv-impor");
+    return bacaCsv(await file.text());
   }
   if (nama.endsWith(".xlsx")) {
     const { readSheet } = await import("read-excel-file/browser");
@@ -53,7 +54,9 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
       const semua = (await bacaFile(f)).filter((r) => r.some((c) => String(c ?? "").trim() !== ""));
       const iHeader = cariBarisHeader(semua, kolom);
       const h = (semua[iHeader] ?? []).map((c) => String(c ?? "").trim());
-      const isi = semua.slice(iHeader + 1);
+      // baris contoh dari template (nama berakhiran "(contoh)") dilewati bila tidak dihapus pengguna
+      const iNama = h.findIndex((x) => x.toLowerCase() === "nama");
+      const isi = semua.slice(iHeader + 1).filter((r) => !String(r[iNama >= 0 ? iNama : 0] ?? "").trim().toLowerCase().endsWith(PENANDA_CONTOH));
       if (!isi.length) return setGalat("Tidak ditemukan baris data di bawah judul kolom.");
       setNamaFile(f.name);
       setHeader(h);
@@ -128,13 +131,13 @@ export function Impor({ jenis, kembali, templateHref }: { jenis: "siswa" | "pega
                 Template berisi judul kolom yang benar dan lembar <strong>Petunjuk</strong> cara mengisinya. File ekspor dari menu ini juga bisa diedit lalu diimpor ulang.
               </p>
             </div>
-            <div className="flex shrink-0 flex-wrap gap-2">
-              <a href={templateHref} download className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white hover:bg-ink/85">
+            <div className="flex shrink-0 flex-wrap items-start gap-2">
+              <TombolUnduh href={templateHref} namaCadangan={`template-impor-${jenis}.xlsx`} utama>
                 Unduh template Excel
-              </a>
-              <a href={`${templateHref}?format=csv`} download className="rounded-full px-5 py-2.5 text-sm font-semibold ring-1 ring-black/15 hover:bg-white">
+              </TombolUnduh>
+              <TombolUnduh href={`${templateHref}?format=csv`} namaCadangan={`template-impor-${jenis}.csv`}>
                 Template CSV
-              </a>
+              </TombolUnduh>
             </div>
           </div>
           <p className="mt-4 text-black/60">

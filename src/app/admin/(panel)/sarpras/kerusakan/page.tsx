@@ -4,6 +4,7 @@ import { NavSarpras } from "@/components/sarpras/Nav";
 import { punya, wajibLogin } from "@/lib/admin/auth";
 import { KONDISI, Lencana, rupiah, STATUS_RUSAK, waktuWIB } from "@/lib/lms";
 import { tanganiKerusakan } from "../../../actions-sarpras";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Laporan Kerusakan" };
 
@@ -34,9 +35,14 @@ export default async function Kerusakan({ searchParams }: { searchParams: Promis
         <Kartu>
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <h2 className="flex-1 text-2xl">{!lihat || sp.lihat === "saya" ? "Laporan saya" : sp.lihat === "semua" ? "Semua laporan" : "Perlu ditangani"}</h2>
-            {lihat && ["", "semua", "saya"].map((v) => (
-              <a key={v} href={v ? `?lihat=${v}` : "?"} className={`rounded-full px-3 py-1 text-xs font-semibold ${(sp.lihat ?? "") === v ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{v === "" ? "Aktif" : v === "semua" ? "Semua" : "Saya"}</a>
-            ))}
+            {lihat && (
+              <TabPills
+                label="Saring laporan kerusakan"
+                rapat
+                item={[{ href: "?", label: "Aktif" }, { href: "?lihat=semua", label: "Semua" }, { href: "?lihat=saya", label: "Saya" }]}
+                aktif={sp.lihat === "semua" ? "?lihat=semua" : sp.lihat === "saya" ? "?lihat=saya" : "?"}
+              />
+            )}
           </div>
           {list.length === 0 ? <p className="text-sm text-black/50">Tidak ada laporan.</p> : (
             <ul className="space-y-3">

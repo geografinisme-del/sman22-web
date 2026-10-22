@@ -1,0 +1,77 @@
+/* Tab berbentuk pil (komponen TabPills) — satu gaya untuk semua halaman admin.
+   Ukuran aktif & tidak aktif identik (border 1px di semua keadaan), tidak ada transform saat hover,
+   hover hanya di perangkat ber-kursor (tidak "tertahan" setelah diketuk di layar sentuh). */
+.tab-pills {
+  display: flex;
+  gap: 8px;
+  margin: -0.5rem 0 1.5rem;
+  padding: 2px 2px 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.tab-pills::-webkit-scrollbar {
+  height: 4px;
+}
+.tab-pills::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--line);
+}
+.tab-pills[data-rapat] {
+  margin: 0;
+}
+.tab-pill {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white, #fff);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+@media (hover: hover) {
+  .tab-pill:hover {
+    background: var(--soft);
+  }
+}
+.tab-pill[aria-selected="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+@media (hover: hover) {
+  .tab-pill[aria-selected="true"]:hover {
+    background: var(--ink);
+  }
+}
+.tab-pill:focus {
+  outline: none;
+}
+.tab-pill:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+.tab-pill .tab-pill-jumlah {
+  margin-left: 6px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+@media print {
+  .tab-pills {
+    display: none;
+  }
+}

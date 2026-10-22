@@ -5,6 +5,7 @@ import { punya, wajibLogin } from "@/lib/admin/auth";
 import { STATUS_PENGAJUAN } from "@/lib/ekskul";
 import { Lencana, rupiah } from "@/lib/lms";
 import { tgl } from "@/lib/perpus";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Pengajuan kegiatan" };
 type A = { id: string; judul: string; mulai: string; status: string; total_anggaran: number; lpj_realisasi: number | null; organisasi: { nama: string; warna: string } | null };
@@ -26,11 +27,11 @@ export default async function DaftarPengajuan({ searchParams }: { searchParams: 
   return (
     <>
       <JudulHalaman judul="Pengajuan kegiatan" deskripsi="Proposal kegiatan organisasi siswa: persetujuan pembina → kesiswaan, lalu LPJ setelah kegiatan." />
-      <div className="mb-4 flex flex-wrap gap-2 text-sm">
-        {[["", "Perlu tindak lanjut"], ...Object.entries(STATUS_PENGAJUAN).map(([k, v]) => [k, v.label]), ["semua", "Semua"]].map(([k, l]) => (
-          <Link key={k} href={k ? `?status=${k}` : "?"} className={`rounded-full px-3 py-1.5 font-semibold ${(sp.status ?? "") === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>
-        ))}
-      </div>
+      <TabPills
+        label="Saring status pengajuan"
+        item={[["", "Perlu tindak lanjut"], ...Object.entries(STATUS_PENGAJUAN).map(([k, v]) => [k, v.label]), ["semua", "Semua"]].map(([k, l]) => ({ href: k ? `?status=${k}` : "?", label: l }))}
+        aktif={sp.status ? `?status=${sp.status}` : "?"}
+      />
       <Kartu>
         {list.length === 0 ? <p className="text-sm text-black/50">Tidak ada pengajuan.</p> : (
           <div className="overflow-x-auto">

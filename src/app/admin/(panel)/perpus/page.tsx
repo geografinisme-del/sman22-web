@@ -16,9 +16,14 @@ export default async function Perpus({ searchParams }: { searchParams: Promise<{
 
   if (!lihat) {
     const { data: saya } = await supabase.rpc("pegawai_saya");
-    const { data: rsv } = saya ? await supabase.from("reservasi_buku").select("id, status, batas_ambil, buku(judul)").eq("pegawai_id", saya).in("status", ["menunggu", "siap"]) : { data: [] };
+    // reservasi & pinjaman milik sendiri dimuat bersamaan
+    const [{ data: rsv }, { data }] = saya
+      ? await Promise.all([
+          supabase.from("reservasi_buku").select("id, status, batas_ambil, buku(judul)").eq("pegawai_id", saya).in("status", ["menunggu", "siap"]),
+          supabase.from("pinjaman_buku").select("id, jatuh_tempo, kembali_pada, perpanjang, eksemplar(kode, buku(judul))").eq("pegawai_id", saya).order("pinjam_pada", { ascending: false }).limit(30),
+        ])
+      : [{ data: [] }, { data: [] }];
     const pesanan = (rsv ?? []) as unknown as { id: string; status: string; batas_ambil: string | null; buku: { judul: string } | null }[];
-    const { data } = saya ? await supabase.from("pinjaman_buku").select("id, jatuh_tempo, kembali_pada, perpanjang, eksemplar(kode, buku(judul))").eq("pegawai_id", saya).order("pinjam_pada", { ascending: false }).limit(30) : { data: [] };
     type R = { id: string; jatuh_tempo: string; kembali_pada: string | null; perpanjang: number; eksemplar: { kode: string; buku: { judul: string } | null } | null };
     return (
       <>

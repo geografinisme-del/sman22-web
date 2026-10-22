@@ -436,7 +436,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Daftar kebutuhan foto/konten untuk sekolah: `docs/kebutuhan-konten.md`.
 
 ### Keamanan akun & backup (21 Okt 2026)
-- **Signup Supabase Auth produksi TERBUKA** (`disable_signup: false`, provider email). Aplikasi tidak memakai signUp;
+- **Signup Supabase Auth produksi SUDAH DITUTUP** (21 Okt 2026, `disable_signup: true`; sebelumnya terbuka). Aplikasi tidak memakai signUp;
   semua akun dibuat lewat Admin API (Pengguna & Peran, akun portal, alumni). Tutup di Supabase Dashboard →
   Authentication → Sign In / Providers → matikan "Allow new users to sign up" (login, atur ulang sandi, dan pembuatan
   akun oleh admin tetap berjalan). Akun yang mendaftar sendiri tidak punya baris `pengguna` → tidak mendapat akses apa pun.
@@ -452,3 +452,44 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   kompatibel dengan kode lama; rollback DB darurat: `supabase/rollback/rollback_20261210_20261225.sql`, backup 21 Okt).
 - Rilis = merge `langit-cerah` → `main` (merge commit, tanpa konflik). Signup Supabase Auth ditutup sebelum rilis.
 - Domain sekolah (smanegeri22bandung.sch.id) & DNS belum diubah — langkah terpisah.
+- **Hasil rilis (21 Okt 2026)**: deployment production baru `dpl_A5HQotUmD4ZR2KRwCV3eiecpguT3`
+  (`sman22-6d80yjxbk-geo-bbba.vercel.app`, merge commit `409a45d`), alamat publik **https://sman22-web.vercel.app**
+  (alias `sman22-web-geo-bbba` & `-git-main-` terkunci Vercel Authentication — normal).
+  Dicek: 13 halaman publik 200 tanpa error/"Contoh:", mega menu & menu HP tanpa galat konsol (1440 & 390), pengalihan
+  /admin/login → halaman masuk per peran (308) & /admin → login GTK, SEO: title/description terisi, tanpa noindex
+  (kecuali 3 halaman masuk — disengaja), robots.txt & sitemap.xml (26 halaman publik) normal; log Vercel & Supabase
+  tanpa error. Login admin dicek pemilik (akun asli).
+- **Belum**: domain sekolah smanegeri22bandung.sch.id & DNS (keputusan terpisah) — setelah domain aktif, perbarui
+  `sekolah.urlSitus` agar sitemap/robots memakai domain resmi. Supabase advisor: aktifkan "Leaked password protection".
+
+## Perbaikan CMS: kecepatan, template impor, tombol tab (22 Okt 2026, branch `langit-cerah`)
+- **Akar galat 500 semua ekspor & template Excel di produksi**: `WARNA_JUDUL = "var(--blue-teks)"` di
+  `src/lib/admin/excel.ts` (write-excel-file hanya menerima hex) → `#1F5FD1`. Jangan memakai variabel CSS di berkas Excel.
+- **Kecepatan**: `src/proxy.ts` tidak lagi berjalan untuk prefetch (matcher `missing` header `next-router-prefetch`/
+  `purpose: prefetch`; ditulis literal karena config dibaca statis). Badge sidebar di `(panel)/layout.tsx` dihitung
+  paralel (`Promise.all`, 2–3 tahap, bukan ±20 berurutan). `loading.tsx` + `Kerangka.tsx` (tabel/ringkasan/
+  tab-statistik/kartu/formulir); Ringkasan dipindah ke grup `(ringkasan)` agar kerangkanya sendiri. Sidebar menandai
+  menu yang diklik seketika (optimistis). `fetchTahan` (`src/lib/supabase/fetch-tahan.ts`) mengulang sekali bila koneksi
+  keep-alive putus (`fetch failed`/ECONNRESET di log produksi); metode non-GET hanya diulang bila pasti belum terkirim.
+  Region fungsi Vercel sebelumnya `iad1` (bawaan, AS) — jauh dari Supabase ap-southeast-1; sejak 22 Okt `vercel.json`
+  `"regions": ["sin1"]` (Singapura). Catatan: `region=` di log runtime Vercel = edge penerima, bukan lokasi fungsi.
+- **Indeks** `supabase/migrations/20261226000000_index_admin.sql` (7 indeks `create index if not exists`) — disetujui &
+  dijalankan di produksi 22 Okt 2026 via psql (tercatat di supabase_migrations.schema_migrations).
+- **Ringkasan (/admin)**: `lib/admin/hitungan.ts` — hasil query yang sama dibagi dalam satu permintaan (React `cache`):
+  layout (badge) & Ringkasan memakai satu hitungan, `pegawai_saya` & tahun ajaran sekali. Panel Ringkasan = komponen
+  async terpisah (paralel). Angka statistik (data induk, kelengkapan website, media sementara, tren kehadiran, kesiswaan
+  bulan ini) di-cache 60 detik PER AKUN lewat `lib/admin/statistik-singkat.ts` (`unstable_cache`, kunci = user + peran/izin;
+  klien bertoken sesi karena cookie tidak boleh dibaca di dalam cache). Daftar "Perlu ditindaklanjuti" & aktivitas TIDAK
+  di-cache. Hitungan memakai `select("*", head)` — tabel `absensi_kelas_harian` & `jurnal_jp` tidak punya kolom `id`.
+  Ukur: `scripts/uji-e2e/ukur-ringkasan.mjs`.
+- **Template impor**: penulis XLSX sendiri `src/lib/admin/xlsx-template.ts` (fflate; lembar Data/Petunjuk/Daftar
+  tersembunyi, judul beku, kolom teks `@`, tanggal dd/mm/yyyy, validasi daftar). CSV: `src/lib/admin/csv-impor.ts`
+  (BOM, `;`, CRLF; pembaca mendeteksi `;`/`,` dan BOM). Baris bertanda `(contoh)` dilewati pengimpor. Label template
+  dikenali otomatis (`dikenali()` di `induk.ts`); No. HP/NISN yang kehilangan 0 di depan dipulihkan.
+- **Tombol unduh**: `TombolUnduh.tsx` (fetch + blob, "Menyiapkan…", pesan galat `role=alert`) untuk semua ekspor/template.
+- **Tab**: satu komponen `TabPills.tsx` + `tab-pills.css` (40px, pill, role tablist/tab, panah kiri/kanan/Home/End,
+  gulir horizontal di HP). Tombol aksi judul halaman 44px sejajar judul (`judul-halaman.css`, `JudulHalaman` grid).
+- **Alat ukur**: `scripts/uji-e2e/ukur-admin.mjs` (waktu pindah menu + jumlah permintaan DB dari log Kong),
+  `proxy-latensi.mjs`, `tangkap-tab.mjs`, `uji-impor.mjs`, `uji-ekspor.mjs`.
+- Catatan uji lokal: `uji-masuk.mjs` mengubah teks bantuan GTK & mendaftarkan TOTP admin → sebelum `uji-alur` hapus
+  faktor MFA admin; kosongkan `portal_login.bantuan_sandi` (cache data publik 60 detik) sebelum `uji-pengalihan`.

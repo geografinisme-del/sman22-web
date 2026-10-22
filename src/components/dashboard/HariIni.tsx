@@ -7,12 +7,13 @@ import { awalBulan, geserTanggal, hariIniWIB } from "@/lib/admin/absensi";
 import { JENIS_KEGIATAN, KOLOM_KEGIATAN, rentangTanggal, type Kegiatan } from "@/lib/kalender";
 import { berperan, punya, type Akses } from "@/lib/admin/auth";
 import { trenTidakHadir } from "@/lib/dashboard";
+import { hitungBersama, pegawaiSaya, statusDisiplin, tahunAjaranAktif, tugasPerluNilai, tukarUntukSaya, type Hitungan, type NamaHitungan } from "@/lib/admin/hitungan";
+import { statistikSingkat } from "@/lib/admin/statistik-singkat";
 
 const NAMA_HARI = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
-type HasilHitung = { count: number | null; error?: unknown };
 /** jumlah dari kueri; null bila kueri gagal (jangan tampilkan sebagai nol) */
-const n = (r: HasilHitung) => (r.error ? null : (r.count ?? 0));
+const n = (r: Hitungan) => (r.error ? null : (r.count ?? 0));
 
 /** Panel ringkasan: permukaan putih, judul 18px, tindakan di kanan. */
 export function Panel({ judul, aksi, children, className = "" }: { judul: string; aksi?: ReactNode; children: ReactNode; className?: string }) {
@@ -62,56 +63,86 @@ function Angka({ nilai, label, catatan }: { nilai: number; label: string; catata
 export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseClient; akses: Akses }) {
   const hari = hariIniWIB();
   const iso = ((new Date(hari + "T00:00:00Z").getUTCDay() + 6) % 7) + 1;
+  const awal = new Date(Date.parse(`${hari}T00:00:00+07:00`)).toISOString();
   const q = (t: string) => supabase.from(t).select("*", { count: "exact", head: true });
-  const kosong = Promise.resolve({ count: 0, error: null });
+  const kosong: Promise<Hitungan> = Promise.resolve({ count: 0, error: null });
   const wali = berperan(akses, "wali_kelas");
+  const lihatSiswa = punya(akses, "absensi.lihat");
+  const lihatGuru = punya(akses, "absensi_pegawai.lihat");
+  // hitungan yang sama dengan badge menu dibagi dengan layout (satu query per permintaan)
+  const bersama = (syarat: boolean, nama: NamaHitungan) => (syarat ? hitungBersama(supabase, nama) : kosong);
 
-  const { data: pid } = await supabase.rpc("pegawai_saya");
-  const [berita, izinPeg, koreksi, izinOrtu, pel, pre, rujukan, gagalKirim, disiplin, jadwalSaya] = await Promise.all([
-    punya(akses, "konten.terbitkan") ? q("berita").eq("status", "diajukan").is("deleted_at", null) : kosong,
-    punya(akses, "izin_pegawai.setujui") ? q("pengajuan_izin_pegawai").eq("status", "menunggu") : kosong,
-    punya(akses, "absensi.kelola") ? q("pengajuan_koreksi").eq("status", "menunggu") : kosong,
-    punya(akses, "absensi.kelola") || wali ? q("izin_ortu").eq("status", "menunggu") : kosong,
-    punya(akses, "kesiswaan.kelola") ? q("pelanggaran_siswa").eq("status", "dilaporkan") : kosong,
-    punya(akses, "kesiswaan.kelola") ? q("prestasi_siswa").eq("status", "diajukan") : kosong,
-    punya(akses, "bk.rujukan") ? q("rujukan_bk").eq("status", "baru") : kosong,
+  // id pegawai & tahun ajaran (dipakai bersama layout/halaman), lalu SEMUA query lain berjalan bersamaan
+  const [pid, taRes] = await Promise.all([pegawaiSaya(supabase), tahunAjaranAktif(supabase)]);
+  const ta = taRes.data;
+  const jadwalSaya = pid
+    ? Promise.resolve(supabase.from("jadwal_lengkap").select("id").eq("pegawai_id", pid).eq("hari", iso).eq("tahun_aktif", true)).then((r) => ({ data: (r.data ?? []) as { id: string }[], error: r.error }))
+    : Promise.resolve({ data: [] as { id: string }[], error: null });
+  // jurnal hari ini langsung menyusul jadwal (rantai sendiri, tidak menahan query lain)
+  const jurnalHariIni = jadwalSaya.then((j) => (j.data.length ? q("jurnal_jp").eq("tanggal", hari).in("jadwal_id", j.data.map((x) => x.id)) : kosong));
+  const bolehKes = punya(akses, "kesiswaan.lihat");
+  // angka statistik (bukan tindakan): cache singkat per akun
+  const statistik = statistikSingkat(supabase, akses, "hari-ini", async (db) => {
+    const jumlah = (r: { count: number | null; error: unknown }): Hitungan => ({ count: r.count, error: r.error ? true : null });
+    const hit = (t: string) => db.from(t).select("*", { count: "exact", head: true });
+    const [tren, totalPeg, totalKelas, prestasiBulan, pelanggaranBulan] = await Promise.all([
+      lihatSiswa ? trenTidakHadir(db) : Promise.resolve([]),
+      lihatGuru ? hit("pegawai").eq("status", "aktif").is("deleted_at", null).then(jumlah) : kosong,
+      lihatSiswa && ta ? hit("kelas").eq("tahun_ajaran_id", ta.id).is("deleted_at", null).then(jumlah) : kosong,
+      bolehKes ? hit("prestasi_siswa").eq("status", "terverifikasi").gte("tanggal", awalBulan(hari)).then(jumlah) : kosong,
+      bolehKes ? hit("pelanggaran_siswa").eq("status", "terverifikasi").gte("tanggal", awalBulan(hari)).then(jumlah) : kosong,
+    ]);
+    return { tren, totalPeg, totalKelas, kes: bolehKes ? ([prestasiBulan, pelanggaranBulan] as const) : null };
+  });
+
+  const [
+    berita, izinPeg, koreksi, izinOrtu, pel, pre, rujukan, gagalKirim, disiplin, jadwal, jurnal,
+    tukarMasuk, tukarKur, kalender, perangkat, supervisi, revisi, perluNilai, pinjam, rusak,
+    aduanBaru, aduanLewat, telatPerpus, tamu, daftarAlumni, evalMutu, revisiMutu, mintaBk, sesiBk, ajuEkskul,
+    aturRes, liburRes, kbmRes, absHari, kelasDicek, pegHari, stat,
+  ] = await Promise.all([
+    bersama(punya(akses, "konten.terbitkan"), "beritaDiajukan"),
+    bersama(punya(akses, "izin_pegawai.setujui"), "izinPegawaiMenunggu"),
+    bersama(punya(akses, "absensi.kelola"), "koreksiMenunggu"),
+    bersama(punya(akses, "absensi.kelola") || wali, "izinOrtuMenunggu"),
+    bersama(punya(akses, "kesiswaan.kelola"), "pelanggaranBaru"),
+    bersama(punya(akses, "kesiswaan.kelola"), "prestasiDiajukan"),
+    bersama(punya(akses, "bk.rujukan"), "rujukanBaru"),
     punya(akses, "pengguna.kelola") ? q("antrian_kirim").eq("status", "gagal") : kosong,
-    punya(akses, "disiplin.kelola") ? supabase.rpc("status_disiplin") : Promise.resolve({ data: [], error: null }),
-    pid ? supabase.from("jadwal_lengkap").select("id").eq("pegawai_id", pid).eq("hari", iso).eq("tahun_aktif", true) : Promise.resolve({ data: [], error: null }),
-  ]);
-  const [tukarMasuk, tukarKur, kalender, perangkat, supervisi, revisi, perluNilai, pinjam, rusak] = await Promise.all([
-    pid ? q("pengajuan_tukar_jadwal").eq("mitra_id", pid).eq("status", "menunggu_mitra") : kosong,
-    punya(akses, "jadwal.kelola") ? q("pengajuan_tukar_jadwal").eq("status", "menunggu_kurikulum") : kosong,
+    punya(akses, "disiplin.kelola") ? statusDisiplin(supabase) : Promise.resolve({ data: [] as { dikonfirmasi: boolean }[], error: null }),
+    jadwalSaya,
+    jurnalHariIni,
+    pid ? tukarUntukSaya(supabase, pid) : kosong,
+    bersama(punya(akses, "jadwal.kelola"), "tukarMenungguKurikulum"),
     supabase.from("kegiatan_kalender").select(KOLOM_KEGIATAN).is("deleted_at", null).gte("selesai", hari).lte("mulai", geserTanggal(hari, 14)).order("mulai").limit(6),
-    punya(akses, "kurikulum.kelola") ? q("perangkat_ajar").eq("status", "diajukan").is("deleted_at", null) : kosong,
+    bersama(punya(akses, "kurikulum.kelola"), "perangkatDiajukan"),
     pid ? q("supervisi_akademik").eq("supervisor_id", pid).eq("status", "terjadwal").lte("tanggal", hari) : kosong,
     pid ? q("perangkat_ajar").eq("pegawai_id", pid).eq("status", "revisi").is("deleted_at", null) : kosong,
-    pid ? supabase.from("pengumpulan_tugas").select("id, tugas!inner(pegawai_id)", { count: "exact", head: true }).eq("status", "dikumpulkan").eq("tugas.pegawai_id", pid) : kosong,
-    punya(akses, "sarpras.kelola") ? q("peminjaman").eq("status", "diajukan") : kosong,
-    punya(akses, "sarpras.kelola") ? q("laporan_kerusakan").eq("status", "dilaporkan") : kosong,
-  ]);
-  const awal = new Date(Date.parse(`${hari}T00:00:00+07:00`)).toISOString();
-  const [aduanBaru, aduanLewat, telatPerpus, tamu] = await Promise.all([
-    q("pengaduan").eq("status", "baru"),
+    pid ? tugasPerluNilai(supabase, pid) : kosong,
+    bersama(punya(akses, "sarpras.kelola"), "peminjamanDiajukan"),
+    bersama(punya(akses, "sarpras.kelola"), "kerusakanBaru"),
+    hitungBersama(supabase, "aduanBaru"),
     q("pengaduan").in("status", ["baru", "diproses"]).lt("tenggat", hari),
     punya(akses, "perpus.kelola") ? q("pinjaman_buku").is("kembali_pada", null).lt("jatuh_tempo", hari) : kosong,
     pid ? q("buku_tamu").eq("bertemu_id", pid).is("keluar", null).gte("masuk", awal) : kosong,
-  ]);
-  const [daftarAlumni, evalMutu, revisiMutu] = await Promise.all([
-    punya(akses, "alumni.kelola") ? q("pendaftaran_alumni").eq("status", "menunggu") : kosong,
-    punya(akses, "mutu.kelola") || punya(akses, "mutu.audit") ? q("evaluasi_indikator").eq("persetujuan", "diajukan") : kosong,
+    bersama(punya(akses, "alumni.kelola"), "alumniMenunggu"),
+    bersama(punya(akses, "mutu.kelola") || punya(akses, "mutu.audit"), "mutuDiajukan"),
     pid ? supabase.from("evaluasi_indikator").select("id, indikator_mutu!inner(pemilik_id)", { count: "exact", head: true }).eq("persetujuan", "revisi").eq("indikator_mutu.pemilik_id", pid) : kosong,
-  ]);
-  const [mintaBk, sesiBk, ajuEkskul] = await Promise.all([
-    punya(akses, "bk.konseling") ? q("permintaan_konseling").eq("status", "baru") : kosong,
+    bersama(punya(akses, "bk.konseling"), "konselingBaru"),
     punya(akses, "bk.konseling") && pid ? q("sesi_konseling").eq("konselor_id", pid).eq("status", "terjadwal").gte("mulai", awal).lt("mulai", new Date(Date.parse(awal) + 864e5).toISOString()) : kosong,
-    punya(akses, "ekskul.kelola") ? q("pengajuan_kegiatan").in("status", ["disetujui_pembina", "lpj_diajukan"]) : kosong,
+    bersama(punya(akses, "ekskul.kelola"), "kegiatanMenungguKelola"),
+    // status hari ini: hari sekolah, libur, atau belum diatur
+    supabase.from("pengaturan_absensi").select("hari_sekolah").eq("id", 1).maybeSingle(),
+    supabase.from("hari_libur").select("keterangan").eq("tanggal", hari).maybeSingle(),
+    supabase.from("kegiatan_kalender").select("judul").is("deleted_at", null).eq("kbm_libur", true).lte("mulai", hari).gte("selesai", hari).limit(1),
+    lihatSiswa ? supabase.from("absensi_siswa").select("status").eq("tanggal", hari) : Promise.resolve({ data: [], error: null }),
+    lihatSiswa ? q("absensi_kelas_harian").eq("tanggal", hari) : kosong,
+    lihatGuru ? supabase.from("absensi_pegawai").select("status, jam_masuk").eq("tanggal", hari) : Promise.resolve({ data: [], error: null }),
+    statistik,
   ]);
-  const jadwal = jadwalSaya as { data: { id: string }[] | null; error: unknown };
-  const idJadwal = (jadwal.data ?? []).map((j) => j.id);
-  const jurnal = idJadwal.length ? await q("jurnal_jp").eq("tanggal", hari).in("jadwal_id", idJadwal) : { count: 0, error: null };
-  const dis = disiplin as { data: unknown; error: unknown };
-  const spBelum = dis.error ? null : (((dis.data ?? []) as { dikonfirmasi: boolean }[]).filter((d) => !d.dikonfirmasi).length);
+  const { tren, totalPeg, totalKelas, kes } = stat;
+  const idJadwal = jadwal.data.map((j) => j.id);
+  const spBelum = disiplin.error ? null : disiplin.data.filter((d) => !d.dikonfirmasi).length;
   const jamBelum = jadwal.error || jurnal.error ? null : Math.max(0, idJadwal.length - (jurnal.count ?? 0));
 
   const daftarTugas: { n: number | null; t: string; href: string; tombol: string }[] = [
@@ -146,14 +177,6 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
   const tugas = daftarTugas.filter((x) => (x.n ?? 0) > 0);
   const tugasGagal = daftarTugas.filter((x) => x.n === null).length;
 
-  // ---- status hari ini: hari sekolah, libur, atau belum diatur ----
-  const lihatSiswa = punya(akses, "absensi.lihat");
-  const lihatGuru = punya(akses, "absensi_pegawai.lihat");
-  const [aturRes, liburRes, kbmRes] = await Promise.all([
-    supabase.from("pengaturan_absensi").select("hari_sekolah").eq("id", 1).maybeSingle(),
-    supabase.from("hari_libur").select("keterangan").eq("tanggal", hari).maybeSingle(),
-    supabase.from("kegiatan_kalender").select("judul").is("deleted_at", null).eq("kbm_libur", true).lte("mulai", hari).gte("selesai", hari).limit(1),
-  ]);
   const hariSekolah = (aturRes.data?.hari_sekolah as number[] | undefined) ?? null;
   const liburKet = liburRes.data?.keterangan ?? (kbmRes.data ?? [])[0]?.judul ?? null;
   const statusHari: { jenis: "sekolah" | "libur" | "bukan" | "belum-diatur"; teks: string } = liburKet
@@ -164,19 +187,6 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
         ? { jenis: "bukan", teks: `Hari ini ${NAMA_HARI[iso]}, bukan hari sekolah.` }
         : { jenis: "sekolah", teks: "" };
 
-  const [taRes, absHari, kelasDicek, tren, pegHari, totalPeg, kes] = await Promise.all([
-    lihatSiswa || lihatGuru ? supabase.from("tahun_ajaran").select("id, nama, semester").eq("aktif", true).maybeSingle() : Promise.resolve({ data: null, error: null }),
-    lihatSiswa ? supabase.from("absensi_siswa").select("status").eq("tanggal", hari) : Promise.resolve({ data: [], error: null }),
-    lihatSiswa ? q("absensi_kelas_harian").eq("tanggal", hari) : kosong,
-    lihatSiswa ? trenTidakHadir(supabase) : Promise.resolve([]),
-    lihatGuru ? supabase.from("absensi_pegawai").select("status, jam_masuk").eq("tanggal", hari) : Promise.resolve({ data: [], error: null }),
-    lihatGuru ? q("pegawai").eq("status", "aktif").is("deleted_at", null) : kosong,
-    punya(akses, "kesiswaan.lihat")
-      ? Promise.all([q("prestasi_siswa").eq("status", "terverifikasi").gte("tanggal", awalBulan(hari)), q("pelanggaran_siswa").eq("status", "terverifikasi").gte("tanggal", awalBulan(hari))])
-      : Promise.resolve(null),
-  ]);
-  const ta = taRes.data as { id: string; nama: string; semester: string } | null;
-  const totalKelas = lihatSiswa && ta ? await q("kelas").eq("tahun_ajaran_id", ta.id).is("deleted_at", null) : { count: 0, error: null };
   const a = absHari as { data: { status: string }[] | null; error: unknown };
   const pRes = pegHari as { data: { status: string; jam_masuk: string | null }[] | null; error: unknown };
   const p = pRes.data ?? [];

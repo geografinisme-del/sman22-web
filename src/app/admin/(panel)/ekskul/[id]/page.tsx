@@ -11,6 +11,7 @@ import { uuid } from "@/lib/admin/schema";
 import { JABATAN, JENIS_KEGIATAN, JENIS_ORG, JENIS_SERTIF, STATUS_DAFTAR, STATUS_PENGAJUAN, STATUS_PROKER, type IsianTambahan } from "@/lib/ekskul";
 import { Lencana, keLokalWIB, rupiah, waktuWIB } from "@/lib/lms";
 import { tgl } from "@/lib/perpus";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Organisasi" };
 const TAB = [["anggota", "Anggota"], ["pendaftaran", "Pendaftaran"], ["kegiatan", "Kegiatan & presensi"], ["proker", "Program kerja"], ["pengajuan", "Pengajuan kegiatan"], ["sertifikat", "Sertifikat & prestasi"], ["profil", "Profil & pembina"]] as const;
@@ -39,9 +40,7 @@ export default async function Organisasi({ params, searchParams }: { params: Pro
         aksi={<div className="flex gap-2"><Link href="/admin/ekskul" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">← Semua</Link>{o.tampil_publik && <a href={`/ekskul/${o.slug}`} target="_blank" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Halaman publik ↗</a>}</div>} />
       <Notifikasi kode={sp.pesan} />
       {sp.galat && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-800">{sp.galat}</p>}
-      <nav className="mb-5 flex gap-2 overflow-x-auto pb-1 text-sm">
-        {TAB.map(([k, l]) => <Link key={k} href={`?tab=${k}`} className={`shrink-0 rounded-full px-3 py-1.5 font-semibold ${tab === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>)}
-      </nav>
+      <TabPills label="Bagian organisasi" item={TAB.map(([k, l]) => ({ href: `?tab=${k}`, label: l }))} aktif={`?tab=${tab}`} />
       {tab === "anggota" && <Anggota />}
       {tab === "pendaftaran" && <Pendaftaran />}
       {tab === "kegiatan" && <Kegiatan />}

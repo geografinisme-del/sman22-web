@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseAktif } from "@/lib/supabase/config";
 import { urlMasuk } from "@/lib/masuk";
+import { fetchTahan } from "@/lib/supabase/fetch-tahan";
 
 /** Menjaga sesi login admin tetap segar dan menolak akses /admin tanpa login. */
 export async function proxy(request: NextRequest) {
@@ -12,6 +13,7 @@ export async function proxy(request: NextRequest) {
 
   let response = NextResponse.next({ request });
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: { fetch: fetchTahan },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (list) => {
@@ -40,4 +42,22 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/admin", "/admin/:path*", "/portal", "/portal/:path*", "/pratinjau/:path*", "/berkas/:path*", "/papan", "/papan/:path*", "/cetak/:path*", "/alumni/akun", "/alumni/akun/:path*"] };
+// Prefetch Link (menu yang belum diklik) TIDAK melewati proxy: Next 16 menghapus header prefetch dari request di dalam
+// proxy, jadi pengecualiannya lewat matcher (cara resmi). Halaman tujuan tetap memeriksa sesi & peran di server
+// (getAkses) saat benar-benar dibuka — tanpa ini setiap prefetch memanggil Auth Supabase satu kali.
+export const config = {
+  // ditulis literal (bukan .map) karena Next membaca config proxy secara statis saat build
+  matcher: [
+    { source: "/admin", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/admin/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/portal", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/portal/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/pratinjau/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/berkas/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/papan", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/papan/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/cetak/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/alumni/akun", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/alumni/akun/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+  ],
+};

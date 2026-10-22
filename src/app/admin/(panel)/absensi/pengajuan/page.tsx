@@ -4,6 +4,7 @@ import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
 import { STATUS_SISWA_ABSEN, type KodeAbsen } from "@/lib/admin/absensi";
 import { formatTanggal } from "@/lib/format";
 import { putuskanPengajuan } from "../../../actions-absensi";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Pengajuan Koreksi" };
 
@@ -39,10 +40,7 @@ export default async function Pengajuan({ searchParams }: { searchParams: Promis
         deskripsi={memutuskan ? "Tinjau koreksi absensi dari wali kelas untuk tanggal yang sudah lewat minggu berjalan." : "Pengajuan koreksi yang Anda kirim."}
       />
       <Notifikasi kode={sp.pesan} />
-      <nav className="mb-5 flex gap-2 text-sm">
-        <a href="/admin/absensi/pengajuan" className={`rounded-full px-4 py-2 ${!riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Menunggu</a>
-        <a href="/admin/absensi/pengajuan?lihat=riwayat" className={`rounded-full px-4 py-2 ${riwayat ? "bg-ink text-white" : "ring-1 ring-black/10"}`}>Riwayat (arsip)</a>
-      </nav>
+      <TabPills label="Saring pengajuan koreksi" item={[{ href: "/admin/absensi/pengajuan", label: "Menunggu" }, { href: "/admin/absensi/pengajuan?lihat=riwayat", label: "Riwayat (arsip)" }]} aktif={riwayat ? "/admin/absensi/pengajuan?lihat=riwayat" : "/admin/absensi/pengajuan"} />
       {list.length === 0 ? (
         <KosongAdmin teks={riwayat ? "Belum ada riwayat pengajuan." : "Tidak ada pengajuan yang menunggu."} />
       ) : (

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { JudulHalaman, Kartu, Notifikasi } from "@/components/admin/ui";
 import { FormAcaraAlumni, FormPeluang } from "@/components/alumni/Form";
 import { NavAlumni } from "@/components/alumni/Nav";
@@ -6,6 +5,7 @@ import { moderasi } from "@/app/admin/actions-alumni";
 import { wajibIzin } from "@/lib/admin/auth";
 import { JENIS_KONTRIBUSI, JENIS_PELUANG, SASARAN_PELUANG, STATUS_MODERASI } from "@/lib/alumni";
 import { Lencana, waktuWIB } from "@/lib/lms";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Layanan alumni" };
 const TAB = [["peluang", "Peluang"], ["acara", "Acara"], ["mentor", "Mentor"], ["mentoring", "Permintaan mentoring"], ["cerita", "Cerita"], ["kontribusi", "Kontribusi"]] as const;
@@ -30,7 +30,7 @@ export default async function Layanan({ searchParams }: { searchParams: Promise<
       <JudulHalaman judul="Layanan & moderasi alumni" deskripsi="Semua kiriman alumni (peluang, cerita, tawaran mentor & kontribusi) tampil setelah ditinjau." />
       <NavAlumni kelola />
       <Notifikasi kode={sp.pesan} />
-      <nav className="mb-5 flex gap-2 overflow-x-auto pb-1 text-sm">{TAB.map(([k, l]) => <Link key={k} href={`?tab=${k}`} className={`shrink-0 rounded-full px-3 py-1.5 font-semibold ${tab === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>)}</nav>
+      <TabPills label="Jenis kiriman alumni" item={TAB.map(([k, l]) => ({ href: `?tab=${k}`, label: l }))} aktif={`?tab=${tab}`} />
       {tab === "peluang" && <Peluang />}
       {tab === "acara" && <Acara />}
       {tab === "mentor" && <Mentor />}

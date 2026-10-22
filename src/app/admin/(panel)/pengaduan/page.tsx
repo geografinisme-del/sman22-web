@@ -5,6 +5,7 @@ import { punya, wajibLogin } from "@/lib/admin/auth";
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { KATEGORI_ADUAN, STATUS_ADUAN } from "@/lib/humas";
 import { Lencana } from "@/lib/lms";
+import { TabPills } from "@/components/admin/TabPills";
 
 export const metadata = { title: "Pengaduan" };
 type A = { id: string; tiket: string; kategori: string; judul: string; status: string; rahasia: boolean; tenggat: string; created_at: string; anonim: boolean; pic_id: string | null };
@@ -26,11 +27,11 @@ export default async function Pengaduan({ searchParams }: { searchParams: Promis
       <JudulHalaman judul="Pengaduan & Aspirasi" deskripsi={petugas ? "Pengaduan dari website/portal. Laporan perundungan & kekerasan hanya terlihat tim rahasia (kepala sekolah, BK, kesiswaan)." : "Pengaduan yang ditugaskan kepada Anda."}
         aksi={<a href="/pengaduan" target="_blank" className="rounded-full px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Formulir publik ↗</a>} />
       <Notifikasi kode={sp.pesan} />
-      <div className="mb-4 flex flex-wrap gap-2 text-sm">
-        {[["", "Aktif"], ...Object.entries(STATUS_ADUAN).map(([k, v]) => [k, v.label.split(" /")[0]]), ["semua", "Semua"]].map(([k, l]) => (
-          <Link key={k} href={k ? `?status=${k}` : "?"} className={`rounded-full px-3 py-1.5 font-semibold ${(sp.status ?? "") === k ? "bg-ink text-white" : "ring-1 ring-black/15"}`}>{l}</Link>
-        ))}
-      </div>
+      <TabPills
+        label="Saring status pengaduan"
+        item={[["", "Aktif"], ...Object.entries(STATUS_ADUAN).map(([k, v]) => [k, v.label.split(" /")[0]]), ["semua", "Semua"]].map(([k, l]) => ({ href: k ? `?status=${k}` : "?", label: l }))}
+        aktif={sp.status ? `?status=${sp.status}` : "?"}
+      />
       <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/5">
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead><tr className="bg-soft text-xs uppercase tracking-wider text-black/50"><th className="px-4 py-2">Tiket</th><th className="px-4 py-2">Judul</th><th className="px-4 py-2">Kategori</th><th className="px-4 py-2">Status</th><th className="px-4 py-2">Tenggat</th></tr></thead>
