@@ -47,3 +47,26 @@ test("kartu depan & geser satu kartu", async () => {
   assert.equal(sudutGeserSatu(-31, 12, -1), 0);
   assert.equal(kartuDepan(sudutGeserSatu(0, 12, 1), 12), 1);
 });
+
+test("cincin HP: kartu tengah penuh, tetangga mengintip & mengecil, kartu jauh tersembunyi", async () => {
+  const { tampilKartuHp } = await import("./cincin.ts");
+  const n = 6; // step 60°
+  const tengah = tampilKartuHp(0, 0, n, 200);
+  const kanan = tampilKartuHp(1, 0, n, 200);
+  const jauh = tampilKartuHp(3, 0, n, 200);
+  assert.equal(tengah.opacity, 1);
+  assert.match(tengah.transform, /translate3d\(0\.00px/);
+  assert.match(tengah.transform, /scale\(1\.0000\)/);
+  assert.equal(kanan.opacity, 1);
+  assert.match(kanan.transform, /translate3d\(200\.00px/);
+  assert.equal(jauh.opacity, 0);
+  assert.ok(tengah.z > kanan.z && kanan.z > jauh.z);
+});
+
+test("putaran otomatis HP berlangkah: diam lalu geser tepat satu kartu", async () => {
+  const { sudutOtomatisLangkah } = await import("./cincin.ts");
+  assert.equal(sudutOtomatisLangkah(0, 0, 1000, 60, 4000, 700), 0, "masih diam");
+  assert.equal(sudutOtomatisLangkah(0, 0, 3300 + 350, 60, 4000, 700), -30, "di tengah geseran");
+  assert.equal(sudutOtomatisLangkah(0, 0, 4000, 60, 4000, 700), -60, "tepat satu kartu");
+  assert.equal(sudutOtomatisLangkah(0, 0, 9000, 60, 4000, 700), -120);
+});

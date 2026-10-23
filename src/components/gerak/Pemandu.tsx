@@ -8,6 +8,8 @@ import { ArrowLeft, ArrowRight, Hand, X } from "lucide-react";
  * Pemandu berbasis pilihan menu (bukan chatbot). Aset karakter belum tersedia, sehingga tampil sebagai
  * tombol bantuan berikon tangan: melambai SEKALI bila diizinkan pengatur overlay, lalu diam.
  * Tidak mengikuti kursor, tidak berbicara otomatis, bisa dinonaktifkan pengunjung (tersimpan di perangkat).
+ * Posisi kanan bawah (44px). Agar tidak menutupi isi: menyingkir saat halaman digulir ke bawah (muncul lagi saat
+ * digulir ke atas), saat footer terlihat, dan saat menu HP terbuka (CSS :has). Panel yang terbuka tidak ikut hilang.
  * Semua tujuan adalah rute yang ada; pilihan peran TIDAK memberi izin apa pun.
  */
 const PILIHAN: { kunci: string; label: string; tautan: { href: string; label: string }[] }[] = [
@@ -66,6 +68,7 @@ export function Pemandu({ melambai, tersembunyi, onMati }: { melambai: boolean; 
   const [buka, setBuka] = useState(false);
   const [pilih, setPilih] = useState<string | null>(null);
   const [tekan, setTekan] = useState(false);
+  const [menyingkir, setMenyingkir] = useState(false);
   const tombol = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const id = useId();
@@ -91,11 +94,45 @@ export function Pemandu({ melambai, tersembunyi, onMati }: { melambai: boolean; 
     };
   }, [buka]);
 
+  // menyingkir saat gulir turun / footer terlihat
+  useEffect(() => {
+    let yLama = window.scrollY;
+    let turun = false;
+    let footer = false;
+    let jadwal = 0;
+    const perbarui = () => setMenyingkir(turun || footer);
+    const gulir = () => {
+      if (jadwal) return;
+      jadwal = requestAnimationFrame(() => {
+        jadwal = 0;
+        const y = window.scrollY;
+        if (Math.abs(y - yLama) < 6) return;
+        turun = y > yLama && y > 120;
+        yLama = y;
+        perbarui();
+      });
+    };
+    window.addEventListener("scroll", gulir, { passive: true });
+    const kaki = document.querySelector(".lgt-footer");
+    const io = kaki
+      ? new IntersectionObserver(([e]) => {
+          footer = e.isIntersecting;
+          perbarui();
+        })
+      : null;
+    if (kaki && io) io.observe(kaki);
+    return () => {
+      window.removeEventListener("scroll", gulir);
+      if (jadwal) cancelAnimationFrame(jadwal);
+      io?.disconnect();
+    };
+  }, []);
+
   if (tersembunyi && !buka) return null;
   const grup = PILIHAN.find((p) => p.kunci === pilih);
 
   return (
-    <div className="pemandu">
+    <div className="pemandu" data-menyingkir={(menyingkir && !buka) || undefined}>
       {buka && (
         <div ref={panel} id={id} className="pemandu-panel" role="region" aria-label="Pemandu bantuan">
           <div className="flex items-start justify-between gap-2">

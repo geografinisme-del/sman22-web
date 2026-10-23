@@ -23,7 +23,8 @@ const JEDA_TUTUP = 250; // ms kursor di luar header+panel sebelum panel menutup
  *   "Portal Digital 22 →". Panel tutup: kursor keluar > 250ms, klik di luar, Esc (fokus kembali ke pemicu), atau
  *   klik tautan. Layar sentuh: panel hanya dibuka dengan ketuk.
  * - HP & tablet (< 1024px): logo + tombol Menu (menu layar penuh terang, MenuHp) + Portal.
- * - Di atas hero langit: latar header transparan; setelah melewati hero / halaman tanpa hero: lengket.
+ * - Di atas hero langit: transparan hanya di posisi paling atas; mulai 8px digulir putih solid (0,88 + blur 12px)
+ *   dengan garis bawah. Tinggi 60px HP / 72px desktop (+ safe-area atas).
  * - Tanpa JavaScript: menu adalah tautan ke halaman utama grup / navigasi lengkap di footer (#navigasi-situs).
  * Tinggi nyata header diukur ke --tinggi-header (jarak atas hero).
  */
@@ -38,6 +39,7 @@ export function SiteHeader({ data }: { data: DataMenu }) {
     () => false,
   );
   const [lewat, setLewat] = useState(false);
+  const [gulir, setGulir] = useState(false);
   const [mega, setMega] = useState<KunciGrup | null>(null);
   const [menuHp, setMenuHp] = useState(false);
   const pemicuHp = useRef<HTMLButtonElement>(null);
@@ -51,14 +53,16 @@ export function SiteHeader({ data }: { data: DataMenu }) {
     setMenuHp(false);
   }
 
-  // status "lewat hero": hero (bila ada) sudah tergulir melewati bagian bawah header
+  // header solid mulai 8px digulir: di atas hero hanya transparan selama halaman di posisi paling atas,
+  // sehingga judul/remah hero yang tergulir tidak pernah tampak menembus teks header
   useEffect(() => {
     const hero = document.querySelector<HTMLElement>("[data-hero-langit]");
     let jadwal = 0;
     const periksa = () => {
       jadwal = 0;
-      const tinggi = ref.current?.offsetHeight ?? 72;
-      setLewat(!hero || hero.getBoundingClientRect().bottom <= tinggi);
+      const digulir = window.scrollY > 8;
+      setGulir(digulir);
+      setLewat(!hero || digulir);
     };
     const gulir = () => {
       if (!jadwal) jadwal = requestAnimationFrame(periksa);
@@ -160,6 +164,7 @@ export function SiteHeader({ data }: { data: DataMenu }) {
         data-js={js || undefined}
         data-terang={terang || undefined}
         data-lewat={(js && lewat) || undefined}
+        data-gulir={(js && gulir) || undefined}
         data-mega={mega ?? undefined}
         onPointerEnter={masukNav}
       >

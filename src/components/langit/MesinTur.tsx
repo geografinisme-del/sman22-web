@@ -10,7 +10,8 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /**
  * Mesin tur sekolah (GSAP + ScrollTrigger, dimuat lambat oleh TurPembungkus).
- * gsap.matchMedia: mode sticky hanya untuk (min-width: 900px) and (prefers-reduced-motion: no-preference).
+ * gsap.matchMedia: mode sticky di semua lebar layar selama (prefers-reduced-motion: no-preference) — HP memakai
+ * tata letak sticky ringkas (foto di atas, kartu di bawah; lihat langit.css).
  * Semua keadaan awal diset di sini; saat kondisi tidak terpenuhi / unmount, section kembali ke mode daftar
  * (gaya inline dibersihkan). Hanya transform/opacity.
  */
@@ -20,7 +21,9 @@ export default function MesinTur({ akar }: { akar: RefObject<HTMLElement | null>
       const sec = akar.current;
       if (!sec) return;
       const mm = gsap.matchMedia();
-      mm.add("(min-width: 900px) and (prefers-reduced-motion: no-preference)", () => {
+      // HP: bilah alamat yang menyusut/membesar tidak memicu hitung ulang (tanpa lompatan)
+      ScrollTrigger.config({ ignoreMobileResize: true });
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
         const item = [...sec.querySelectorAll<HTMLElement>(".tur-item")];
         const media = item.map((li) => li.querySelector<HTMLElement>(".tur-media")!);
         const foto = item.map((li) => li.querySelector<HTMLElement>(".tur-foto"));

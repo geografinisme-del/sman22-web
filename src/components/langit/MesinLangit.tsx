@@ -36,7 +36,8 @@ const TARGET = [
  * - Semua gerak hanya untuk (prefers-reduced-motion: no-preference) lewat gsap.matchMedia().
  * - Keadaan awal (tersembunyi) HANYA diset di sini, dan hanya untuk blok yang masih di bawah layar —
  *   tanpa JS / reduced motion / tingkat "minimal", semua konten langsung terlihat.
- * - Blok besar 800 ms; efek berat (parallax foto) hanya (min-width: 900px) and (hover: hover) + tingkat "dinamis".
+ * - Blok besar 800 ms (HP: naik 16px); parallax foto untuk tingkat "dinamis" di semua lebar layar (HP: geser lebih kecil).
+ * - Satu-satunya alasan gerak mati: prefers-reduced-motion (tidak dibatasi lebar layar / hover / jenis pointer).
  * - Awan hero dijeda saat hero tidak terlihat. Kartu putar & tur punya mesin sendiri.
  */
 export default function MesinLangit({ tingkat }: { tingkat: string }) {
@@ -51,7 +52,7 @@ export default function MesinLangit({ tingkat }: { tingkat: string }) {
         // hanya yang belum terlihat & belum terlewati; tur punya mesin sendiri
         .filter((el) => el.getBoundingClientRect().top > batas && !el.closest(".tur, [data-hero-langit], dialog"));
       if (!blok.length) return;
-      const jarak = dinamis ? 40 : 24;
+      const jarak = window.innerWidth < 900 ? 16 : dinamis ? 40 : 24;
       // hanya opacity (bukan visibility): teks tetap ada untuk pembaca layar, Ctrl+F, dan innerText
       gsap.set(blok, { opacity: 0, y: jarak });
       ScrollTrigger.batch(blok, {
@@ -96,11 +97,12 @@ export default function MesinLangit({ tingkat }: { tingkat: string }) {
       return () => pulihkan.forEach((f) => f());
     });
 
-    // parallax foto: efek berat, hanya desktop dengan pointer hover & tingkat dinamis
+    // parallax foto (tingkat dinamis): hanya transform; HP bergeser lebih kecil (±3%)
     if (dinamis) {
-      mm.add("(prefers-reduced-motion: no-preference) and (min-width: 900px) and (hover: hover)", () => {
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const y = window.innerWidth < 900 ? 3 : 5;
         gsap.utils.toArray<HTMLElement>(".lp .lgt-foto-besar img, .lp .lgt-mozaik > li:first-child img").forEach((img) => {
-          gsap.fromTo(img, { yPercent: -5, scale: 1.1 }, { yPercent: 5, scale: 1.1, ease: "none", scrollTrigger: { trigger: img.closest(".media-slot") ?? img, start: "top bottom", end: "bottom top", scrub: true } });
+          gsap.fromTo(img, { yPercent: -y, scale: 1.1 }, { yPercent: y, scale: 1.1, ease: "none", scrollTrigger: { trigger: img.closest(".media-slot") ?? img, start: "top bottom", end: "bottom top", scrub: true } });
         });
       });
     }

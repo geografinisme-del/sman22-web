@@ -159,7 +159,7 @@ for (const lebar of [1440, 1024]) {
       open: d.open,
       label: d.getAttribute("aria-label"),
       latar: cs.backgroundImage,
-      fokus: document.activeElement?.id,
+      fokus: document.activeElement?.className,
       awan: d.querySelectorAll(".lgt-awan-tipis svg").length,
       kunci: getComputedStyle(document.documentElement).overflow,
       grup: [...d.querySelectorAll(".lgt-akordeon-judul")].map((x) => x.textContent.trim()),
@@ -168,7 +168,8 @@ for (const lebar of [1440, 1024]) {
       luber: d.scrollWidth > d.clientWidth + 1,
     };
   });
-  cek("HP: menu terbuka (dialog terang, awan, fokus di kolom cari, scroll halaman terkunci)", k.open && k.label === "Menu" && k.latar.includes("linear-gradient") && k.awan >= 2 && k.fokus === "lgt-hp-cari" && k.kunci === "hidden", k);
+  // fokus awal di tombol Tutup — bukan kolom cari (di HP fokus ke kolom memunculkan papan ketik)
+  cek("HP: menu terbuka (dialog terang, awan, fokus di tombol Tutup, scroll halaman terkunci)", k.open && k.label === "Menu" && k.latar.includes("linear-gradient") && k.awan >= 2 && k.fokus === "lgt-menu-hp-tutup" && k.kunci === "hidden", k);
   cek("HP: 5 menu akordeon bernomor 01–05", JSON.stringify(k.grup) === JSON.stringify(GRUP) && k.nomor.join(",") === "01,02,03,04,05", k);
   cek("HP: target sentuh ≥ 44px, tanpa luber", k.sentuh && !k.luber, k);
   await page.screenshot({ path: path.join(keluar, "hp-390-menu.png") });

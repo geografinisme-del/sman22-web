@@ -1,6 +1,6 @@
 // Uji tur sekolah (lokal saja): admin unggah foto (dikompres WebP ≤ 2400px), video > 15 detik ditolak,
 // ganti satu titik menjadi video + poster, lalu beranda menampilkannya tanpa deploy ulang; tur dari awan sampai
-// titik terakhir; mode daftar di HP. Pakai:
+// titik terakhir; mode sticky ringkas di HP (daftar hanya saat reduced motion). Pakai:
 //   node scripts/uji-e2e/uji-tur.mjs <base-url> <akun-uji.json> <folder-media-uji>
 // Folder media berisi: foto-besar.jpg (3000px), tur-6detik.mp4, tur-20detik.mp4, poster.jpg (berkas sintetis).
 import { chromium } from "playwright-core";
@@ -129,7 +129,7 @@ const akhir = await keadaan(1);
 cek("tur: akhir gulir = titik terakhir", akhir.aktif === n - 1 && akhir.awan === 0, akhir);
 await ctx.close();
 
-// 5. HP: daftar biasa, tanpa sticky
+// 5. HP: tur pinned ringkas (sticky) — animasi HP tidak lagi dimatikan karena lebar layar
 {
   const hp = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const p = await hp.newPage();
@@ -137,7 +137,7 @@ await ctx.close();
   await p.evaluate(() => document.querySelector("#tur").scrollIntoView({ behavior: "instant" }));
   await tidur(1500);
   const k = await p.evaluate(() => ({ mode: document.querySelector("#tur").dataset.mode, pos: getComputedStyle(document.querySelector(".tur-pin")).position, luber: document.documentElement.scrollWidth > innerWidth }));
-  cek("HP 390: tur berupa daftar (tanpa sticky), tanpa luber", k.mode === "daftar" && k.pos !== "sticky" && !k.luber, k);
+  cek("HP 390: tur pinned (sticky), tanpa luber", k.mode === "sticky" && k.pos === "sticky" && !k.luber, k);
   await hp.close();
 }
 // 6. admin: urutan (tombol panah + "Simpan urutan") & batas minimal 3 titik aktif — keadaan dikembalikan
