@@ -19,9 +19,9 @@ Semua item dapat diunggah atau diisi sendiri oleh admin lewat **Panel Admin** (m
 
 | No | Item | Untuk halaman | Ukuran / format | Contoh isi | Status | Diisi lewat |
 |---|---|---|---|---|---|---|
-| 1 | Foto pintu **Guru & Tendik** | Halaman masuk Guru & Tendik + kartu "Pilih pintu Anda." (Portal Digital 22) | Mendatar, lebar ≥ 1600 px | Guru dan staf TU sedang bekerja/rapat di ruang guru | Sementara (foto aula berisi siswa) | Admin → Halaman masuk portal |
-| 2 | Foto pintu **Siswa** | Halaman masuk Siswa + kartu "Pilih pintu Anda." | Mendatar, lebar ≥ 1600 px | Siswa di kelas atau apel pagi | Sudah ada (apel di lapangan) | Admin → Halaman masuk portal |
-| 3 | Foto pintu **Orang Tua** | Halaman masuk Orang Tua + kartu "Pilih pintu Anda." | Mendatar, lebar ≥ 1600 px | Orang tua saat pengambilan rapor / pertemuan wali kelas | Sementara (foto gedung) | Admin → Halaman masuk portal |
+| 1 | Foto pintu **Guru & Tendik** | Halaman masuk Guru & Tendik + kartu "Pilih pintu Anda." (Portal Digital 22) | Mendatar, lebar ≥ 1600 px | Guru dan staf TU sedang bekerja/rapat di ruang guru | Sementara (ilustrasi stok: kursi aula kosong) | Admin → Halaman masuk portal |
+| 2 | Foto pintu **Siswa** | Halaman masuk Siswa + kartu "Pilih pintu Anda." | Mendatar, lebar ≥ 1600 px | Siswa di kelas atau apel pagi | Sementara (ilustrasi stok: upacara dari jauh — foto apel asli terlalu buram) | Admin → Halaman masuk portal |
+| 3 | Foto pintu **Orang Tua** | Halaman masuk Orang Tua + kartu "Pilih pintu Anda." | Mendatar, lebar ≥ 1600 px | Orang tua saat pengambilan rapor / pertemuan wali kelas | Sementara (ilustrasi stok: koridor sekolah) | Admin → Halaman masuk portal |
 | 4 | Kartu beranda **E-Learning** | Beranda (kartu putar) | 4:3, ≥ 1200 × 900 px | Siswa belajar dengan laptop/Chromebook | Sementara | Admin → Kartu Beranda |
 | 5 | Kartu beranda **Prestasi** | Beranda (kartu putar) | 4:3, ≥ 1200 × 900 px | Siswa memegang piala/medali | Sementara | Admin → Kartu Beranda |
 | 6 | Kartu beranda **Penerimaan murid baru** | Beranda (kartu putar) | 4:3, ≥ 1200 × 900 px | Suasana layanan SPMB / MPLS | Sementara | Admin → Kartu Beranda |
@@ -29,15 +29,29 @@ Semua item dapat diunggah atau diisi sendiri oleh admin lewat **Panel Admin** (m
 | 8 | Kartu beranda **E-Library** | Beranda (kartu putar) | 4:3, ≥ 1200 × 900 px | Rak buku / siswa membaca di perpustakaan | Sementara | Admin → Kartu Beranda |
 | 9 | Kartu beranda **Pengaduan dan aspirasi** | Beranda (kartu putar) | 4:3, ≥ 1200 × 900 px | Ruang layanan TU / meja informasi | Sementara | Admin → Kartu Beranda |
 | 10 | Kartu sorotan menu **E-Learning** | Menu "Pembelajaran" (desktop) | 4:3, ≥ 1200 × 900 px | Sama dengan no. 4 boleh | Sementara | Admin → Menu navigasi |
-| 11 | Tur sekolah — **Selamat datang** | Beranda (Tur sekolah) | Mendatar 16:9, ≥ 1920 × 1080 px, atau video MP4 6–20 detik | Halaman/plaza sekolah | Sementara | Admin → Tur Sekolah |
-| 12 | Tur sekolah — **Gerbang & lapangan** | Beranda (Tur sekolah) | idem | Gerbang depan dan lapangan upacara | Sementara | Admin → Tur Sekolah |
-| 13 | Tur sekolah — **Gedung utama** | Beranda (Tur sekolah) | idem | Tampak depan gedung utama | Sementara | Admin → Tur Sekolah |
-| 14 | Tur sekolah — **Masjid sekolah** | Beranda (Tur sekolah) | idem | Masjid tampak luar/dalam | Sementara | Admin → Tur Sekolah |
-| 15 | Tur sekolah — **Aula** | Beranda (Tur sekolah) | idem | Aula saat kegiatan | Sementara | Admin → Tur Sekolah |
-| 16 | Tur sekolah — **Perpustakaan** | Beranda (Tur sekolah) | idem | Ruang baca perpustakaan | Kosong (belum ada foto) | Admin → Tur Sekolah |
+| 11 | Tur sekolah — **Selamat datang** | Beranda (Tur sekolah) | Mendatar 16:9, ≥ 1920 × 1080 px, atau video MP4 6–20 detik | Halaman/plaza sekolah | Sudah ada (foto asli keluarga besar) | Admin → Tur Sekolah |
+| 12 | Tur sekolah — **Gerbang & lapangan** | Beranda (Tur sekolah) | idem | Gerbang depan dan lapangan upacara | Sementara (ilustrasi stok) | Admin → Tur Sekolah |
+| 13 | Tur sekolah — **Gedung utama** | Beranda (Tur sekolah) | idem | Tampak depan gedung utama | Sudah ada (foto asli, resolusi kecil — lihat no. 34) | Admin → Tur Sekolah |
+| 14 | Tur sekolah — **Masjid sekolah** | Beranda (Tur sekolah) | idem | Masjid tampak luar/dalam | Sementara (ilustrasi stok) | Admin → Tur Sekolah |
+| 15 | Tur sekolah — **Aula** | Beranda (Tur sekolah) | idem | Aula saat kegiatan | Sementara (ilustrasi stok) | Admin → Tur Sekolah |
+| 16 | Tur sekolah — **Perpustakaan** | Beranda (Tur sekolah) | idem | Ruang baca perpustakaan | Sementara (ilustrasi stok rak buku) | Admin → Tur Sekolah |
 | 17 | Foto **Guru dan Tenaga Kependidikan** | Profil → Guru dan tenaga kependidikan | Potret tegak 4:5, ≥ 800 × 1000 px, latar polos | Foto resmi tiap guru/tendik | Kosong | Admin → Guru & Tendik (publik) |
 | 18 | Foto **Fasilitas** | Profil → Fasilitas | 4:3, ≥ 1200 × 900 px | Laboratorium, lapangan, kantin, UKS, dll. | Kosong | Admin → Fasilitas |
 | 19 | Foto **berita** | Beranda, Berita | Mendatar 16:9, ≥ 1600 × 900 px | Dokumentasi kegiatan yang diberitakan | Kosong | Admin → Berita |
+
+### A2. Tambahan dari audit foto 23 Okt 2026
+
+Foto asli yang buram/kecil sudah diganti sementara dengan foto stok berlabel (Admin → Website → **Foto sementara**;
+kredit di /kredit-foto). Foto asli tidak dihapus dan bisa dikembalikan. Yang tetap dibutuhkan dari sekolah:
+
+| No | Item | Untuk halaman | Ukuran / format | Contoh isi | Status | Diisi lewat |
+|---|---|---|---|---|---|---|
+| 34 | **Foto gedung** — perlu foto gedung resolusi tinggi (≥ 2400px) dari sekolah | Latar halaman Profil, Tur "Gedung utama", kartu "Mengenal SMAN 22", Galeri "Gedung utama", gambar pratinjau tautan (SEO) | Mendatar, lebar ≥ 2400 px | Tampak depan gedung dengan papan nama, langit cerah | Sudah ada tetapi kecil (1122 px, tampak lembut di layar besar) | Admin → Tur Sekolah / Galeri / Kartu Beranda |
+| 35 | Foto resmi **kepala sekolah** | Sambutan kepala sekolah, kartu Profil | Potret tegak, ≥ 1200 × 1600 px, latar polos | Foto resmi berseragam | Sudah ada tetapi kecil (425 px) | Admin → Profil Sekolah |
+| 36 | Foto kegiatan pengganti di **Galeri** | Galeri, Profil → Fasilitas, beranda "Kehidupan siswa" | Mendatar, lebar ≥ 1600 px | Upacara bendera, apel pagi, kajian di masjid | Sementara (ilustrasi stok berlabel "bukan foto kegiatan"; foto asli bisa dilihat lewat "Lihat foto asli") | Admin → Galeri |
+| 37 | Foto kartu & halaman lain | Profil → Sejarah; beranda "Tentang kami"; kartu Profil (Sambutan, Sejarah, Tata tertib); kartu Pembelajaran (E-Learning, Kalender); Program 7KAIH | Mendatar, lebar ≥ 1600 px (Sejarah ≥ 2400 px) | Suasana sekolah yang sesuai judulnya | Sementara (ilustrasi stok) | Admin → Website → Foto sementara |
+| 38 | Foto kartu sorotan **mega menu** | Menu Profil (Sambutan, Visi-misi, Fasilitas), Pembelajaran (Kurikulum), Kehidupan Siswa (Galeri) | 4:3, ≥ 1200 × 900 px | Sesuai judul kartu | Sementara (ilustrasi stok) | Admin → Menu navigasi |
+| 39 | **Logo** versi vektor | Kop surat, cetak ukuran besar | SVG atau PDF (atau PNG ≥ 2000 px) | Logo resmi sekolah | Logo saat ini 502 px — cukup untuk web, kurang untuk cetak | Kirim ke Tim TIK |
 
 ## B. Konten teks / data
 

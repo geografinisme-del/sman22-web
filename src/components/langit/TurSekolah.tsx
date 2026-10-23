@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MediaSlot } from "@/components/MediaSlot";
 import { ArrowUpRight } from "lucide-react";
 import type { TitikTur } from "@/content/tur-bawaan";
@@ -72,7 +73,16 @@ export function TurSekolah({ titik }: { titik: TitikTur[] }) {
             </li>
           ))}
         </ol>
-        <p className="tur-kredit">Foto: dokumentasi SMAN 22 Bandung</p>
+        {/* kredit jujur: sebutkan ilustrasi sementara bila ada titik yang memakai foto stok */}
+        <p className="tur-kredit">
+          {titik.some((t) => t.sementara) ? (
+            <>
+              Foto: dokumentasi SMAN 22 Bandung dan ilustrasi sementara (<Link href="/kredit-foto">kredit foto</Link>)
+            </>
+          ) : (
+            "Foto: dokumentasi SMAN 22 Bandung"
+          )}
+        </p>
       </div>
     </TurPembungkus>
   );

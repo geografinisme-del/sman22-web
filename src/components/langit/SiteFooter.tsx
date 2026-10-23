@@ -59,7 +59,10 @@ export function SiteFooter({ data }: { data: DataMenu }) {
           </nav>
         </div>
         <p className="lgt-footer-bawah">
-          © {new Date().getFullYear()} {sekolah.nama} · Dikelola oleh Tim TIK {sekolah.nama}
+          © {new Date().getFullYear()} {sekolah.nama} · Dikelola oleh Tim TIK {sekolah.nama} ·{" "}
+          <Link href="/kredit-foto" prefetch={false}>
+            Kredit foto
+          </Link>
         </p>
       </div>
     </footer>

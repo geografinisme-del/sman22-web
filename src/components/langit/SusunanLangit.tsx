@@ -2,6 +2,7 @@ import "server-only";
 import { getAgenda, getBerita, getGaleri, getKartuBeranda, getPengumuman, getPrestasi, getProfil, getRekomendasiBuku, getSitus, getSpmbInfo, getTur, getVisualAkun } from "@/lib/data";
 import { susunBagian, type Konfigurasi } from "@/lib/tampilan/konfigurasi";
 import { tautanELearning } from "@/content/menu";
+import { fotoKode } from "@/lib/foto-slot";
 import { AksesKontak, KabarSekolah, KehidupanSiswa, PengumumanAgenda, PrestasiBeranda, RekomendasiBuku, TentangKami } from "./Bagian";
 import { BentoAngka } from "./BentoAngka";
 import { CtaSpmb } from "./CtaSpmb";
@@ -17,7 +18,7 @@ const sintetis = (src: string) => src.includes("/images/hero/model-sintetis");
 export async function SusunanLangit({ konfig }: { konfig: Konfigurasi }) {
   const tampil = konfig.beranda.filter((w) => w.tampil);
   const ada = (j: string) => tampil.some((w) => w.jenis === j);
-  const [situs, profil, kartu, tur, berita, agenda, pengumuman, galeri, visual, prestasi, spmb, buku] = await Promise.all([
+  const [situs, profil, kartu, tur, berita, agenda, pengumuman, galeri, visual, prestasi, spmb, buku, fotoTentang] = await Promise.all([
     getSitus(),
     getProfil(),
     ada("hero") ? getKartuBeranda() : Promise.resolve([]),
@@ -30,6 +31,7 @@ export async function SusunanLangit({ konfig }: { konfig: Konfigurasi }) {
     ada("prestasi") ? getPrestasi(12) : Promise.resolve([]),
     ada("spmb") ? getSpmbInfo() : Promise.resolve(null),
     ada("perpus") ? getRekomendasiBuku(4) : Promise.resolve([]),
+    fotoKode("beranda.tentang", { src: "/images/gedung.jpg", alt: "Gedung utama SMA Negeri 22 Bandung", sementara: false }),
   ]);
 
   // foto kartu biru "dalam angka": slide hero CMS → visual beranda → foto keluarga besar
@@ -81,7 +83,7 @@ export async function SusunanLangit({ konfig }: { konfig: Konfigurasi }) {
       case "kontak":
         return <AksesKontak layanan={situs.tema.beranda.bento} profil={profil} pL={pasang("layanan")} pK={pasang("kontak")} eLearning={tautanELearning(situs.layanan)} />;
       case "profil":
-        return <TentangKami profil={profil} p={a.pengaturan} />;
+        return <TentangKami profil={profil} p={a.pengaturan} foto={fotoTentang} />;
       case "perpus":
         return <RekomendasiBuku buku={buku} p={a.pengaturan} />;
       default:

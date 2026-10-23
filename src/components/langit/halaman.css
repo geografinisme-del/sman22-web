@@ -184,6 +184,18 @@ a.kartu:hover,
   font-size: 0.875rem;
   color: var(--muted);
 }
+/* tautan kecil ke foto asli di bawah foto pengganti kegiatan (foto stok berlabel) */
+.lp .tautan-foto-asli {
+  color: var(--blue-teks);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  border-radius: 4px;
+}
+.lp .tautan-foto-asli:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
 .lp .ikon-geser {
   flex-shrink: 0;
   transition: translate var(--durasi-ui) var(--ease);

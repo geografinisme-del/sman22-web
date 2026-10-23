@@ -207,8 +207,8 @@ export function ProgramUnggulan() {
 }
 export function KehidupanSiswa({ galeri, p = {}, program }: { galeri: FotoItem[]; p?: P; program?: P }) {
   const sumber = galeri.length
-    ? galeri.filter((g) => g.gambar).map((g) => ({ src: g.gambar, judul: g.judul, sementara: g.sementara }))
-    : kehidupanSekolah.map((k) => ({ src: k.gambar, judul: `${k.judul} — ${k.keterangan.toLowerCase()}`, sementara: false }));
+    ? galeri.filter((g) => g.gambar).map((g) => ({ src: g.gambar, judul: g.judul, sementara: g.sementara, label: g.label, asli: g.asli }))
+    : kehidupanSekolah.map((k) => ({ src: k.gambar, judul: `${k.judul} — ${k.keterangan.toLowerCase()}`, sementara: false, label: undefined, asli: undefined }));
   // keterangan foto tidak berulang
   const unik: typeof sumber = [];
   for (const f of sumber) if (!unik.some((u) => u.judul.trim().toLowerCase() === f.judul.trim().toLowerCase() || u.src === f.src)) unik.push(f);
@@ -223,8 +223,18 @@ export function KehidupanSiswa({ galeri, p = {}, program }: { galeri: FotoItem[]
             {foto.map((f, i) => (
               <li key={f.src}>
                 <figure>
-                  <MediaSlot src={f.src} alt="" ratio="isi" isPlaceholder={f.sementara} sizes={i === 0 ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 25vw, 50vw"} className="lgt-mozaik-foto" />
-                  <figcaption>{f.judul}</figcaption>
+                  <MediaSlot src={f.src} alt="" ratio="isi" isPlaceholder={f.sementara} label={f.label} sizes={i === 0 ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 25vw, 50vw"} className="lgt-mozaik-foto" />
+                  <figcaption>
+                    {f.judul}
+                    {f.asli && (
+                      <>
+                        {" · "}
+                        <a href={f.asli} target="_blank" rel="noopener" className="tautan-foto-asli">
+                          Lihat foto asli
+                        </a>
+                      </>
+                    )}
+                  </figcaption>
                 </figure>
               </li>
             ))}
@@ -325,7 +335,7 @@ export function AksesKontak({ layanan, profil, pL, pK, eLearning }: { layanan: K
 }
 
 /* ---------------- Tentang kami (widget profil) ---------------- */
-export function TentangKami({ profil, p = {} }: { profil: Profil; p?: P }) {
+export function TentangKami({ profil, p = {}, foto }: { profil: Profil; p?: P; foto?: { src: string; alt: string; sementara: boolean; fokus?: { x: number; y: number } } }) {
   const isi = profil.pernyataan || profil.visi;
   if (!isi) return null;
   return (
@@ -337,7 +347,15 @@ export function TentangKami({ profil, p = {} }: { profil: Profil; p?: P }) {
             Profil sekolah <span aria-hidden>→</span>
           </Link>
         </div>
-        <MediaSlot src="/images/gedung.jpg" alt="Gedung utama SMA Negeri 22 Bandung" ratio="4/3" sizes="(min-width: 900px) 50vw, 100vw" className="lgt-foto-besar" />
+        <MediaSlot
+          src={foto?.src ?? "/images/gedung.jpg"}
+          alt={foto?.alt ?? "Gedung utama SMA Negeri 22 Bandung"}
+          isPlaceholder={foto?.sementara}
+          focus={foto?.fokus}
+          ratio="4/3"
+          sizes="(min-width: 900px) 50vw, 100vw"
+          className="lgt-foto-besar"
+        />
       </div>
     </section>
   );
