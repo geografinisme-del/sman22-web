@@ -520,3 +520,26 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   Chrome masuk lagi (2 sesi) → "Keluar dari semua perangkat" (konfirmasi) → 0 sesi, pesan "Anda sudah keluar dari semua
   perangkat." tampil. Halaman login ketiga peran 200; log Vercel & Supabase tanpa error.
 
+## Foto sementara berkualitas + arsip foto asli (23 Okt 2026)
+- Audit: `docs/audit-foto.md` (`scripts/uji-e2e/audit-gambar.mjs`, 1440@2x & 390@3x). Usulan: `docs/usulan-foto-sementara.md`.
+- 19 foto Unsplash (unduhan resmi via tautan download halaman foto; WebP 1600/2400 px) di `public/media/stok/`, dipakai di
+  27 lokasi. Kredit: `CREDITS.md`, halaman `/kredit-foto` (tautan "Kredit foto" di footer).
+- Tabel `foto_slot` (migrasi `20261227000000_foto_slot.sql`, hanya menambah; dijalankan di produksi 23 Okt, backup
+  `backup/20261023-102603`). Data: `supabase/data/20261227_foto_sementara.sql` (idempoten; hanya mengubah baris CMS yang
+  masih memakai foto lama). Rollback (hanya dengan izin): `supabase/rollback/rollback_20261227_foto_slot.sql`.
+  * slot tabel CMS (kartu_beranda, tur_sekolah, galeri, menu_sorotan, portal_login): foto aktif di tabel CMS; foto_slot
+    menyimpan foto asli + kredit. Slot kode (profil.sejarah, beranda.tentang, kartu-profil.*, kartu-pembelajaran.*,
+    program.7kaih): foto dibaca lewat `fotoKode()` (`src/lib/foto-slot.ts`).
+  * foto asli TIDAK dihapus: tetap di `public/images/*` (opsi "tandai di CMS"; Storage butuh kunci service-role).
+- Label: dekorasi "Ilustrasi sementara"; pengganti foto kegiatan (galeri) "Ilustrasi — bukan foto kegiatan" + tautan
+  "Lihat foto asli". Admin → Website → **Foto sementara**: "Kembalikan foto asli" (satu klik) dan unggah foto asli untuk
+  slot kode. Uji: `scripts/uji-e2e/uji-foto-slot.mjs`, RLS `supabase/tests/rls_foto_slot_test.sql`.
+- gedung.jpg TETAP di slot identitas (latar Profil, Tur "Gedung utama", kartu "Mengenal SMAN 22", galeri "Gedung utama",
+  gambar SEO) — perlu foto gedung ≥ 2400 px dari sekolah (docs/kebutuhan-konten.md no. 34).
+- Rilis: merge `a23b5de` → `dpl_HbDLLy8yUUX5frGF7Ve2fe6wBiig` (sin1); titik kembali kode `dpl_3XkELAYDmoEtNSvFhPQdt24r1L2M`
+  (CATATAN: kode lama + data baru = foto stok 404; rollback kode harus disertai rollback data).
+- Pelajaran: database preview = produksi. Memasang data yang merujuk berkas baru SEBELUM kode dirilis membuat produksi
+  menampilkan gambar rusak sampai rilis. Lain kali: rilis kode yang aman-mundur dulu (berkas + pembaca), baru jalankan data.
+- Akun uji lokal dibuat ulang (scratchpad terhapus): sandi acak baru di scratchpad `akun-uji.local.json`; media uji
+  sintetis dibuat ulang (Pillow + ffmpeg).
+

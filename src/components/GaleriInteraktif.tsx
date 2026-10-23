@@ -41,7 +41,7 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
           <li key={f.id}>
             <figure>
               <button type="button" onClick={() => setBuka(i)} className="block w-full" aria-label={`Perbesar foto: ${f.judul}${f.sementara ? ` (${f.label ?? "Ilustrasi sementara"})` : ""}`}>
-                <MediaSlot src={f.gambar} alt="" ratio={RASIO[i % RASIO.length]} isPlaceholder={f.sementara} label={f.label} labelDiNamaInduk sizes="(min-width: 768px) 33vw, 100vw" priority={i < 3} />
+                <MediaSlot src={f.gambar} alt="" ratio={RASIO[i % RASIO.length]} isPlaceholder={f.sementara} label={f.label} labelDiNamaInduk sizes="(min-width: 768px) 33vw, 100vw" priority={i < 6} />
               </button>
               <figcaption className="keterangan-foto">
                 {f.judul}

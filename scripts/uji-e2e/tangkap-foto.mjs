@@ -56,7 +56,9 @@ for (const l of LAYAR) {
       return Boolean(b);
     }, t);
     if (!ok) continue;
-    await tunggu(900);
+    // tunggu foto kartu sorotan selesai dimuat (lazy; foto baru belum ada di cache CDN)
+    await page.waitForFunction(() => [...document.querySelectorAll(".lgt-mega-foto img, .lgt-menu-hp img")].filter((i) => i.offsetParent).every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 15000 }).catch(() => {});
+    await tunggu(600);
     await simpan(`menu-${t.toLowerCase().replace(/\s+/g, "-")}`);
     await page.keyboard.press("Escape");
     await tunggu(300);
