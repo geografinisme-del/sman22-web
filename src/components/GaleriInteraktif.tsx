@@ -9,6 +9,9 @@ import type { FotoItem } from "@/lib/data";
 const RASIO = ["4/5", "4/3", "1/1", "3/4", "16/10"] as const;
 
 /** Galeri masonry + lightbox (dialog bawaan: Esc menutup, panah kiri/kanan berpindah). */
+/** lebar tampil kolom kisi galeri (halaman.css): 2 kolom < 900px, 3 kolom di desktop (wadah maks. ±1240px) */
+const UKURAN_KISI = "(min-width: 1280px) 400px, (min-width: 900px) 33vw, 50vw";
+
 export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
   const [buka, setBuka] = useState<number | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -41,7 +44,7 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
           <li key={f.id}>
             <figure>
               <button type="button" onClick={() => setBuka(i)} className="block w-full" aria-label={`Perbesar foto: ${f.judul}${f.sementara ? ` (${f.label ?? "Ilustrasi sementara"})` : ""}`}>
-                <MediaSlot src={f.gambar} alt="" ratio={RASIO[i % RASIO.length]} isPlaceholder={f.sementara} label={f.label} labelDiNamaInduk sizes="(min-width: 768px) 33vw, 100vw" priority={i < 6} />
+                <MediaSlot src={f.gambar} alt="" ratio={RASIO[i % RASIO.length]} isPlaceholder={f.sementara} label={f.label} labelDiNamaInduk sizes={UKURAN_KISI} priority={i < 6} />
               </button>
               <figcaption className="keterangan-foto">
                 {f.judul}
