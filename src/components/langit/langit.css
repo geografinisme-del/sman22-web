@@ -428,6 +428,8 @@
   grid-area: 1 / 1;
   justify-self: center;
   width: var(--lebar-kartu-hp);
+  /* = SKALA_TENGAH_HP (lib/cincin.ts) sebelum JS memasang posisi */
+  transform: scale(0.996);
   backface-visibility: hidden;
   will-change: transform, opacity;
   pointer-events: auto;

@@ -1,7 +1,7 @@
 "use client";
 
 import { MediaSlot } from "@/components/MediaSlot";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { KartuBeranda } from "@/content/kartu-beranda";
 import { kartuDepan, phiKartu, sudutGeserSatu, sudutOtomatis, sudutOtomatisLangkah, sudutTerdekat, tampilKartu, tampilKartuHp } from "@/lib/cincin";
@@ -106,8 +106,9 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
     };
   }, [n]);
 
-  // mesin cincin
-  useEffect(() => {
+  // mesin cincin — useLayoutEffect: posisi kartu terpasang SEBELUM lukisan pertama mode baru (tanpa kedip tumpukan
+  // kartu, dan gambar kartu tengah tidak pernah tampil lebih besar dari lukisan awal → tidak ada LCP kedua)
+  useLayoutEffect(() => {
     if (mode === "baris") return;
     const hp = mode === "hp";
     const w = wadah.current!;
