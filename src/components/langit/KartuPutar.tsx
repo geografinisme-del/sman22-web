@@ -1,7 +1,7 @@
 "use client";
 
 import { MediaSlot } from "@/components/MediaSlot";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { KartuBeranda } from "@/content/kartu-beranda";
 import { kartuDepan, phiKartu, sudutGeserSatu, sudutOtomatis, sudutOtomatisLangkah, sudutTerdekat, tampilKartu, tampilKartuHp } from "@/lib/cincin";
@@ -30,6 +30,7 @@ const AMBANG_SERET = 6;
 const HP_JEDA = 4000; // ms per langkah putar otomatis HP
 const HP_DURASI = 700; // ms geseran satu kartu HP
 const HP_GESER = 0.7; // jarak kartu tetangga = 0,7 × lebar kartu
+const HP_JEDA_AWAL = 6000; // ms sampai langkah otomatis pertama HP selesai
 
 /** cubic-bezier(0.22, 1, 0.36, 1) — easing tunggal situs */
 function ease(t: number) {
@@ -78,6 +79,11 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
 
   const s = useRef<Mesin>({ keadaan: "otomatis", theta: 0, theta0: 0, t0: 0, vel: 0, anim: null, diamSampai: 0, pilih: -1, terlihat: true, tekan: false, geser: 0, xAkhir: 0, thetaSeret: 0 });
   const kendali = useRef<Kendali>({ putarKe: () => {}, lanjut: () => {} });
+  // mode terbaru untuk penangan klik/fokus kartu (daftar kartu di-memo: pergantian mode tidak merender ulang 12 kartu)
+  const modeRef = useRef(mode);
+  useLayoutEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
 
   // pilih mode
   useEffect(() => {
@@ -121,7 +127,11 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
     st.pilih = -1;
     st.theta0 = st.theta;
     st.t0 = performance.now();
-    if (hp) st.theta = st.theta0 = Math.round(st.theta / step) * step;
+    if (hp) {
+      st.theta = st.theta0 = Math.round(st.theta / step) * step;
+      // HP: langkah otomatis pertama selesai ±6 detik setelah cincin aktif — kartu pertama sempat terbaca
+      st.t0 += HP_JEDA_AWAL - HP_JEDA;
+    }
 
     // HP: jarak kartu tetangga mengikuti lebar kartu nyata (berubah saat layar diputar)
     let geserHp = 0;
@@ -340,60 +350,68 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
     kendali.current.putarKe(sudutGeserSatu(st.anim ? st.anim.ke : st.theta, n, arah), { pilih: -1, diam: DIAM_TOMBOL });
   };
 
+  // pilihKartu hanya memakai ref & step; isi daftar ditentukan kartu/n/step
+  const daftar = useMemo(
+    () =>
+      kartu.map((k, i) => (
+        <li key={k.id} className="lgt-cincin-slot">
+          <a
+            href={k.url}
+            className="lgt-kartu"
+            // hanya fokus keyboard (bukan klik/tekan mouse) yang memutar kartu ke tengah & menghentikan putaran
+            onFocus={(e) => modeRef.current !== "baris" && e.currentTarget.matches(":focus-visible") && pilihKartu(i, Infinity)}
+            onClick={(e) => {
+              if (modeRef.current === "baris") return;
+              const st = s.current;
+              // seret > 6px bukan klik (hanya klik pointer; Enter dari keyboard memiliki detail 0)
+              if (e.detail !== 0 && st.geser > AMBANG_SERET) {
+                e.preventDefault();
+                return;
+              }
+              // kartu terpilih yang sudah di tengah → buka tautan; selain itu pilih dulu (putar ke tengah lalu diam)
+              // HP: kartu yang sedang di tengah langsung dibuka (tanpa harus dipilih dulu)
+              const diTengah =
+                modeRef.current === "hp"
+                  ? st.keadaan !== "seret" && st.keadaan !== "inersia" && Math.abs(phiKartu(i, st.theta, n)) < step / 4
+                  : st.keadaan === "diam" && st.pilih === i && Math.abs(phiKartu(i, st.theta, n)) < step / 2;
+              if (!diTengah) {
+                e.preventDefault();
+                pilihKartu(i, st.diamSampai === Infinity && st.pilih === i ? Infinity : DIAM_PILIH);
+              }
+            }}
+            draggable={false}
+          >
+            <MediaSlot
+              src={k.foto || undefined}
+              alt=""
+              ratio="isi"
+              isPlaceholder={k.sementara}
+              sizes="(min-width: 900px) 360px, min(78vw, 340px)"
+              priority={i < 2}
+              draggable={false}
+              className="lgt-kartu-foto"
+              kosong={<span className="lgt-kartu-22" aria-hidden>22</span>}
+            />
+            <span className="lgt-kartu-isi">
+              <span className="lgt-kartu-label">{k.label}</span>
+              <span className="lgt-kartu-judul">{k.judul}</span>
+              <span className="lgt-kartu-desk">{k.deskripsi}</span>
+              <span className="lgt-kartu-buka" aria-hidden>
+                Buka →
+              </span>
+            </span>
+          </a>
+        </li>
+      )),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [kartu, n, step],
+  );
+
   return (
     <div ref={wadah} className="lgt-cincin-wadah" data-mode={mode}>
       <div className="lgt-cincin-panggung" style={mode === "cincin" ? { perspective: `${PERSPEKTIF}px` } : undefined}>
         <ul ref={cincin} className="lgt-cincin" aria-label="Jelajahi sekolah">
-          {kartu.map((k, i) => (
-            <li key={k.id} className="lgt-cincin-slot">
-              <a
-                href={k.url}
-                className="lgt-kartu"
-                // hanya fokus keyboard (bukan klik/tekan mouse) yang memutar kartu ke tengah & menghentikan putaran
-                onFocus={(e) => mode !== "baris" && e.currentTarget.matches(":focus-visible") && pilihKartu(i, Infinity)}
-                onClick={(e) => {
-                  if (mode === "baris") return;
-                  const st = s.current;
-                  // seret > 6px bukan klik (hanya klik pointer; Enter dari keyboard memiliki detail 0)
-                  if (e.detail !== 0 && st.geser > AMBANG_SERET) {
-                    e.preventDefault();
-                    return;
-                  }
-                  // kartu terpilih yang sudah di tengah → buka tautan; selain itu pilih dulu (putar ke tengah lalu diam)
-                  // HP: kartu yang sedang di tengah langsung dibuka (tanpa harus dipilih dulu)
-                  const diTengah =
-                    mode === "hp"
-                      ? st.keadaan !== "seret" && st.keadaan !== "inersia" && Math.abs(phiKartu(i, st.theta, n)) < step / 4
-                      : st.keadaan === "diam" && st.pilih === i && Math.abs(phiKartu(i, st.theta, n)) < step / 2;
-                  if (!diTengah) {
-                    e.preventDefault();
-                    pilihKartu(i, st.diamSampai === Infinity && st.pilih === i ? Infinity : DIAM_PILIH);
-                  }
-                }}
-                draggable={false}
-              >
-                <MediaSlot
-                  src={k.foto || undefined}
-                  alt=""
-                  ratio="isi"
-                  isPlaceholder={k.sementara}
-                  sizes="(min-width: 900px) 360px, min(78vw, 340px)"
-                  priority={i < 2}
-                  draggable={false}
-                  className="lgt-kartu-foto"
-                  kosong={<span className="lgt-kartu-22" aria-hidden>22</span>}
-                />
-                <span className="lgt-kartu-isi">
-                  <span className="lgt-kartu-label">{k.label}</span>
-                  <span className="lgt-kartu-judul">{k.judul}</span>
-                  <span className="lgt-kartu-desk">{k.deskripsi}</span>
-                  <span className="lgt-kartu-buka" aria-hidden>
-                    Buka →
-                  </span>
-                </span>
-              </a>
-            </li>
-          ))}
+          {daftar}
         </ul>
       </div>
       {mode === "cincin" && (

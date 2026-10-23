@@ -1,5 +1,5 @@
 // Uji animasi HP (BACA-SAJA): kartu putar cincin ringan & tur pinned di emulasi HP 390px, Chromium + WebKit.
-// - kartu putar: mode "hp", kartu tengah ±78% lebar, 3 kartu terlihat, maju otomatis 1 kartu (≤ 5 dtk), usap kiri →
+// - kartu putar: mode "hp", kartu tengah ±78% lebar, 3 kartu terlihat, maju otomatis 1 kartu (pertama ±6 dtk), usap kiri →
 //   kartu berikutnya ke tengah (berhenti tepat), ketuk kartu samping → ke tengah tanpa pindah halaman,
 //   ketuk kartu tengah → buka tautannya.
 // - tur: mode "sticky", panggung menempel & setinggi layar, langkah berganti saat digulir, kartu teks di bawah foto.
@@ -64,9 +64,9 @@ for (const nm of daftarMesin.split(",")) {
   cek(L(`3 kartu terlihat (tengah + 2 mengintip): ${terlihat}`), terlihat === 3, terlihat);
   cek(L("tanpa luber horizontal"), !(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)));
 
-  // 1. maju otomatis
+  // 1. maju otomatis (langkah pertama ±6 dtk setelah cincin aktif, berikutnya tiap 4 dtk)
   const d0 = await depan(page);
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(7000);
   const d1 = await depan(page);
   cek(L(`maju otomatis satu kartu (${d0} → ${d1})`), d1 === (d0 + 1) % n, { d0, d1 });
 
