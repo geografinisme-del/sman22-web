@@ -41,11 +41,12 @@ export default async function KreditFoto() {
           </a>{" "}
           (gratis untuk penggunaan komersial dan nonkomersial). Terima kasih kepada para fotografer.
         </p>
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {daftar.map((d, i) => (
-            <li key={d.src} className="overflow-hidden rounded-[18px] border border-[var(--line)] bg-white">
-              <MediaSlot src={d.src} alt={d.isi} ratio="3/2" sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" priority={i < 3} />
-              <div className="p-4 text-sm">
+        {/* daftar ringkas dengan gambar mini kecil: cukup untuk kredit, ringan dimuat */}
+        <ul className="grid gap-3 lg:grid-cols-2">
+          {daftar.map((d) => (
+            <li key={d.src} className="flex gap-4 rounded-[14px] border border-[var(--line)] bg-white p-3">
+              <MediaSlot src={d.src} alt={d.isi} ratio="1/1" sizes="96px" className="w-24 shrink-0 overflow-hidden rounded-[10px]" />
+              <div className="min-w-0 text-sm">
                 <p className="font-semibold text-[var(--ink)]">{d.isi}</p>
                 <p className="mt-1">
                   Foto:{" "}
@@ -57,7 +58,7 @@ export default async function KreditFoto() {
                   {d.lisensi.replace(/ \(https?:[^)]+\)/, "")}
                   {d.diunduh ? ` · diunduh ${formatTanggal(d.diunduh)}` : ""}
                 </p>
-                <p className="mt-2 text-[var(--muted)]">Dipakai di: {d.lokasi.join("; ")}</p>
+                <p className="mt-1 text-[var(--muted)]">Dipakai di: {d.lokasi.join("; ")}</p>
               </div>
             </li>
           ))}
