@@ -85,10 +85,22 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
     const gerak = window.matchMedia("(prefers-reduced-motion: no-preference)");
     const lebar = window.matchMedia("(min-width: 900px)");
     const atur = () => setMode(!gerak.matches || n < 3 ? "baris" : lebar.matches ? "cincin" : "hp");
-    atur();
+    // cincin baru dipasang setelah halaman selesai dimuat & peramban senggang: kerja JS/tata letak tidak bersaing
+    // dengan muat awal (LCP). Sebelum itu kartu tampil sebagai baris berukuran sama (tanpa pergeseran tata letak).
+    let idle = 0;
+    let jeda = 0;
+    const pasang = () => {
+      if ("requestIdleCallback" in window) idle = window.requestIdleCallback(atur, { timeout: 1500 });
+      else jeda = setTimeout(atur, 300) as unknown as number;
+    };
+    if (document.readyState === "complete") pasang();
+    else window.addEventListener("load", pasang, { once: true });
     gerak.addEventListener("change", atur);
     lebar.addEventListener("change", atur);
     return () => {
+      window.removeEventListener("load", pasang);
+      if (idle) window.cancelIdleCallback(idle);
+      clearTimeout(jeda);
       gerak.removeEventListener("change", atur);
       lebar.removeEventListener("change", atur);
     };
