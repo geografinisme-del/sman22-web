@@ -3,23 +3,26 @@ import { CtaBand, InfoCard, SectionHeading } from "@/components/langit/Komponen"
 import { PageHeader } from "@/components/ui";
 import { sekolah } from "@/content/sekolah";
 import { getProfil } from "@/lib/data";
+import { fotoKode } from "@/lib/foto-slot";
 import { JENIS_MITRA } from "@/lib/humas";
 import { supabaseAktif } from "@/lib/supabase/config";
 import { supabasePublik } from "@/lib/supabase/public";
 
 export const metadata: Metadata = { title: "Profil Sekolah" };
 
-const SUBHALAMAN = [
-  { href: "/sambutan", label: "Profil", judul: "Sambutan kepala sekolah", deskripsi: "Pesan kepala sekolah untuk warga dan calon siswa.", foto: "/images/kepala-sekolah.jpg" },
+const SUBHALAMAN: { href: string; label: string; judul: string; deskripsi: string; foto: string; slot?: string }[] = [
+  { href: "/sambutan", label: "Profil", judul: "Sambutan kepala sekolah", deskripsi: "Pesan kepala sekolah untuk warga dan calon siswa.", foto: "/images/kepala-sekolah.jpg", slot: "kartu-profil.sambutan" },
   { href: "/profil/visi-misi", label: "Profil", judul: "Visi dan misi", deskripsi: "Arah dan tujuan pendidikan di SMA Negeri 22 Bandung.", foto: "/images/apel-lapangan.jpg" },
-  { href: "/profil/sejarah", label: "Profil", judul: "Sejarah", deskripsi: `Perjalanan sekolah sejak ${sekolah.tahunBerdiri}.`, foto: "/images/gedung.jpg" },
+  { href: "/profil/sejarah", label: "Profil", judul: "Sejarah", deskripsi: `Perjalanan sekolah sejak ${sekolah.tahunBerdiri}.`, foto: "/images/gedung.jpg", slot: "kartu-profil.sejarah" },
   { href: "/profil/guru-staf", label: "Profil", judul: "Guru dan Tenaga Kependidikan", deskripsi: "Direktori guru dan tenaga kependidikan (GTK).", foto: "/images/keluarga-besar.jpg" },
   { href: "/profil/fasilitas", label: "Profil", judul: "Fasilitas", deskripsi: "Ruang belajar, laboratorium, dan sarana pendukung.", foto: "/images/kegiatan-aula.jpg" },
-  { href: "/profil/tata-tertib", label: "Profil", judul: "Tata tertib", deskripsi: "Aturan dan pembiasaan.", foto: "/images/upacara-pagi.jpg" },
+  { href: "/profil/tata-tertib", label: "Profil", judul: "Tata tertib", deskripsi: "Aturan dan pembiasaan.", foto: "/images/upacara-pagi.jpg", slot: "kartu-profil.tata-tertib" },
 ];
 
 export default async function Profil() {
   const p = await getProfil();
+  // foto kartu: slot foto_slot (ilustrasi sementara berkualitas) menggantikan foto bawaan yang buram/kecil
+  const kartu = await Promise.all(SUBHALAMAN.map(async (s) => ({ ...s, f: s.slot ? await fotoKode(s.slot, { src: s.foto, alt: "", sementara: false }) : { src: s.foto, alt: "", sementara: false } })));
   const { data: mitraData } = supabaseAktif ? await supabasePublik().rpc("mitra_publik") : { data: [] };
   const mitra = (mitraData ?? []) as { mitra: string; jenis: string }[];
   // hanya isian resmi yang sudah terisi yang ditampilkan; sisanya disebut ringkas
@@ -44,8 +47,8 @@ export default async function Profil() {
         <div className="lgt-wadah">
           <SectionHeading label="Mengenal sekolah" judul="Semua tentang SMAN 22." teks={p.pernyataan || undefined} />
           <div className="lgt-kisi mt-8">
-            {SUBHALAMAN.map((s) => (
-              <InfoCard key={s.href} href={s.href} foto={s.foto} alt="" label={s.label} judul={s.judul} deskripsi={s.deskripsi} />
+            {kartu.map((s) => (
+              <InfoCard key={s.href} href={s.href} foto={s.f.src} alt="" sementara={s.f.sementara} label={s.label} judul={s.judul} deskripsi={s.deskripsi} />
             ))}
           </div>
         </div>

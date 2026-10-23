@@ -35,6 +35,7 @@ export function MediaSlot({
   draggable,
   style,
   labelDiNamaInduk = false,
+  label = "Ilustrasi sementara",
 }: {
   src?: string;
   alt: string;
@@ -57,6 +58,8 @@ export function MediaSlot({
   style?: CSSProperties;
   /** label "Ilustrasi sementara" disembunyikan dari pembaca layar — pakai bila info itu sudah ada di nama tombol/tautan induk */
   labelDiNamaInduk?: boolean;
+  /** teks label sementara (mis. "Ilustrasi — bukan foto kegiatan" untuk pengganti foto kegiatan) */
+  label?: string;
 }) {
   const posisi = typeof focus === "string" ? focus : focus ? `${focus.x}% ${focus.y}%` : undefined;
   const kotak = (
@@ -98,7 +101,7 @@ export function MediaSlot({
       )}
       {isPlaceholder && (src || video) && (
         <span className="media-label" aria-hidden={labelDiNamaInduk || undefined}>
-          Ilustrasi sementara
+          {label}
         </span>
       )}
     </span>

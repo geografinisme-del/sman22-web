@@ -23,6 +23,7 @@ const WEBSITE = [
   { href: "/admin/fasilitas", label: "Fasilitas" },
   { href: "/admin/halaman", label: "Halaman teks" },
   { href: "/admin/tur-sekolah", label: "Tur Sekolah" },
+  { href: "/admin/foto-sementara", label: "Foto sementara" },
   { href: "/admin/prestasi", label: "Prestasi & Alumni" },
   { href: "/admin/spmb", label: "SPMB Beranda" },
   { href: "/admin/portal-bidang", label: "Penanggung Jawab Portal" },

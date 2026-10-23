@@ -40,10 +40,20 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
         {foto.map((f, i) => (
           <li key={f.id}>
             <figure>
-              <button type="button" onClick={() => setBuka(i)} className="block w-full" aria-label={`Perbesar foto: ${f.judul}${f.sementara ? " (Ilustrasi sementara)" : ""}`}>
-                <MediaSlot src={f.gambar} alt="" ratio={RASIO[i % RASIO.length]} isPlaceholder={f.sementara} labelDiNamaInduk sizes="(min-width: 768px) 33vw, 100vw" />
+              <button type="button" onClick={() => setBuka(i)} className="block w-full" aria-label={`Perbesar foto: ${f.judul}${f.sementara ? ` (${f.label ?? "Ilustrasi sementara"})` : ""}`}>
+                <MediaSlot src={f.gambar} alt="" ratio={RASIO[i % RASIO.length]} isPlaceholder={f.sementara} label={f.label} labelDiNamaInduk sizes="(min-width: 768px) 33vw, 100vw" priority={i < 3} />
               </button>
-              <figcaption className="keterangan-foto">{f.judul}</figcaption>
+              <figcaption className="keterangan-foto">
+                {f.judul}
+                {f.asli && (
+                  <>
+                    {" · "}
+                    <a href={f.asli} target="_blank" rel="noopener" className="tautan-foto-asli">
+                      Lihat foto asli
+                    </a>
+                  </>
+                )}
+              </figcaption>
             </figure>
           </li>
         ))}
@@ -66,13 +76,18 @@ export function GaleriInteraktif({ foto }: { foto: FotoItem[] }) {
                   {String((buka ?? 0) + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
                 </span>
                 {aktif.judul}
+                {aktif.asli && (
+                  <a href={aktif.asli} target="_blank" rel="noopener" className="ml-3 underline underline-offset-2">
+                    Lihat foto asli
+                  </a>
+                )}
               </p>
               <button type="button" onClick={() => setBuka(null)} className="grid h-10 w-10 place-items-center rounded-full hover:bg-white/10" aria-label="Tutup">
                 <X size={20} aria-hidden />
               </button>
             </div>
             <div className="relative flex-1">
-              <MediaSlot key={aktif.id} src={aktif.gambar} alt={aktif.judul} ratio="isi" fit="contain" sizes="100vw" className="absolute inset-0" kelasMedia="galeri-foto" isPlaceholder={aktif.sementara} />
+              <MediaSlot key={aktif.id} src={aktif.gambar} alt={aktif.judul} ratio="isi" fit="contain" sizes="100vw" className="absolute inset-0" kelasMedia="galeri-foto" isPlaceholder={aktif.sementara} label={aktif.label} />
               {total > 1 && (
                 <>
                   <button type="button" onClick={() => setBuka(((buka ?? 0) - 1 + total) % total)} className="galeri-panah left-3" aria-label="Foto sebelumnya">

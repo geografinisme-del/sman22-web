@@ -97,6 +97,14 @@
   color: rgb(255 255 255 / 0.6);
   font-size: 0.875rem;
 }
+.lgt-footer-bawah a {
+  color: rgb(255 255 255 / 0.82);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.lgt-footer-bawah a:hover {
+  color: var(--lime);
+}
 
 /* ===================== hero beranda ===================== */
 .lgt-hero {
@@ -588,6 +596,11 @@
 .tur-kredit {
   font-size: 0.8125rem;
   color: var(--muted);
+}
+.tur-kredit a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* mode sticky (desktop, gerak diizinkan; dipasang oleh MesinTur) */

@@ -40,6 +40,7 @@ export function Kartu({ children, className = "" }: { children: ReactNode; class
 
 const PESAN: Record<string, { teks: string; ok: boolean }> = {
   tersimpan: { teks: "Perubahan berhasil disimpan.", ok: true },
+  "foto-dikembalikan": { teks: "Foto asli dikembalikan ke lokasinya. Ilustrasi sementara tetap tercatat di daftar.", ok: true },
   "tur-minimal": { teks: "Minimal 3 titik tur harus aktif. Aktifkan titik lain sebelum menonaktifkan yang ini.", ok: false },
   "tur-maksimal": { teks: "Maksimal 8 titik tur aktif. Nonaktifkan titik lain dulu.", ok: false },
   "pesanan-siap": { teks: "Buku dipesan dan sudah disiapkan. Ambil di perpustakaan dalam 3 hari.", ok: true },

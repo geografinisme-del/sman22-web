@@ -4,16 +4,22 @@ import { InfoCard } from "@/components/langit/Komponen";
 import { PageHeader, Section } from "@/components/ui";
 import { tautanELearning } from "@/content/menu";
 import { getSitus } from "@/lib/data";
+import { fotoKode } from "@/lib/foto-slot";
 
 export const metadata: Metadata = { title: "Pembelajaran" };
 
 export default async function Pembelajaran() {
-  const eLearning = tautanELearning((await getSitus()).layanan);
+  const [situs, fElearning, fKalender] = await Promise.all([
+    getSitus(),
+    fotoKode("kartu-pembelajaran.e-learning", { src: "/media/placeholder/galeri-3.webp", alt: "", sementara: true }),
+    fotoKode("kartu-pembelajaran.kalender", { src: "/images/upacara-pagi.jpg", alt: "", sementara: false }),
+  ]);
+  const eLearning = tautanELearning(situs.layanan);
   const kartu = [
-    { href: "/program", judul: "Program dan karakter", deskripsi: "7KAIH, Gerbang Pancawaluya, dan kokurikuler tematik.", foto: "/images/apel-lapangan.jpg" },
-    { href: eLearning, judul: "E-Learning", deskripsi: "Kelas digital, materi, dan tugas daring.", foto: "/media/placeholder/galeri-3.webp", sementara: true },
-    { href: "/pembelajaran/kalender", judul: "Kalender akademik", deskripsi: "Tanggal ujian, libur, dan kegiatan akademik.", foto: "/images/upacara-pagi.jpg" },
-    { href: "/pembelajaran/kurikulum", judul: "Kurikulum", deskripsi: "Struktur dan pelaksanaan kurikulum sekolah.", foto: "/images/kegiatan-aula.jpg" },
+    { href: "/program", judul: "Program dan karakter", deskripsi: "7KAIH, Gerbang Pancawaluya, dan kokurikuler tematik.", foto: "/images/apel-lapangan.jpg", sementara: false },
+    { href: eLearning, judul: "E-Learning", deskripsi: "Kelas digital, materi, dan tugas daring.", foto: fElearning.src, sementara: fElearning.sementara },
+    { href: "/pembelajaran/kalender", judul: "Kalender akademik", deskripsi: "Tanggal ujian, libur, dan kegiatan akademik.", foto: fKalender.src, sementara: fKalender.sementara },
+    { href: "/pembelajaran/kurikulum", judul: "Kurikulum", deskripsi: "Struktur dan pelaksanaan kurikulum sekolah.", foto: "/images/kegiatan-aula.jpg", sementara: false },
   ];
   return (
     <>

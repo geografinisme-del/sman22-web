@@ -61,7 +61,8 @@ export type PengumumanItem = {
   poster?: { url: string; alt: string };
   tautan?: { url: string; label: string };
 };
-export type FotoItem = { id: string; judul: string; gambar: string; sementara?: boolean };
+/** `asli` = foto asli yang diarsipkan (foto ini pengganti sementara); `label` = teks label sementara */
+export type FotoItem = { id: string; judul: string; gambar: string; sementara?: boolean; asli?: string; label?: string };
 
 /** Teks "[ISI ...]" dianggap kosong supaya tidak tampil di situs */
 const bersih = (s?: string | null) => {
@@ -295,7 +296,21 @@ export const getGaleri = cache(async (): Promise<FotoItem[]> => {
     logGagal("galeri", error);
     return [];
   }
-  return data.map((g) => ({ id: g.id, judul: g.judul, gambar: g.gambar_url, sementara: g.is_placeholder === true }));
+  // foto pengganti dokumentasi kegiatan: label khusus + tautan ke foto asli (tabel foto_slot, migrasi 20261227)
+  const { slotBaris, LABEL_SEMENTARA } = await import("@/lib/foto-slot");
+  const slot = await slotBaris("galeri");
+  return data.map((g) => {
+    const s = slot.get(g.id);
+    const sementara = g.is_placeholder === true;
+    const pengganti = Boolean(s && sementara && s.src === g.gambar_url);
+    return {
+      id: g.id,
+      judul: g.judul,
+      gambar: g.gambar_url,
+      sementara,
+      ...(pengganti && s ? { label: LABEL_SEMENTARA[s.jenis], ...(s.asli ? { asli: s.asli } : {}) } : {}),
+    };
+  });
 });
 
 /* ------------------------------------------------------------------ */
