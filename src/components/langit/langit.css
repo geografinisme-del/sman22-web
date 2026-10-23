@@ -93,14 +93,24 @@
 .lgt-footer-bawah {
   margin-top: 48px;
   padding-top: 20px;
+  /* ruang di bawah baris terakhir = tombol "Bantuan" mengambang (48px + jarak 16px) + jarak + area aman bilah navigasi HP,
+     sehingga saat digulir ke dasar teks & tautan tidak tertutup tombol */
+  padding-bottom: calc(48px + 16px + 16px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid rgb(255 255 255 / 0.14);
   color: rgb(255 255 255 / 0.6);
   font-size: 0.875rem;
 }
 .lgt-footer-bawah a {
+  position: relative;
   color: rgb(255 255 255 / 0.82);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+/* area ketuk ±44px tanpa mengubah tampilan teks */
+.lgt-footer-bawah a::after {
+  content: "";
+  position: absolute;
+  inset: -13px -6px;
 }
 .lgt-footer-bawah a:hover {
   color: var(--lime);
