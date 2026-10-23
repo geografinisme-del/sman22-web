@@ -542,4 +542,8 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   menampilkan gambar rusak sampai rilis. Lain kali: rilis kode yang aman-mundur dulu (berkas + pembaca), baru jalankan data.
 - Akun uji lokal dibuat ulang (scratchpad terhapus): sandi acak baru di scratchpad `akun-uji.local.json`; media uji
   sintetis dibuat ulang (Pillow + ffmpeg).
+- Footer HP (23 Okt): tombol "Bantuan" (fixed, kiri bawah, 48px) sempat menutupi baris hak cipta di 360/390px. Kini
+  `.lgt-footer-bawah` diberi ruang bawah (48+16+16px + safe-area) dan area ketuk "Kredit foto" ±44px. Uji:
+  `scripts/uji-e2e/uji-footer-hp.mjs` (hit-test sepanjang teks; COOKIE_PRATINJAU untuk preview). Rilis
+  `dpl_AurNX9ZBLgUefDtes6w2YK7dGfqC` (aca338f), titik kembali `dpl_8H867ERkbfx4CZ359uSz94T9GCcm`.
 
