@@ -564,3 +564,10 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Menu HP: fokus awal tombol Tutup (bukan kolom cari). Akordeon 22px / 56px.
 - Uji: `uji-hp-gerak.mjs` (Chromium + WebKit, opsional rekam video), `audit-hp.mjs` (4 perangkat × 2 mesin, semua halaman
   publik + 3 login); preview butuh `COOKIE_PRATINJAU` dan memakai `waitUntil: "load"` (toolbar Vercel tak pernah idle).
+- Lighthouse (23 Okt): angka beranda di PREVIEW tidak mewakili production — kode lama pun hanya 0,72–0,88 di preview
+  (0,95 di production): toolbar Vercel + FCP yang tertahan di lingkungan preview. Bandingkan selalu A/B pada kondisi sama
+  (deployment preview lama vs baru, bergantian, ≥ 6 pasang, median). Hasil akhir: baru 0,80 vs lama 0,73 (LCP, SI, TBT
+  lebih rendah; CLS 0; a11y 100). Perbaikan kinerja yang ditemukan: favicon `src/app/icon.png` 368 KB → 20 KB (ikut
+  dimuat sebelum LCP di HP); kartu HP tidak memicu LCP kedua (ul flex→grid membuat ulang objek tata letak → posisi
+  dipasang di useLayoutEffect + skala tengah 0,996); mode cincin dipasang setelah load + idle; daftar kartu di-memo;
+  langkah otomatis pertama HP ±6 dtk.
