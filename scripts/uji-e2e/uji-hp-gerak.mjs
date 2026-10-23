@@ -45,7 +45,7 @@ for (const nm of daftarMesin.split(",")) {
     ...ekstra,
   });
   const page = await ctx.newPage();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/", { waitUntil: "load" });
   await diamkan(page);
   await page.waitForTimeout(1200);
   const L = (t) => `${nm} 390px: ${t}`;
@@ -111,7 +111,7 @@ for (const nm of daftarMesin.split(",")) {
   cek(L(`ketuk kartu tengah membuka ${href}`), new URL(page.url()).pathname === new URL(href, BASE).pathname, page.url());
 
   // 5. tur pinned
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/", { waitUntil: "load" });
   await diamkan(page);
   await page.evaluate(() => document.querySelector("#tur").scrollIntoView());
   await page.waitForTimeout(1500);
@@ -151,7 +151,7 @@ for (const nm of daftarMesin.split(",")) {
   // 6. reduced motion → tanpa animasi
   const ctx2 = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, reducedMotion: "reduce", ...ekstra });
   const p2 = await ctx2.newPage();
-  await p2.goto(BASE + "/", { waitUntil: "networkidle" });
+  await p2.goto(BASE + "/", { waitUntil: "load" });
   await p2.waitForTimeout(1500);
   cek(
     L("reduced motion: kartu baris biasa & tur daftar"),

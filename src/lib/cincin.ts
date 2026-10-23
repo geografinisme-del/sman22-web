@@ -63,6 +63,8 @@ export function sudutGeserSatu(thetaAcuan: number, n: number, arah: 1 | -1) {
  * p = phi/step (posisi dalam satuan kartu). translateX = p × geser px, rotateY miring ke dalam, skala mengecil ke samping.
  * Hanya transform/opacity (murah di GPU). Kartu |p| ≥ 1,6 disembunyikan.
  */
+export const SKALA_TENGAH_HP = 0.996;
+
 export function tampilKartuHp(i: number, theta: number, n: number, geser: number) {
   const step = 360 / n;
   const phi = phiKartu(i, theta, n);
@@ -71,7 +73,9 @@ export function tampilKartuHp(i: number, theta: number, n: number, geser: number
   const near = Math.max(0, 1 - a);
   const opacity = a <= 1 ? 1 : a >= 1.6 ? 0 : 1 - (a - 1) / 0.6;
   const miring = Math.max(-1, Math.min(1, p)) * -24;
-  const skala = 1 - 0.16 * Math.min(a, 1.4);
+  // kartu tengah 0,996 (tak kasatmata): lapisan 3D membulatkan ukuran sedikit ke atas; tanpa ini gambar kartu tengah
+  // tampak "lebih besar" dari lukisan pertama (mode baris) sehingga Chrome mencatat LCP baru setelah JS aktif
+  const skala = SKALA_TENGAH_HP - 0.16 * Math.min(a, 1.4);
   return {
     phi,
     near,

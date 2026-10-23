@@ -21,7 +21,7 @@ for (const lebar of [360, 390]) {
   const ctx = await browser.newContext({ viewport: { width: lebar, height: 780 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2, ...ekstra });
   const page = await ctx.newPage();
   for (const jalur of daftar.split(",")) {
-    await page.goto(BASE + jalur, { waitUntil: "networkidle" });
+    await page.goto(BASE + jalur, { waitUntil: "load" });
     const tutup = page.getByRole("button", { name: "Tutup", exact: true });
     if (await tutup.count()) await tutup.first().click().catch(() => {});
     // gulir bertahap sampai benar-benar di dasar halaman (konten lazy ikut dimuat)
@@ -103,7 +103,7 @@ for (const lebar of [360, 390]) {
     cek(`${label}: titik kiri/tengah/kanan tautan "Kredit foto" menerima ketukan`, h.titik.every((t) => t === "tautan"), h.titik.join(", "));
   }
   // ketuk sungguhan dari halaman beranda
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/", { waitUntil: "load" });
   const tutup = page.getByRole("button", { name: "Tutup", exact: true });
   if (await tutup.count()) await tutup.first().click().catch(() => {});
   const tautan = page.locator('.lgt-footer-bawah a[href="/kredit-foto"]');

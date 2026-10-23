@@ -547,3 +547,20 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   `scripts/uji-e2e/uji-footer-hp.mjs` (hit-test sepanjang teks; COOKIE_PRATINJAU untuk preview). Rilis
   `dpl_AurNX9ZBLgUefDtes6w2YK7dGfqC` (aca338f), titik kembali `dpl_8H867ERkbfx4CZ359uSz94T9GCcm`.
 
+## Tampilan HP menyeluruh (23 Okt 2026, branch `langit-cerah`, BELUM dirilis)
+- ATURAN: hanya push ke preview; rilis production hanya bila pemilik menulis "rilis". Juga menunggu: sizes galeri `f719e54`.
+- Header: tinggi `--tinggi-header-min` 60px HP / 72px desktop (tokens.css) + `env(safe-area-inset-top)`; `viewportFit: "cover"`
+  di `app/layout.tsx`. Putih 0,88 + blur 12px; di atas hero transparan hanya di posisi atas, solid mulai 8px gulir
+  (`data-lewat`), garis bawah `data-gulir` (box-shadow inset, bukan border → tinggi tepat 60px).
+- Tipografi ≤ 480px: token `--text-h2` 28px, `--text-isi` 16px/1,6, `.label-mono` 11px; H1 hero/PageHero 34–38px; judul dasar
+  h2/h3 diatur di `@layer base` (utilitas Tailwind tetap menang). Jarak bagian HP 64px; bagian setelah PageHero 32px.
+- Animasi: SATU-SATUNYA alasan mati = prefers-reduced-motion (tak ada lagi gating lebar/hover). KartuPutar mode `hp`
+  (`tampilKartuHp`, `sudutOtomatisLangkah` di lib/cincin.ts): kartu 78% lebar, langkah otomatis 4 dtk, usap → luncuran
+  berhenti tepat 1 kartu (dibatasi sejauh yang diseret), ketuk samping → tengah, ketuk tengah → buka. Mode baris & hp
+  memakai ukuran kartu sama (tanpa CLS). Tur: MesinTur sticky di semua lebar; CSS HP 100svh, foto atas, kartu bawah,
+  indikator bergaris; `ScrollTrigger.config({ ignoreMobileResize: true })`.
+- Tombol Bantuan: HP kanan bawah 44px (desktop tetap kiri bawah karena kanan dipakai panel Informasi); menyingkir saat
+  gulir turun / footer terlihat / menu HP terbuka (`html:has(dialog.lgt-menu-hp[open])`); naik di atas tombol Informasi.
+- Menu HP: fokus awal tombol Tutup (bukan kolom cari). Akordeon 22px / 56px.
+- Uji: `uji-hp-gerak.mjs` (Chromium + WebKit, opsional rekam video), `audit-hp.mjs` (4 perangkat × 2 mesin, semua halaman
+  publik + 3 login); preview butuh `COOKIE_PRATINJAU` dan memakai `waitUntil: "load"` (toolbar Vercel tak pernah idle).

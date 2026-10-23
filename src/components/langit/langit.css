@@ -1149,6 +1149,10 @@
     position: absolute;
     inset: -2px -2px;
   }
+  /* hero halaman setinggi isinya (tanpa min-height 300px): judul pendek tidak menyisakan ruang kosong di atas */
+  .lgt-phero {
+    min-height: 0;
+  }
   /* bagian pertama tepat di bawah hero halaman: rapat (32px ≤ 48px), tanpa celah kosong besar */
   .lgt-phero + .lgt-bagian,
   .lgt-phero + section.lgt-bagian,

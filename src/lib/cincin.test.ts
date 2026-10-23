@@ -56,7 +56,7 @@ test("cincin HP: kartu tengah penuh, tetangga mengintip & mengecil, kartu jauh t
   const jauh = tampilKartuHp(3, 0, n, 200);
   assert.equal(tengah.opacity, 1);
   assert.match(tengah.transform, /translate3d\(0\.00px/);
-  assert.match(tengah.transform, /scale\(1\.0000\)/);
+  assert.match(tengah.transform, /scale\(0\.9960\)/, "≤ 1 agar tidak memicu LCP ulang");
   assert.equal(kanan.opacity, 1);
   assert.match(kanan.transform, /translate3d\(200\.00px/);
   assert.equal(jauh.opacity, 0);
