@@ -31,7 +31,7 @@ export function BentoAngka({ profil, foto }: { profil: Profil; foto: { src: stri
         </h2>
         <div className="lgt-bento">
           <div className="lgt-bento-kartu lgt-bento-biru">
-            <MediaSlot src={foto.src} alt="" ratio="isi" sizes="(min-width: 900px) 33vw, 100vw" className="lgt-bento-foto" />
+            <MediaSlot src={foto.src} alt="" ratio="isi" sizes="(min-width: 900px) 33vw, 100vw" className="lgt-bento-foto" tunda />
             <div className="lgt-bento-panel">
               <strong className="lgt-bento-angka">{sekolah.tahunBerdiri}</strong>
               <span>Tahun berdiri.</span>

@@ -387,7 +387,8 @@ export function KartuPutar({ kartu }: { kartu: KartuBeranda[] }) {
               ratio="isi"
               isPlaceholder={k.sementara}
               sizes="(min-width: 900px) 360px, min(78vw, 340px)"
-              priority={i < 2}
+              // hanya kartu pertama (LCP) berprioritas tinggi; kartu lain tidak berebut jaringan dengannya
+              priority={i === 0}
               draggable={false}
               className="lgt-kartu-foto"
               kosong={<span className="lgt-kartu-22" aria-hidden>22</span>}

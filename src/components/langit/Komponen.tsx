@@ -94,6 +94,7 @@ export function InfoCard({
   aksi = "Buka",
   rasio = "kartu",
   children,
+  tunda,
 }: {
   href?: string;
   foto?: string;
@@ -106,6 +107,8 @@ export function InfoCard({
   /** "kartu" = foto 150px; "lebar" = foto 16:10 (kartu besar) */
   rasio?: "kartu" | "lebar";
   children?: ReactNode;
+  /** foto ditunda sampai setelah LCP & dekat layar (beranda di bawah hero) */
+  tunda?: boolean;
 }) {
   const isi = (
     <>
@@ -117,6 +120,7 @@ export function InfoCard({
         sizes={rasio === "lebar" ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 33vw, 100vw"}
         className={`lgt-ikartu-foto ${rasio === "lebar" ? "lgt-ikartu-foto-lebar" : ""}`}
         kosong={<span className="lgt-kartu-22" aria-hidden>22</span>}
+        tunda={tunda}
       />
       <span className="lgt-kartu-isi">
         {label && <span className="lgt-kartu-label">{label}</span>}

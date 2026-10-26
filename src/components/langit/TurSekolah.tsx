@@ -39,6 +39,7 @@ export function TurSekolah({ titik }: { titik: TitikTur[] }) {
                 // ≥900px: mode sticky selebar layar; 700–899px: daftar 2 kolom; HP: 1 kolom
                 sizes="(min-width: 900px) 100vw, (min-width: 700px) 50vw, 100vw"
                 className="tur-media"
+                tunda
                 kelasMedia={t.media?.tipe === "video" ? "tur-video" : "tur-foto"}
                 kosong={
                   <span className="tur-kosong" role="img" aria-label={`${t.judul}: foto menyusul`}>

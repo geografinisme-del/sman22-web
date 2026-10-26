@@ -571,3 +571,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   dimuat sebelum LCP di HP); kartu HP tidak memicu LCP kedua (ul flex→grid membuat ulang objek tata letak → posisi
   dipasang di useLayoutEffect + skala tengah 0,996); mode cincin dipasang setelah load + idle; daftar kartu di-memo;
   langkah otomatis pertama HP ±6 dtk.
+- RILIS 26 Okt 2026: merge `b17fb7c` → production `dpl_8uxw42iAVurBgexRk6coJKhSQYS4` (sin1). Titik kembali kode:
+  `dpl_AurNX9ZBLgUefDtes6w2YK7dGfqC` (aca338f). Tanpa perubahan database. Tombol Bantuan tetap mengambang (keputusan
+  pemilik). Cek production: uji-bantuan-hp, uji-hp-gerak, uji-footer-hp lulus (Chromium + WebKit). Lighthouse HP
+  production (median 3×): beranda 0,85, /portal-digital 0,96, Profil 0,97, Galeri 0,95; CLS 0, a11y/BP/SEO 100.

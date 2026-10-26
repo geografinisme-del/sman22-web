@@ -41,13 +41,13 @@ export function KabarSekolah({ berita, p = {} }: { berita: BeritaItem[]; p?: P }
       <div className="lgt-wadah">
         <SectionHeading id="judul-kabar" label="Kabar dari sekolah" judul={teks(p.judul, "Cerita terbaru dari SMAN 22.")} aksi={{ href: "/berita", label: "Semua berita" }} />
         <div className="lgt-kabar mt-8">
-          <InfoCard href={`/berita/${utama.slug}`} foto={utama.gambar} alt={utama.judul} sementara={utama.gambarSementara} label={[utama.kategori, formatTanggal(utama.tanggal)].filter(Boolean).join(" · ")} judul={utama.judul} deskripsi={utama.ringkasan} aksi="Baca" rasio="lebar" />
+          <InfoCard href={`/berita/${utama.slug}`} foto={utama.gambar} alt={utama.judul} sementara={utama.gambarSementara} label={[utama.kategori, formatTanggal(utama.tanggal)].filter(Boolean).join(" · ")} judul={utama.judul} deskripsi={utama.ringkasan} aksi="Baca" rasio="lebar" tunda />
           {lain.length > 0 && (
             <ul className="lgt-kabar-daftar">
               {lain.map((b) => (
                 <li key={b.id}>
                   <Link href={`/berita/${b.slug}`} className="lgt-baris-kabar">
-                    {b.gambar && <MediaSlot src={b.gambar} alt="" ratio="4/3" sizes="120px" isPlaceholder={b.gambarSementara} className="lgt-baris-foto" />}
+                    {b.gambar && <MediaSlot src={b.gambar} alt="" ratio="4/3" sizes="120px" isPlaceholder={b.gambarSementara} className="lgt-baris-foto" tunda />}
                     <span className="min-w-0">
                       <span className="lgt-kartu-label">{[b.kategori, formatTanggal(b.tanggal)].filter(Boolean).join(" · ")}</span>
                       <span className="lgt-baris-judul">{b.judul}</span>
@@ -223,7 +223,7 @@ export function KehidupanSiswa({ galeri, p = {}, program }: { galeri: FotoItem[]
             {foto.map((f, i) => (
               <li key={f.src}>
                 <figure>
-                  <MediaSlot src={f.src} alt="" ratio="isi" isPlaceholder={f.sementara} label={f.label} sizes={i === 0 ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 25vw, 50vw"} className="lgt-mozaik-foto" />
+                  <MediaSlot src={f.src} alt="" ratio="isi" isPlaceholder={f.sementara} label={f.label} sizes={i === 0 ? "(min-width: 900px) 50vw, 100vw" : "(min-width: 900px) 25vw, 50vw"} className="lgt-mozaik-foto" tunda />
                   <figcaption>
                     {f.judul}
                     {f.asli && (
@@ -355,6 +355,7 @@ export function TentangKami({ profil, p = {}, foto }: { profil: Profil; p?: P; f
           ratio="4/3"
           sizes="(min-width: 900px) 50vw, 100vw"
           className="lgt-foto-besar"
+          tunda
         />
       </div>
     </section>
@@ -370,7 +371,7 @@ export function RekomendasiBuku({ buku, p = {} }: { buku: BukuRingkas[]; p?: P }
         <SectionHeading id="judul-perpus" label="E-Library" judul={teks(p.judul, "Rekomendasi pustakawan.")} aksi={{ href: "/perpustakaan", label: "Buka katalog" }} />
         <div className="lgt-kisi mt-8">
           {buku.map((b) => (
-            <InfoCard key={b.id} href={`/perpustakaan/${b.id}`} foto={b.sampul || undefined} alt={`Sampul ${b.judul}`} label={b.kategori} judul={b.judul} deskripsi={[b.pengarang, b.tersedia > 0 ? `${b.tersedia} tersedia` : "Sedang dipinjam"].filter(Boolean).join(" · ")} aksi="Lihat" />
+            <InfoCard key={b.id} href={`/perpustakaan/${b.id}`} foto={b.sampul || undefined} alt={`Sampul ${b.judul}`} label={b.kategori} judul={b.judul} deskripsi={[b.pengarang, b.tersedia > 0 ? `${b.tersedia} tersedia` : "Sedang dipinjam"].filter(Boolean).join(" · ")} aksi="Lihat" tunda />
           ))}
         </div>
       </div>

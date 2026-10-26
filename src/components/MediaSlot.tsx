@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { CSSProperties, ReactNode } from "react";
+import { GambarTunda } from "./GambarTunda";
 
 /** next/image hanya untuk berkas situs & Storage Supabase; URL luar lain (mis. sampul katalog) dimuat apa adanya. */
 const STORAGE = process.env.NEXT_PUBLIC_SUPABASE_URL ? `${process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/` : null;
@@ -36,6 +37,7 @@ export function MediaSlot({
   style,
   labelDiNamaInduk = false,
   label = "Ilustrasi sementara",
+  tunda = false,
 }: {
   src?: string;
   alt: string;
@@ -60,6 +62,8 @@ export function MediaSlot({
   labelDiNamaInduk?: boolean;
   /** teks label sementara (mis. "Ilustrasi — bukan foto kegiatan" untuk pengganti foto kegiatan) */
   label?: string;
+  /** beranda di bawah hero: foto baru diminta setelah LCP & saat mendekati layar (GambarTunda) */
+  tunda?: boolean;
 }) {
   const posisi = typeof focus === "string" ? focus : focus ? `${focus.x}% ${focus.y}%` : undefined;
   const kotak = (
@@ -80,6 +84,8 @@ export function MediaSlot({
           className={`media-gambar media-luar ${kelasMedia}`}
           style={posisi ? { objectPosition: posisi } : undefined}
         />
+      ) : src && tunda && !priority ? (
+        <GambarTunda src={src} alt={alt} sizes={sizes} draggable={draggable} className={`media-gambar ${kelasMedia}`} style={posisi ? { objectPosition: posisi } : undefined} />
       ) : src ? (
         <Image
           src={src}
