@@ -575,3 +575,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   `dpl_AurNX9ZBLgUefDtes6w2YK7dGfqC` (aca338f). Tanpa perubahan database. Tombol Bantuan tetap mengambang (keputusan
   pemilik). Cek production: uji-bantuan-hp, uji-hp-gerak, uji-footer-hp lulus (Chromium + WebKit). Lighthouse HP
   production (median 3×): beranda 0,85, /portal-digital 0,96, Profil 0,97, Galeri 0,95; CLS 0, a11y/BP/SEO 100.
+- RILIS 26 Okt 2026 (2): beranda HP — prioritas tinggi hanya kartu pertama; foto di bawah hero ditunda (GambarTunda:
+  <img> sama sejak awal, src dipasang setelah LCP & ±400px dari layar). Merge `8c5283a` → `dpl_BkqJmpPGLFiWq9g5ouwNZ63T3uXV`;
+  titik kembali `dpl_8uxw42iAVurBgexRk6coJKhSQYS4`. Uji: `uji-beranda-hp.mjs` (baru). Lighthouse production beranda
+  median 0,85 (0,79–0,95); run buruk = lukisan pertama tertahan ±2,5 s (halaman putih), juga terjadi pada kode lama.
