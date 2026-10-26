@@ -78,14 +78,14 @@ const keadaan = (page) =>
   cek("gerak: awan hero dijeda saat hero di luar layar", k.diam === true, k.diam);
   await ctx.close();
 }
-// 3. layar sempit: kartu baris geser, tanpa 3D
+// 3. layar sempit: cincin ringan HP (bukan cincin 3D desktop)
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
   await page.waitForTimeout(1500);
   const k = await keadaan(page);
-  cek("390px: kartu baris geser (tanpa cincin 3D)", k.cincin === "baris", k.cincin);
+  cek("390px: kartu putar mode cincin ringan HP", k.cincin === "hp", k.cincin);
   cek("390px: tanpa luber horizontal", !(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), null);
   await ctx.close();
 }

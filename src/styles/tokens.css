@@ -46,14 +46,33 @@
   --bayangan-tegas: 0 2px 6px rgb(11 18 32 / 0.1), 0 24px 48px rgb(11 18 32 / 0.18);
   --cincin-fokus: 0 0 0 3px color-mix(in srgb, var(--blue) 45%, transparent);
 
-  /* tinggi header situs (SiteHeader mengukur ulang tinggi nyatanya lewat JS) */
-  --tinggi-header-min: 72px;
+  /* tinggi header situs: 60px HP, 72px desktop (SiteHeader mengukur ulang tinggi nyatanya lewat JS,
+     termasuk safe-area atas di iPhone) */
+  --tinggi-header-min: 60px;
   --tinggi-header: var(--tinggi-header-min);
 
   /* gerak: easing tunggal, tanpa bounce */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --durasi-ui: 240ms;
   --durasi-blok: 850ms;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --tinggi-header-min: 72px;
+  }
+}
+/* HP kecil (≤ 480px): skala huruf ringkas — H2 28px, isi 16/1.6 */
+@media (max-width: 480px) {
+  :root {
+    --text-h2: 1.75rem;
+    --text-isi: 1rem;
+    --leading-isi: 1.6;
+  }
+  .label-mono {
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+  }
 }
 
 /* Tailwind v4: token yang sama sebagai utilitas */

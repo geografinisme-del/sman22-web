@@ -25,7 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // colorScheme "light": cegah peramban HP (mode gelap paksa) mengubah warna situs sehingga tampilan HP & laptop seragam
-export const viewport: Viewport = { themeColor: "#1f6ff0", colorScheme: "light" };
+// viewport-fit=cover: env(safe-area-inset-*) aktif di iPhone (header, footer, tombol Bantuan memakainya)
+export const viewport: Viewport = { themeColor: "#1f6ff0", colorScheme: "light", viewportFit: "cover" };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = {

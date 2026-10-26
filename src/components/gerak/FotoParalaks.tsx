@@ -3,9 +3,9 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 /**
- * Parallax sangat ringan untuk SATU foto desktop: isi bergeser total ±`jarak`px saat foto melintasi layar.
+ * Parallax sangat ringan untuk SATU foto: isi bergeser total ±`jarak`px saat foto melintasi layar (HP: setengahnya).
  * Lapisan dalam dilebihkan 12px atas-bawah agar tepi foto tidak pernah terlihat kosong.
- * Mati di bawah 1024px dan saat prefers-reduced-motion. Hanya transform (tanpa perubahan layout).
+ * Mati hanya saat prefers-reduced-motion. Hanya transform (tanpa perubahan layout).
  */
 export function FotoParalaks({ children, jarak = 20 }: { children: ReactNode; jarak?: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -13,12 +13,11 @@ export function FotoParalaks({ children, jarak = 20 }: { children: ReactNode; ja
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const desktop = window.matchMedia("(min-width: 1024px)");
     const kurangiGerak = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame = 0;
     const hitung = () => {
       frame = 0;
-      if (!desktop.matches || kurangiGerak.matches) {
+      if (kurangiGerak.matches) {
         el.style.transform = "";
         return;
       }
@@ -27,7 +26,8 @@ export function FotoParalaks({ children, jarak = 20 }: { children: ReactNode; ja
       if (r.bottom < 0 || r.top > tinggi) return;
       // -1 (foto di bawah layar) … 1 (foto di atas layar)
       const t = Math.max(-1, Math.min(1, (tinggi / 2 - (r.top + r.height / 2)) / (tinggi / 2 + r.height / 2)));
-      el.style.transform = `translate3d(0, ${(t * jarak) / 2}px, 0)`;
+      const j = window.innerWidth < 900 ? jarak / 2 : jarak;
+      el.style.transform = `translate3d(0, ${(t * j) / 2}px, 0)`;
     };
     const jadwal = () => {
       if (!frame) frame = requestAnimationFrame(hitung);

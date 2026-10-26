@@ -3,7 +3,8 @@
  * Semua nilai dari styles/tokens.css. Tidak ada keadaan awal tersembunyi di CSS (gerak diatur JS).
  */
 .lgt-wadah {
-  width: min(1240px, calc(100% - 32px));
+  /* landscape iPhone berponi: jarak tepi ikut safe-area kiri/kanan */
+  width: min(1240px, calc(100% - 2 * max(16px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px))));
   margin-inline: auto;
 }
 
@@ -377,6 +378,75 @@
   height: 100%;
 }
 
+/* HP/tablet (< 900px): kartu selebar ±78% layar di mode baris DAN cincin ringan — ukuran sama sehingga
+   pergantian mode setelah JS dimuat tidak menggeser tata letak (CLS 0) */
+@media (max-width: 899px) {
+  .lgt-cincin-wadah {
+    --lebar-kartu-hp: min(78vw, 340px);
+    margin-top: 40px;
+  }
+  .lgt-cincin-wadah .lgt-kartu {
+    width: var(--lebar-kartu-hp);
+  }
+  .lgt-cincin-wadah .lgt-kartu-foto {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+  .lgt-cincin-wadah .lgt-kartu-isi {
+    padding: 18px 20px 20px;
+  }
+  .lgt-cincin-wadah .lgt-kartu-label {
+    font-size: 11px;
+  }
+  .lgt-cincin-wadah .lgt-kartu-judul {
+    font-size: 20px;
+  }
+  .lgt-cincin-wadah .lgt-kartu-desk,
+  .lgt-cincin-wadah .lgt-kartu-buka {
+    font-size: 14px;
+  }
+  .lgt-cincin-wadah[data-mode="baris"] .lgt-cincin {
+    padding-block: 12px 28px;
+  }
+  .lgt-cincin-wadah[data-mode="baris"] .lgt-cincin-slot {
+    scroll-snap-align: center;
+  }
+}
+/* cincin ringan HP: semua kartu ditumpuk di satu sel grid (tinggi = kartu tertinggi, tanpa tinggi tetap);
+   posisi & kemiringan diatur JS lewat transform/opacity saja */
+.lgt-cincin-wadah[data-mode="hp"] .lgt-cincin-panggung {
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.lgt-cincin-wadah[data-mode="hp"] .lgt-cincin {
+  display: grid;
+  padding-block: 12px 28px;
+  perspective: 900px;
+  pointer-events: none;
+}
+.lgt-cincin-wadah[data-mode="hp"] .lgt-cincin-slot {
+  grid-area: 1 / 1;
+  justify-self: center;
+  width: var(--lebar-kartu-hp);
+  /* = SKALA_TENGAH_HP (lib/cincin.ts) sebelum JS memasang posisi */
+  transform: scale(0.996);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  pointer-events: auto;
+}
+.lgt-cincin-wadah[data-mode="hp"] .lgt-kartu {
+  height: 100%;
+}
+.lgt-cincin-wadah[data-mode="hp"] .lgt-cincin-slot[data-depan] .lgt-kartu {
+  box-shadow: var(--bayangan-tegas);
+}
+.lgt-cincin-wadah[data-mode="hp"] .lgt-cincin-slot[data-terpilih] .lgt-kartu {
+  box-shadow:
+    0 0 0 3px var(--lime),
+    0 4px 10px rgb(11 18 32 / 0.16),
+    0 24px 48px rgb(11 18 32 / 0.26);
+}
+
 /* ===================== kartu putar: mode cincin 3D (desktop, JS) ===================== */
 @media (min-width: 900px) {
   .lgt-cincin-wadah {
@@ -734,6 +804,102 @@
   text-shadow: 0 1px 6px rgb(0 0 0 / 0.4);
 }
 
+/* mode sticky di HP/tablet (< 900px): panggung setinggi layar (svh — tidak melompat saat bilah alamat
+   menyusut), foto membulat di atas, kartu teks di bawah foto, indikator langkah bergaris di atas foto */
+@media (max-width: 899px) {
+  .tur[data-mode="sticky"] {
+    --tur-ruang-kartu: 232px;
+    height: calc((var(--tur-n) * 0.8 + 1) * 100vh);
+    height: calc((var(--tur-n) * 0.8 + 1) * 100svh);
+  }
+  .tur[data-mode="sticky"] .tur-pin {
+    height: 100vh;
+    height: 100svh;
+  }
+  .tur[data-mode="sticky"] .tur-media {
+    inset: calc(var(--tinggi-header) + 26px) 16px calc(var(--tur-ruang-kartu) + env(safe-area-inset-bottom, 0px));
+    border-radius: 20px;
+    /* MediaSlot memakai width/height 100%: biarkan inset yang menentukan ukuran */
+    width: auto;
+    height: auto;
+  }
+  /* kartu menempel 12px di bawah foto (tinggi kartu berbeda-beda; sisa ruang ada di bawah kartu, bukan di antara) */
+  .tur[data-mode="sticky"] .tur-kartu {
+    top: calc(100% - var(--tur-ruang-kartu) - env(safe-area-inset-bottom, 0px) + 12px);
+    left: 16px;
+    right: 16px;
+    bottom: auto;
+    width: auto;
+    max-height: calc(var(--tur-ruang-kartu) - 28px);
+    overflow: hidden;
+    padding: 18px 20px 20px;
+    border-radius: 20px;
+    background: var(--white);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: var(--bayangan-kartu);
+  }
+  .tur[data-mode="sticky"] .tur-kartu h3 {
+    font-size: 22px;
+  }
+  .tur[data-mode="sticky"] .tur-kartu-desk {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+  /* kartu bertombol: deskripsi 2 baris agar tombol selalu muat di dalam kartu */
+  .tur[data-mode="sticky"] .tur-kartu:has(.tur-tombol) .tur-kartu-desk {
+    -webkit-line-clamp: 2;
+  }
+  .tur[data-mode="sticky"] .tur-tombol {
+    margin-top: 12px;
+  }
+  .tur[data-mode="sticky"] .tur-penanda {
+    top: calc(var(--tinggi-header) + 10px);
+    right: 16px;
+    left: 16px;
+    display: flex;
+    gap: 6px;
+    translate: none;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .tur[data-mode="sticky"] .tur-penanda li {
+    flex: 1;
+    height: 4px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--ink) 14%, transparent);
+    font-size: 0;
+    transition: background-color var(--durasi-ui) var(--ease);
+  }
+  .tur[data-mode="sticky"] .tur-penanda li::before {
+    display: none;
+  }
+  .tur[data-mode="sticky"] .tur-penanda li[data-aktif] {
+    background: var(--blue);
+  }
+  .tur[data-mode="sticky"] .tur-kredit {
+    right: 28px;
+    left: 28px;
+    bottom: calc(var(--tur-ruang-kartu) + env(safe-area-inset-bottom, 0px) + 10px);
+    font-size: 0.75rem;
+    text-align: right;
+  }
+  .tur[data-mode="sticky"] .media-label {
+    top: 12px;
+    left: 12px;
+  }
+  .tur[data-mode="sticky"] .tur-awan h2 {
+    font-size: clamp(2rem, 1.4rem + 3vw, 2.5rem);
+  }
+}
+
 /* ===================== bento angka ===================== */
 .lgt-bento {
   display: grid;
@@ -876,4 +1042,123 @@
   z-index: -1;
   pointer-events: none;
   background: linear-gradient(90deg, rgb(10 30 90 / 0.28), rgb(10 30 90 / 0.08) 70%, rgb(10 30 90 / 0) 100%);
+}
+
+/* ===================== HP kecil (≤ 480px): skala huruf & jarak ringkas =====================
+   H1 hero 34–38px (lh 1.1, maks 4 baris), sub 16px; H2 28px; H3 20px; isi 16/1.6; teks kecil 14px;
+   label mono 11px; tombol 48px/16px; kartu padding 20px. Jarak antarbagian 64px. */
+@media (max-width: 480px) {
+  .lgt-hero h1,
+  .lp .lgt-hero h1,
+  .lgt-phero h1,
+  .lp .lgt-phero h1 {
+    font-size: clamp(2.125rem, 1.6rem + 2.4vw, 2.375rem);
+    line-height: 1.1;
+  }
+  .lgt-hero-sub,
+  .lgt-phero-desk {
+    font-size: 1rem;
+  }
+  .lgt-hero-sub {
+    margin-top: 16px;
+  }
+  .lgt-hero-aksi {
+    margin-top: 24px;
+  }
+  .lp .lgt-cta h2,
+  .lgt-cta h2,
+  .lp .tur-awan h2,
+  .tur-awan h2,
+  .tur[data-mode="sticky"] .tur-awan h2 {
+    font-size: 1.75rem;
+  }
+  .lgt-pil-tombol {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+  .lgt-pil-lime:has(> .lgt-pil-bulat) {
+    padding-right: 4px;
+  }
+  .lgt-kartu-isi {
+    padding: 20px;
+  }
+  .lgt-kartu-label,
+  .tur-kartu-label {
+    font-size: 11px;
+  }
+  .lgt-kartu-desk,
+  .lgt-kartu-buka,
+  .tur-kartu-desk {
+    font-size: 14px;
+  }
+  .lgt-remah ol {
+    font-size: 0.6875rem;
+  }
+}
+/* judul dasar di @layer base (kelas utilitas & kelas komponen tetap menang); judul bagian memakai --text-h2 */
+@layer base {
+  @media (max-width: 480px) {
+    :where(.lp) h2 {
+      font-size: 1.75rem;
+    }
+    :where(.lp) h3 {
+      font-size: 1.25rem;
+    }
+  }
+}
+/* jarak antarbagian di HP: 64px (spesifikasi 56–72px) */
+@media (max-width: 767px) {
+  .lgt-bagian {
+    padding: 64px 0;
+  }
+  .lgt-bagian-rapat {
+    padding: 16px 0 64px;
+  }
+  .bagian {
+    padding: 56px 0;
+  }
+  .tur[data-mode="daftar"] .tur-pin {
+    padding: 64px 0;
+  }
+  /* target sentuh ≥ 44px: tautan panah, daftar tautan footer, media sosial */
+  .lgt-tautan-panah {
+    min-height: 44px;
+  }
+  .lgt-footer-nav ul {
+    gap: 0;
+  }
+  .lgt-footer-nav a,
+  .lgt-footer-sosial a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    padding: 0;
+  }
+  /* remah roti & tombol header 40px: area ketuk diperluas ke ±44px tanpa mengubah tampilan */
+  .lgt-remah a,
+  .lgt-tombol-menu,
+  .lgt-tombol-portal {
+    position: relative;
+  }
+  .lgt-remah a::after {
+    content: "";
+    position: absolute;
+    inset: -15px -4px;
+  }
+  .lgt-tombol-menu::after,
+  .lgt-tombol-portal::after {
+    content: "";
+    position: absolute;
+    inset: -2px -2px;
+  }
+  /* hero halaman setinggi isinya (tanpa min-height 300px): judul pendek tidak menyisakan ruang kosong di atas */
+  .lgt-phero {
+    min-height: 0;
+  }
+  /* bagian pertama tepat di bawah hero halaman: rapat (32px ≤ 48px), tanpa celah kosong besar */
+  .lgt-phero + .lgt-bagian,
+  .lgt-phero + section.lgt-bagian,
+  .lgt-phero + .bagian {
+    padding-top: 32px;
+  }
 }

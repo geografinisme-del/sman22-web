@@ -176,7 +176,7 @@ const depan = (page) => page.evaluate(() => [...document.querySelectorAll(".lgt-
   await ctx.close();
 }
 
-// ---------- HP 390: header transparan (teks putih) di atas hero, bar putih 90% + teks tinta setelah hero ----------
+// ---------- HP 390: header transparan (teks putih) di atas hero, putih 0,88 + teks tinta setelah digulir ----------
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   await bersih(ctx);
@@ -188,7 +188,7 @@ const depan = (page) => page.evaluate(() => [...document.querySelectorAll(".lgt-
   await tidur(400);
   const bawah = await page.evaluate(() => ({ lewat: document.querySelector(".lgt-header").hasAttribute("data-lewat"), warna: getComputedStyle(document.querySelector(".lgt-merek")).color, latar: getComputedStyle(document.querySelector(".lgt-header")).backgroundColor }));
   cek("HP: header teks putih di atas hero", atas.terang && atas.warna === "rgb(255, 255, 255)", atas);
-  cek("HP: header putih 90% + teks tinta setelah hero", bawah.lewat && bawah.warna !== "rgb(255, 255, 255)" && bawah.latar.includes("0.9"), bawah);
+  cek("HP: header putih 0,88 + teks tinta setelah digulir", bawah.lewat && bawah.warna !== "rgb(255, 255, 255)" && bawah.latar.includes("0.88"), bawah);
   await ctx.close();
 }
 
@@ -208,7 +208,9 @@ for (const [nama, opsi] of [
     tf: document.querySelector(".lgt-cincin").style.transform,
     luber: document.documentElement.scrollWidth > innerWidth,
   }));
-  cek(`${nama}: baris geser scroll-snap tanpa 3D`, k.mode === "baris" && k.snap.startsWith("x") && !k.tf, k);
+  // HP: cincin ringan (mode "hp", gerak per kartu); reduced motion: baris geser scroll-snap tanpa 3D
+  if (nama === "HP 390") cek(`${nama}: cincin ringan HP (bukan cincin 3D desktop)`, k.mode === "hp" && !k.tf, k);
+  else cek(`${nama}: baris geser scroll-snap tanpa 3D`, k.mode === "baris" && k.snap.startsWith("x") && !k.tf, k);
   cek(`${nama}: tidak ada luber horizontal`, !k.luber, k);
   await ctx.close();
 }

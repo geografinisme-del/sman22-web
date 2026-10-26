@@ -542,4 +542,32 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   menampilkan gambar rusak sampai rilis. Lain kali: rilis kode yang aman-mundur dulu (berkas + pembaca), baru jalankan data.
 - Akun uji lokal dibuat ulang (scratchpad terhapus): sandi acak baru di scratchpad `akun-uji.local.json`; media uji
   sintetis dibuat ulang (Pillow + ffmpeg).
+- Footer HP (23 Okt): tombol "Bantuan" (fixed, kiri bawah, 48px) sempat menutupi baris hak cipta di 360/390px. Kini
+  `.lgt-footer-bawah` diberi ruang bawah (48+16+16px + safe-area) dan area ketuk "Kredit foto" ±44px. Uji:
+  `scripts/uji-e2e/uji-footer-hp.mjs` (hit-test sepanjang teks; COOKIE_PRATINJAU untuk preview). Rilis
+  `dpl_AurNX9ZBLgUefDtes6w2YK7dGfqC` (aca338f), titik kembali `dpl_8H867ERkbfx4CZ359uSz94T9GCcm`.
 
+## Tampilan HP menyeluruh (23 Okt 2026, branch `langit-cerah`, BELUM dirilis)
+- ATURAN: hanya push ke preview; rilis production hanya bila pemilik menulis "rilis". Juga menunggu: sizes galeri `f719e54`.
+- Header: tinggi `--tinggi-header-min` 60px HP / 72px desktop (tokens.css) + `env(safe-area-inset-top)`; `viewportFit: "cover"`
+  di `app/layout.tsx`. Putih 0,88 + blur 12px; di atas hero transparan hanya di posisi atas, solid mulai 8px gulir
+  (`data-lewat`), garis bawah `data-gulir` (box-shadow inset, bukan border → tinggi tepat 60px).
+- Tipografi ≤ 480px: token `--text-h2` 28px, `--text-isi` 16px/1,6, `.label-mono` 11px; H1 hero/PageHero 34–38px; judul dasar
+  h2/h3 diatur di `@layer base` (utilitas Tailwind tetap menang). Jarak bagian HP 64px; bagian setelah PageHero 32px.
+- Animasi: SATU-SATUNYA alasan mati = prefers-reduced-motion (tak ada lagi gating lebar/hover). KartuPutar mode `hp`
+  (`tampilKartuHp`, `sudutOtomatisLangkah` di lib/cincin.ts): kartu 78% lebar, langkah otomatis 4 dtk, usap → luncuran
+  berhenti tepat 1 kartu (dibatasi sejauh yang diseret), ketuk samping → tengah, ketuk tengah → buka. Mode baris & hp
+  memakai ukuran kartu sama (tanpa CLS). Tur: MesinTur sticky di semua lebar; CSS HP 100svh, foto atas, kartu bawah,
+  indikator bergaris; `ScrollTrigger.config({ ignoreMobileResize: true })`.
+- Tombol Bantuan: HP kanan bawah 44px (desktop tetap kiri bawah karena kanan dipakai panel Informasi); menyingkir saat
+  gulir turun / footer terlihat / menu HP terbuka (`html:has(dialog.lgt-menu-hp[open])`); naik di atas tombol Informasi.
+- Menu HP: fokus awal tombol Tutup (bukan kolom cari). Akordeon 22px / 56px.
+- Uji: `uji-hp-gerak.mjs` (Chromium + WebKit, opsional rekam video), `audit-hp.mjs` (4 perangkat × 2 mesin, semua halaman
+  publik + 3 login); preview butuh `COOKIE_PRATINJAU` dan memakai `waitUntil: "load"` (toolbar Vercel tak pernah idle).
+- Lighthouse (23 Okt): angka beranda di PREVIEW tidak mewakili production — kode lama pun hanya 0,72–0,88 di preview
+  (0,95 di production): toolbar Vercel + FCP yang tertahan di lingkungan preview. Bandingkan selalu A/B pada kondisi sama
+  (deployment preview lama vs baru, bergantian, ≥ 6 pasang, median). Hasil akhir: baru 0,80 vs lama 0,73 (LCP, SI, TBT
+  lebih rendah; CLS 0; a11y 100). Perbaikan kinerja yang ditemukan: favicon `src/app/icon.png` 368 KB → 20 KB (ikut
+  dimuat sebelum LCP di HP); kartu HP tidak memicu LCP kedua (ul flex→grid membuat ulang objek tata letak → posisi
+  dipasang di useLayoutEffect + skala tengah 0,996); mode cincin dipasang setelah load + idle; daftar kartu di-memo;
+  langkah otomatis pertama HP ±6 dtk.

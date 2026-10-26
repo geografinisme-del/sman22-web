@@ -28,8 +28,8 @@ export function MenuHp({ terbuka, onTutup, data }: { terbuka: boolean; onTutup: 
     if (terbuka && !d.open) {
       d.showModal();
       document.documentElement.style.overflow = "hidden";
-      // fokus awal: kolom cari
-      requestAnimationFrame(() => d.querySelector<HTMLElement>("#lgt-hp-cari")?.focus());
+      // fokus awal: tombol Tutup (bukan kolom cari — di HP fokus ke kolom memunculkan papan ketik)
+      d.querySelector<HTMLElement>(".lgt-menu-hp-tutup")?.focus();
     } else if (!terbuka && d.open) {
       d.close();
     }

@@ -153,8 +153,8 @@
   display: grid;
   flex-shrink: 0;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-kartu);
   color: var(--lp-teks);
   transition: background-color var(--durasi-ui) var(--ease);
@@ -317,8 +317,24 @@ html.kunci-gulir {
 .pemandu {
   position: fixed;
   z-index: 29;
-  left: max(16px, env(safe-area-inset-left));
-  bottom: max(16px, env(safe-area-inset-bottom));
+  /* desktop: kiri bawah (kanan bawah dipakai panel Informasi); HP: kanan bawah, lihat @media di bawah */
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transition:
+    opacity var(--durasi-ui) var(--ease),
+    translate var(--durasi-ui) var(--ease),
+    visibility var(--durasi-ui);
+}
+/* menyingkir (gulir turun / footer terlihat): tidak menutupi isi & tidak bisa diketuk tanpa sengaja */
+.pemandu[data-menyingkir] {
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 calc(100% + 16px);
+  pointer-events: none;
+}
+/* menu HP terbuka: pemandu disembunyikan */
+html:has(dialog.lgt-menu-hp[open]) .pemandu {
+  display: none;
 }
 .pemandu-tombol {
   display: inline-flex;
@@ -331,7 +347,7 @@ html.kunci-gulir {
   background: var(--white);
   color: var(--lp-ink);
   font-weight: 600;
-  box-shadow: var(--bayangan-kartu);
+  box-shadow: 0 1px 2px rgb(11 18 32 / 0.08), 0 6px 16px rgb(11 18 32 / 0.12);
   transition:
     border-color var(--gerak-cepat) var(--ease-keluar),
     transform var(--gerak-cepat) var(--ease-keluar);
@@ -405,9 +421,22 @@ html.kunci-gulir {
     clip: rect(0 0 0 0);
   }
   .pemandu-tombol {
-    width: 48px;
+    width: 44px;
+    min-height: 44px;
     padding: 0;
     justify-content: center;
+  }
+  /* HP: kanan bawah (jempol), di atas tombol Informasi bila tombol itu tampil */
+  .pemandu {
+    right: calc(16px + env(safe-area-inset-right, 0px));
+    left: auto;
+  }
+  html:has(.info-tombol) .pemandu {
+    bottom: calc(16px + 48px + 12px + env(safe-area-inset-bottom, 0px));
+  }
+  .pemandu-panel {
+    right: 0;
+    left: auto;
   }
 }
 

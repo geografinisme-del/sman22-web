@@ -57,3 +57,42 @@ export function sudutGeserSatu(thetaAcuan: number, n: number, arah: 1 | -1) {
   const step = 360 / n;
   return Math.round(thetaAcuan / step) * step - arah * step;
 }
+
+/**
+ * Cincin ringan HP (< 900px): kartu tengah ±78% lebar layar, kartu tetangga mengintip di kiri-kanan (3 terlihat).
+ * p = phi/step (posisi dalam satuan kartu). translateX = p × geser px, rotateY miring ke dalam, skala mengecil ke samping.
+ * Hanya transform/opacity (murah di GPU). Kartu |p| ≥ 1,6 disembunyikan.
+ */
+export const SKALA_TENGAH_HP = 0.996;
+
+export function tampilKartuHp(i: number, theta: number, n: number, geser: number) {
+  const step = 360 / n;
+  const phi = phiKartu(i, theta, n);
+  const p = phi / step;
+  const a = Math.min(Math.abs(p), 2);
+  const near = Math.max(0, 1 - a);
+  const opacity = a <= 1 ? 1 : a >= 1.6 ? 0 : 1 - (a - 1) / 0.6;
+  const miring = Math.max(-1, Math.min(1, p)) * -24;
+  // kartu tengah 0,996 (tak kasatmata): lapisan 3D membulatkan ukuran sedikit ke atas; tanpa ini gambar kartu tengah
+  // tampak "lebih besar" dari lukisan pertama (mode baris) sehingga Chrome mencatat LCP baru setelah JS aktif
+  const skala = SKALA_TENGAH_HP - 0.16 * Math.min(a, 1.4);
+  return {
+    phi,
+    near,
+    opacity,
+    z: 1000 - Math.round(a * 100),
+    transform: `translate3d(${(p * geser).toFixed(2)}px,0,${(-a * 60).toFixed(1)}px) rotateY(${miring.toFixed(2)}deg) scale(${skala.toFixed(4)})`,
+  };
+}
+
+/**
+ * Putaran otomatis HP berbasis waktu, berlangkah: diam (jeda − durasi) ms, lalu bergeser satu kartu dalam `durasi` ms.
+ * theta0 harus tepat di kelipatan step (kartu di tengah). `ease` = fungsi easing 0..1.
+ */
+export function sudutOtomatisLangkah(theta0: number, t0: number, t: number, step: number, jeda: number, durasi: number, ease: (x: number) => number = (x) => x) {
+  const e = Math.max(0, t - t0);
+  const ke = Math.floor(e / jeda);
+  const sisa = e - ke * jeda;
+  const gerak = sisa < jeda - durasi ? 0 : ease((sisa - (jeda - durasi)) / durasi);
+  return theta0 - step * (ke + gerak);
+}
