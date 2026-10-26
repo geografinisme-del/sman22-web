@@ -514,6 +514,10 @@
 }
 
 /* ===================== umum ===================== */
+/* foto beranda yang pemuatannya ditunda (GambarTunda): tak terlihat sampai src dipasang — tidak ada ikon/alt rusak */
+.media-gambar[data-tunda] {
+  opacity: 0;
+}
 .situs-langit .media-label {
   border-radius: var(--radius-pil);
   font-family: var(--font-kode);
