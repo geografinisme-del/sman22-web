@@ -1,6 +1,6 @@
 // Lighthouse (seluler, simulasi) untuk beberapa rute + ringkasan skor, metrik, dan audit yang gagal.
 // Pakai: node scripts/uji-e2e/lighthouse-langit.mjs <base-url> <folder-keluar> <jalur1,jalur2> [kategori] [ekstra-header-json]
-// Butuh CHROME_PATH. Untuk pratinjau Vercel terlindungi, argumen ke-5 = path berkas JSON header (mis. {"Cookie":"_vercel_jwt=…"}).
+// Butuh CHROME_PATH. Selalu memakai FLAG_CHROME (tanpa perlambatan jendela latar). Untuk pratinjau Vercel terlindungi, argumen ke-5 = path berkas JSON header (mis. {"Cookie":"_vercel_jwt=…"}).
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -8,11 +8,14 @@ import path from "node:path";
 const [base, keluar, daftar, kategori = "performance,accessibility,best-practices,seo", ekstra] = process.argv.slice(2);
 fs.mkdirSync(keluar, { recursive: true });
 const npx = process.platform === "win32" ? "npx.cmd" : "npx";
+// Chrome tanpa tampilan di Windows dianggap jendela tertutup/latar → frame diperlambat (±1/detik) sehingga lukisan
+// pertama "tertahan" 1,5–3,5 s padahal halaman sudah siap. Flag ini mematikan perlambatan itu (wajib, lihat HANDOFF).
+export const FLAG_CHROME = "--headless=new --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling --disable-features=CalculateNativeWinOcclusion";
 const ringkas = [];
 for (const jalur of daftar.split(",")) {
   const nama = jalur === "/" ? "beranda" : jalur.replace(/^\//, "").replace(/[/?=&]/g, "_");
   const berkas = path.join(keluar, `${nama}.json`);
-  const arg = ["-y", "lighthouse@12.8.2", base + jalur, `--only-categories=${kategori}`, "--output=json", `--output-path=${berkas}`, "--chrome-flags=--headless=new", "--quiet"];
+  const arg = ["-y", "lighthouse@12.8.2", base + jalur, `--only-categories=${kategori}`, "--output=json", `--output-path=${berkas}`, process.platform === "win32" ? `--chrome-flags="${FLAG_CHROME}"` : `--chrome-flags=${FLAG_CHROME}`, "--quiet"];
   if (ekstra) arg.push(`--extra-headers=${ekstra}`);
   try {
     execFileSync(npx, arg, { stdio: "ignore", shell: process.platform === "win32" });

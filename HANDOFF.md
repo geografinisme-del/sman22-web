@@ -575,3 +575,16 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   `dpl_AurNX9ZBLgUefDtes6w2YK7dGfqC` (aca338f). Tanpa perubahan database. Tombol Bantuan tetap mengambang (keputusan
   pemilik). Cek production: uji-bantuan-hp, uji-hp-gerak, uji-footer-hp lulus (Chromium + WebKit). Lighthouse HP
   production (median 3×): beranda 0,85, /portal-digital 0,96, Profil 0,97, Galeri 0,95; CLS 0, a11y/BP/SEO 100.
+- RILIS 26 Okt 2026 (2): beranda HP — prioritas tinggi hanya kartu pertama; foto di bawah hero ditunda (GambarTunda:
+  <img> sama sejak awal, src dipasang setelah LCP & ±400px dari layar). Merge `8c5283a` → `dpl_BkqJmpPGLFiWq9g5ouwNZ63T3uXV`;
+  titik kembali `dpl_8uxw42iAVurBgexRk6coJKhSQYS4`. Uji: `uji-beranda-hp.mjs` (baru). Lighthouse production beranda
+  median 0,85 (0,79–0,95); run buruk = lukisan pertama tertahan ±2,5 s (halaman putih), juga terjadi pada kode lama.
+
+## Pengukuran Lighthouse — WAJIB tanpa perlambatan jendela latar (26 Okt 2026)
+- Chrome tanpa tampilan di Windows dianggap jendela tertutup/latar sehingga frame diperlambat (±1 frame/detik): lukisan
+  pertama tampak "tertahan" 1,5–3,5 s padahal halaman siap < 0,7 s (utas utama menganggur). Ini artefak alat ukur.
+- Selalu pakai `scripts/uji-e2e/lighthouse-langit.mjs` (flag sudah bawaan), atau tambahkan sendiri:
+  `--chrome-flags="--headless=new --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling --disable-features=CalculateNativeWinOcclusion"`
+- Contoh (Git Bash): `MSYS_NO_PATHCONV=1 CHROME_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe" node scripts/uji-e2e/lighthouse-langit.mjs https://sman22-web.vercel.app <folder> "/,/profil"`
+  Preview: argumen ke-5 = berkas JSON header `{"Cookie":"_vercel_jwt=…"}`. Ambil median ≥ 3 run.
+- Bukti (beranda production, 8 vs 8 run): FCP teramati 0,69–3,53 s → 0,69–1,11 s; median skor 0,93 → 0,95.

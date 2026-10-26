@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { sekolah } from "@/content/sekolah";
 import { getSitus } from "@/lib/data";
@@ -46,6 +48,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="flex min-h-screen flex-col antialiased">
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        {/* Vercel Speed Insights (tier gratis) & Web Analytics: data kinerja & kunjungan pengunjung sungguhan */}
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

@@ -33,7 +33,8 @@ const bantuan = (page) =>
     };
   });
 const gulir = async (page, y) => {
-  await page.evaluate((y) => window.scrollTo(0, y), y);
+  // instan: situs memakai scroll-behavior smooth — tanpa ini posisi belum sampai saat diperiksa
+  await page.evaluate((y) => window.scrollTo({ top: y, behavior: "instant" }), y);
   await page.waitForTimeout(450);
 };
 
@@ -65,9 +66,9 @@ for (const nm of daftarMesin.split(",")) {
     cek(L("gulir turun → Bantuan menyingkir"), !(await bantuan(page)).terlihat);
     await gulir(page, 500);
     cek(L("gulir naik → Bantuan muncul lagi"), (await bantuan(page)).terlihat);
-    await page.evaluate(() => document.querySelector(".lgt-footer").scrollIntoView());
+    await page.evaluate(() => document.querySelector(".lgt-footer").scrollIntoView({ behavior: "instant" }));
     await page.waitForTimeout(450);
-    await page.evaluate(() => window.scrollBy(0, -20)); // gerak naik kecil: tetap tersembunyi karena footer terlihat
+    await page.evaluate(() => window.scrollBy({ top: -20, behavior: "instant" })); // naik sedikit: tetap tersembunyi (footer terlihat)
     await page.waitForTimeout(450);
     cek(L("footer terlihat → Bantuan tersembunyi"), !(await bantuan(page)).terlihat);
 
