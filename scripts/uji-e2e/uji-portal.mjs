@@ -107,6 +107,8 @@ await kirim("Page.captureScreenshot", { format: "jpeg", quality: 78 }).then((g) 
 await keluarAkun();
 await buka("/portal-digital/buka/guru");
 await isiMasuk("pustakawan");
+// /portal-digital/buka/guru memutuskan di server lalu mengalihkan — tunggu sampai pengalihan selesai
+await sampai(`!location.pathname.startsWith("/portal-digital/buka")`, 15000).catch(() => {});
 cek("pustakawan memilih Pojok Guru → dasbor staf (/admin)", (await url()).startsWith("/admin") && !(await url()).includes("login"), await url());
 await buka("/portal-digital/buka/elibrary");
 cek("kartu E-Library → katalog publik", (await url()) === "/perpustakaan", await url());

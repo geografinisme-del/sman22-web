@@ -1,6 +1,6 @@
 // Uji alur impor siswa lewat UI: unggah → Cocokkan kolom → Periksa → Impor → "Impor berhasil".
 // Pakai: node scripts/uji-e2e/uji-impor.mjs <base-url> <akun-uji.json> <folder-tangkapan> <berkas1> [berkas2 …]
-// Akun "admin" (super_admin; di database UJI lokal). Hanya untuk server lokal.
+// Akun operator uji "ekspor" (di database UJI lokal; jalankan reset-data-uji-lokal.mjs dulu). Hanya untuk server lokal.
 import { chromium } from "playwright-core";
 import fs from "node:fs";
 import path from "node:path";
@@ -18,8 +18,9 @@ const cek = (n, ok, d = "") => {
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const page = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
 await page.goto(BASE + "/portal-digital/masuk/gtk", { waitUntil: "networkidle" });
-await page.fill("input[name=email]", "admin@sman22.test");
-await page.fill("input[name=password]", AKUN.admin);
+// akun operator uji lokal (peran manajemen tanpa super_admin — super_admin WAJIB MFA); lihat reset-data-uji-lokal.mjs
+await page.fill("input[name=email]", "ekspor@sman22.test");
+await page.fill("input[name=password]", AKUN.ekspor);
 await page.getByRole("button", { name: "Masuk", exact: true }).click();
 await page.waitForURL((u) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/mfa"), { timeout: 30000 });
 

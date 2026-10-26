@@ -597,3 +597,9 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - `uji-ekspor` memakai akun lokal `ekspor@sman22.test` (12 peran manajemen tanpa super_admin → tidak wajib MFA; super_admin
   WAJIB MFA sejak migrasi keamanan). Sandi di `akun-uji.local.json` → `sandi.ekspor` (scratchpad, tidak di repo).
   Akun lama `operator@sman22.test` di DB lokal adalah rekaman auth tak lengkap (tanpa identitas) — jangan dipakai.
+  `uji-impor` & `uji-foto-slot` juga memakai akun ini; reset juga menghapus siswa hasil uji-impor (NISN 00900000xx).
+
+## Pembaruan keamanan dependensi (26 Okt 2026, branch `langit-cerah`)
+- next 16.3.8 → 16.4.3 (GHSA-2464-fhr4-w9xw RCE Image Optimization + SVG, critical; GHSA-673q-mjm6-r5xr RCE `use cache`
+  typed array, critical; GHSA-p3m5-59mp-jv5r DoS Server Actions, high), eslint-config-next ikut 16.4.3,
+  zod 4.6.5 → 4.6.7 (GHSA-mrhx-c7xc-m3w5 memori habis, high). `npm audit`: 0 kerentanan.

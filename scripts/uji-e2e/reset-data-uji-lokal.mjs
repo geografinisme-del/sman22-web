@@ -4,6 +4,7 @@
 // - susunan widget beranda (draf & terbit) = SUSUNAN_BAWAAN kode (uji-alur melepas Berita & memindah Kontak, lalu
 //   sengaja menerapkannya), tingkat gerak = bawaan kode (uji-alur menerapkan "dinamis")
 // - kosongkan teks bantuan sandi bertanda "Uji" (uji-masuk mengubahnya; data publik di-cache 60 detik)
+// - hapus siswa hasil uji-impor (NISN fiktif 00900000xx) beserta baris yang merujuknya
 // - pastikan akun uji ekspor@sman22.test (peran manajemen tanpa super_admin → tidak wajib MFA) ada & aktif
 // Pakai: node scripts/uji-e2e/reset-data-uji-lokal.mjs
 import { execFileSync } from "node:child_process";
@@ -28,6 +29,23 @@ insert into public.pengguna (user_id, nama, email, aktif)
 insert into public.pengguna_peran (user_id, peran)
   select u.id, k from auth.users u, unnest(array[${PERAN_EKSPOR.map((p) => `'${p}'`).join(",")}]) k where u.email = 'ekspor@sman22.test'
   on conflict do nothing;
+-- siswa hasil uji-impor (NISN fiktif 00900000xx + nama "Uji …"): hapus baris yang merujuknya, lalu siswanya,
+-- agar impor berikutnya kembali tercatat sebagai "Data baru"
+do $$
+declare r record; ids uuid[];
+begin
+  select array_agg(id) into ids from public.siswa where nisn ~ '^00900000[0-9]{2}$' and nama like 'Uji %';
+  if ids is null then return; end if;
+  for r in
+    select c.conrelid::regclass as tabel, a.attname as kolom
+    from pg_constraint c join pg_attribute a on a.attrelid = c.conrelid and a.attnum = c.conkey[1]
+    where c.contype = 'f' and c.confrelid = 'public.siswa'::regclass
+  loop
+    execute format('delete from %s where %I = any($1)', r.tabel, r.kolom) using ids;
+  end loop;
+  delete from public.siswa where id = any(ids);
+end $$;
+select 'siswa uji impor tersisa: ' || (select count(*) from public.siswa where nisn ~ '^00900000[0-9]{2}$');
 select 'mfa admin: ' || (select count(*) from auth.mfa_factors f join auth.users u on u.id = f.user_id where u.email = 'admin@sman22.test');
 select 'gerak: ' || (select tema->'tampilan'->>'gerak' from public.pengaturan_situs where id = 1);
 select 'susunan terbit: ' || (select jsonb_path_query_array(tema->'tampilan', '$.beranda[*].jenis')::text from public.pengaturan_situs where id = 1);
