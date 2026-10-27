@@ -604,7 +604,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   typed array, critical; GHSA-p3m5-59mp-jv5r DoS Server Actions, high), eslint-config-next ikut 16.4.3,
   zod 4.6.5 → 4.6.7 (GHSA-mrhx-c7xc-m3w5 memori habis, high). `npm audit`: 0 kerentanan.
 
-## "Lihat sebagai…" — pratinjau peran untuk super admin (27 Okt 2026, branch `langit-cerah`, BELUM dirilis)
+## "Lihat sebagai…" — pratinjau peran untuk super admin (27 Okt 2026, DIRILIS)
 - Siapa: hanya super admin dengan sesi AAL2 (lolos MFA). Menu akun admin → "Lihat sebagai…" → `/lihat-sebagai`.
   Daftar peran dari tabel `peran` (+ "Akun menunggu verifikasi"); ruang kerja tiap peran dihitung `ruangKerjaUntuk`.
 - Cara kerja: cookie `sman22_pratinjau` (httpOnly, sameSite=strict, HMAC-SHA256 `PRATINJAU_RAHASIA`, 30 menit; isi: peran,
@@ -631,5 +631,11 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Rahasia: `PRATINJAU_RAHASIA` tidak pernah dicatat/ditampilkan/di-commit; lokal dibaca dari berkas scratchpad.
 - Uji: `uji-pratinjau-db.mjs` (regresi tulis pengguna biasa + anon + header palsu; read-only hanya untuk super admin AAL2),
   `uji-pratinjau.mjs` (akses, tiap peran = login asli, data contoh, hanya-baca server, kedaluwarsa, keluar, audit, screenshot).
+- RILIS 27 Okt 2026: kode `7c55536` → production `dpl_6BkJBeU3QWxkdYfjUkdyYHYkrQMj` (titik kembali kode
+  `dpl_E3CEU3cbtfJ8jC9TJWNcewqxsUQx`). Backup `backup/20261027-*` lalu migrasi 20261228 via psql (satu transaksi, 05:37 UTC,
+  tercatat di schema_migrations). `authenticator.rolconfig` kini + `pgrst.db_pre_request=public.pra_permintaan` (setelan
+  supautils/timeout tetap). Uji production (transaksi ROLLBACK): akun sementara guru/siswa/ortu/humas/pegawai/wali kelas
+  + super admin tanpa pratinjau bisa menulis (dengan/tanpa header palsu); pratinjau sah → read-only; anon baca & pengaduan
+  jalan; 24 peran → izin = peran_izin. Production saat itu hanya punya 1 akun (super admin).
 - PELAJARAN: draf awal mencabut EXECUTE `peran_pratinjau()` dari anon → semua data publik gagal (pre-request berjalan untuk
   anon). Fungsi yang dipanggil pre-request/RLS WAJIB bisa dieksekusi anon.
