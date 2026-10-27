@@ -60,7 +60,7 @@ export async function MenungguVerifikasi({ supabase, nama, email, keluar }: { su
         )}
         {profil.jamLayanan && <p className="mt-2 text-sm text-[var(--muted)]">Jam layanan: {profil.jamLayanan}</p>}
 
-        <form action={keluar} className="mt-8">
+        <form data-keluar-akun="" action={keluar} className="mt-8">
           <button type="submit" className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[var(--ink)] px-6 font-semibold text-white">
             Keluar
           </button>

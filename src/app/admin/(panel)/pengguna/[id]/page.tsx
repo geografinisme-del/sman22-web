@@ -27,7 +27,8 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
     supabase.from("jabatan_gtk").select("kode, nama").eq("aktif", true).order("urutan"),
   ]);
   const pegawai = [...(tertaut ? [tertaut] : []), ...(pegawaiBebas ?? [])];
-  const authInfo = kunciAdminTersedia ? (await supabaseAdminAuth().getUserById(id)).data.user : null;
+  // info login (service-role, melewati RLS) tidak dibaca selama "Lihat sebagai…"
+  const authInfo = kunciAdminTersedia && !akses.pratinjau ? (await supabaseAdminAuth().getUserById(id)).data.user : null;
   const jumlahMfa = (authInfo?.factors ?? []).filter((f) => f.status === "verified").length;
   const akunPortal = u.email.endsWith(`@${DOMAIN_PORTAL}`);
   const waktu = (t?: string | null) => (t ? `${formatTanggal(t.slice(0, 10))}, ${new Date(t).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" })} WIB` : "belum pernah");

@@ -14,13 +14,14 @@ export const TABEL_AUDIT: Record<string, string> = {
   pelanggaran_siswa: "Pelanggaran siswa", prestasi_siswa: "Prestasi siswa", pembinaan_siswa: "Pembinaan siswa", rujukan_bk: "Rujukan BK", jenis_pelanggaran: "Aturan pelanggaran",
   absensi_siswa: "Absensi siswa", absensi_pegawai: "Kehadiran pegawai", absensi_jp: "Absensi per jam", jurnal_jp: "Jurnal mengajar", izin_ortu: "Izin orang tua",
   pengajuan_koreksi: "Koreksi absensi", pengajuan_izin_pegawai: "Izin pegawai", penugasan_mengajar: "Penugasan mengajar", hero_slide: "Foto pembuka", pengaturan_situs: "Tampilan website",
-  visual_akun: "Visual website",
+  visual_akun: "Visual website", pratinjau: "Lihat sebagai (pratinjau peran)",
 };
 
 /** Label singkat aksi (dipakai sebagai pilihan saringan di halaman Log Aktivitas) */
 export const AKSI_AUDIT: Record<string, string> = {
   INSERT: "Tambah", UPDATE: "Ubah", DELETE: "Hapus", EKSPOR: "Ekspor data", LIHAT: "Lihat berkas", CETAK: "Cetak",
   LOGIN: "Masuk", LOGOUT: "Keluar", LOGIN_GAGAL: "Gagal masuk", KEAMANAN: "Keamanan akun", RESET_DIMINTA: "Minta atur ulang sandi",
+  PRATINJAU_MULAI: "Mulai lihat sebagai", PRATINJAU_SELESAI: "Selesai lihat sebagai",
 };
 
 export const PERISTIWA_AUDIT: Record<string, string> = {
@@ -45,6 +46,10 @@ export function kalimatAktivitas(a: { tabel: string; aksi: string; data_baru?: R
       return "Percobaan masuk gagal";
     case "RESET_DIMINTA":
       return "Meminta atur ulang kata sandi";
+    case "PRATINJAU_MULAI":
+      return `Mulai "Lihat sebagai" ${String(a.data_baru?.peran ?? "")}`.trim();
+    case "PRATINJAU_SELESAI":
+      return `Selesai "Lihat sebagai" ${String(a.data_baru?.peran ?? "")}`.trim();
     case "KEAMANAN": {
       const p = String(a.data_baru?.peristiwa ?? "");
       return kapital(PERISTIWA_AUDIT[p] ?? "Perubahan keamanan akun");

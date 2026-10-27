@@ -117,3 +117,82 @@ a:hover .panah,
 .ruang-bidang[data-bidang] {
   --tema-utama: var(--bidang);
 }
+
+/* ===== "Lihat sebagai…" (pratinjau peran): pita tetap di atas, isi & header bergeser di bawahnya ===== */
+html[data-pratinjau] body {
+  padding-top: var(--tinggi-pita, 48px);
+}
+html[data-pratinjau] [data-pita-geser],
+html[data-pratinjau] .lgt-header {
+  top: var(--tinggi-pita, 48px) !important;
+}
+html[data-pratinjau] {
+  scroll-padding-top: calc(var(--tinggi-pita, 48px) + 72px);
+}
+.pita-pratinjau {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding: 8px 16px;
+  background: var(--lime, #d9f26b);
+  color: var(--ink, #0b1220);
+  border-bottom: 2px solid var(--ink, #0b1220);
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+.pita-pratinjau p {
+  margin: 0;
+}
+.pita-pratinjau-aksi {
+  display: flex;
+  gap: 8px;
+}
+.pita-pratinjau-aksi a,
+.pita-pratinjau-aksi button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  padding: 0 14px;
+  border: 1.5px solid var(--ink, #0b1220);
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pita-pratinjau-aksi button {
+  background: var(--ink, #0b1220);
+  color: var(--lime, #d9f26b);
+}
+.pesan-pratinjau {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 80;
+  max-width: calc(100vw - 32px);
+  translate: -50% 0;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: var(--ink, #0b1220);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgb(11 18 32 / 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+.pesan-pratinjau[data-tampil] {
+  opacity: 1;
+}
+@media print {
+  .pita-pratinjau,
+  .pesan-pratinjau {
+    display: none;
+  }
+  html[data-pratinjau] body {
+    padding-top: 0;
+  }
+}

@@ -42,7 +42,7 @@ export default async function BukaBidang({ params }: { params: Promise<{ bidang:
               Ruang kerja saya
             </Link>
           )}
-          <form action={keluar}>
+          <form data-keluar-akun="" action={keluar}>
             <button type="submit" className="pd-tautan">
               Masuk dengan akun lain
             </button>

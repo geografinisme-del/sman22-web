@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { adaCookiePratinjau } from "@/lib/pratinjau";
+import { PESAN_PRATINJAU } from "@/lib/pratinjau-umum";
 import { NextResponse, type NextRequest } from "next/server";
 import { getAkses } from "@/lib/admin/auth";
 import { uuid } from "@/lib/admin/schema";
@@ -23,6 +25,8 @@ const SUMBER = {
 } as const;
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ jenis: string; id: string }> }) {
+  // "Lihat sebagai…": unduhan berkas privat memakai kunci service-role (melewati RLS) → selalu ditolak saat pratinjau
+  if (await adaCookiePratinjau()) return new NextResponse(PESAN_PRATINJAU, { status: 403 });
   const { jenis, id } = await params;
   if (jenis === "mutu") return bukaBuktiMutu(req, id);
   const s = SUMBER[jenis as keyof typeof SUMBER];

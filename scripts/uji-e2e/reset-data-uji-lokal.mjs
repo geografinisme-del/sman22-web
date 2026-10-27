@@ -4,6 +4,7 @@
 // - susunan widget beranda (draf & terbit) = SUSUNAN_BAWAAN kode (uji-alur melepas Berita & memindah Kontak, lalu
 //   sengaja menerapkannya), tingkat gerak = bawaan kode (uji-alur menerapkan "dinamis")
 // - kosongkan teks bantuan sandi bertanda "Uji" (uji-masuk mengubahnya; data publik di-cache 60 detik)
+// - pasang lagi foto stok galeri.upacara (uji-foto-slot mengembalikannya ke foto asli)
 // - hapus siswa hasil uji-impor (NISN fiktif 00900000xx) beserta baris yang merujuknya
 // - pastikan akun uji ekspor@sman22.test (peran manajemen tanpa super_admin → tidak wajib MFA) ada & aktif
 // Pakai: node scripts/uji-e2e/reset-data-uji-lokal.mjs
@@ -45,6 +46,11 @@ begin
   end loop;
   delete from public.siswa where id = any(ids);
 end $$;
+-- uji-foto-slot menekan "Kembalikan foto asli" untuk galeri.upacara: pasang lagi foto stok sementaranya
+update public.galeri g set gambar_url = '/media/stok/pengibaran-bendera.webp', is_placeholder = true
+  from public.foto_slot f where f.lokasi = 'galeri.upacara' and f.dikembalikan_pada is not null and g.id::text = f.baris_id::text;
+update public.foto_slot set url_aktif = '/media/stok/pengibaran-bendera.webp', is_placeholder = true, dikembalikan_pada = null
+  where lokasi = 'galeri.upacara' and dikembalikan_pada is not null;
 select 'siswa uji impor tersisa: ' || (select count(*) from public.siswa where nisn ~ '^00900000[0-9]{2}$');
 select 'mfa admin: ' || (select count(*) from auth.mfa_factors f join auth.users u on u.id = f.user_id where u.email = 'admin@sman22.test');
 select 'gerak: ' || (select tema->'tampilan'->>'gerak' from public.pengaturan_situs where id = 1);

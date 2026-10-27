@@ -30,7 +30,7 @@ export default async function AksesLain({ searchParams }: { searchParams: Promis
             masuk {nama}.
           </p>
           <div className="pd-akses-lain-aksi">
-            <form action={keluarDanMasuk}>
+            <form data-keluar-akun="" action={keluarDanMasuk}>
               <input type="hidden" name="untuk" value={untuk} />
               {lanjut && <input type="hidden" name="lanjut" value={lanjut} />}
               <button type="submit" className="pd-tombol">
