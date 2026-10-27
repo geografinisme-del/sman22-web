@@ -29,8 +29,9 @@ for (const href of asli) {
 
 // 2) admin: daftar slot
 await page.goto(BASE + "/portal-digital/masuk/gtk", { waitUntil: "networkidle" });
-await page.fill("input[name=email]", "admin@sman22.test");
-await page.fill("input[name=password]", AKUN.admin);
+// akun operator uji lokal (peran manajemen tanpa super_admin — super_admin WAJIB MFA); lihat reset-data-uji-lokal.mjs
+await page.fill("input[name=email]", "ekspor@sman22.test");
+await page.fill("input[name=password]", AKUN.ekspor);
 await page.getByRole("button", { name: "Masuk", exact: true }).click();
 await page.waitForURL((u) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/mfa"), { timeout: 30000 });
 await page.goto(BASE + "/admin/foto-sementara", { waitUntil: "networkidle" });

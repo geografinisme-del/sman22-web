@@ -113,7 +113,7 @@ for (const nm of daftarMesin.split(",")) {
   // 5. tur pinned
   await page.goto(BASE + "/", { waitUntil: "load" });
   await diamkan(page);
-  await page.evaluate(() => document.querySelector("#tur").scrollIntoView());
+  await page.evaluate(() => document.querySelector("#tur").scrollIntoView({ behavior: "instant" }));
   await page.waitForTimeout(1500);
   cek(L("tur mode sticky (pinned)"), (await page.getAttribute("#tur", "data-mode")) === "sticky");
   const info = () =>
@@ -136,13 +136,13 @@ for (const nm of daftarMesin.split(",")) {
   const t0 = await info();
   cek(L("awan pembuka tampil di awal tur"), t0.awan > 0.9, t0);
   const tinggiTur = await page.evaluate(() => document.querySelector("#tur").offsetHeight);
-  await page.evaluate((d) => window.scrollBy(0, d), Math.round(tinggiTur * 0.3));
+  await page.evaluate((d) => window.scrollBy({ top: d, behavior: "instant" }), Math.round(tinggiTur * 0.3));
   await page.waitForTimeout(900);
   const t1 = await info();
   cek(L("panggung menempel di atas & setinggi layar"), Math.abs(t1.pinAtas) <= 1 && Math.abs(t1.pinTinggi - t1.layar) <= 2, t1);
   cek(L(`langkah aktif berganti (${t1.aktif})`), t1.aktif >= 1, t1);
   cek(L("kartu teks di bawah foto & di dalam layar"), t1.kartuDiBawahFoto && t1.kartuDalamLayar, t1);
-  await page.evaluate((d) => window.scrollBy(0, d), Math.round(tinggiTur * 0.3));
+  await page.evaluate((d) => window.scrollBy({ top: d, behavior: "instant" }), Math.round(tinggiTur * 0.3));
   await page.waitForTimeout(900);
   const t2 = await info();
   cek(L(`langkah terus maju saat digulir (${t1.aktif} → ${t2.aktif})`), t2.aktif > t1.aktif, { t1, t2 });

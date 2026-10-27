@@ -25,8 +25,10 @@ let gagal = 0;
 const browser = await chromium.launch({ executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe" });
 const page = await (await browser.newContext()).newPage();
 await page.goto(BASE + "/portal-digital/masuk/gtk", { waitUntil: "networkidle" });
-await page.fill("input[name=email]", "admin@sman22.test");
-await page.fill("input[name=password]", AKUN.admin);
+// akun operator uji (peran manajemen tanpa super_admin): super_admin WAJIB MFA sehingga akan berhenti di /admin/mfa.
+// Akun ini dibuat di stack lokal saja (lihat HANDOFF "Data uji lokal"); sandinya di akun-uji.json → sandi.ekspor
+await page.fill("input[name=email]", "ekspor@sman22.test");
+await page.fill("input[name=password]", AKUN.ekspor);
 await page.getByRole("button", { name: "Masuk", exact: true }).click();
 await page.waitForURL((u) => u.pathname.startsWith("/admin") && !u.pathname.startsWith("/admin/mfa"), { timeout: 30000 });
 for (const [nama, url, jenis, bolehKosong] of RUTE) {

@@ -588,3 +588,18 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Contoh (Git Bash): `MSYS_NO_PATHCONV=1 CHROME_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe" node scripts/uji-e2e/lighthouse-langit.mjs https://sman22-web.vercel.app <folder> "/,/profil"`
   Preview: argumen ke-5 = berkas JSON header `{"Cookie":"_vercel_jwt=…"}`. Ambil median ≥ 3 run.
 - Bukti (beranda production, 8 vs 8 run): FCP teramati 0,69–3,53 s → 0,69–1,11 s; median skor 0,93 → 0,95.
+
+## Data uji lokal (26 Okt 2026)
+- Sebelum `uji-alur` / `uji-ekspor` / `uji-pengalihan`: `node scripts/uji-e2e/reset-data-uji-lokal.mjs` (hanya kontainer
+  `supabase_db_sman22-web-uji`), lalu tunggu ±1 menit (cache data publik 60 detik) atau mulai ulang server lokal.
+  Reset: hapus faktor MFA admin, susunan beranda draf & terbit = `SUSUNAN_BAWAAN`, gerak = bawaan, bantuan sandi "Uji…".
+  Alasan: `uji-alur` sengaja menerapkan susunan tanpa Berita + gerak Dinamis dan mendaftarkan TOTP admin.
+- `uji-ekspor` memakai akun lokal `ekspor@sman22.test` (12 peran manajemen tanpa super_admin → tidak wajib MFA; super_admin
+  WAJIB MFA sejak migrasi keamanan). Sandi di `akun-uji.local.json` → `sandi.ekspor` (scratchpad, tidak di repo).
+  Akun lama `operator@sman22.test` di DB lokal adalah rekaman auth tak lengkap (tanpa identitas) — jangan dipakai.
+  `uji-impor` & `uji-foto-slot` juga memakai akun ini; reset juga menghapus siswa hasil uji-impor (NISN 00900000xx).
+
+## Pembaruan keamanan dependensi (26 Okt 2026, branch `langit-cerah`)
+- next 16.3.8 → 16.4.3 (GHSA-2464-fhr4-w9xw RCE Image Optimization + SVG, critical; GHSA-673q-mjm6-r5xr RCE `use cache`
+  typed array, critical; GHSA-p3m5-59mp-jv5r DoS Server Actions, high), eslint-config-next ikut 16.4.3,
+  zod 4.6.5 → 4.6.7 (GHSA-mrhx-c7xc-m3w5 memori habis, high). `npm audit`: 0 kerentanan.
