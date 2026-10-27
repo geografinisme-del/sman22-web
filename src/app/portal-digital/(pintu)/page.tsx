@@ -81,7 +81,7 @@ export default async function PortalDigital({ searchParams }: { searchParams: Pr
               <Link href={hanyaPortal ? "/portal" : "/admin/mulai"} className="lgt-tautan-panah">
                 Ruang kerja saya <span aria-hidden>→</span>
               </Link>
-              <form action={keluar} className="ml-auto">
+              <form data-keluar-akun="" action={keluar} className="ml-auto">
                 <button type="submit" className="inline-flex min-h-9 items-center gap-1.5 text-sm font-bold hover:underline">
                   <LogOut size={15} aria-hidden /> Keluar
                 </button>

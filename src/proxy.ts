@@ -3,9 +3,43 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseAktif } from "@/lib/supabase/config";
 import { urlMasuk } from "@/lib/masuk";
 import { fetchTahan } from "@/lib/supabase/fetch-tahan";
+import { COOKIE_LABEL_PRATINJAU, COOKIE_PRATINJAU, JALUR_KENDALI_PRATINJAU, PESAN_PRATINJAU } from "@/lib/pratinjau-umum";
+
+/** jalur yang wajib login (selain itu proxy hanya dilewati untuk menjaga pratinjau, lihat matcher "next-action") */
+const DILINDUNGI = ["/admin", "/portal", "/pratinjau", "/berkas", "/papan", "/cetak", "/alumni/akun", JALUR_KENDALI_PRATINJAU];
+const dilindungi = (p: string) => DILINDUNGI.some((d) => p === d || p.startsWith(d + "/"));
+/** unduhan data pribadi yang ditolak selama pratinjau (templat kosong tetap boleh) */
+const UNDUH_PRIBADI = /^\/admin\/.*\/(ekspor|nilai)(\/|$)|^\/berkas\//;
+
+/**
+ * "Lihat sebagai…": selama cookie pratinjau ada (sah atau tidak), SEMUA penulisan ditolak di server — Server Action
+ * (header next-action, di halaman mana pun), metode selain GET/HEAD, dan unduhan data pribadi. Pengecualian hanya
+ * pengendali pratinjau sendiri (mulai/ganti/selesai). Saklar PRATINJAU_AKTIF="false" → cookie pratinjau dihapus.
+ */
+function jagaPratinjau(request: NextRequest): NextResponse | null {
+  const ada = request.cookies.has(COOKIE_PRATINJAU) || request.cookies.has(COOKIE_LABEL_PRATINJAU);
+  if (!ada) return null;
+  if (process.env.PRATINJAU_AKTIF === "false") {
+    const lanjut = NextResponse.next();
+    lanjut.cookies.delete(COOKIE_PRATINJAU);
+    lanjut.cookies.delete(COOKIE_LABEL_PRATINJAU);
+    return lanjut;
+  }
+  const { pathname } = request.nextUrl;
+  if (pathname === JALUR_KENDALI_PRATINJAU || pathname.startsWith(JALUR_KENDALI_PRATINJAU + "/")) return null;
+  const tulis = request.method !== "GET" && request.method !== "HEAD";
+  if (tulis || request.headers.has("next-action") || UNDUH_PRIBADI.test(pathname)) {
+    return new NextResponse(PESAN_PRATINJAU, { status: 403, headers: { "content-type": "text/plain; charset=utf-8", "x-pratinjau": "ditolak" } });
+  }
+  return null;
+}
 
 /** Menjaga sesi login admin tetap segar dan menolak akses /admin tanpa login. */
 export async function proxy(request: NextRequest) {
+  const jaga = jagaPratinjau(request);
+  if (jaga && jaga.status === 403) return jaga;
+  // halaman publik hanya masuk proxy lewat matcher Server Action — tidak perlu login
+  if (!dilindungi(request.nextUrl.pathname)) return jaga ?? NextResponse.next();
   const isLogin = request.nextUrl.pathname === "/admin/login";
   // halaman tanpa login: lupa sandi
   if (request.nextUrl.pathname === "/admin/lupa-sandi") return NextResponse.next();
@@ -39,6 +73,8 @@ export async function proxy(request: NextRequest) {
   }
   // pengguna yang sudah masuk diarahkan oleh /admin (portal → /portal)
   if (user && isLogin) return NextResponse.redirect(new URL("/admin", request.url));
+  // saklar pratinjau dimatikan: buang cookie pratinjau yang tersisa
+  if (jaga) jaga.cookies.getAll().forEach((c) => response.cookies.set(c));
   return response;
 }
 
@@ -59,5 +95,10 @@ export const config = {
     { source: "/cetak/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
     { source: "/alumni/akun", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
     { source: "/alumni/akun/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/lihat-sebagai", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    { source: "/lihat-sebagai/:path*", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] },
+    // "Lihat sebagai…": Server Action & API di halaman mana pun melewati proxy agar bisa ditolak selama pratinjau
+    { source: "/:path*", has: [{ type: "header", key: "next-action" }] },
+    { source: "/api/:path*" },
   ],
 };

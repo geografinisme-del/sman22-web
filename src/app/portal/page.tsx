@@ -3,6 +3,7 @@ import { STATUS_SISWA_ABSEN, awalBulan, hariIniWIB, type KodeAbsen } from "@/lib
 import { getPengumuman } from "@/lib/data";
 import { formatTanggal } from "@/lib/format";
 import { konteksPortal } from "./data";
+import { catatanContoh, rekapContoh, WALI_CONTOH } from "./contoh";
 
 export const metadata = { title: "Beranda" };
 
@@ -10,7 +11,7 @@ type Rekap = { sakit: number; izin: number; alpa: number; terlambat: number; pul
 type Disiplin = { siswa_id: string; jenis: string; jumlah: number; label: string; dikonfirmasi: boolean };
 
 export default async function BerandaPortal() {
-  const { supabase, anak } = await konteksPortal();
+  const { supabase, anak, contoh } = await konteksPortal();
   const hari = hariIniWIB();
   const [disiplinRes, pengumuman, { data: sv }] = await Promise.all([supabase.rpc("status_disiplin"), getPengumuman(3), supabase.rpc("survei_aktif")]);
   const survei = ((sv ?? []) as { id: string; judul: string; sudah: boolean }[]).filter((x) => !x.sudah);
@@ -18,6 +19,8 @@ export default async function BerandaPortal() {
 
   const kartu = await Promise.all(
     anak.map(async (a) => {
+      // pratinjau: kehadiran contoh (fiktif) — tidak ada query data siswa
+      if (contoh) return { a, r: rekapContoh(a.id) as Rekap, terakhir: catatanContoh(a.id, hari), wali: WALI_CONTOH, jp: [] };
       const [{ data: rekap }, { data: terakhir }, { data: wali }, { data: jp }] = await Promise.all([
         a.kelas_id ? supabase.rpc("rekap_absensi_kelas", { p_kelas: a.kelas_id, p_dari: awalBulan(hari), p_sampai: hari }) : Promise.resolve({ data: [] }),
         supabase.from("absensi_siswa").select("tanggal, status, keterangan").eq("siswa_id", a.id).order("tanggal", { ascending: false }).limit(5),

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { STATUS_SISWA_ABSEN, awalBulan, hariIniWIB, type KodeAbsen } from "@/lib/admin/absensi";
 import { konteksPortal } from "../../data";
+import { catatanContoh } from "../../contoh";
 
 export const metadata = { title: "Kalender Kehadiran" };
 
@@ -15,7 +16,7 @@ function geserBulan(ym: string, n: number) {
 
 export default async function KalenderAnak({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ bulan?: string }> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
-  const { supabase, anak } = await konteksPortal();
+  const { supabase, anak, contoh } = await konteksPortal();
   const a = anak.find((x) => x.id === id);
   if (!a) notFound();
 
@@ -28,7 +29,8 @@ export default async function KalenderAnak({ params, searchParams }: { params: P
   const akhir = `${bulan}-${String(jumlahHari).padStart(2, "0")}`;
 
   const [{ data: absen }, { data: libur }, { data: atur }] = await Promise.all([
-    supabase.from("absensi_siswa").select("tanggal, status, keterangan").eq("siswa_id", a.id).gte("tanggal", awal).lte("tanggal", akhir),
+    // pratinjau: catatan contoh fiktif (bukan data siswa)
+    contoh ? Promise.resolve({ data: catatanContoh(a.id, hari) }) : supabase.from("absensi_siswa").select("tanggal, status, keterangan").eq("siswa_id", a.id).gte("tanggal", awal).lte("tanggal", akhir),
     supabase.from("hari_libur").select("tanggal, keterangan").gte("tanggal", awal).lte("tanggal", akhir),
     supabase.from("pengaturan_absensi").select("hari_sekolah").eq("id", 1).maybeSingle(),
   ]);

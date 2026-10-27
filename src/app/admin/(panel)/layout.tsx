@@ -51,7 +51,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             Anda masuk sebagai <strong>{user.email}</strong>, tetapi akun ini belum diberi peran atau sedang dinonaktifkan.
             Hubungi super admin sekolah.
           </p>
-          <form action={keluar}>
+          <form data-keluar-akun="" action={keluar}>
             <button type="submit" className="mt-6 rounded-full bg-ink px-6 py-3 font-semibold text-white">
               Keluar
             </button>
@@ -91,7 +91,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   ] = await Promise.all([
     cariPegawaiSaya(supabase),
     dasarSaja ? Promise.resolve(false) : Promise.resolve(supabase.rpc("pemilik_mutu")).then((r) => Boolean(r.data)),
-    hitung(supabase.from("notifikasi").select("id", kepala).is("dibaca_pada", null)),
+    // "Lihat sebagai…": notifikasi pribadi admin tidak ditampilkan (bukan milik peran yang dilihat)
+    akses.pratinjau ? nol : hitung(supabase.from("notifikasi").select("id", kepala).is("dibaca_pada", null)),
     bersama(punya(akses, "konten.terbitkan"), "beritaDiajukan"),
     bersama(punya(akses, "jadwal.kelola"), "tukarMenungguKurikulum"),
     bersama(punya(akses, "kurikulum.kelola"), "perangkatDiajukan"),
@@ -268,6 +269,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         email={akses.email}
         peran={akses.peran.map((p) => NAMA_PERAN[p] ?? p).join(", ")}
         keluar={keluar}
+        lihatSebagai={berperan(akses, "super_admin") && !akses.pratinjau}
       />
       <main className="px-4 py-6 sm:px-6 lg:ml-[260px] lg:px-8 lg:py-7 print:m-0 print:p-0">
         <div className="max-w-[1320px]">

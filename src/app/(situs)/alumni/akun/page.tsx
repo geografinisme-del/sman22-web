@@ -27,7 +27,7 @@ export default async function AreaAlumni({ searchParams }: { searchParams: Promi
     <Section>
       <div className="mb-6 flex flex-wrap items-end gap-3">
         <div className="flex-1"><p className="text-sm text-[var(--muted)]">Area Alumni · angkatan {p.tahun_lulus}</p><h1 className="text-4xl">{p.nama}</h1></div>
-        <form action={keluar}><button className="rounded-lg px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Keluar</button></form>
+        <form data-keluar-akun="" action={keluar}><button className="rounded-lg px-4 py-2 text-sm font-semibold ring-1 ring-black/15">Keluar</button></form>
       </div>
       {sp.pesan && <p role="status" className="mb-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800">Tersimpan.</p>}
       {sp.galat && <p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-800">{sp.galat}</p>}

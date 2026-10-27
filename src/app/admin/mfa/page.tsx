@@ -41,7 +41,7 @@ export default async function HalamanMfa({ searchParams }: { searchParams: Promi
               HP hilang atau berganti HP? Minta super admin lain mereset verifikasi dua langkah akun Anda melalui menu Pengguna & Peran.
             </p>
           )}
-          <form action={keluar}>
+          <form data-keluar-akun="" action={keluar}>
             <button type="submit" className="font-semibold underline underline-offset-4">
               Keluar dan kembali ke halaman masuk
             </button>

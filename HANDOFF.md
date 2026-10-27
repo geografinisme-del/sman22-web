@@ -603,3 +603,33 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - next 16.3.8 → 16.4.3 (GHSA-2464-fhr4-w9xw RCE Image Optimization + SVG, critical; GHSA-673q-mjm6-r5xr RCE `use cache`
   typed array, critical; GHSA-p3m5-59mp-jv5r DoS Server Actions, high), eslint-config-next ikut 16.4.3,
   zod 4.6.5 → 4.6.7 (GHSA-mrhx-c7xc-m3w5 memori habis, high). `npm audit`: 0 kerentanan.
+
+## "Lihat sebagai…" — pratinjau peran untuk super admin (27 Okt 2026, branch `langit-cerah`, BELUM dirilis)
+- Siapa: hanya super admin dengan sesi AAL2 (lolos MFA). Menu akun admin → "Lihat sebagai…" → `/lihat-sebagai`.
+  Daftar peran dari tabel `peran` (+ "Akun menunggu verifikasi"); ruang kerja tiap peran dihitung `ruangKerjaUntuk`.
+- Cara kerja: cookie `sman22_pratinjau` (httpOnly, sameSite=strict, HMAC-SHA256 `PRATINJAU_RAHASIA`, 30 menit; isi: peran,
+  uid, mulai) + cookie penanda `sman22_pratinjau_label` (tanpa rahasia, hanya untuk pita). `supabaseServer()` mengirim header
+  `x-pratinjau-peran`; database (migrasi `20261228000000_pratinjau_peran.sql`) HANYA mematuhinya bila pemanggil super admin
+  AAL2 → `punya_izin/punya_peran/akses_saya` menghitung dari peran yang dilihat & pre-request `pra_permintaan()` menjadikan
+  transaksi read-only. Sesi login admin tidak diganti.
+- Hanya baca, 3 lapis: (1) `proxy.ts` menolak Server Action (header next-action, di halaman mana pun), metode tulis, ekspor
+  (`/admin/**/ekspor|nilai`) & `/berkas/**` selama cookie pratinjau ada → 403 "Mode pratinjau — perubahan tidak disimpan";
+  (2) `aksesAksi()` null; (3) database read-only. `PitaPratinjau` (root layout) mencegat submit/tautan unduh di peramban.
+  Pengecualian: `/lihat-sebagai/*` (route handler mulai/selesai). Logout saat pratinjau (form `data-keluar-akun`) →
+  `/lihat-sebagai/selesai?keluar=1`.
+- Klien service-role (melewati RLS): halaman detail pengguna (`getUserById`) dilewati saat pratinjau; `/berkas` (signed URL)
+  ditolak; semua Server Action pemakai klien admin/layanan (pengguna, pegawai, portal, alumni, reset sandi, kirim notifikasi)
+  ditolak proxy + aksesAksi; `/api/notifikasi/kirim` ditolak proxy. Diuji di `uji-pratinjau.mjs`.
+- Siswa/Orang Tua: DATA CONTOH fiktif dari `src/app/portal/contoh.ts` (tidak ke database), berlabel "Data contoh";
+  notifikasi pribadi admin disembunyikan saat pratinjau.
+- Catatan aktivitas: `audit_log` (tabel `pratinjau`, aksi PRATINJAU_MULAI/SELESAI) lewat RPC `catat_pratinjau`; tampil di
+  Admin → Keamanan akun → "Riwayat Lihat sebagai…" (tanpa catatan selesai = berakhir otomatis ≤ 30 menit).
+- SAKLAR DARURAT: set env Vercel `PRATINJAU_AKTIF=false` (Production) lalu redeploy (atau "Redeploy" deployment terakhir).
+  Efek: cookie pratinjau diabaikan & dihapus proxy, header tidak dikirim, halaman pemilih menampilkan "dimatikan". Database
+  TIDAK perlu di-rollback (tanpa header perilaku DB = lama). Tanpa `PRATINJAU_RAHASIA` (< 32 karakter) fitur juga mati.
+  Rollback DB (hanya dengan izin): `supabase/rollback/rollback_20261228_pratinjau_peran.sql` (lepas pre-request DULU).
+- Rahasia: `PRATINJAU_RAHASIA` tidak pernah dicatat/ditampilkan/di-commit; lokal dibaca dari berkas scratchpad.
+- Uji: `uji-pratinjau-db.mjs` (regresi tulis pengguna biasa + anon + header palsu; read-only hanya untuk super admin AAL2),
+  `uji-pratinjau.mjs` (akses, tiap peran = login asli, data contoh, hanya-baca server, kedaluwarsa, keluar, audit, screenshot).
+- PELAJARAN: draf awal mencabut EXECUTE `peran_pratinjau()` dari anon → semua data publik gagal (pre-request berjalan untuk
+  anon). Fungsi yang dipanggil pre-request/RLS WAJIB bisa dieksekusi anon.

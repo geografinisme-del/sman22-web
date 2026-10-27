@@ -32,8 +32,7 @@ import {
   UserRound,
   Users,
   X,
-  type LucideProps,
-} from "lucide-react";
+  type LucideProps, Eye } from "lucide-react";
 import { sekolah } from "@/content/sekolah";
 
 export type GrupMenu = { judul?: string; item: { href: string; label: string; badge?: number }[] };
@@ -126,6 +125,7 @@ export function Sidebar({
   keluar,
   notif = 0,
   ruang = [],
+  lihatSebagai = false,
 }: {
   grup: GrupMenu[];
   /** ruang kerja yang boleh dibuka (turunan izin; berpindah ruang kerja tidak menambah kewenangan) */
@@ -135,6 +135,8 @@ export function Sidebar({
   peran: string;
   keluar: () => Promise<void>;
   notif?: number;
+  /** super admin AAL2 (bukan sedang pratinjau): tampilkan "Lihat sebagai…" */
+  lihatSebagai?: boolean;
 }) {
   const path = usePathname();
   const router = useRouter();
@@ -421,10 +423,15 @@ export function Sidebar({
             <Link href="/admin/keamanan" onClick={() => tutupLaci(false)} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[var(--soft)]">
               <ShieldCheck size={16} aria-hidden /> Keamanan akun
             </Link>
+            {lihatSebagai && (
+              <a href="/lihat-sebagai" className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[var(--soft)]">
+                <Eye size={16} aria-hidden /> Lihat sebagai…
+              </a>
+            )}
             <a href="/" target="_blank" rel="noopener" className="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm hover:bg-[var(--soft)]">
               <ExternalLink size={16} aria-hidden /> Lihat website
             </a>
-            <form action={keluar}>
+            <form data-keluar-akun="" action={keluar}>
               <button type="submit" className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm text-blue-teks hover:bg-[var(--soft)]">
                 <LogOut size={16} aria-hidden /> Keluar
               </button>
@@ -463,7 +470,7 @@ export function Sidebar({
   return (
     <>
       {/* bilah atas ponsel */}
-      <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[var(--line)] bg-white px-4 print:hidden lg:hidden">
+      <div data-pita-geser className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-[var(--line)] bg-white px-4 print:hidden lg:hidden">
         <button
           ref={tombolMenu}
           type="button"
@@ -497,7 +504,7 @@ export function Sidebar({
       )}
 
       {/* sidebar layar lebar dengan area gulir sendiri */}
-      <aside className="hidden border-r border-[var(--line)] bg-white print:hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-[260px] lg:flex-col">
+      <aside data-pita-geser className="hidden border-r border-[var(--line)] bg-white print:hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-[260px] lg:flex-col">
         <div className="flex h-16 shrink-0 items-center gap-2 px-4">
           {merek}
           {lonceng}
