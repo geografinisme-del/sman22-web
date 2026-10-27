@@ -15,6 +15,25 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 
 Detail status per modul: **MODULE_STATUS.md**.
 
+## Hosting production (sejak 27 Okt 2026)
+
+- **Production = https://sman22-web-five.vercel.app** — Vercel tim **geo-10862155** (slug `geo-78c9e361`,
+  `team_v98buq3ONHk1OwseKj0L7DGz`, paket Hobby/gratis), proyek `sman22-web` `prj_W0M3ydjGUHwClUPW3z77XWVUbgc4`, region sin1.
+  Repo `geografinisme-del/sman22-web`: `main` → production, `langit-cerah` → preview
+  (`sman22-web-git-langit-cerah-geo-78c9e361.vercel.app`). Untuk sementara situs internal sekolah; nanti pindah ke domain resmi.
+- Env (nama saja): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, BK_KUNCI, CRON_SECRET,
+  PRATINJAU_RAHASIA (semua Production + Preview, Sensitive). Speed Insights & Analytics aktif di proyek ini.
+- Batasan Hobby: satu region (sin1); cron `/api/notifikasi/kirim` sekali sehari (23:05 UTC, bisa meleset ≤ 1 jam);
+  untuk penggunaan non-komersial.
+- Supabase Auth: Site URL = https://sman22-web-five.vercel.app; Redirect URLs memuat `https://sman22-web-five.vercel.app/**`
+  (untuk preview: `https://*-geo-78c9e361.vercel.app/**`).
+- Database tetap Supabase `sman22-web` (dwkaiyuxyvluwisgmuww) — dipakai production DAN preview.
+- **LAMA, dihentikan**: tim `geo-bbba` (`team_TQo8fAzO2wJzomVXH28QWxg7`, berbayar), proyek `prj_1jloUJhWcLvescjm4rcab7gByajM`,
+  domain sman22-web.vercel.app (tanpa BK_KUNCI/CRON_SECRET/PRATINJAU_RAHASIA). Catatan rilis lama di bawah yang menyebut
+  `sman22-web.vercel.app` / ID `dpl_…` geo-bbba merujuk ke proyek lama ini.
+- Rilis pertama di tim gratis: `dpl_Fi7QBUfdNfjK78FFT2tKG6CFazLz` (commit `a626dcf`, 27 Okt 2026; titik kembali
+  `dpl_AUtgg3pbTjs4zZ5h5X5MC6mhE45J`). Diuji: halaman publik, login 3 peran, admin + MFA, ekspor Excel, "Lihat sebagai…", log 30 menit bersih.
+
 Push ke `main` memicu deploy produksi Vercel. Jangan push/merge tanpa persetujuan pemilik. Push branch fitur hanya membuat pratinjau.
 
 ## Arah visual (tetap berlaku)
