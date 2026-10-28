@@ -18,21 +18,23 @@ Detail status per modul: **MODULE_STATUS.md**.
 ## Hosting production (sejak 27 Okt 2026)
 
 - **Production = https://sman22-web-five.vercel.app** — Vercel tim **geo** (slug `geo-bbba`, `team_TQo8fAzO2wJzomVXH28QWxg7`,
-  diturunkan ke paket Hobby/gratis oleh pemilik), proyek **`sman22-web-vagy`** `prj_W0M3ydjGUHwClUPW3z77XWVUbgc4`, region sin1.
-  (Proyek ini dibuat di tim geo-78c9e361 lalu dipindahkan ke geo-bbba 27 Okt 09:39 UTC; nama diberi akhiran "-vagy" oleh
-  Vercel karena "sman22-web" sudah dipakai proyek lama. Alias lama `*-geo-78c9e361.vercel.app` ikut terbawa.)
-- Repo `geografinisme-del/sman22-web`: `main` → production, `langit-cerah` → preview
-  (`sman22-web-vagy-git-langit-cerah-geo-bbba.vercel.app`). Untuk sementara situs internal sekolah; nanti pindah ke domain resmi.
+  diturunkan ke paket Hobby/gratis oleh pemilik), proyek **`sman22-web`** `prj_W0M3ydjGUHwClUPW3z77XWVUbgc4`, region sin1.
+  Riwayat: proyek ini dibuat di tim geo-78c9e361, dipindah ke geo-bbba 27 Okt (sempat bernama `sman22-web-vagy`), lalu diganti
+  nama menjadi `sman22-web` 28 Okt setelah proyek lama dihapus. Alias lama `*-geo-78c9e361.vercel.app` ikut terbawa.
+- **https://sman22-web.vercel.app** (alamat lama) = redirect 308 ke sman22-web-five.vercel.app (path & query ikut), dipasang di
+  proyek production agar tautan lama tetap jalan dan nama tidak diambil orang lain.
+- Repo `geografinisme-del/sman22-web`: `main` → production, `langit-cerah` → preview (tim geo-bbba, alamat
+  `sman22-<acak>-geo-bbba.vercel.app`, terkunci Vercel Authentication). Untuk sementara situs internal sekolah; nanti pindah
+  ke domain resmi.
 - Env (nama saja): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, BK_KUNCI, CRON_SECRET,
   PRATINJAU_RAHASIA (semua Production + Preview, Sensitive). Speed Insights & Analytics aktif (skrip `/_vercel/*` = 200).
 - Batasan Hobby: satu region (sin1); cron `/api/notifikasi/kirim` sekali sehari (23:05 UTC, bisa meleset ≤ 1 jam);
   untuk penggunaan non-komersial.
 - Supabase Auth: Site URL = https://sman22-web-five.vercel.app; Redirect URLs memuat `https://sman22-web-five.vercel.app/**`
-  (untuk preview: `https://*-geo-bbba.vercel.app/**`).
+  dan `https://*-geo-bbba.vercel.app/**` (preview).
 - Database tetap Supabase `sman22-web` (dwkaiyuxyvluwisgmuww) — dipakai production DAN preview.
-- **LAMA, sudah diputus dari GitHub (27 Okt)**: proyek `sman22-web` `prj_1jloUJhWcLvescjm4rcab7gByajM` di tim yang sama,
-  domain sman22-web.vercel.app (tanpa BK_KUNCI/CRON_SECRET/PRATINJAU_RAHASIA; tidak lagi dibangun). Catatan rilis lama di
-  bawah yang menyebut `sman22-web.vercel.app` merujuk ke proyek lama ini.
+- Proyek lama `prj_1jloUJhWcLvescjm4rcab7gByajM` (dulu melayani sman22-web.vercel.app) sudah DIHAPUS 28 Okt 2026. Catatan rilis
+  lama di bawah yang menyebut ID `dpl_…` atau URL `sman22-…-geo-bbba` sebelum 27 Okt merujuk ke proyek yang sudah dihapus itu.
 - Rilis production saat ini: `dpl_Fi7QBUfdNfjK78FFT2tKG6CFazLz` (commit `a626dcf`, 27 Okt 2026; titik kembali
   `dpl_AUtgg3pbTjs4zZ5h5X5MC6mhE45J`). Diuji: halaman publik, login 3 peran, admin + MFA, ekspor Excel, "Lihat sebagai…", log 30 menit bersih.
 
