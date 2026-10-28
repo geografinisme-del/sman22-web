@@ -18,7 +18,7 @@ Detail status per modul: **MODULE_STATUS.md**.
 ## Hosting production (sejak 27 Okt 2026)
 
 - **Production = https://sman22-web-five.vercel.app** — Vercel tim **geo** (slug `geo-bbba`, `team_TQo8fAzO2wJzomVXH28QWxg7`,
-  diturunkan ke paket Hobby/gratis oleh pemilik), proyek **`sman22-web`** `prj_W0M3ydjGUHwClUPW3z77XWVUbgc4`, region sin1.
+  paket Hobby Plan aktif sejak 28 Okt 2026, tanpa tagihan), proyek **`sman22-web`** `prj_W0M3ydjGUHwClUPW3z77XWVUbgc4`, region sin1.
   Riwayat: proyek ini dibuat di tim geo-78c9e361, dipindah ke geo-bbba 27 Okt (sempat bernama `sman22-web-vagy`), lalu diganti
   nama menjadi `sman22-web` 28 Okt setelah proyek lama dihapus. Alias lama `*-geo-78c9e361.vercel.app` ikut terbawa.
 - **https://sman22-web.vercel.app** (alamat lama) = redirect 308 ke sman22-web-five.vercel.app (path & query ikut), dipasang di
