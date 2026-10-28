@@ -23,8 +23,9 @@ Detail status per modul: **MODULE_STATUS.md**.
   nama menjadi `sman22-web` 28 Okt setelah proyek lama dihapus. Alias lama `*-geo-78c9e361.vercel.app` ikut terbawa.
 - **https://sman22-web.vercel.app** (alamat lama) = redirect 308 ke sman22-web-five.vercel.app (path & query ikut), dipasang di
   proyek production agar tautan lama tetap jalan dan nama tidak diambil orang lain.
-- Repo `geografinisme-del/sman22-web`: `main` → production, `langit-cerah` → preview (tim geo-bbba, alamat
-  `sman22-<acak>-geo-bbba.vercel.app`, terkunci Vercel Authentication). Untuk sementara situs internal sekolah; nanti pindah
+- Repo `geografinisme-del/sman22-web`: `main` → production, `langit-cerah` → preview **https://sman22-web-git-langit-cerah-geo-bbba.vercel.app**
+  (domain tetap yang dipasang manual di Settings → Domains, Preview + cabang langit-cerah, karena alamat cabang otomatis tidak
+  muncul lagi setelah proyek diganti nama; terkunci Vercel Authentication). Untuk sementara situs internal sekolah; nanti pindah
   ke domain resmi.
 - Env (nama saja): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, BK_KUNCI, CRON_SECRET,
   PRATINJAU_RAHASIA (semua Production + Preview, Sensitive). Speed Insights & Analytics aktif (skrip `/_vercel/*` = 200).
