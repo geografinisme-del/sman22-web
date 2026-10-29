@@ -1,12 +1,16 @@
 import { JudulHalaman, KosongAdmin, Lencana } from "@/components/admin/ui";
-import { punya, wajibIzin } from "@/lib/admin/auth";
+import { punya, wajibLogin } from "@/lib/admin/auth";
+import { redirect } from "next/navigation";
 import { formatWaktu } from "@/lib/format";
 import { FormTangani } from "./Form";
 
 export const metadata = { title: "Rujukan BK" };
 
 export default async function RujukanBk() {
-  const { supabase, akses } = await wajibIzin("bk.rujukan");
+  const { supabase, akses } = await wajibLogin();
+  if (!akses) redirect("/admin?pesan=tanpa-akses");
+  // perujuk (guru/wali kelas) bukan BK: hanya status rujukannya sendiri, tanpa catatan BK (lewat rujukan_saya())
+  if (!punya(akses, "bk.rujukan")) return <RujukanSaya supabase={supabase} />;
   const konselor = punya(akses, "bk.konseling");
   const { data } = await supabase.from("rujukan_bk").select("id, siswa_id, alasan, dirujuk_oleh, dirujuk_pada, status, catatan_bk, siswa:siswa_id(nama)").order("status").order("dirujuk_pada", { ascending: false }).limit(100);
   type R = { id: string; siswa_id: string; alasan: string; dirujuk_oleh: string; dirujuk_pada: string; status: string; catatan_bk: string; siswa: { nama: string } | null };
@@ -26,6 +30,27 @@ export default async function RujukanBk() {
                 {konselor && r.status === "baru" && <a href={`/admin/bk/kasus/baru?rujukan=${r.id}`} className="ml-4 mt-2 inline-block text-sm font-semibold text-blue-teks underline">Buka kasus BK →</a>}
               </div>
               <FormTangani id={r.id} status={r.status} catatan={r.catatan_bk} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+async function RujukanSaya({ supabase }: { supabase: Awaited<ReturnType<typeof wajibLogin>>["supabase"] }) {
+  const { data } = await supabase.rpc("rujukan_saya");
+  const list = (data ?? []) as { id: string; nama_siswa: string; alasan: string; dirujuk_pada: string; status: string }[];
+  return (
+    <>
+      <JudulHalaman judul="Rujukan BK Saya" deskripsi="Status rujukan yang Anda kirim ke guru BK. Catatan BK bersifat rahasia dan hanya dapat dibaca guru BK." />
+      {!list.length ? <KosongAdmin teks="Anda belum pernah merujuk siswa ke BK." /> : (
+        <ul className="space-y-3">
+          {list.map((r) => (
+            <li key={r.id} className="rounded-2xl bg-white p-5 ring-1 ring-black/5">
+              <p className="font-semibold">{r.nama_siswa} <Lencana warna={r.status === "baru" ? "kuning" : r.status === "selesai" ? "hijau" : "abu"}>{r.status}</Lencana></p>
+              <p className="mt-1 text-xs text-black/50">Dirujuk {formatWaktu(r.dirujuk_pada)}</p>
+              <p className="mt-2 text-sm text-black/70">“{r.alasan}”</p>
             </li>
           ))}
         </ul>

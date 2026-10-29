@@ -50,7 +50,11 @@ export type Izin =
   | "mutu.kelola"
   | "mutu.audit"
   | "mutu.lihat"
-  | "sarpras.inventaris";
+  | "sarpras.inventaris"
+  | "humas.lihat"
+  | "pengaduan.lihat"
+  | "pengaduan.metadata"
+  | "pengguna.kelola_dasar";
 
 export type Akses = {
   userId: string;
@@ -69,9 +73,10 @@ export type Akses = {
 export const NAMA_PERAN: Record<string, string> = {
   super_admin: "Super Admin",
   kepala_sekolah: "Kepala Sekolah",
-  wakasek: "Wakasek",
-  kurikulum: "Wakasek Kurikulum",
-  sarpras: "Wakasek Sarpras",
+  waka_kurikulum: "Wakasek Kurikulum",
+  waka_kesiswaan: "Wakasek Kesiswaan",
+  waka_sarpras: "Wakasek Sarpras",
+  waka_humas: "Wakasek Humas",
   pustakawan: "Pustakawan",
   literasi: "Koordinator Literasi",
   keuangan: "Bendahara / Keuangan",
@@ -80,8 +85,6 @@ export const NAMA_PERAN: Record<string, string> = {
   tim_mutu: "Tim Penjaminan Mutu",
   auditor: "Auditor Internal",
   operator: "Operator / TU",
-  humas: "Humas",
-  kesiswaan: "Kesiswaan",
   piket: "Guru Piket",
   bk: "Guru BK",
   wali_kelas: "Wali Kelas",
@@ -151,6 +154,13 @@ export const labelPeran = (list: string[]) => list.map((p) => NAMA_PERAN[p] ?? p
 export async function wajibIzin(izin: Izin) {
   const hasil = await wajibLogin();
   if (!punya(hasil.akses, izin)) redirect("/admin?pesan=tanpa-akses");
+  return hasil as typeof hasil & { akses: Akses };
+}
+
+/** Untuk halaman modul yang syaratnya bukan satu izin (lihat lib/admin/akses-modul.ts): URL langsung tetap ditolak. */
+export async function wajibBoleh(syarat: (a: Akses) => boolean) {
+  const hasil = await wajibLogin();
+  if (!hasil.akses || !syarat(hasil.akses)) redirect("/admin?pesan=tanpa-akses");
   return hasil as typeof hasil & { akses: Akses };
 }
 

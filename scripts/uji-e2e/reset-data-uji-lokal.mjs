@@ -17,7 +17,7 @@ const nama = execFileSync("docker", ["ps", "--filter", `name=^${KONTAINER}$`, "-
 if (nama !== KONTAINER) throw new Error(`kontainer ${KONTAINER} tidak berjalan — reset dibatalkan`);
 
 const susunan = JSON.stringify(SUSUNAN_BAWAAN).replace(/'/g, "''");
-const PERAN_EKSPOR = ["kepala_sekolah", "wakasek", "kurikulum", "operator", "sarpras", "humas", "kesiswaan", "tim_mutu", "admin_alumni", "keuangan", "pustakawan", "wali_kelas"];
+const PERAN_EKSPOR = ["kepala_sekolah", "waka_kurikulum", "operator", "waka_sarpras", "waka_humas", "waka_kesiswaan", "tim_mutu", "admin_alumni", "keuangan", "pustakawan", "wali_kelas"];
 const sql = `
 begin;
 delete from auth.mfa_factors where user_id in (select id from auth.users where email = 'admin@sman22.test');

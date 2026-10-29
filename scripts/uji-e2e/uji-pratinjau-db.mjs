@@ -120,9 +120,9 @@ const totp = (rahasia) => {
     cek("admin AAL2 + header guru → peran_pratinjau = guru", pr.data === "guru", pr.teks);
     const b = await tulisPref(t2, id, { "x-pratinjau-peran": "guru" });
     cek("admin AAL2 + pratinjau → penulisan DITOLAK database (read-only)", b.status >= 400 && /read-only/i.test(b.teks), `${b.status} ${b.teks.slice(0, 160)}`);
-    const ak = await api("/rest/v1/rpc/akses_saya", { token: t2, metode: "POST", isi: {}, header: { "x-pratinjau-peran": "humas" } });
-    const izinHumas = psql("select string_agg(izin, ',' order by izin) from public.peran_izin where peran = 'humas';");
-    cek("admin AAL2 + pratinjau humas → akses_saya = peran & izin humas saja", JSON.stringify(ak.data?.peran) === '["humas"]' && [...(ak.data?.izin ?? [])].sort().join(",") === izinHumas, ak.data);
+    const ak = await api("/rest/v1/rpc/akses_saya", { token: t2, metode: "POST", isi: {}, header: { "x-pratinjau-peran": "waka_humas" } });
+    const izinHumas = psql("select string_agg(izin, ',' order by izin) from public.peran_izin where peran = 'waka_humas';");
+    cek("admin AAL2 + pratinjau humas → akses_saya = peran & izin humas saja", JSON.stringify(ak.data?.peran) === '["waka_humas"]' && [...(ak.data?.izin ?? [])].sort().join(",") === izinHumas, ak.data);
     const pg = await api("/rest/v1/pengguna?select=user_id", { token: t2, header: { "x-pratinjau-peran": "guru" } });
     const pgPenuh = await api("/rest/v1/pengguna?select=user_id", { token: t2 });
     cek(`admin AAL2 + pratinjau guru → data menyempit (pengguna: ${pgPenuh.data?.length} → ${pg.data?.length})`, Array.isArray(pg.data) && pg.data.length < pgPenuh.data.length && pg.data.length <= 1, { pratinjau: pg.data?.length, penuh: pgPenuh.data?.length });

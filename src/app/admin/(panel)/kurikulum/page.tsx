@@ -2,7 +2,8 @@ import Link from "next/link";
 import { JudulHalaman, Kartu, Notifikasi, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
 import { FormStruktur } from "@/components/kurikulum/Form";
 import { NavKurikulum } from "@/components/kurikulum/Nav";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { KELOMPOK, TINGKAT, faseTingkat } from "@/lib/kurikulum";
 import { hapusStruktur, salinStruktur } from "../../actions-kurikulum";
 
@@ -13,7 +14,7 @@ type Cek = { kelas: string; tingkat: string; mapel: string; jp_struktur: number 
 
 export default async function Struktur({ searchParams }: { searchParams: Promise<{ tingkat?: string; pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.strukturKurikulum);
   const kelola = punya(akses, "kurikulum.kelola");
   const tingkat = TINGKAT.includes(sp.tingkat as (typeof TINGKAT)[number]) ? sp.tingkat! : "X";
   const { data: ta } = await supabase.from("tahun_ajaran").select("id, nama").eq("aktif", true).maybeSingle();

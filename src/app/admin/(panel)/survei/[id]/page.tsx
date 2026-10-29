@@ -19,7 +19,7 @@ export default async function DetailSurvei({ params, searchParams }: { params: P
   if (!s) notFound();
   const tracer = s.sasaran === "alumni";
   const bolehUbah = punya(akses, "humas.kelola") || (tracer && punya(akses, "alumni.kelola"));
-  if (!bolehUbah && !(tracer && punya(akses, "alumni.lihat"))) redirect("/admin?pesan=tanpa-akses");
+  if (!bolehUbah && !punya(akses, "humas.lihat") && !(tracer && punya(akses, "alumni.lihat"))) redirect("/admin?pesan=tanpa-akses");
   const { data: h } = await supabase.rpc("hasil_survei", { p_id: id });
   const hasil = (h ?? { responden: 0, per_peran: {}, pertanyaan: [] }) as H;
   const PERAN: Record<string, string> = { publik: "Umum", siswa: "Siswa", ortu: "Orang tua", pegawai: "Guru/staf", alumni: "Alumni" };

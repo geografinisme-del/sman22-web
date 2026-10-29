@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { JudulHalaman, Kartu, Notifikasi, TombolLink } from "@/components/admin/ui";
 import { FormProsesAduan } from "@/components/humas/Form";
-import { wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibLogin } from "@/lib/admin/auth";
 import { daftarStaf } from "@/lib/admin/nama";
 import { uuid } from "@/lib/admin/schema";
 import { KATEGORI_ADUAN, STATUS_ADUAN } from "@/lib/humas";
@@ -12,7 +12,7 @@ export const metadata = { title: "Pengaduan" };
 export default async function DetailAduan({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ pesan?: string }> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   if (!uuid.safeParse(id).success) notFound();
-  const { supabase } = await wajibLogin();
+  const { supabase, akses } = await wajibLogin();
   const { data: a } = await supabase.from("pengaduan").select("*").eq("id", id).maybeSingle();
   if (!a) notFound();
   const [guru, { data: riw }] = await Promise.all([
@@ -49,10 +49,18 @@ export default async function DetailAduan({ params, searchParams }: { params: Pr
             </div>
           )}
         </Kartu>
-        <Kartu className="self-start">
-          <h2 className="mb-4 text-2xl">Tindak lanjut</h2>
-          <FormProsesAduan d={a} guru={guru} />
-        </Kartu>
+        {/* kepala sekolah (pengaduan.lihat) hanya membaca; tindak lanjut oleh bidangnya (database juga menolak) */}
+        {punya(akses, "pengaduan.kelola") || punya(akses, "pengaduan.rahasia") || (a.pic_id && a.pic_id === (await supabase.rpc("pegawai_saya")).data) ? (
+          <Kartu className="self-start">
+            <h2 className="mb-4 text-2xl">Tindak lanjut</h2>
+            <FormProsesAduan d={a} guru={guru} />
+          </Kartu>
+        ) : (
+          <Kartu className="self-start">
+            <h2 className="mb-2 text-2xl">Tindak lanjut</h2>
+            <p className="text-sm text-black/60">Anda dapat membaca pengaduan ini. Tindak lanjut dilakukan oleh {a.rahasia ? "guru BK atau Wakasek Kesiswaan" : "Wakasek Humas"} atau PIC yang ditugaskan.</p>
+          </Kartu>
+        )}
       </div>
     </>
   );

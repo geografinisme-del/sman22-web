@@ -23,8 +23,8 @@ export const GRUP: Record<Grup, { judul: string; keterangan: string }> = {
 };
 
 /** Peran staf yang boleh membuka dasbor admin (sama dengan pemeriksaan di layout panel). */
-export const PERAN_STAF = ["super_admin", "kepala_sekolah", "wakasek", "kurikulum", "sarpras", "pustakawan", "literasi", "keuangan", "admin_alumni", "tim_mutu", "auditor", "operator", "humas", "kesiswaan", "piket", "bk", "wali_kelas", "guru"];
-const PERAN_PIMPINAN = ["super_admin", "kepala_sekolah", "wakasek"];
+export const PERAN_STAF = ["super_admin", "kepala_sekolah", "waka_kurikulum", "waka_kesiswaan", "waka_sarpras", "waka_humas", "pustakawan", "literasi", "keuangan", "admin_alumni", "tim_mutu", "auditor", "operator", "piket", "bk", "wali_kelas", "guru"];
+const PERAN_PIMPINAN = ["super_admin", "kepala_sekolah"];
 
 export type Pintu = {
   bidang: KunciBidang;

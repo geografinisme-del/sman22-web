@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { JudulHalaman, KosongAdmin, Notifikasi, TombolLink, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
-import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
+import { berperan, punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { BIDANG, PERINGKAT, TINGKAT } from "@/lib/kesiswaan/label";
 import { formatTanggal } from "@/lib/format";
 import { verifikasi } from "../../actions-kesiswaan";
@@ -25,7 +26,7 @@ function FormVerifikasi({ tipe, id, label }: { tipe: string; id: string; label: 
 
 export default async function Kesiswaan({ searchParams }: { searchParams: Promise<{ pesan?: string; kelas?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.poinKesiswaan);
   const lihat = punya(akses, "kesiswaan.lihat");
   if (!lihat && !berperan(akses, "wali_kelas")) redirect("/admin/kesiswaan/lapor");
   const kelola = punya(akses, "kesiswaan.kelola");

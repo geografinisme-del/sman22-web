@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { JudulHalaman, Kartu, Lencana, Notifikasi, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
-import { NAMA_PERAN, wajibIzin } from "@/lib/admin/auth";
+import { NAMA_PERAN, punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH, peranDasar } from "@/lib/admin/akses-modul";
 import { kunciAdminTersedia } from "@/lib/supabase/admin";
 import { FormBuatAkun, FormTambahJabatan } from "./FormPengguna";
 
@@ -8,7 +9,9 @@ export const metadata = { title: "Pengguna & Peran" };
 
 export default async function Pengguna({ searchParams }: { searchParams: Promise<{ pesan?: string; pegawai?: string; q?: string }> }) {
   const sp = await searchParams;
-  const { supabase } = await wajibIzin("pengguna.kelola");
+  const { supabase, akses } = await wajibBoleh(BOLEH.penggunaPeran);
+  // operator (pengguna.kelola_dasar): hanya peran dasar & akun yang tidak dilindungi
+  const penuh = punya(akses, "pengguna.kelola");
   const q = (sp.q ?? "").replace(/[%_,()*\\]/g, " ").trim().slice(0, 80);
   type Baris = { user_id: string; nama: string; email: string; aktif: boolean; jabatan?: string | null; pengguna_peran: { peran: string }[] };
   const cari = (kolom: string) => {
@@ -32,7 +35,7 @@ export default async function Pengguna({ searchParams }: { searchParams: Promise
 
   return (
     <>
-      <JudulHalaman judul="Pengguna & Peran" deskripsi="Atur siapa yang bisa masuk dan apa yang boleh dilakukan. Hak akses dijaga oleh database." />
+      <JudulHalaman judul="Pengguna & Peran" deskripsi={penuh ? "Atur siapa yang bisa masuk dan apa yang boleh dilakukan. Hak akses dijaga oleh database." : "Buat akun, atur ulang sandi, dan beri peran dasar (guru, wali kelas, piket, pegawai, laboran, siswa, orang tua). Peran pimpinan, BK, dan wakasek diatur super admin. Semua perubahan tercatat."} />
       <Notifikasi kode={sp.pesan} />
       {tanpaPeran.length > 0 && (
         <Kartu className="mb-8 ring-2 ring-amber-300">
@@ -55,10 +58,10 @@ export default async function Pengguna({ searchParams }: { searchParams: Promise
         <details open={Boolean(pegawaiAwal)}>
           <summary className="cursor-pointer text-2xl">+ Buat akun baru</summary>
           <div className="mt-6">
-            <FormBuatAkun peran={peran ?? []} pegawai={pegawai ?? []} pegawaiAwal={pegawaiAwal} adaKunci={kunciAdminTersedia} jabatan={jabatan ?? []} />
+            <FormBuatAkun peran={(peran ?? []).filter((p) => penuh || peranDasar(p.kode))} pegawai={pegawai ?? []} pegawaiAwal={pegawaiAwal} adaKunci={kunciAdminTersedia} jabatan={jabatan ?? []} />
           </div>
         </details>
-        {jabatan && (
+        {jabatan && penuh && (
           <details className="mt-6 border-t border-black/10 pt-4">
             <summary className="cursor-pointer font-semibold">Daftar jabatan ({jabatan.length})</summary>
             <p className="mt-2 text-sm text-black/60">{jabatan.map((j) => j.nama).join(" · ")}</p>

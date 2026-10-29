@@ -1,7 +1,8 @@
 import { JudulHalaman, Kartu, Notifikasi } from "@/components/admin/ui";
 import { FormMitra, type DataMitra } from "@/components/humas/Form";
 import { arsipKemitraan } from "@/app/admin/actions-humas";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { daftarStaf } from "@/lib/admin/nama";
 import { JENIS_MITRA } from "@/lib/humas";
@@ -11,7 +12,7 @@ export const metadata = { title: "Kemitraan" };
 
 export default async function Kemitraan({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.dataHumas);
   const kelola = punya(akses, "humas.kelola");
   const [{ data }, guru] = await Promise.all([
     supabase.from("kemitraan").select("*").is("deleted_at", null).order("berakhir", { ascending: true, nullsFirst: false }),

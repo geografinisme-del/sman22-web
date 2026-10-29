@@ -3,7 +3,8 @@ import { TombolCetak } from "@/components/jadwal/Bantu";
 import { JadwalMingguan, JadwalSatuHari } from "@/components/jadwal/JadwalMingguan";
 import { NavJadwal } from "@/components/jadwal/NavJadwal";
 import { hariIniWIB } from "@/lib/admin/absensi";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { HARI, namaHari } from "@/lib/admin/jadwal";
 import { muatEntri, muatJam, muatPerubahan, namaUntukPerubahan, teksPerubahan } from "@/lib/admin/jadwal-data";
 import { formatTanggal } from "@/lib/format";
@@ -21,7 +22,7 @@ const TAB: { k: Lihat; l: string }[] = [
 
 export default async function LihatJadwal({ searchParams }: { searchParams: Promise<{ lihat?: string; id?: string; hari?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.jadwalPelajaran);
   const lihat: Lihat = (["kelas", "guru", "ruang", "hari"] as const).find((x) => x === sp.lihat) ?? "kelas";
   const hariIni = hariIniWIB();
   const isoHariIni = ((new Date(hariIni + "T00:00:00Z").getUTCDay() + 6) % 7) + 1;

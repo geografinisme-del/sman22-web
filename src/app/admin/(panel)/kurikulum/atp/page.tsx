@@ -4,7 +4,8 @@ import { TombolCetak } from "@/components/jadwal/Bantu";
 import { AiModul, AiTp, LabelAI } from "@/components/kurikulum/Ai";
 import { FormCp, FormTp, type DataTp } from "@/components/kurikulum/Form";
 import { NavKurikulum } from "@/components/kurikulum/Nav";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { uuid } from "@/lib/admin/schema";
 import { aiAktif } from "@/lib/ai";
 import { arsipCp, arsipTp, aturStatusAtp } from "../../../actions-kurikulum";
@@ -15,7 +16,7 @@ type Cp = { id: string; elemen: string; deskripsi: string; urutan: number };
 
 export default async function Atp({ searchParams }: { searchParams: Promise<{ mapel?: string; fase?: string; ubah?: string; ubahCp?: string; pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.strukturKurikulum);
   const kelola = punya(akses, "kurikulum.kelola");
   const { data: saya } = await supabase.rpc("pegawai_saya");
   const { data: ta } = await supabase.from("tahun_ajaran").select("id").eq("aktif", true).maybeSingle();

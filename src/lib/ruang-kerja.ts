@@ -32,7 +32,7 @@ export const RUANG_KERJA: RuangKerja[] = [
 ];
 
 /** Peran pimpinan selalu mulai dari Ringkasan (gambaran seluruh sekolah). */
-const PERAN_PIMPINAN = ["super_admin", "kepala_sekolah", "wakasek"];
+const PERAN_PIMPINAN = ["super_admin", "kepala_sekolah"];
 
 type AksesMinimal = { peran: string[]; izin: readonly string[] };
 

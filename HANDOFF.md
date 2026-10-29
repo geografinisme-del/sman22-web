@@ -15,6 +15,30 @@ Catatan serah-terima untuk pengembang/agen berikutnya. Perbarui berkas ini setia
 
 Detail status per modul: **MODULE_STATUS.md**.
 
+## Hosting production (sejak 27 Okt 2026)
+
+- **Production = https://sman22-web-five.vercel.app** — Vercel tim **geo** (slug `geo-bbba`, `team_TQo8fAzO2wJzomVXH28QWxg7`,
+  paket Hobby Plan aktif sejak 28 Okt 2026, tanpa tagihan), proyek **`sman22-web`** `prj_W0M3ydjGUHwClUPW3z77XWVUbgc4`, region sin1.
+  Riwayat: proyek ini dibuat di tim geo-78c9e361, dipindah ke geo-bbba 27 Okt (sempat bernama `sman22-web-vagy`), lalu diganti
+  nama menjadi `sman22-web` 28 Okt setelah proyek lama dihapus. Alias lama `*-geo-78c9e361.vercel.app` ikut terbawa.
+- **https://sman22-web.vercel.app** (alamat lama) = redirect 308 ke sman22-web-five.vercel.app (path & query ikut), dipasang di
+  proyek production agar tautan lama tetap jalan dan nama tidak diambil orang lain.
+- Repo `geografinisme-del/sman22-web`: `main` → production, `langit-cerah` → preview **https://sman22-web-git-langit-cerah-geo-bbba.vercel.app**
+  (domain tetap yang dipasang manual di Settings → Domains, Preview + cabang langit-cerah, karena alamat cabang otomatis tidak
+  muncul lagi setelah proyek diganti nama; terkunci Vercel Authentication). Untuk sementara situs internal sekolah; nanti pindah
+  ke domain resmi.
+- Env (nama saja): NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, BK_KUNCI, CRON_SECRET,
+  PRATINJAU_RAHASIA (semua Production + Preview, Sensitive). Speed Insights & Analytics aktif (skrip `/_vercel/*` = 200).
+- Batasan Hobby: satu region (sin1); cron `/api/notifikasi/kirim` sekali sehari (23:05 UTC, bisa meleset ≤ 1 jam);
+  untuk penggunaan non-komersial.
+- Supabase Auth: Site URL = https://sman22-web-five.vercel.app; Redirect URLs memuat `https://sman22-web-five.vercel.app/**`
+  dan `https://*-geo-bbba.vercel.app/**` (preview).
+- Database tetap Supabase `sman22-web` (dwkaiyuxyvluwisgmuww) — dipakai production DAN preview.
+- Proyek lama `prj_1jloUJhWcLvescjm4rcab7gByajM` (dulu melayani sman22-web.vercel.app) sudah DIHAPUS 28 Okt 2026. Catatan rilis
+  lama di bawah yang menyebut ID `dpl_…` atau URL `sman22-…-geo-bbba` sebelum 27 Okt merujuk ke proyek yang sudah dihapus itu.
+- Rilis production saat ini: `dpl_Fi7QBUfdNfjK78FFT2tKG6CFazLz` (commit `a626dcf`, 27 Okt 2026; titik kembali
+  `dpl_AUtgg3pbTjs4zZ5h5X5MC6mhE45J`). Diuji: halaman publik, login 3 peran, admin + MFA, ekspor Excel, "Lihat sebagai…", log 30 menit bersih.
+
 Push ke `main` memicu deploy produksi Vercel. Jangan push/merge tanpa persetujuan pemilik. Push branch fitur hanya membuat pratinjau.
 
 ## Arah visual (tetap berlaku)
@@ -604,7 +628,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   typed array, critical; GHSA-p3m5-59mp-jv5r DoS Server Actions, high), eslint-config-next ikut 16.4.3,
   zod 4.6.5 → 4.6.7 (GHSA-mrhx-c7xc-m3w5 memori habis, high). `npm audit`: 0 kerentanan.
 
-## "Lihat sebagai…" — pratinjau peran untuk super admin (27 Okt 2026, branch `langit-cerah`, BELUM dirilis)
+## "Lihat sebagai…" — pratinjau peran untuk super admin (27 Okt 2026, DIRILIS)
 - Siapa: hanya super admin dengan sesi AAL2 (lolos MFA). Menu akun admin → "Lihat sebagai…" → `/lihat-sebagai`.
   Daftar peran dari tabel `peran` (+ "Akun menunggu verifikasi"); ruang kerja tiap peran dihitung `ruangKerjaUntuk`.
 - Cara kerja: cookie `sman22_pratinjau` (httpOnly, sameSite=strict, HMAC-SHA256 `PRATINJAU_RAHASIA`, 30 menit; isi: peran,
@@ -631,5 +655,37 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Rahasia: `PRATINJAU_RAHASIA` tidak pernah dicatat/ditampilkan/di-commit; lokal dibaca dari berkas scratchpad.
 - Uji: `uji-pratinjau-db.mjs` (regresi tulis pengguna biasa + anon + header palsu; read-only hanya untuk super admin AAL2),
   `uji-pratinjau.mjs` (akses, tiap peran = login asli, data contoh, hanya-baca server, kedaluwarsa, keluar, audit, screenshot).
+- RILIS 27 Okt 2026: kode `7c55536` → production `dpl_6BkJBeU3QWxkdYfjUkdyYHYkrQMj` (titik kembali kode
+  `dpl_E3CEU3cbtfJ8jC9TJWNcewqxsUQx`). Backup `backup/20261027-*` lalu migrasi 20261228 via psql (satu transaksi, 05:37 UTC,
+  tercatat di schema_migrations). `authenticator.rolconfig` kini + `pgrst.db_pre_request=public.pra_permintaan` (setelan
+  supautils/timeout tetap). Uji production (transaksi ROLLBACK): akun sementara guru/siswa/ortu/humas/pegawai/wali kelas
+  + super admin tanpa pratinjau bisa menulis (dengan/tanpa header palsu); pratinjau sah → read-only; anon baca & pengaduan
+  jalan; 24 peran → izin = peran_izin. Production saat itu hanya punya 1 akun (super admin).
 - PELAJARAN: draf awal mencabut EXECUTE `peran_pratinjau()` dari anon → semua data publik gagal (pre-request berjalan untuk
   anon). Fungsi yang dipanggil pre-request/RLS WAJIB bisa dieksekusi anon.
+
+## Hak akses per bidang — A2a (29 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+- Rancangan & matriks: `docs/audit-hak-akses.md` (A1), `docs/usulan-a2-hak-akses.md` (A2). Migrasi
+  `20261229000000_hak_akses_bidang.sql` (rollback `supabase/rollback/rollback_20261229_hak_akses_bidang.sql`).
+- Peran: `kurikulum/kesiswaan/sarpras/humas` → `waka_kurikulum/waka_kesiswaan/waka_sarpras/waka_humas` ("Wakasek …");
+  `wakasek` generik dihapus (migrasi batal bila masih ada akun wakasek). Kurikulum & kalender hanya waka_kurikulum.
+- Kepala sekolah: lihat semua + menyetujui (konten, izin pegawai, supervisi); humas/mutu/pengaduan hanya lihat.
+- Operator: Pengguna & Peran untuk peran dasar (guru, wali_kelas, piket, pegawai, laboran, siswa, orang_tua) saja; akun
+  yang punya peran lain "dilindungi" (RLS + `peran_dasar()`/`akun_dilindungi()` + server action). Jadwal & pengaturan
+  absensi dicabut dari operator.
+- BK: isi kasus & tabel rujukan hanya peran bk; guru perujuk lihat status lewat `rujukan_saya()` (tanpa catatan BK).
+- Pengaduan: biasa = waka_humas; rahasia = bk + waka_kesiswaan; kepala lihat; super admin metadata (`pengaduan_ringkas`).
+- Log aktivitas: tabel sensitif (siswa, orang_tua, pegawai, pengaduan, rujukan/tindak lanjut BK, pelanggaran, pembinaan,
+  izin_ortu) hanya mencatat id + nama kolom yang berubah. Catatan lama ikut disamarkan saat migrasi (TIDAK bisa dibatalkan
+  tanpa backup).
+- Super admin tidak bisa terkunci: trigger `jaga_izin_super_admin` mencegah pencabutan `pengguna.kelola`.
+- Menu: `src/lib/admin/akses-modul.ts` (`BOLEH.*`) = sumber yang sama untuk sidebar & penjaga halaman (`wajibBoleh`).
+  Grup pribadi "Akun saya"; "Pengaturan" hanya untuk yang berizin; grup BK hanya peran bk.
+- Uji: `uji-hak-akses-db.mjs` (66 cek, transaksi ROLLBACK), `uji-pratinjau.mjs` bagian 2b (menu, URL langsung,
+  tampilan baca-saja, screenshot `tangkapan/hak-akses/a2-*`), `akses-modul.test.ts`.
+- Perbaikan ikut: pita "Lihat sebagai…" menampilkan "Wakasek%20Sarpras" (label cookie ter-encode dua kali) — kini benar.
+- Rilis: kode dulu (kompatibel? TIDAK sepenuhnya — kode baru memakai kode peran waka_*; jalankan migrasi SEGERA setelah
+  deploy READY; sebelum migrasi, akun lama tetap bisa masuk tetapi menu bidang mengikuti izin lama). Production saat ini
+  hanya 1 akun (super admin) sehingga jeda singkat aman.
+- A2b (data pribadi: view `siswa_akademik` + RPC tercatat, super admin lepas kelola data induk dengan "akses darurat")
+  dikerjakan setelah A2a dirilis.

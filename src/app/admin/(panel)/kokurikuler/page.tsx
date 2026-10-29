@@ -3,7 +3,8 @@ import { JudulHalaman, Kartu, KosongAdmin, Notifikasi } from "@/components/admin
 import { FormProjek, type DataProjek } from "@/components/kurikulum/Form";
 import { NavKurikulum } from "@/components/kurikulum/Nav";
 import { hariIniWIB } from "@/lib/admin/absensi";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { daftarGuru, petaNamaPegawai } from "@/lib/admin/nama";
 import { DIMENSI, semesterSekarang, type Dimensi } from "@/lib/kurikulum";
 import { rentangTanggal } from "@/lib/kalender";
@@ -16,7 +17,7 @@ type Projek = DataProjek & { status: string; projek_kelas: { kelas_id: string; f
 
 export default async function Kokurikuler({ searchParams }: { searchParams: Promise<{ ubah?: string; pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.strukturKurikulum);
   const kelola = punya(akses, "kurikulum.kelola");
   const { data: saya } = await supabase.rpc("pegawai_saya");
   const { data: ta } = await supabase.from("tahun_ajaran").select("id").eq("aktif", true).maybeSingle();

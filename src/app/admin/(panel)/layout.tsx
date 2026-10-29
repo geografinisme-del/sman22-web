@@ -5,6 +5,7 @@ import { hitungBersama, pegawaiSaya as cariPegawaiSaya, statusDisiplin, tugasPer
 import { redirect } from "next/navigation";
 import { keluar } from "../actions";
 import { ruangKerjaUntuk } from "@/lib/ruang-kerja";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { AksenBidang } from "@/components/admin/AksenBidang";
 import { MenungguVerifikasi } from "@/components/admin/MenungguVerifikasi";
 
@@ -29,7 +30,7 @@ const WEBSITE = [
   { href: "/admin/portal-bidang", label: "Penanggung Jawab Portal" },
 ];
 
-const PERAN_PANEL = ["super_admin", "kepala_sekolah", "wakasek", "kurikulum", "sarpras", "pustakawan", "literasi", "keuangan", "admin_alumni", "tim_mutu", "auditor", "operator", "humas", "kesiswaan", "piket", "bk", "wali_kelas", "guru", "laboran", "pegawai"];
+const PERAN_PANEL = ["super_admin", "kepala_sekolah", "waka_kurikulum", "waka_kesiswaan", "waka_sarpras", "waka_humas", "pustakawan", "literasi", "keuangan", "admin_alumni", "tim_mutu", "auditor", "operator", "piket", "bk", "wali_kelas", "guru", "laboran", "pegawai"];
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const { supabase, user, akses } = await wajibLogin();
@@ -152,25 +153,26 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         { href: "/admin/tahun-ajaran", label: "Tahun Ajaran" },
       ],
     });
-  const jadwal: GrupMenu["item"] = [
-    { href: "/admin/jadwal-saya", label: "Jadwal Saya" },
-    { href: "/admin/jadwal", label: "Jadwal Pelajaran" },
-  ];
-  if (pegawaiSaya) jadwal.push({ href: "/admin/tukar-jam", label: "Tukar Jam", badge: tukarMasuk });
+  // Menu mengikuti izin (lib/admin/akses-modul.ts = penjaga halaman yang sama). Layanan untuk SEMUA GTK: Profil, Jadwal
+  // Saya, Presensi Saya, Kalender, Direktori, Peminjaman, Lapor Kerusakan, Lapor Pelanggaran, Perpustakaan (pinjaman saya).
+  const mengajar = BOLEH.mengajar(akses);
+  const jadwal: GrupMenu["item"] = [{ href: "/admin/jadwal-saya", label: "Jadwal Saya" }];
+  if (BOLEH.jadwalPelajaran(akses)) jadwal.push({ href: "/admin/jadwal", label: "Jadwal Pelajaran" });
+  if (mengajar && pegawaiSaya) jadwal.push({ href: "/admin/tukar-jam", label: "Tukar Jam", badge: tukarMasuk });
   jadwal.push({ href: "/admin/kalender", label: "Kalender Sekolah" });
   if (punya(akses, "jadwal.pengganti") || punya(akses, "jadwal.kelola")) jadwal.push({ href: "/admin/jadwal/pengganti", label: "Guru Pengganti" });
   if (punya(akses, "jadwal.kelola")) jadwal.push({ href: "/admin/jadwal/tukar", label: "Persetujuan Tukar Jam", badge: tukarMenunggu });
   if (punya(akses, "jadwal.pengganti") || punya(akses, "jadwal.kelola")) jadwal.push({ href: "/admin/jadwal/riwayat", label: "Riwayat Jadwal" });
   grup.push({ judul: "Jadwal", item: jadwal });
-  const kurikulum: GrupMenu["item"] = [{ href: "/admin/kurikulum", label: "Struktur Kurikulum" }];
-  if (pegawaiSaya || punya(akses, "kurikulum.kelola")) kurikulum.push({ href: "/admin/kurikulum/atp", label: "CP, TP & ATP" });
-  if (pegawaiSaya) kurikulum.push({ href: "/admin/perangkat-ajar", label: "Perangkat Ajar" });
+  const kurikulum: GrupMenu["item"] = [];
+  if (BOLEH.strukturKurikulum(akses)) kurikulum.push({ href: "/admin/kurikulum", label: "Struktur Kurikulum" }, { href: "/admin/kurikulum/atp", label: "CP, TP & ATP" });
+  if (mengajar && pegawaiSaya) kurikulum.push({ href: "/admin/perangkat-ajar", label: "Perangkat Ajar" });
   if (punya(akses, "kurikulum.kelola")) kurikulum.push({ href: "/admin/perangkat-ajar/review", label: "Periksa Perangkat", badge: perangkatMenunggu });
-  if (pegawaiSaya) kurikulum.push({ href: "/admin/materi", label: "Materi & Papan Interaktif" });
-  kurikulum.push({ href: "/admin/kokurikuler", label: "Projek Kokurikuler" });
-  if (pegawaiSaya || punya(akses, "supervisi.kelola")) kurikulum.push({ href: "/admin/supervisi", label: "Supervisi Akademik", badge: supervisiTugas });
-  grup.push({ judul: "Kurikulum", item: kurikulum });
-  if (pegawaiSaya) grup.push({ judul: "Pembelajaran", item: [{ href: "/admin/lms", label: "Kelas Digital (Tugas & Kuis)", badge: perluNilai }] });
+  if (mengajar && pegawaiSaya) kurikulum.push({ href: "/admin/materi", label: "Materi & Papan Interaktif" });
+  if (BOLEH.strukturKurikulum(akses)) kurikulum.push({ href: "/admin/kokurikuler", label: "Projek Kokurikuler" });
+  if (BOLEH.supervisi(akses) && (pegawaiSaya || punya(akses, "supervisi.kelola"))) kurikulum.push({ href: "/admin/supervisi", label: "Supervisi Akademik", badge: supervisiTugas });
+  if (kurikulum.length) grup.push({ judul: "Kurikulum", item: kurikulum });
+  if (mengajar && pegawaiSaya) grup.push({ judul: "Pembelajaran", item: [{ href: "/admin/lms", label: "Kelas Digital (Tugas & Kuis)", badge: perluNilai }] });
   const sarpras: GrupMenu["item"] = [];
   if (punya(akses, "sarpras.kelola") || punya(akses, "sarpras.lihat")) sarpras.push({ href: "/admin/sarpras", label: "Inventaris" });
   sarpras.push({ href: "/admin/sarpras/peminjaman", label: "Peminjaman Ruang/Barang", badge: pinjamMenunggu });
@@ -182,17 +184,23 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   else if (pjPojok) perpus.push({ href: "/admin/perpus/pojok", label: "Pojok Baca Saya" });
   grup.push({ judul: "Perpustakaan", item: perpus });
   const humas: GrupMenu["item"] = [];
-  if (punya(akses, "pengaduan.kelola") || punya(akses, "pengaduan.rahasia") || aduanAda > 0) humas.push({ href: "/admin/pengaduan", label: "Pengaduan", badge: aduanBaru });
-  if (punya(akses, "humas.kelola") || punya(akses, "pengaduan.kelola") || punya(akses, "pengaduan.rahasia")) humas.unshift({ href: "/admin/humas", label: "Dasbor Humas" });
-  if (punya(akses, "humas.kelola")) humas.push({ href: "/admin/kemitraan", label: "Kemitraan & MoU" }, { href: "/admin/survei", label: "Survei" }, { href: "/admin/kontak-media", label: "Kontak Media" });
-  if (punya(akses, "tamu.catat") || punya(akses, "humas.kelola") || pegawaiSaya) humas.push({ href: "/admin/buku-tamu", label: "Buku Tamu", badge: tamuAda });
+  const petugasAduan = punya(akses, "pengaduan.kelola") || punya(akses, "pengaduan.rahasia") || punya(akses, "pengaduan.lihat") || punya(akses, "pengaduan.metadata");
+  if (BOLEH.dasborHumas(akses)) humas.push({ href: "/admin/humas", label: "Dasbor Humas" });
+  // pengaduan: petugas, atau pegawai yang ditugaskan sebagai PIC (aduanAda = baris yang boleh ia lihat)
+  if (petugasAduan || aduanAda > 0) humas.push({ href: "/admin/pengaduan", label: "Pengaduan", badge: aduanBaru });
+  if (BOLEH.dataHumas(akses)) humas.push({ href: "/admin/kemitraan", label: "Kemitraan & MoU" }, { href: "/admin/survei", label: "Survei" }, { href: "/admin/kontak-media", label: "Kontak Media" });
+  if (punya(akses, "tamu.catat") || BOLEH.dataHumas(akses) || pegawaiSaya) humas.push({ href: "/admin/buku-tamu", label: "Buku Tamu", badge: tamuAda });
   if (humas.length) grup.push({ judul: "Humas", item: humas });
-  // BK (isi konseling hanya untuk guru BK; pimpinan hanya agregat)
-  const bk: GrupMenu["item"] = [];
-  if (punya(akses, "bk.konseling")) bk.push({ href: "/admin/bk", label: "Layanan & Kasus BK", badge: mintaBk });
-  if (punya(akses, "bk.agregat")) bk.push({ href: "/admin/bk/laporan", label: "Laporan BK (agregat)" });
-  if (punya(akses, "bk.konseling") || punya(akses, "audit.baca")) bk.push({ href: "/admin/bk/log", label: "Log Akses BK" });
-  if (bk.length) grup.push({ judul: "Bimbingan Konseling", item: bk });
+  // BK: hanya peran BK. Pimpinan melihat angka agregat (tanpa isi) dari grup Kesiswaan; log akses BK di Pengaturan.
+  if (punya(akses, "bk.konseling"))
+    grup.push({
+      judul: "Bimbingan Konseling",
+      item: [
+        { href: "/admin/bk", label: "Layanan & Kasus BK", badge: mintaBk },
+        ...(punya(akses, "bk.agregat") ? [{ href: "/admin/bk/laporan", label: "Laporan BK (agregat)" }] : []),
+        { href: "/admin/bk/log", label: "Log Akses BK" },
+      ],
+    });
   // Ekskul & OSIS
   const ekskul: GrupMenu["item"] = [];
   if (lihatEkskul || binaan > 0) ekskul.push({ href: "/admin/ekskul", label: kelolaEkskul ? "Organisasi Siswa" : "Organisasi Binaan", badge: ekskulMenungguBinaan });
@@ -208,8 +216,10 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (punya(akses, "mutu.kelola") || punya(akses, "mutu.audit") || punya(akses, "mutu.lihat") || pemilikMutu)
     grup.push({ judul: "Mutu", item: [{ href: "/admin/mutu", label: "Mutu & Akreditasi", badge: mutuDiajukan }, { href: "/admin/mutu/temuan", label: "Temuan & Perbaikan" }, { href: "/admin/mutu/bukti", label: "Repositori Bukti" }] });
   const kesiswaan: GrupMenu["item"] = [{ href: "/admin/kesiswaan/lapor", label: "Lapor Pelanggaran/Prestasi" }];
-  if (punya(akses, "kesiswaan.lihat") || berperan(akses, "wali_kelas")) kesiswaan.push({ href: "/admin/kesiswaan", label: "Prestasi & Poin", badge: pelanggaranBaru + prestasiBaru });
+  if (BOLEH.poinKesiswaan(akses)) kesiswaan.push({ href: "/admin/kesiswaan", label: "Prestasi & Poin", badge: pelanggaranBaru + prestasiBaru });
   if (punya(akses, "bk.rujukan")) kesiswaan.push({ href: "/admin/rujukan-bk", label: "Rujukan BK", badge: rujukanBaru });
+  else if (pegawaiSaya) kesiswaan.push({ href: "/admin/rujukan-bk", label: "Rujukan BK Saya" });
+  if (punya(akses, "bk.agregat") && !punya(akses, "bk.konseling")) kesiswaan.push({ href: "/admin/bk/laporan", label: "Statistik BK (angka)" });
   if (punya(akses, "kesiswaan.kelola")) kesiswaan.push({ href: "/admin/kesiswaan/pengaturan", label: "Aturan Poin" });
   grup.push({ judul: "Kesiswaan", item: kesiswaan });
   if (berperan(akses, "wali_kelas")) grup.push({ judul: "Perwalian", item: [{ href: "/admin/kelas-saya", label: "Kelas Saya" }] });
@@ -230,13 +240,15 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (punya(akses, "absensi_pegawai.kelola")) absensi.push({ href: "/admin/absensi/guru/pengaturan", label: "Jam Kerja Pegawai" });
   if (punya(akses, "absensi.atur")) absensi.push({ href: "/admin/absensi/pengaturan", label: "Pengaturan Absensi" });
   grup.push({ judul: "Absensi", item: absensi });
-  const pengaturan = [];
+  // Pengaturan sistem (hanya yang berizin) terpisah dari menu pribadi "Akun saya"
+  const pengaturan: GrupMenu["item"] = [];
   if (punya(akses, "akun_portal.kelola")) pengaturan.push({ href: "/admin/akun-portal", label: "Akun Portal Siswa & Ortu" });
-  if (punya(akses, "pengguna.kelola")) pengaturan.push({ href: "/admin/pengguna", label: "Pengguna & Peran" });
+  if (BOLEH.penggunaPeran(akses)) pengaturan.push({ href: "/admin/pengguna", label: "Pengguna & Peran" });
   if (punya(akses, "pengguna.kelola")) pengaturan.push({ href: "/admin/notifikasi/kanal", label: "WhatsApp & Email" });
-  pengaturan.push({ href: "/admin/profil-saya", label: "Profil Saya" }, { href: "/admin/direktori", label: "Direktori GTK" }, { href: "/admin/keamanan", label: "Keamanan Akun" });
   if (punya(akses, "audit.baca")) pengaturan.push({ href: "/admin/log", label: "Log Aktivitas" });
+  if (punya(akses, "audit.baca") && !punya(akses, "bk.konseling")) pengaturan.push({ href: "/admin/bk/log", label: "Log Akses BK" });
   if (pengaturan.length) grup.push({ judul: "Pengaturan", item: pengaturan });
+  grup.push({ judul: "Akun saya", item: [{ href: "/admin/profil-saya", label: "Profil Saya" }, { href: "/admin/direktori", label: "Direktori GTK" }, { href: "/admin/keamanan", label: "Keamanan Akun" }] });
 
   // Pegawai umum (satpam, caraka, sopir, …) dan laboran: menu dasbor dasar saja
   // (+ inventaris & jadwal lab untuk laboran). Hak akses tetap dijaga RLS; ini hanya merapikan menu.
@@ -246,16 +258,15 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       {
         judul: "Saya",
         item: [
-          { href: "/admin/profil-saya", label: "Profil Saya" },
-          { href: "/admin/direktori", label: "Direktori GTK" },
           { href: "/admin/kalender", label: "Kalender Sekolah" },
           ...(pegawaiSaya ? [{ href: "/admin/presensi", label: "Presensi Saya" }] : []),
+          { href: "/admin/sarpras/kerusakan", label: "Laporan Kerusakan" },
         ],
       },
     ];
     if (punya(akses, "sarpras.inventaris"))
       dasar.push({ judul: "Laboratorium", item: [{ href: "/admin/sarpras", label: "Inventaris" }, { href: "/admin/sarpras/peminjaman", label: "Jadwal & Peminjaman Lab" }] });
-    dasar.push({ judul: "Pengaturan", item: [{ href: "/admin/keamanan", label: "Keamanan Akun" }] });
+    dasar.push({ judul: "Akun saya", item: [{ href: "/admin/profil-saya", label: "Profil Saya" }, { href: "/admin/direktori", label: "Direktori GTK" }, { href: "/admin/keamanan", label: "Keamanan Akun" }] });
     grup.splice(0, grup.length, ...dasar);
   }
 
