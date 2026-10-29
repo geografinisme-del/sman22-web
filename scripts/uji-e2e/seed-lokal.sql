@@ -5,7 +5,7 @@ select id, initcap(split_part(email, '@', 1)) || ' (uji)', email from auth.users
 on conflict (user_id) do update set aktif = true, nama = excluded.nama;
 delete from public.pengguna_peran where user_id in (select id from auth.users where email like '%@sman22.test');
 insert into public.pengguna_peran (user_id, peran)
-select u.id, x.peran from auth.users u join (values ('admin@sman22.test', 'super_admin'), ('humas@sman22.test', 'humas'), ('pustakawan@sman22.test', 'pustakawan'), ('guru@sman22.test', 'guru')) x(email, peran) on x.email = u.email;
+select u.id, x.peran from auth.users u join (values ('admin@sman22.test', 'super_admin'), ('humas@sman22.test', 'waka_humas'), ('pustakawan@sman22.test', 'pustakawan'), ('guru@sman22.test', 'guru')) x(email, peran) on x.email = u.email;
 
 update public.profil_sekolah set kepala_sekolah = 'Kepala Sekolah [UJI]', pernyataan = '[UJI] Teks pernyataan profil untuk pengujian lokal.' where id = 1;
 

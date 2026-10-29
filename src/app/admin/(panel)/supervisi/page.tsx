@@ -3,7 +3,8 @@ import { JudulHalaman, Kartu, KosongAdmin, Notifikasi } from "@/components/admin
 import { FormJadwalSupervisi } from "@/components/kurikulum/Form";
 import { NavKurikulum } from "@/components/kurikulum/Nav";
 import { hariIniWIB } from "@/lib/admin/absensi";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { daftarGuru, petaNamaPegawai } from "@/lib/admin/nama";
 import { formatTanggal } from "@/lib/format";
 import { predikatSupervisi, semesterSekarang } from "@/lib/kurikulum";
@@ -16,7 +17,7 @@ const STATUS: Record<string, string> = { terjadwal: "bg-amber-50 text-amber-900 
 
 export default async function Supervisi({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.supervisi);
   const kelola = punya(akses, "supervisi.kelola");
   const { data: saya } = await supabase.rpc("pegawai_saya");
   const hari = hariIniWIB();

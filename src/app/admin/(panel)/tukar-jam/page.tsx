@@ -1,7 +1,8 @@
 import { JudulHalaman, Kartu, KosongAdmin, Notifikasi } from "@/components/admin/ui";
 import { FormTukar } from "@/components/jadwal/FormTukar";
 import { geserTanggal, hariIniWIB } from "@/lib/admin/absensi";
-import { wajibLogin } from "@/lib/admin/auth";
+import { wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { uuid } from "@/lib/admin/schema";
 import { muatTukar, STATUS_TUKAR, type BarisTukar } from "@/lib/admin/tukar";
 import { batalkanTukar, jawabTukar } from "../../actions-tukar";
@@ -30,7 +31,7 @@ function Rincian({ t }: { t: BarisTukar }) {
 
 export default async function TukarJam({ searchParams }: { searchParams: Promise<{ mitra?: string; pesan?: string; galat?: string }> }) {
   const sp = await searchParams;
-  const { supabase } = await wajibLogin();
+  const { supabase } = await wajibBoleh(BOLEH.mengajar);
   const { data: saya } = await supabase.rpc("pegawai_saya");
   if (!saya)
     return (

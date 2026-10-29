@@ -2,7 +2,8 @@ import Link from "next/link";
 import { JudulHalaman, Kartu, Notifikasi, Paginasi } from "@/components/admin/ui";
 import { FormBuku } from "@/components/perpus/Form";
 import { NavPerpus } from "@/components/perpus/Nav";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 
 export const metadata = { title: "Katalog Perpustakaan" };
 const PER = 40;
@@ -10,7 +11,7 @@ type K = { id: string; judul: string; pengarang: string; penerbit: string; tahun
 
 export default async function Katalog({ searchParams }: { searchParams: Promise<{ q?: string; hal?: string; tambah?: string; pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.katalogPerpus);
   const kelola = punya(akses, "perpus.kelola");
   const hal = Math.max(1, Number(sp.hal) || 1);
   const { data } = await supabase.rpc("katalog_publik", { p_cari: sp.q ?? "", p_batas: PER, p_lewati: (hal - 1) * PER });

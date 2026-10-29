@@ -1,4 +1,4 @@
-# Usulan A2 — Hak akses per bidang (menunggu persetujuan)
+# Usulan A2 — Hak akses per bidang (A2a DISETUJUI 29 Okt 2026, keputusan 1–5 = usulan)
 
 Dasar: audit A1 (`docs/audit-hak-akses.md`) + keputusan pemilik 29 Okt 2026.
 Production saat ini: 1 akun (super admin), 0 siswa, 0 pengaduan, 0 rujukan BK — risiko migrasi data kecil.
@@ -42,10 +42,12 @@ Ruang kerja & menu mengikuti matriks: Wakasek Sarpras hanya melihat Sarpras, tid
 | B | Izin baru: `humas.lihat`, `pengaduan.lihat`, `pengaduan.metadata`, `pengguna.kelola_dasar` | — |
 | C | Ganti kode: kurikulum→waka_kurikulum, kesiswaan→waka_kesiswaan, sarpras→waka_sarpras, humas→waka_humas (akun dipindahkan, label "Wakasek …"); `wakasek` dihapus | Fungsi yang menyebut "kurikulum/sarpras/humas/kesiswaan" adalah **kategori notifikasi**, bukan kode peran — tidak perlu diubah |
 | D | Daftar izin lengkap untuk super_admin, kepala_sekolah, operator, 4 waka | — |
-| E | Rujukan BK | `rujukan_bk` SELECT: `bk.rujukan` **atau** `dirujuk_oleh = auth.uid()`; super admin tidak lagi punya `bk.rujukan` |
+| E | Rujukan BK | `rujukan_bk` SELECT tetap hanya `bk.rujukan` (peran bk); guru pembuat rujukan membaca status rujukannya lewat fungsi `rujukan_saya()` **tanpa kolom catatan BK** (RLS tidak bisa menyembunyikan kolom); super admin tidak lagi punya `bk.rujukan` |
 | F | Pengaduan | ubah: biasa = `pengaduan.kelola` (waka_humas), rahasia = `pengaduan.rahasia` (bk, waka_kesiswaan), PIC tetap; baca = itu + `pengaduan.lihat` (kepala); view `pengaduan_ringkas` (tiket, kategori, status, tanggal — tanpa isi/nama/kontak/catatan) untuk `pengaduan.metadata` (super admin) |
 | G | Kepala sekolah lihat humas | SELECT baru dengan `humas.lihat` pada kemitraan, kegiatan_mitra, kontak_media, survei, jawaban_survei, buku_tamu |
 | H | Operator kelola akun dasar | `pengguna`/`pengguna_peran`: `pengguna.kelola` **atau** (`pengguna.kelola_dasar` + peran dasar + akun target tidak "dilindungi"); semua perubahan sudah tercatat di log (trigger audit yang ada) |
+| J | Fungsi penjaga | `statistik_humas`, `hasil_survei` menerima izin lihat (kepala); `cari_akun`, `catat_keamanan_pengguna`, `cabut_sesi_pengguna` menerima operator untuk akun tidak dilindungi (reset MFA tetap super admin) |
+| K | Super admin tidak terkunci | trigger `jaga_izin_super_admin`: izin `pengguna.kelola`/`pengguna.kelola_dasar` milik super admin tidak bisa dicabut |
 | I | **Log aktivitas** (temuan baru, lihat bawah) | `catat_audit()` menyimpan hanya id + nama kolom yang berubah untuk siswa, orang_tua, siswa_orang_tua, pegawai, pengaduan, rujukan_bk, tindak_lanjut_bk, rujukan_eksternal_bk, pelanggaran_siswa, pembinaan_siswa, izin_ortu; 15 catatan lama disamarkan |
 
 **Temuan baru saat menyusun A2:** pencatat log aktivitas menyimpan **salinan lengkap baris** — termasuk isi pengaduan

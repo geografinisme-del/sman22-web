@@ -21,7 +21,7 @@ test("satu penugasan → langsung ke ruang kerjanya", () => {
 });
 
 test("beberapa penugasan → Ringkasan + pemilih, tanpa menggabungkan izin", () => {
-  const ganda = akun(["kurikulum", "humas"], ["kurikulum.kelola", "humas.kelola"]);
+  const ganda = akun(["waka_kurikulum", "waka_humas"], ["kurikulum.kelola", "humas.kelola"]);
   assert.deepEqual(ruangKerjaUntuk(ganda).map((r) => r.kunci), ["kurikulum", "humas"]);
   assert.equal(tujuanAwal(ganda), "/admin");
 });

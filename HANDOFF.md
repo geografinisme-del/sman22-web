@@ -663,3 +663,29 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   jalan; 24 peran → izin = peran_izin. Production saat itu hanya punya 1 akun (super admin).
 - PELAJARAN: draf awal mencabut EXECUTE `peran_pratinjau()` dari anon → semua data publik gagal (pre-request berjalan untuk
   anon). Fungsi yang dipanggil pre-request/RLS WAJIB bisa dieksekusi anon.
+
+## Hak akses per bidang — A2a (29 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+- Rancangan & matriks: `docs/audit-hak-akses.md` (A1), `docs/usulan-a2-hak-akses.md` (A2). Migrasi
+  `20261229000000_hak_akses_bidang.sql` (rollback `supabase/rollback/rollback_20261229_hak_akses_bidang.sql`).
+- Peran: `kurikulum/kesiswaan/sarpras/humas` → `waka_kurikulum/waka_kesiswaan/waka_sarpras/waka_humas` ("Wakasek …");
+  `wakasek` generik dihapus (migrasi batal bila masih ada akun wakasek). Kurikulum & kalender hanya waka_kurikulum.
+- Kepala sekolah: lihat semua + menyetujui (konten, izin pegawai, supervisi); humas/mutu/pengaduan hanya lihat.
+- Operator: Pengguna & Peran untuk peran dasar (guru, wali_kelas, piket, pegawai, laboran, siswa, orang_tua) saja; akun
+  yang punya peran lain "dilindungi" (RLS + `peran_dasar()`/`akun_dilindungi()` + server action). Jadwal & pengaturan
+  absensi dicabut dari operator.
+- BK: isi kasus & tabel rujukan hanya peran bk; guru perujuk lihat status lewat `rujukan_saya()` (tanpa catatan BK).
+- Pengaduan: biasa = waka_humas; rahasia = bk + waka_kesiswaan; kepala lihat; super admin metadata (`pengaduan_ringkas`).
+- Log aktivitas: tabel sensitif (siswa, orang_tua, pegawai, pengaduan, rujukan/tindak lanjut BK, pelanggaran, pembinaan,
+  izin_ortu) hanya mencatat id + nama kolom yang berubah. Catatan lama ikut disamarkan saat migrasi (TIDAK bisa dibatalkan
+  tanpa backup).
+- Super admin tidak bisa terkunci: trigger `jaga_izin_super_admin` mencegah pencabutan `pengguna.kelola`.
+- Menu: `src/lib/admin/akses-modul.ts` (`BOLEH.*`) = sumber yang sama untuk sidebar & penjaga halaman (`wajibBoleh`).
+  Grup pribadi "Akun saya"; "Pengaturan" hanya untuk yang berizin; grup BK hanya peran bk.
+- Uji: `uji-hak-akses-db.mjs` (66 cek, transaksi ROLLBACK), `uji-pratinjau.mjs` bagian 2b (menu, URL langsung,
+  tampilan baca-saja, screenshot `tangkapan/hak-akses/a2-*`), `akses-modul.test.ts`.
+- Perbaikan ikut: pita "Lihat sebagai…" menampilkan "Wakasek%20Sarpras" (label cookie ter-encode dua kali) — kini benar.
+- Rilis: kode dulu (kompatibel? TIDAK sepenuhnya — kode baru memakai kode peran waka_*; jalankan migrasi SEGERA setelah
+  deploy READY; sebelum migrasi, akun lama tetap bisa masuk tetapi menu bidang mengikuti izin lama). Production saat ini
+  hanya 1 akun (super admin) sehingga jeda singkat aman.
+- A2b (data pribadi: view `siswa_akademik` + RPC tercatat, super admin lepas kelola data induk dengan "akses darurat")
+  dikerjakan setelah A2a dirilis.

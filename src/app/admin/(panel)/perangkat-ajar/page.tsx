@@ -3,7 +3,8 @@ import { JudulHalaman, Kartu, KosongAdmin, Notifikasi } from "@/components/admin
 import { FormPerangkat } from "@/components/kurikulum/Form";
 import { NavKurikulum } from "@/components/kurikulum/Nav";
 import { hariIniWIB } from "@/lib/admin/absensi";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { JENIS_PERANGKAT, semesterSekarang, type JenisPerangkat } from "@/lib/kurikulum";
 import { Status } from "@/components/kurikulum/Status";
 import { ubahStatusPerangkat } from "../../actions-kurikulum";
@@ -16,7 +17,7 @@ type Item = { id: string; jenis: JenisPerangkat; judul: string; tingkat: string;
 
 export default async function PerangkatAjar({ searchParams }: { searchParams: Promise<{ semester?: string; pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.perangkatAjar);
   const semester = sp.semester === "1" || sp.semester === "2" ? Number(sp.semester) : semesterSekarang(hariIniWIB());
   const { data: saya } = await supabase.rpc("pegawai_saya");
   if (!saya)

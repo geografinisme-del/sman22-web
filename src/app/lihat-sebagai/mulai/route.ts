@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
   const tujuan = peran === "siswa" || peran === "orang_tua" ? "/portal" : peran === "alumni" ? "/alumni/akun" : "/admin";
   const res = NextResponse.redirect(new URL(tujuan, req.url), 303);
   res.cookies.set(COOKIE_PRATINJAU, bungkusPratinjau({ peran, uid: user.id, mulai: Date.now() }), opsiCookiePratinjau());
-  res.cookies.set(COOKIE_LABEL_PRATINJAU, encodeURIComponent(NAMA_PERAN[peran] ?? peran), opsiCookieLabel());
+  // Next sudah meng-encode nilai cookie; jangan di-encode lagi (pita menampilkan "Wakasek%20Sarpras")
+  res.cookies.set(COOKIE_LABEL_PRATINJAU, NAMA_PERAN[peran] ?? peran, opsiCookieLabel());
   return res;
 }

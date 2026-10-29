@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { JudulHalaman, KosongAdmin, Notifikasi } from "@/components/admin/ui";
-import { wajibLogin } from "@/lib/admin/auth";
+import { wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { penugasanSaya } from "@/lib/admin/lms-data";
 
 export const metadata = { title: "Kelas Digital" };
 
 export default async function Lms({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase } = await wajibLogin();
+  const { supabase } = await wajibBoleh(BOLEH.mengajar);
   const { saya, list } = await penugasanSaya(supabase);
   if (!saya) return (<><JudulHalaman judul="Kelas Digital" /><KosongAdmin teks="Akun Anda belum ditautkan ke data guru." /></>);
   const [{ data: tugas }, { data: kuis }, { data: belum }] = await Promise.all([

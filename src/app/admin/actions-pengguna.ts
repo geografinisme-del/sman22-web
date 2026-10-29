@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { aksesAksi } from "@/lib/admin/auth";
+import { aksesAksi, punya } from "@/lib/admin/auth";
+import { akunDilindungi, peranDasar } from "@/lib/admin/akses-modul";
 import { pesanError } from "@/lib/admin/schema";
 import { kunciAdminTersedia, supabaseAdminAuth } from "@/lib/supabase/admin";
 import { kirimSegera } from "@/lib/notif/kirim";
@@ -18,6 +19,22 @@ const kodePeran = z.string().regex(/^[a-z_]{2,30}$/);
 const kodeJabatan = z.union([z.literal(""), z.string().regex(/^[a-z][a-z0-9_]{1,39}$/)]);
 const kolomBelumAda = (e: { code?: string }) => ["42703", "PGRST204"].includes(e.code ?? "");
 const TANPA_AKSES: HasilAksi = { ok: false, pesan: "Anda tidak berhak mengelola pengguna." };
+const AKUN_DILINDUNGI: HasilAksi = { ok: false, pesan: "Akun ini punya peran yang hanya bisa diatur super admin." };
+
+/**
+ * Pengelola akun: super admin (pengguna.kelola, semua peran) atau operator (pengguna.kelola_dasar, hanya peran dasar dan
+ * hanya akun yang tidak dilindungi). Database menjaga aturan yang sama (RLS + fungsi peran_dasar/akun_dilindungi).
+ */
+async function aksesKelolaPengguna() {
+  const ctx = await aksesAksi();
+  if (!ctx) return null;
+  const penuh = punya(ctx.akses, "pengguna.kelola");
+  if (!penuh && !punya(ctx.akses, "pengguna.kelola_dasar")) return null;
+  return { ...ctx, penuh };
+}
+type KelolaPengguna = NonNullable<Awaited<ReturnType<typeof aksesKelolaPengguna>>>;
+const peranAkun = async (ctx: KelolaPengguna, userId: string) =>
+  ((await ctx.supabase.from("pengguna_peran").select("peran").eq("user_id", userId)).data ?? []).map((x) => x.peran as string);
 
 const sandi = z
   .string()
@@ -35,7 +52,7 @@ const buatSchema = z.object({
 });
 
 export async function buatAkun(_p: HasilAksi, form: FormData): Promise<HasilAksi> {
-  const ctx = await aksesAksi("pengguna.kelola");
+  const ctx = await aksesKelolaPengguna();
   if (!ctx) return TANPA_AKSES;
   const parsed = buatSchema.safeParse({
     nama: String(form.get("nama") ?? ""),
@@ -49,6 +66,9 @@ export async function buatAkun(_p: HasilAksi, form: FormData): Promise<HasilAksi
   const d = parsed.data;
   if (d.peran.includes("super_admin") && !ctx.akses.peran.includes("super_admin")) {
     return { ok: false, pesan: "Hanya super admin yang dapat memberi peran super admin.", errors: { peran: "Tidak diizinkan" } };
+  }
+  if (!ctx.penuh && !d.peran.every(peranDasar)) {
+    return { ok: false, pesan: "Operator hanya dapat memberi peran dasar (guru, wali kelas, piket, pegawai, laboran, siswa, orang tua).", errors: { peran: "Tidak diizinkan" } };
   }
 
   let userId: string | null = null;
@@ -113,7 +133,7 @@ const ubahSchema = z.object({
 });
 
 export async function ubahPengguna(_p: HasilAksi, form: FormData): Promise<HasilAksi> {
-  const ctx = await aksesAksi("pengguna.kelola");
+  const ctx = await aksesKelolaPengguna();
   if (!ctx) return TANPA_AKSES;
   const parsed = ubahSchema.safeParse({
     user_id: String(form.get("user_id") ?? ""),
@@ -132,6 +152,10 @@ export async function ubahPengguna(_p: HasilAksi, form: FormData): Promise<Hasil
   const sesudah = new Set<string>(d.peran);
   const tambah = [...sesudah].filter((x) => !sebelum.has(x));
   const hapus = [...sebelum].filter((x) => !sesudah.has(x));
+  if (!ctx.penuh) {
+    if (akunDilindungi([...sebelum])) return AKUN_DILINDUNGI;
+    if (![...tambah, ...hapus].every(peranDasar)) return { ok: false, pesan: "Operator hanya dapat memberi atau mencabut peran dasar.", errors: { peran: "Tidak diizinkan" } };
+  }
 
   let u = await ctx.supabase.from("pengguna").update({ nama: d.nama, aktif: d.aktif, jabatan: d.jabatan || null }).eq("user_id", d.user_id);
   // sebelum migrasi 20261225 kolom jabatan belum ada → simpan tanpa jabatan
@@ -139,7 +163,7 @@ export async function ubahPengguna(_p: HasilAksi, form: FormData): Promise<Hasil
   if (u.error) return { ok: false, pesan: u.error.message.includes("super admin") ? u.error.message : "Gagal menyimpan pengguna." };
   if (tambah.length) {
     const t = await ctx.supabase.from("pengguna_peran").insert(tambah.map((peran) => ({ user_id: d.user_id, peran, diberikan_oleh: ctx.akses.userId })));
-    if (t.error) return { ok: false, pesan: t.error.code === "42501" ? "Hanya super admin yang dapat memberi peran super admin." : "Gagal menambah peran." };
+    if (t.error) return { ok: false, pesan: t.error.code === "42501" ? (ctx.penuh ? "Hanya super admin yang dapat memberi peran super admin." : AKUN_DILINDUNGI.pesan) : "Gagal menambah peran." };
   }
   if (hapus.length) {
     const h = await ctx.supabase.from("pengguna_peran").delete().eq("user_id", d.user_id).in("peran", hapus);
@@ -169,17 +193,18 @@ export async function ubahPengguna(_p: HasilAksi, form: FormData): Promise<Hasil
 }
 
 export async function aturSandi(_p: HasilAksi, form: FormData): Promise<HasilAksi> {
-  const ctx = await aksesAksi("pengguna.kelola");
+  const ctx = await aksesKelolaPengguna();
   if (!ctx) return TANPA_AKSES;
   if (!kunciAdminTersedia) return { ok: false, pesan: "Fitur ini butuh kunci rahasia Supabase di server (lihat panduan)." };
   const id = z.string().uuid().safeParse(String(form.get("user_id")));
   const s = sandi.safeParse(String(form.get("password") ?? ""));
   if (!id.success) return { ok: false, pesan: "Pengguna tidak valid." };
   if (!s.success) return { ok: false, pesan: "Kata sandi belum memenuhi syarat.", errors: { password: s.error.issues[0].message } };
-  const { data: target } = await ctx.supabase.from("pengguna_peran").select("peran").eq("user_id", id.data);
-  if (target?.some((t) => t.peran === "super_admin") && !ctx.akses.peran.includes("super_admin")) {
+  const target = await peranAkun(ctx, id.data);
+  if (target.includes("super_admin") && !ctx.akses.peran.includes("super_admin")) {
     return { ok: false, pesan: "Hanya super admin yang dapat mengubah kata sandi super admin." };
   }
+  if (!ctx.penuh && akunDilindungi(target)) return AKUN_DILINDUNGI;
   const { error } = await supabaseAdminAuth().updateUserById(id.data, { password: s.data });
   if (error) return { ok: false, pesan: "Gagal mengubah kata sandi." };
   await ctx.supabase.rpc("catat_keamanan_pengguna", { p_user: id.data, p_peristiwa: "sandi_direset" });
@@ -207,7 +232,7 @@ export async function resetMfaPengguna(form: FormData) {
 
 /** Kirim tautan atur ulang sandi ke email staf (tanpa admin mengetahui sandinya) */
 export async function kirimTautanReset(form: FormData) {
-  const ctx = await aksesAksi("pengguna.kelola");
+  const ctx = await aksesKelolaPengguna();
   if (!ctx) redirect("/admin?pesan=tanpa-akses");
   const id = z.string().uuid().safeParse(String(form.get("user_id")));
   if (!id.success) redirect("/admin/pengguna?pesan=gagal");
@@ -215,6 +240,7 @@ export async function kirimTautanReset(form: FormData) {
   const peran = ((u?.pengguna_peran ?? []) as { peran: string }[]).map((p) => p.peran);
   if (!u?.email || u.email.endsWith(`@${DOMAIN_PORTAL}`)) redirect(`/admin/pengguna/${id.data}?pesan=gagal`);
   if (peran.includes("super_admin") && !ctx.akses.peran.includes("super_admin")) redirect(`/admin/pengguna/${id.data}?pesan=gagal`);
+  if (!ctx.penuh && akunDilindungi(peran)) redirect(`/admin/pengguna/${id.data}?pesan=gagal`);
   let error: { message: string } | null = null;
   const lewat = await kirimTautanSandi(u.email);
   if (lewat === "dibatasi") redirect(`/admin/pengguna/${id.data}?pesan=gagal`);

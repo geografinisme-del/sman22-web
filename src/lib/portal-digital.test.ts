@@ -19,7 +19,7 @@ test("layanan publik dibuka tanpa login", () => {
 });
 
 test("berwenang → ruang kerja; tidak berwenang → penjelasan, bukan akses", () => {
-  assert.deepEqual(putuskanPintu("kurikulum", akun(["kurikulum"], ["kurikulum.kelola"]), true), { aksi: "buka", href: "/admin/kurikulum" });
+  assert.deepEqual(putuskanPintu("kurikulum", akun(["waka_kurikulum"], ["kurikulum.kelola"]), true), { aksi: "buka", href: "/admin/kurikulum" });
   const tolak = putuskanPintu("kurikulum", akun(["guru"], ["kesiswaan.lihat"]), true);
   assert.equal(tolak?.aksi, "tolak");
   // siswa tidak bisa membuka Pojok Guru / manajemen walau memilih kartunya
@@ -38,7 +38,7 @@ test("bidang tak dikenal → null (halaman 404, bukan halaman kosong)", () => {
 
 test("administrasi sistem hanya terlihat bagi yang berhak", () => {
   assert.ok(!pintuTerlihat(null).some((p) => p.bidang === "sistem"));
-  assert.ok(!pintuTerlihat(akun(["humas"], ["konten.kelola"])).some((p) => p.bidang === "sistem"));
+  assert.ok(!pintuTerlihat(akun(["waka_humas"], ["konten.kelola"])).some((p) => p.bidang === "sistem"));
   assert.ok(pintuTerlihat(akun(["super_admin"], ["pengguna.kelola"])).some((p) => p.bidang === "sistem"));
 });
 

@@ -2,7 +2,8 @@ import { JudulHalaman, Kartu, Notifikasi } from "@/components/admin/ui";
 import { FormKunjungan, FormPengaturanPerpus } from "@/components/perpus/Form";
 import { NavPerpus } from "@/components/perpus/Nav";
 import { awalBulan, hariIniWIB } from "@/lib/admin/absensi";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { redirect } from "next/navigation";
 import { tgl, type Pinjaman } from "@/lib/perpus";
 import { lunasiDenda } from "../../../actions-perpus";
@@ -11,7 +12,7 @@ export const metadata = { title: "Laporan Perpustakaan" };
 
 export default async function Laporan({ searchParams }: { searchParams: Promise<{ dari?: string; sampai?: string; pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.katalogPerpus);
   const kelola = punya(akses, "perpus.kelola");
   if (!kelola && !punya(akses, "perpus.lihat")) redirect("/admin/perpus");
   const hari = hariIniWIB();

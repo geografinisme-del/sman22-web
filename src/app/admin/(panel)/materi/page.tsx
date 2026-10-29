@@ -2,7 +2,8 @@ import Link from "next/link";
 import { JudulHalaman, Kartu, KosongAdmin, Notifikasi } from "@/components/admin/ui";
 import { FormMateriBaru } from "@/components/kurikulum/Form";
 import { NavKurikulum } from "@/components/kurikulum/Nav";
-import { wajibLogin } from "@/lib/admin/auth";
+import { wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { formatTanggal } from "@/lib/format";
 
 export const metadata = { title: "Materi Digital" };
@@ -11,7 +12,7 @@ type M = { id: string; judul: string; terbit: boolean; slide: unknown[]; updated
 
 export default async function Materi({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase } = await wajibLogin();
+  const { supabase } = await wajibBoleh(BOLEH.mengajar);
   const { data: saya } = await supabase.rpc("pegawai_saya");
   if (!saya) return (<><JudulHalaman judul="Materi Digital" /><NavKurikulum /><KosongAdmin teks="Akun Anda belum ditautkan ke data guru." /></>);
   const { data: ta } = await supabase.from("tahun_ajaran").select("id").eq("aktif", true).maybeSingle();

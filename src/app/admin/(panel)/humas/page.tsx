@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { JudulHalaman, Kartu, Notifikasi } from "@/components/admin/ui";
 import { FormSLA } from "@/components/humas/Form";
-import { punya, wajibLogin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { KATEGORI_ADUAN, STATUS_ADUAN } from "@/lib/humas";
 
@@ -10,8 +10,7 @@ export const metadata = { title: "Dasbor Humas" };
 
 export default async function DasborHumas({ searchParams }: { searchParams: Promise<{ pesan?: string; dari?: string; sampai?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
-  if (!punya(akses, "humas.kelola") && !punya(akses, "pengaduan.kelola") && !punya(akses, "pengaduan.rahasia")) redirect("/admin?pesan=tanpa-akses");
+  const { supabase, akses } = await wajibBoleh(BOLEH.dasborHumas);
   const hari = hariIniWIB();
   const tglOk = (s?: string) => (s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : null);
   const sampai = tglOk(sp.sampai) ?? hari;

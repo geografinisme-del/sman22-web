@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { JudulHalaman, Kartu, Notifikasi, TombolLink } from "@/components/admin/ui";
-import { berperan, wajibIzin } from "@/lib/admin/auth";
+import { berperan, punya, wajibBoleh } from "@/lib/admin/auth";
+import { akunDilindungi, BOLEH, peranDasar } from "@/lib/admin/akses-modul";
 import { formatTanggal } from "@/lib/format";
 import { DOMAIN_PORTAL } from "@/lib/portal";
 import { kirimTautanReset, resetMfaPengguna } from "../../../actions-pengguna";
@@ -13,7 +14,8 @@ export const metadata = { title: "Ubah pengguna" };
 export default async function UbahPengguna({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ pesan?: string; tautan?: string }> }) {
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   if (!uuid.safeParse(id).success) notFound();
-  const { supabase, akses } = await wajibIzin("pengguna.kelola");
+  const { supabase, akses } = await wajibBoleh(BOLEH.penggunaPeran);
+  const penuh = punya(akses, "pengguna.kelola");
   // kolom jabatan baru ada setelah migrasi 20261225 — sebelum itu halaman tetap berfungsi tanpa jabatan
   const pilih = (kolom: string) => supabase.from("pengguna").select(kolom).eq("user_id", id).maybeSingle<{ user_id: string; nama: string; email: string; aktif: boolean; jabatan?: string | null; pengguna_peran: { peran: string }[] }>();
   const pertama = await pilih("user_id, nama, email, aktif, jabatan, pengguna_peran(peran)");
@@ -27,6 +29,9 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
     supabase.from("jabatan_gtk").select("kode, nama").eq("aktif", true).order("urutan"),
   ]);
   const pegawai = [...(tertaut ? [tertaut] : []), ...(pegawaiBebas ?? [])];
+  const peranAkun = (u.pengguna_peran as { peran: string }[]).map((p) => p.peran);
+  // operator tidak bisa mengubah akun yang punya peran di luar peran dasar (dijaga juga di server action & database)
+  const terkunci = !penuh && akunDilindungi(peranAkun);
   // info login (service-role, melewati RLS) tidak dibaca selama "Lihat sebagai…"
   const authInfo = kunciAdminTersedia && !akses.pratinjau ? (await supabaseAdminAuth().getUserById(id)).data.user : null;
   const jumlahMfa = (authInfo?.factors ?? []).filter((f) => f.status === "verified").length;
@@ -42,10 +47,17 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
           Akun dibuat, tetapi belum tertaut ke data guru. Pilih data guru di bawah lalu simpan.
         </p>
       )}
+      {terkunci ? (
+        <Kartu>
+          <p className="text-sm text-black/70">
+            Akun ini memiliki peran <strong>{peranAkun.join(", ")}</strong> yang hanya dapat diatur super admin. Anda dapat melihat datanya, tetapi tidak dapat mengubah peran, status, atau kata sandinya.
+          </p>
+        </Kartu>
+      ) : (
       <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <Kartu>
           <FormUbahPengguna
-            peran={peran ?? []}
+            peran={(peran ?? []).filter((p) => penuh || peranDasar(p.kode))}
             pegawai={pegawai}
             jabatan={jabatan ?? []}
             data={{ user_id: u.user_id, nama: u.nama, aktif: u.aktif, jabatan: u.jabatan ?? "", peran: (u.pengguna_peran as { peran: string }[]).map((p) => p.peran), pegawai_id: tertaut?.id ?? "" }}
@@ -84,6 +96,7 @@ export default async function UbahPengguna({ params, searchParams }: { params: P
           )}
         </Kartu>
       </div>
+      )}
     </>
   );
 }

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { JudulHalaman, Kartu, Notifikasi } from "@/components/admin/ui";
 import { FormSurveiAdmin } from "@/components/humas/Form";
-import { wajibIzin } from "@/lib/admin/auth";
+import { punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { SASARAN_SURVEI } from "@/lib/humas";
 import { tgl } from "@/lib/perpus";
@@ -10,14 +11,16 @@ export const metadata = { title: "Survei" };
 
 export default async function Survei({ searchParams }: { searchParams: Promise<{ pesan?: string }> }) {
   const sp = await searchParams;
-  const { supabase } = await wajibIzin("humas.kelola");
+  const { supabase, akses } = await wajibBoleh(BOLEH.dataHumas);
+  // kepala sekolah (humas.lihat): hanya melihat daftar & rekap, tanpa formulir
+  const kelola = punya(akses, "humas.kelola");
   const { data } = await supabase.from("survei").select("id, judul, sasaran, mulai, selesai, terbit").is("deleted_at", null).order("created_at", { ascending: false });
   const hari = hariIniWIB();
   return (
     <>
       <JudulHalaman judul="Survei" deskripsi="Survei kepuasan & aspirasi untuk masyarakat, orang tua, siswa, atau guru. Jawaban anonim dan hanya ditampilkan sebagai rekap." />
       <Notifikasi kode={sp.pesan} />
-      <div className="grid gap-6 xl:grid-cols-[1fr_480px]">
+      <div className={kelola ? "grid gap-6 xl:grid-cols-[1fr_480px]" : "grid gap-6"}>
         <div className="space-y-3">
           {(data ?? []).length === 0 && <Kartu><p className="text-black/50">Belum ada survei.</p></Kartu>}
           {(data ?? []).map((s) => {
@@ -30,7 +33,7 @@ export default async function Survei({ searchParams }: { searchParams: Promise<{
             );
           })}
         </div>
-        <Kartu className="self-start"><h2 className="mb-4 text-2xl">Survei baru</h2><FormSurveiAdmin hari={hari} /></Kartu>
+        {kelola && <Kartu className="self-start"><h2 className="mb-4 text-2xl">Survei baru</h2><FormSurveiAdmin hari={hari} /></Kartu>}
       </div>
     </>
   );
