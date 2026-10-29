@@ -664,7 +664,11 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - PELAJARAN: draf awal mencabut EXECUTE `peran_pratinjau()` dari anon → semua data publik gagal (pre-request berjalan untuk
   anon). Fungsi yang dipanggil pre-request/RLS WAJIB bisa dieksekusi anon.
 
-## Hak akses per bidang — A2a (29 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+## Hak akses per bidang — A2a (DIRILIS 30 Okt 2026)
+- RILIS: kode `b467444` → production `dpl_MPrEKuyLKC5fBHtzTEEPJhrqsoua` (titik kembali `dpl_Fi7QBUfdNfjK78FFT2tKG6CFazLz`).
+  Backup `backup/20261030-045000` (audit_log 213 baris, terverifikasi pg_restore). Migrasi 20261229 via psql satu transaksi
+  21:52 UTC 29 Okt (tercatat di schema_migrations); 0 catatan log lama perlu disamarkan. Uji production:
+  `UJI_PRODUKSI=1 node scripts/uji-e2e/uji-hak-akses-db.mjs` 66/66 (semua ROLLBACK, sisa 0).
 - Rancangan & matriks: `docs/audit-hak-akses.md` (A1), `docs/usulan-a2-hak-akses.md` (A2). Migrasi
   `20261229000000_hak_akses_bidang.sql` (rollback `supabase/rollback/rollback_20261229_hak_akses_bidang.sql`).
 - Peran: `kurikulum/kesiswaan/sarpras/humas` → `waka_kurikulum/waka_kesiswaan/waka_sarpras/waka_humas` ("Wakasek …");
