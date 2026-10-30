@@ -693,3 +693,14 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   hanya 1 akun (super admin) sehingga jeda singkat aman.
 - A2b (data pribadi: view `siswa_akademik` + RPC tercatat, super admin lepas kelola data induk dengan "akses darurat")
   dikerjakan setelah A2a dirilis.
+
+## Menu "Layanan saya" (A3 bagian menu, 30 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+- Layanan PRIBADI semua GTK digabung ke grup "Layanan saya": Presensi Saya, Jadwal Saya, Tukar Jam (pengajar),
+  Kalender, Lapor Pelanggaran/Prestasi, Lapor Kerusakan, Peminjaman Ruang/Barang, Pinjaman Perpustakaan Saya, Pojok Baca
+  Saya, Rujukan BK Saya, Tamu untuk Saya, Pengaduan Ditugaskan (PIC). Pekerjaan guru di kelas → grup "Mengajar".
+- Grup bernama bidang (Kesiswaan, Jadwal, Kurikulum, Perpustakaan, Sarpras, Humas, Absensi, …) HANYA untuk pengelola
+  bidang itu. Wali kelas: "Perwalian" (Kelas Saya + Prestasi & Poin Kelas).
+- Uji: `uji-pratinjau.mjs` bagian 2b — 13 peran, semua grup dibuka & isinya diperiksa (Layanan saya ⊂ layanan pribadi),
+  URL langsung ditolak, screenshot `tangkapan/hak-akses/a3-*-{1440,390}.png`.
+- Catatan uji lokal: `next start` di Windows kadang keluar sendiri (kode 0xC0000409); jalankan lewat pengawas yang
+  memulai ulang; uji-pratinjau mengulang navigasi yang terputus dan mencetak jumlahnya.
