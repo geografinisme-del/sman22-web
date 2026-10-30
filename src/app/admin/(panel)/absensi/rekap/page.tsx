@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { JudulHalaman, KosongAdmin, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
-import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
+import { berperan, punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { awalBulan, hariIniWIB, tanggalValid } from "@/lib/admin/absensi";
 import { kelasWaliSaya } from "@/lib/admin/kelas-wali";
 import { formatTanggal } from "@/lib/format";
@@ -12,7 +13,7 @@ type R = { siswa_id: string; nisn: string | null; nama: string; sakit: number; i
 
 export default async function Rekap({ searchParams }: { searchParams: Promise<{ kelas?: string; dari?: string; sampai?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.rekapAbsensi);
   const semua = punya(akses, "absensi.lihat");
   if (!semua && !berperan(akses, "wali_kelas")) redirect("/admin?pesan=tanpa-akses");
 

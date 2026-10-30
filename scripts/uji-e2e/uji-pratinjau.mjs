@@ -7,6 +7,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { RUANG_KERJA } from "../../src/lib/ruang-kerja.ts";
+import { BIDANG_PERAN, kartuUntuk, menuUntuk } from "../../src/lib/admin/menu-peran.ts";
 
 const [BASE, berkasAkun, keluar, berkasKunci] = process.argv.slice(2);
 if (!/^http:\/\/localhost:\d+$/.test(BASE ?? "")) throw new Error("base harus http://localhost:<port>");
@@ -152,6 +153,23 @@ const page = await masuk(ctx, "admin@sman22.test", SANDI.admin);
 await mfa(page);
 await page.goto(BASE + "/admin", { waitUntil: "load" });
 cek("super admin AAL2: tombol 'Lihat sebagai…' ada di menu akun", (await page.locator('a[href="/lihat-sebagai"]').count()) > 0);
+{
+  // menu super admin sendiri (super admin tidak bisa "dilihat sebagai") = matriks
+  const jdl = await page.evaluate(() => [...document.querySelectorAll("aside button span.flex-1")].map((x) => x.textContent.trim()));
+  await page.evaluate((j) => localStorage.setItem("admin-menu-grup", JSON.stringify(j)), jdl);
+  await page.reload({ waitUntil: "load" });
+  await page.waitForTimeout(500);
+  const tampil = await page.evaluate(() => {
+    const aside = [...document.querySelectorAll("aside")].find((x) => x.querySelector("nav li"));
+    return Object.fromEntries([...aside.querySelectorAll("nav li")].filter((li) => li.querySelector(":scope > button span.flex-1")).map((li) => [li.querySelector(":scope > button span.flex-1").textContent.trim(), [...li.querySelectorAll(":scope > ul a")].map((x) => x.getAttribute("href"))]));
+  });
+  const harap = Object.fromEntries(menuUntuk(["super_admin"]).map((g) => [g.judul, g.item.map((x) => x.href)]));
+  const urut = (o) => JSON.stringify(Object.keys(o).sort().map((k) => [k, o[k]]));
+  cek("super admin: menu PERSIS sama dengan matriks", urut(tampil) === urut(harap), { tampil, harap });
+  const kartu = await page.evaluate(() => [...document.querySelectorAll("[data-kartu-peran]")].map((x) => x.getAttribute("data-kartu-peran")));
+  cek("super admin: kartu Ringkasan = [admin]", JSON.stringify(kartu) === JSON.stringify(kartuUntuk(["super_admin"])), kartu);
+  await page.evaluate(() => localStorage.removeItem("admin-menu-grup"));
+}
 await page.goto(BASE + "/lihat-sebagai", { waitUntil: "load" });
 const jumlahPeran = Number(psql("select count(*) from public.peran where kode <> 'super_admin';"));
 const pilihan = await page.locator("button[data-peran]").count();
@@ -166,7 +184,7 @@ const mulai = async (kode) => {
   await page.waitForTimeout(800);
 };
 const potret = async (nama) => {
-  await page.screenshot({ path: path.join(keluar, `${nama}-1440.png`), fullPage: nama.startsWith("a3-") });
+  await page.screenshot({ path: path.join(keluar, `${nama}-1440.png`), fullPage: nama.startsWith("matriks-") });
   const hp = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2, storageState: await ctx.storageState() });
   const p2 = await hp.newPage();
   await p2.goto(page.url(), { waitUntil: "load" });
@@ -177,7 +195,7 @@ const potret = async (nama) => {
     return { pita: b && { atas: Math.round(b.top), bawah: Math.round(b.bottom) }, header: h && { atas: Math.round(h.top) }, lebar: document.documentElement.scrollWidth > innerWidth };
   });
   cek(`${nama} 390px: pita terlihat & header di bawahnya (tidak menutupi), tanpa gulir horizontal`, pita.pita && pita.pita.atas === 0 && (!pita.header || pita.header.atas >= pita.pita.bawah - 1) && !pita.lebar, pita);
-  await p2.screenshot({ path: path.join(keluar, `${nama}-390.png`), fullPage: nama.startsWith("a3-") });
+  await p2.screenshot({ path: path.join(keluar, `${nama}-390.png`), fullPage: nama.startsWith("matriks-") });
   await hp.close();
 };
 
@@ -237,73 +255,69 @@ for (const [kode, nama] of [["siswa", "siswa"], ["orang_tua", "orang-tua"]]) {
   await potret(nama);
 }
 
-// ================= 2b. MENU PER PERAN (A2a + A3): grup bidang hanya untuk pengelola, "Layanan saya" hanya layanan pribadi,
-// URL langsung ditolak server, tampilan baca-saja, screenshot 1440/390 =================
-/** semua grup dibuka (via localStorage menu) → { judul grup: [href…] } */
+// ================= 2b. MENU & KARTU PER PERAN = MATRIKS (docs/matriks-layanan.md, src/lib/admin/menu-peran.ts) =================
+// Untuk SETIAP peran: menu yang tampil PERSIS sama dengan matriks (tidak lebih, tidak kurang), setiap item menu terbuka,
+// setiap halaman bidang yang TIDAK ada di menunya ditolak server, kartu Ringkasan sesuai matriks, tanpa pesan galat.
+/** semua grup dibuka (via localStorage menu) → [{ judul, item: [{href,label}] }] sesuai urutan DOM */
 const menuLengkap = async () => {
   const judul = await page.evaluate(() => [...document.querySelectorAll("aside button span.flex-1")].map((s) => s.textContent.trim()));
   await page.evaluate((j) => localStorage.setItem("admin-menu-grup", JSON.stringify(j)), judul);
   await page.reload({ waitUntil: "load" });
   await page.waitForTimeout(500);
-  return page.evaluate(() =>
-    Object.fromEntries(
-      [...document.querySelectorAll("aside nav li")]
-        .filter((li) => li.querySelector(":scope > button span.flex-1"))
-        .map((li) => [li.querySelector(":scope > button span.flex-1").textContent.trim(), [...li.querySelectorAll(":scope > ul a")].map((a) => a.getAttribute("href"))]),
-    ),
-  );
+  return page.evaluate(() => {
+    const aside = [...document.querySelectorAll("aside")].find((a) => a.querySelector("nav li"));
+    return [...aside.querySelectorAll("nav li")]
+      .filter((li) => li.querySelector(":scope > button span.flex-1"))
+      .map((li) => ({ judul: li.querySelector(":scope > button span.flex-1").textContent.trim(), item: [...li.querySelectorAll(":scope > ul a")].map((a) => ({ href: a.getAttribute("href"), label: a.textContent.replace(/\d+$/, "").trim() })) }));
+  });
 };
-// layanan pribadi yang boleh ada di "Layanan saya" (bukan halaman kelola)
-const PRIBADI = new Set(["/admin/presensi", "/admin/jadwal-saya", "/admin/tukar-jam", "/admin/kalender", "/admin/kesiswaan/lapor", "/admin/sarpras/kerusakan", "/admin/sarpras/peminjaman", "/admin/perpus", "/admin/perpus/pojok", "/admin/rujukan-bk", "/admin/buku-tamu", "/admin/pengaduan"]);
-const BIDANG = ["Buku Tamu", "Pengaduan", "Kesiswaan", "Jadwal", "Kurikulum", "Perpustakaan", "Sarpras", "Humas", "Bimbingan Konseling", "Absensi", "Pengaturan", "Data Induk", "Website", "Mutu", "Alumni"];
-const NAMA = { waka_sarpras: "Wakasek Sarpras", waka_kurikulum: "Wakasek Kurikulum", waka_kesiswaan: "Wakasek Kesiswaan", waka_humas: "Wakasek Humas", kepala_sekolah: "Kepala Sekolah", operator: "Operator / TU", bk: "Guru BK", guru: "Guru", piket: "Guru Piket", wali_kelas: "Wali Kelas", pegawai: "Pegawai umum", laboran: "Laboran", pustakawan: "Pustakawan" };
-// grup bidang yang BOLEH tampil per peran (selain itu tidak boleh ada); "Layanan saya" & "Akun saya" selalu ada
-// kartu Ringkasan per peran (urutan tampil); pengajar (guru, wali kelas, piket, BK) juga mendapat "mengajar"
-const KARTU = {
-  waka_sarpras: ["sarpras"], waka_kurikulum: ["kurikulum"], waka_kesiswaan: ["kesiswaan"], waka_humas: ["humas"],
-  kepala_sekolah: ["kepala"], operator: ["admin"], bk: ["bk", "mengajar"], guru: ["mengajar"], piket: ["piket", "mengajar"],
-  wali_kelas: ["wali", "mengajar"], pegawai: [], laboran: ["sarpras"], pustakawan: [],
+const kanonik = (grup) => JSON.stringify(Object.fromEntries([...grup].sort((a, b) => a.judul.localeCompare(b.judul)).map((g) => [g.judul, g.item.map((x) => `${x.href}|${x.label}`)])));
+/** cepat (tanpa render peramban): { tolak: ditolak server (tanpa-akses/403/404), tujuan: path akhir bila dialihkan } */
+const periksa = async (url) => {
+  const r = await page.request.get(BASE + url, { maxRedirects: 0 });
+  let tujuan = url;
+  if (r.status() >= 300 && r.status() < 400) tujuan = r.headers().location ?? "";
+  else {
+    const isi = await r.text();
+    const m = isi.match(/id="__next-page-redirect"[^>]*content="\d+;url=([^"]+)"/) ?? isi.match(/NEXT_REDIRECT;[a-z]+;([^;"]+);/);
+    if (m) tujuan = m[1].replace(/&amp;/g, "&");
+  }
+  const u = new URL(tujuan, BASE);
+  return { tolak: [403, 404].includes(r.status()) || u.searchParams.get("pesan") === "tanpa-akses" || !u.pathname.startsWith("/admin"), tujuan: u.pathname };
 };
-const ATURAN = {
-  waka_sarpras: { grup: ["Sarpras"], buka: ["/admin/sarpras"], tolak: ["/admin/kurikulum", "/admin/kokurikuler", "/admin/bk/laporan", "/admin/survei", "/admin/kontak-media", "/admin/pengguna", "/admin/jadwal", "/admin/kesiswaan", "/admin/perpus/katalog"] },
-  waka_kurikulum: { grup: ["Kurikulum", "Jadwal", "Data Induk", "Mutu", "Perpustakaan"], buka: ["/admin/kurikulum", "/admin/jadwal"], tolak: ["/admin/bk/laporan", "/admin/survei", "/admin/pengguna", "/admin/kesiswaan"] },
-  waka_kesiswaan: { grup: ["Kesiswaan", "Absensi", "Data Induk", "Pengaduan", "Ekskul & OSIS"], buka: ["/admin/kesiswaan", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/survei", "/admin/bk", "/admin/pengguna", "/admin/jadwal", "/admin/humas", "/admin/kemitraan"] },
-  waka_humas: { grup: ["Humas", "Website", "Alumni"], buka: ["/admin/survei", "/admin/kontak-media", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/bk/laporan", "/admin/pengguna", "/admin/kesiswaan"] },
-  kepala_sekolah: { grup: ["Humas", "Kesiswaan", "Absensi", "Kurikulum", "Pengaturan", "Mutu", "Sarpras", "Data Induk", "Website", "Alumni", "Ekskul & OSIS", "Perpustakaan"], buka: ["/admin/survei", "/admin/kontak-media", "/admin/bk/laporan", "/admin/pengaduan", "/admin/log"], tolak: ["/admin/bk", "/admin/pengguna", "/admin/kesiswaan/pengaturan"] },
-  operator: { grup: ["Pengaturan", "Data Induk", "Absensi", "Sarpras", "Buku Tamu"], buka: ["/admin/pengguna", "/admin/siswa"], tolak: ["/admin/bk/laporan", "/admin/survei", "/admin/jadwal", "/admin/absensi/pengaturan", "/admin/kesiswaan"] },
-  bk: { grup: ["Bimbingan Konseling", "Kesiswaan", "Absensi", "Data Induk", "Alumni", "Pengaduan"], buka: ["/admin/bk", "/admin/rujukan-bk", "/admin/pengaduan"], tolak: ["/admin/survei", "/admin/pengguna", "/admin/kemitraan", "/admin/kontak-media", "/admin/humas"] },
-  guru: { grup: [], buka: ["/admin/kurikulum", "/admin/rujukan-bk"], tolak: ["/admin/kontak-media", "/admin/bk/laporan", "/admin/pengguna", "/admin/kesiswaan", "/admin/perpus/katalog"] },
-  piket: { grup: ["Absensi", "Jadwal", "Buku Tamu"], buka: ["/admin/absensi"], tolak: ["/admin/kesiswaan", "/admin/pengguna", "/admin/perpus/katalog"] },
-  wali_kelas: { grup: ["Absensi"], buka: ["/admin/kelas-saya", "/admin/kesiswaan"], tolak: ["/admin/pengguna", "/admin/survei"] },
-  pegawai: { grup: [], buka: [], tolak: ["/admin/kurikulum", "/admin/lms", "/admin/supervisi", "/admin/kesiswaan"] },
-  laboran: { grup: ["Laboratorium"], buka: ["/admin/sarpras"], tolak: ["/admin/kurikulum", "/admin/kesiswaan"] },
-  pustakawan: { grup: ["Perpustakaan"], buka: ["/admin/perpus/katalog"], tolak: ["/admin/kesiswaan", "/admin/kurikulum", "/admin/pengguna"] },
-};
-for (const [kode, a] of Object.entries(ATURAN)) {
+const SEMUA_PERAN = Object.keys(BIDANG_PERAN);
+const HREF_BIDANG = [...new Set(SEMUA_PERAN.flatMap((p) => menuUntuk([p]).flatMap((g) => g.item.map((x) => x.href))))];
+const NAMA = { super_admin: "Super Admin", kepala_sekolah: "Kepala Sekolah", waka_kurikulum: "Wakasek Kurikulum", waka_kesiswaan: "Wakasek Kesiswaan", waka_sarpras: "Wakasek Sarpras", waka_humas: "Wakasek Humas", bk: "Guru BK", wali_kelas: "Wali Kelas", piket: "Guru Piket", guru: "Guru", literasi: "Koordinator Literasi", operator: "Operator / TU", pustakawan: "Pustakawan", laboran: "Laboran", pegawai: "Pegawai umum", keuangan: "Bendahara / Keuangan", tim_mutu: "Tim Penjaminan Mutu", auditor: "Auditor Internal", admin_alumni: "Admin Alumni" };
+for (const kode of SEMUA_PERAN.filter((p) => p !== "super_admin")) {
   await mulai(kode);
   await page.goto(BASE + "/admin", { waitUntil: "load" });
-  // kartu Ringkasan sesuai peran (A3): kunci kartu yang tampil sama dengan harapan, tanpa pesan galat
-  const kartu = await page.evaluate(() => [...document.querySelectorAll("[data-kartu-peran]")].map((x) => x.getAttribute("data-kartu-peran")));
-  cek(`${kode}: kartu Ringkasan = [${KARTU[kode].join(", ")}]`, JSON.stringify(kartu) === JSON.stringify(KARTU[kode]), kartu);
-  cek(`${kode}: Ringkasan tanpa pesan galat (data kosong tampil rapi)`, !/gagal dimuat/i.test((await page.textContent("main")) ?? ""));
   const label = (await page.locator(".pita-pratinjau strong").first().textContent().catch(() => "")) ?? "";
   cek(`${kode}: pita menyebut nama peran spesifik`, label.includes(NAMA[kode] ?? kode), label);
-  const menu = await menuLengkap();
-  const judul = Object.keys(menu);
-  const bidangTampil = judul.filter((j) => BIDANG.includes(j) || j === "Laboratorium");
-  const lebih = bidangTampil.filter((j) => !a.grup.includes(j));
-  cek(`${kode}: grup bidang hanya ${a.grup.join(", ") || "(tidak ada)"}`, lebih.length === 0 && a.grup.filter((g) => !["Data Induk", "Mutu", "Alumni", "Ekskul & OSIS", "Website", "Perpustakaan", "Humas"].includes(g)).every((g) => judul.includes(g)), { tampil: judul });
-  cek(`${kode}: ada "Layanan saya" & "Akun saya"`, judul.includes("Akun saya") && (judul.includes("Layanan saya") || kode === "laboran"), judul);
-  const bukanPribadi = (menu["Layanan saya"] ?? []).filter((h) => !PRIBADI.has(h));
-  cek(`${kode}: "Layanan saya" hanya layanan pribadi`, bukanPribadi.length === 0, { bukanPribadi, isi: menu["Layanan saya"] });
-  if (kode === "bk") {
-    cek("bk: tanpa grup Humas; grup Pengaduan hanya daftar pengaduan", !judul.includes("Humas") && JSON.stringify(menu["Pengaduan"]) === JSON.stringify(["/admin/pengaduan"]), menu);
-    const semua = Object.values(menu).flat();
-    cek("bk: kemitraan, kontak media, survei, website tidak ada di menu", !["/admin/kemitraan", "/admin/kontak-media", "/admin/survei", "/admin/humas", "/admin/berita"].some((h) => semua.includes(h)), semua);
+  // kartu Ringkasan = matriks, tanpa galat
+  const kartu = await page.evaluate(() => [...document.querySelectorAll("[data-kartu-peran]")].map((x) => x.getAttribute("data-kartu-peran")));
+  cek(`${kode}: kartu Ringkasan = [${kartuUntuk([kode]).join(", ")}]`, JSON.stringify(kartu) === JSON.stringify(kartuUntuk([kode])), kartu);
+  cek(`${kode}: Ringkasan tanpa pesan galat (data kosong tampil rapi)`, !/gagal dimuat/i.test((await page.textContent("main")) ?? ""));
+  cek(`${kode}: tanpa bagian "Terakhir dibuka"`, !(await page.textContent("aside")).includes("Terakhir dibuka"));
+  // menu PERSIS = matriks
+  const tampil = (await menuLengkap()).filter((g) => g.item.length);
+  const harap = menuUntuk([kode]).map((g) => ({ judul: g.judul, item: g.item }));
+  cek(`${kode}: menu PERSIS sama dengan matriks (${harap.reduce((t, g) => t + g.item.length, 0)} item)`, kanonik(tampil) === kanonik(harap), { tampil: kanonik(tampil), harap: kanonik(harap) });
+  // setiap item menu terbuka; setiap halaman bidang di luar menunya ditolak server
+  const milik = new Set(harap.flatMap((g) => g.item.map((x) => x.href)));
+  const gagalBuka = [];
+  // terbuka = tidak ditolak, dan bila dialihkan, tujuannya juga ada di menu peran itu (mis. Per Jam → Jadwal Saya)
+  for (const h of milik) {
+    const r = await periksa(h);
+    if (r.tolak || (r.tujuan !== h && !milik.has(r.tujuan))) gagalBuka.push(`${h}→${r.tujuan}`);
   }
-  if (kode === "waka_sarpras") cek("waka_sarpras: tidak ada grup Kesiswaan/Jadwal/Perpustakaan sama sekali", !["Kesiswaan", "Jadwal", "Perpustakaan"].some((g) => judul.includes(g)), judul);
-  for (const u of a.buka) cek(`${kode}: ${u} terbuka`, !(await bukaDitolak(page, u)), page.url());
-  for (const u of a.tolak) cek(`${kode}: ${u} dibuka langsung → ditolak server`, await bukaDitolak(page, u), page.url());
+  cek(`${kode}: semua ${milik.size} item menu terbuka`, gagalBuka.length === 0, gagalBuka);
+  const bocor = [];
+  // di luar menu: ditolak, atau dialihkan ke halaman lain (mis. Inventaris → Peminjaman)
+  for (const h of HREF_BIDANG.filter((x) => !milik.has(x))) {
+    const r = await periksa(h);
+    if (!r.tolak && r.tujuan === h) bocor.push(h);
+  }
+  cek(`${kode}: halaman bidang di luar menunya ditolak server`, bocor.length === 0, bocor);
   if (kode === "kepala_sekolah") {
     await page.goto(BASE + "/admin/survei", { waitUntil: "load" });
     cek("kepala sekolah: Survei tampil tanpa formulir 'Survei baru' (baca saja)", !(await page.textContent("main")).includes("Survei baru"));
@@ -319,7 +333,7 @@ for (const [kode, a] of Object.entries(ATURAN)) {
   await page.evaluate(() => localStorage.removeItem("admin-menu-grup"));
   await page.reload({ waitUntil: "load" });
   await page.waitForTimeout(600);
-  await potret(`a3-${kode}`);
+  await potret(`matriks-${kode}`);
 }
 
 await mulai("operator");

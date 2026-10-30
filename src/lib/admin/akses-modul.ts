@@ -5,8 +5,10 @@
  */
 export type AksesMinimal = { peran: readonly string[]; izin: readonly string[] };
 
-/** peran yang mengajar di kelas (menu perangkat ajar, materi, kelas digital, tukar jam) */
-export const PERAN_PENGAJAR = ["guru", "wali_kelas", "piket", "bk"];
+import { PERAN_PENDIDIK } from "./menu-peran.ts";
+
+/** peran yang mengajar di kelas = semua PENDIDIK (guru + tugas tambahan guru, termasuk waka & kepala sekolah) */
+export const PERAN_PENGAJAR = PERAN_PENDIDIK;
 
 const izin = (a: AksesMinimal, ...daftar: string[]) => daftar.some((i) => a.izin.includes(i));
 const peran = (a: AksesMinimal, ...daftar: string[]) => daftar.some((p) => a.peran.includes(p));
@@ -35,4 +37,10 @@ export const BOLEH = {
   penggunaPeran: (a: AksesMinimal) => izin(a, "pengguna.kelola", "pengguna.kelola_dasar"),
   laporanBk: (a: AksesMinimal) => izin(a, "bk.agregat"),
   logAksesBk: (a: AksesMinimal) => izin(a, "bk.konseling", "audit.baca"),
+  /** absensi harian per kelas: pencatat (piket, kesiswaan), pengatur, pemantau kehadiran sekolah (kepala, TU) & wali kelas */
+  absensiHarian: (a: AksesMinimal) => izin(a, "absensi.kelola", "absensi.atur", "absensi_pegawai.lihat") || peran(a, "wali_kelas"),
+  /** rekap absensi: pemantau disiplin/kehadiran (bukan piket) & wali kelas */
+  rekapAbsensi: (a: AksesMinimal) => izin(a, "disiplin.lihat", "absensi.atur", "absensi_pegawai.lihat") || peran(a, "wali_kelas"),
+  /** halaman literasi & pengelolaan pojok baca: pustakawan & koordinator literasi */
+  binaLiterasi: (a: AksesMinimal) => izin(a, "perpus.kelola", "literasi.kelola"),
 } satisfies Record<string, (a: AksesMinimal) => boolean>;

@@ -1,5 +1,6 @@
 import { JudulHalaman, KosongAdmin, Lencana } from "@/components/admin/ui";
 import { punya, wajibLogin } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { redirect } from "next/navigation";
 import { formatWaktu } from "@/lib/format";
 import { FormTangani } from "./Form";
@@ -10,7 +11,10 @@ export default async function RujukanBk() {
   const { supabase, akses } = await wajibLogin();
   if (!akses) redirect("/admin?pesan=tanpa-akses");
   // perujuk (guru/wali kelas) bukan BK: hanya status rujukannya sendiri, tanpa catatan BK (lewat rujukan_saya())
-  if (!punya(akses, "bk.rujukan")) return <RujukanSaya supabase={supabase} />;
+  if (!punya(akses, "bk.rujukan")) {
+    if (!BOLEH.mengajar(akses)) redirect("/admin?pesan=tanpa-akses");
+    return <RujukanSaya supabase={supabase} />;
+  }
   const konselor = punya(akses, "bk.konseling");
   const { data } = await supabase.from("rujukan_bk").select("id, siswa_id, alasan, dirujuk_oleh, dirujuk_pada, status, catatan_bk, siswa:siswa_id(nama)").order("status").order("dirujuk_pada", { ascending: false }).limit(100);
   type R = { id: string; siswa_id: string; alasan: string; dirujuk_oleh: string; dirujuk_pada: string; status: string; catatan_bk: string; siswa: { nama: string } | null };

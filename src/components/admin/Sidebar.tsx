@@ -41,7 +41,7 @@ import { sekolah } from "@/content/sekolah";
 export type GrupMenu = { judul?: string; item: { href: string; label: string; badge?: number }[] };
 
 /** Urutan grup: yang dipakai harian di atas, pengaturan & arsip di bawah. Grup lain menyusul sesuai urutan asli. */
-const PRIORITAS = ["Layanan saya", "Mengajar", "Perwalian", "Absensi", "Kesiswaan", "Jadwal", "Kurikulum", "Data Induk", "Website", "Bimbingan Konseling", "Ekskul & OSIS", "Perpustakaan", "Sarpras", "Laboratorium", "Humas", "Buku Tamu", "Alumni", "Mutu", "Pengaturan", "Akun saya"];
+const PRIORITAS = ["Layanan saya", "Mengajar", "Piket", "Perwalian", "Absensi", "Kesiswaan", "Jadwal", "Kurikulum", "Data Induk", "Website", "Bimbingan Konseling", "Ekskul & OSIS", "Perpustakaan", "Sarpras", "Laboratorium", "Humas", "Buku Tamu", "Alumni", "Mutu", "Pengaturan", "Akun saya"];
 /** Satu gaya ikon (lucide, garis 1.75) per grup modul */
 const IKON_GRUP: Record<string, ComponentType<LucideProps>> = {
   Absensi: CalendarCheck,
@@ -50,6 +50,7 @@ const IKON_GRUP: Record<string, ComponentType<LucideProps>> = {
   Jadwal: CalendarClock,
   Pembelajaran: BookOpen,
   Mengajar: BookOpen,
+  Piket: ShieldCheck,
   "Layanan saya": ClipboardList,
   Kurikulum: BookMarked,
   "Data Induk": Database,
@@ -65,7 +66,6 @@ const IKON_GRUP: Record<string, ComponentType<LucideProps>> = {
   Pengaturan: Settings,
   "Akun saya": CircleUser,
 };
-const KUNCI_TERAKHIR = "admin-menu-terakhir";
 const KUNCI_GRUP = "admin-menu-grup";
 
 /* localStorage sebagai "toko" luar: riwayat menu & grup yang terbuka (hanya di peramban ini) */
@@ -150,7 +150,6 @@ export function Sidebar({
   const [buka, setBuka] = useState(false);
   const [cari, setCari] = useState("");
   const grupBuka = useDaftarTersimpan(KUNCI_GRUP);
-  const terakhir = useDaftarTersimpan(KUNCI_TERAKHIR);
   const tombolMenu = useRef<HTMLButtonElement>(null);
   const laci = useRef<HTMLDivElement>(null);
 
@@ -172,13 +171,6 @@ export function Sidebar({
   const cocok = menunggu ?? dariAlamat;
   const aktif = (h: string) => h === cocok;
   const grupAktif = urut.find((g) => g.item.some((i) => i.href === cocok))?.judul;
-
-  // catat menu yang baru dibuka (maks 4) untuk pintasan "Terakhir dibuka"
-  useEffect(() => {
-    if (!cocok || cocok === "/admin") return;
-    const lama = JSON.parse(bacaMentah(KUNCI_TERAKHIR)) as string[];
-    if (lama[0] !== cocok) tulis(KUNCI_TERAKHIR, [cocok, ...lama.filter((h) => h !== cocok)].slice(0, 4));
-  }, [cocok]);
 
   // tekan "/" untuk langsung mencari menu
   useEffect(() => {
@@ -243,7 +235,6 @@ export function Sidebar({
         }))
         .filter((g) => g.item.length)
     : null;
-  const pintasan = terakhir.map((h) => semua.find((m) => m.href === h)).filter((m): m is NonNullable<typeof m> => Boolean(m));
 
   const tautan = (m: GrupMenu["item"][number], kecil = false) => (
     <Link
@@ -354,16 +345,6 @@ export function Sidebar({
           )
         ) : (
           <>
-            {pintasan.length > 1 && (
-              <div className="mb-2 border-b border-[var(--line)] pb-2">
-                <p className="px-3 pb-1 pt-1 text-xs font-semibold text-[var(--muted)]">Terakhir dibuka</p>
-                <ul className="space-y-0.5">
-                  {pintasan.map((m) => (
-                    <li key={m.href}>{tautan(m, true)}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
             <ul className="space-y-0.5">
               {urut.map((g) => {
                 if (!g.judul)

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { JudulHalaman, KosongAdmin } from "@/components/admin/ui";
 import { hariIniWIB, tanggalValid } from "@/lib/admin/absensi";
 import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { jamPendek } from "@/lib/admin/jadwal";
 import { kelasWaliSaya } from "@/lib/admin/kelas-wali";
 import { formatTanggal } from "@/lib/format";
@@ -13,8 +14,11 @@ const WARNA: Record<string, string> = { S: "bg-sky-600", I: "bg-indigo-600", A: 
 export default async function RekapJp({ searchParams }: { searchParams: Promise<{ kelas?: string; tanggal?: string }> }) {
   const sp = await searchParams;
   const { supabase, akses } = await wajibLogin();
-  const semua = punya(akses, "absensi.lihat");
-  if (!semua && !berperan(akses, "wali_kelas")) redirect("/admin?pesan=tanpa-akses");
+  const semua = punya(akses, "absensi.lihat") && Boolean(akses && BOLEH.mengajar(akses));
+  if (!semua && !berperan(akses, "wali_kelas")) {
+    // guru tanpa hak memantau: presensi & jurnal per jam diisi dari jadwal mengajarnya sendiri
+    redirect(akses && BOLEH.mengajar(akses) ? "/admin/jadwal-saya" : "/admin?pesan=tanpa-akses");
+  }
   const tanggal = tanggalValid(sp.tanggal) ? sp.tanggal : hariIniWIB();
   const hari = ((new Date(tanggal + "T00:00:00Z").getUTCDay() + 6) % 7) + 1;
   let kelas: { id: string; nama: string }[];

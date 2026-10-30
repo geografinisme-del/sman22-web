@@ -3,7 +3,8 @@ import { JudulHalaman, KosongAdmin } from "@/components/admin/ui";
 import { TombolCetak } from "@/components/jadwal/Bantu";
 import { JadwalMingguan } from "@/components/jadwal/JadwalMingguan";
 import { geserTanggal, hariIniWIB } from "@/lib/admin/absensi";
-import { wajibLogin } from "@/lib/admin/auth";
+import { wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { jamPendek, namaHari, type Entri } from "@/lib/admin/jadwal";
 import { muatEntri, muatJam, muatPerubahan, namaUntukPerubahan, teksPerubahan } from "@/lib/admin/jadwal-data";
 import { formatTanggal } from "@/lib/format";
@@ -11,7 +12,7 @@ import { formatTanggal } from "@/lib/format";
 export const metadata = { title: "Jadwal Saya" };
 
 export default async function JadwalSaya() {
-  const { supabase } = await wajibLogin();
+  const { supabase } = await wajibBoleh(BOLEH.mengajar);
   const { data: saya } = await supabase.rpc("pegawai_saya");
   if (!saya) return (
     <>

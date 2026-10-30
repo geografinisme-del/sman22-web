@@ -35,7 +35,7 @@ function ringkas(b: Baris) {
 export default async function RiwayatJadwal({ searchParams }: { searchParams: Promise<{ tabel?: string; hal?: string }> }) {
   const sp = await searchParams;
   const { supabase, akses } = await wajibLogin();
-  if (!punya(akses, "jadwal.kelola") && !punya(akses, "jadwal.pengganti")) redirect("/admin?pesan=tanpa-akses");
+  if (!punya(akses, "jadwal.kelola")) redirect("/admin?pesan=tanpa-akses");
   const hal = Math.max(1, Number(sp.hal) || 1);
   const tabel = sp.tabel && TABEL[sp.tabel] ? sp.tabel : null;
   const { data, error } = await supabase.rpc("riwayat_jadwal", { p_batas: PER, p_lewati: (hal - 1) * PER, p_tabel: tabel });

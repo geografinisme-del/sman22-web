@@ -1,4 +1,4 @@
-# Matriks menu & kartu Ringkasan per peran (USULAN — menunggu persetujuan)
+# Matriks menu & kartu Ringkasan per peran (DISETUJUI 30 Okt 2026 — diterapkan di `src/lib/admin/menu-peran.ts`)
 
 Tanda: **✓** tampil · **—** tidak · **Δ** berubah dari kondisi production sekarang (A3, `dpl_6KomU5xpkdLBer9UXdTa1H9aZQcd`).
 Satu akun dengan beberapa peran = gabungan semua kolom ✓-nya.
@@ -14,6 +14,22 @@ Satu akun dengan beberapa peran = gabungan semua kolom ✓-nya.
 4. **"Terakhir dibuka"** (4 menu terakhir dari peramban ini, judul kecil) tampil di atas Ringkasan dan menduplikasi menu
    di bawahnya → **dihapus** (pencarian menu "/" tetap ada).
 5. **Kartu Ringkasan** belum ada untuk pustakawan, pegawai umum, literasi, keuangan, tim mutu, auditor, admin alumni.
+
+## Keputusan & penyesuaian saat diterapkan
+
+- Keputusan 1–5 = usulan (literasi pendidik, keuangan tendik, peran lain mengikuti akun; waka & kepala menu pendidik;
+  Tamu untuk Saya dihapus; "Terakhir dibuka" dihapus; grup "Piket").
+- **Pojok Baca** = pengelolaan pojok baca KELAS (lokasi, penanggung jawab, koleksi, jurnal kegiatan) — bukan catatan bacaan
+  pribadi → "Pojok Baca Saya" masuk grup **Mengajar**, hanya untuk guru penanggung jawab pojok baca.
+- Agar menu = halaman yang dibuka server (izin A2 tetap): koordinator **literasi** mendapat Katalog Buku & Laporan & Denda
+  (punya `perpus.lihat`); **bendahara** mendapat Organisasi Siswa (punya `ekskul.lihat`).
+- Item yang alamatnya sudah ada di grup bidang tidak diulang di "Layanan saya"/"Mengajar" (mis. Peminjaman untuk
+  Wakasek Sarpras ada di grup Sarpras). Kepala sekolah & operator: grup Sarpras hanya Inventaris (lihat), sehingga Lapor
+  Kerusakan & Peminjaman tetap di "Layanan saya".
+- Penjaga server diselaraskan dengan matriks (halaman di luar menu ditolak): Jadwal Saya, Lapor Pelanggaran, Rujukan BK
+  Saya → pendidik; Absensi harian → pencatat/pengatur/pemantau/wali (bukan BK); Rekap Absensi → pemantau & wali (bukan
+  piket); Riwayat Jadwal → penyusun jadwal (bukan piket); Literasi & Pojok Baca → pustakawan/literasi (+ penanggung jawab
+  pojoknya); "Presensi & Jurnal per Jam": pemantau melihat per kelas, guru lain diarahkan ke Jadwal Saya.
 
 ## 1. Dasar peran
 

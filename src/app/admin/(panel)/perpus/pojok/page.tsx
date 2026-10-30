@@ -24,7 +24,7 @@ export default async function Pojok({ searchParams }: { searchParams: Promise<{ 
   ]);
   const pojok = (pj ?? []) as DataPojok[];
   const milik = pojok.filter((p) => bina || p.penanggung_jawab_id === saya);
-  if (!bina && !punya(akses, "perpus.lihat") && milik.length === 0) redirect("/admin?pesan=tanpa-akses");
+  if (!bina && milik.length === 0) redirect("/admin?pesan=tanpa-akses");
   const kegiatan = (keg ?? []) as K[];
   const nama = new Map(guru.map((g) => [g.id, g.nama]));
   const kelas = ((kls ?? []) as { id: string; nama: string }[]).map((k) => ({ id: k.id, nama: k.nama }));
@@ -39,7 +39,7 @@ export default async function Pojok({ searchParams }: { searchParams: Promise<{ 
       <div className="grid gap-6 xl:grid-cols-[1fr_400px]">
         <div className="space-y-4">
           {(bina ? pojok : milik).length === 0 && <Kartu><p className="text-black/50">Belum ada pojok baca.</p></Kartu>}
-          {(bina || punya(akses, "perpus.lihat") ? pojok : milik).map((p) => {
+          {(bina ? pojok : milik).map((p) => {
             const kg = kegiatan.filter((k) => k.pojok_id === p.id);
             const boleh = bina || p.penanggung_jawab_id === saya;
             return (

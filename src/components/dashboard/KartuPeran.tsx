@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Keadaan, Panel } from "@/components/dashboard/HariIni";
 import { geserTanggal, hariIniWIB } from "@/lib/admin/absensi";
-import { berperan, NAMA_PERAN, punya, type Akses } from "@/lib/admin/auth";
-import { BOLEH } from "@/lib/admin/akses-modul";
+import { NAMA_PERAN, type Akses } from "@/lib/admin/auth";
+import { kartuUntuk, type KunciKartu } from "@/lib/admin/menu-peran";
 import { hitungBersama, pegawaiSaya, statusDisiplin, tahunAjaranAktif, type Hitungan } from "@/lib/admin/hitungan";
 
 /**
@@ -84,28 +84,24 @@ async function KartuKepala({ db }: { db: Db }) {
   );
 }
 
-/** super admin: akun, keamanan & kesehatan notifikasi; operator (akun dasar): hanya akun yang menunggu verifikasi */
-async function KartuAdmin({ db, penuh }: { db: Db; penuh: boolean }) {
+/** super admin: akun, keamanan & kesehatan notifikasi (operator memakai kartu Tata usaha) */
+async function KartuAdmin({ db }: { db: Db }) {
   // sejak kemarin pukul 00.00 WIB
   const sehari = new Date(Date.parse(`${geserTanggal(hariIniWIB(), -1)}T00:00:00+07:00`)).toISOString();
   const [akun, gagalLogin, gagalKirim, antre] = await Promise.all([
     db.from("pengguna").select("user_id, pengguna_peran(peran)").eq("aktif", true).limit(2000),
-    penuh ? db.from("audit_log").select("id", kepala).eq("aksi", "LOGIN_GAGAL").gte("waktu", sehari) : nol,
-    penuh ? db.from("antrian_kirim").select("id", kepala).eq("status", "gagal") : nol,
-    penuh ? db.from("antrian_kirim").select("id", kepala).eq("status", "menunggu") : nol,
+    db.from("audit_log").select("id", kepala).eq("aksi", "LOGIN_GAGAL").gte("waktu", sehari),
+    db.from("antrian_kirim").select("id", kepala).eq("status", "gagal"),
+    db.from("antrian_kirim").select("id", kepala).eq("status", "menunggu"),
   ]);
   const tanpaPeran = akun.error ? null : ((akun.data ?? []) as { pengguna_peran: unknown[] }[]).filter((u) => u.pengguna_peran.length === 0).length;
   return (
-    <Panel judul={penuh ? "Administrasi sistem" : "Akun & pengguna"}>
+    <Panel judul="Administrasi sistem">
       <Daftar>
         <Baris n={tanpaPeran} label="Akun menunggu verifikasi (tanpa peran)" href="/admin/pengguna" tanda />
-        {penuh && (
-          <>
-            <Baris n={gagalLogin.error ? null : (gagalLogin.count ?? 0)} label="Percobaan masuk gagal (sejak kemarin)" href="/admin/log" tanda />
-            <Baris n={gagalKirim.error ? null : (gagalKirim.count ?? 0)} label="Notifikasi WhatsApp/email gagal" href="/admin/notifikasi/kanal" tanda />
-            <Baris n={antre.error ? null : (antre.count ?? 0)} label="Notifikasi dalam antrean" href="/admin/notifikasi/kanal" />
-          </>
-        )}
+        <Baris n={gagalLogin.error ? null : (gagalLogin.count ?? 0)} label="Percobaan masuk gagal (sejak kemarin)" href="/admin/log" tanda />
+        <Baris n={gagalKirim.error ? null : (gagalKirim.count ?? 0)} label="Notifikasi WhatsApp/email gagal" href="/admin/notifikasi/kanal" tanda />
+        <Baris n={antre.error ? null : (antre.count ?? 0)} label="Notifikasi dalam antrean" href="/admin/notifikasi/kanal" />
       </Daftar>
     </Panel>
   );
@@ -338,20 +334,181 @@ async function KartuMengajar({ db, pid }: { db: Db; pid: string | null }) {
   );
 }
 
-/** Kartu sesuai peran (gabungan peran). Dipanggil halaman Ringkasan. */
+// ------------------------------------------------------------------------------------------------ tenaga kependidikan & tugas lain
+async function KartuTu({ db }: { db: Db }) {
+  const { data: ta } = await tahunAjaranAktif(db);
+  const [akun, aktif, beranggota, tanpaAkun] = await Promise.all([
+    db.from("pengguna").select("user_id, pengguna_peran(peran)").eq("aktif", true).limit(2000),
+    db.from("siswa").select("id", kepala).eq("status", "aktif").is("deleted_at", null),
+    ta ? db.from("anggota_kelas").select("id", kepala).eq("tahun_ajaran_id", ta.id) : nol,
+    db.from("siswa").select("id", kepala).eq("status", "aktif").is("deleted_at", null).is("user_id", null),
+  ]);
+  const tanpaPeran = akun.error ? null : ((akun.data ?? []) as { pengguna_peran: unknown[] }[]).filter((u) => u.pengguna_peran.length === 0).length;
+  const tanpaKelas = aktif.error || beranggota.error ? null : Math.max(0, (aktif.count ?? 0) - (beranggota.count ?? 0));
+  return (
+    <Panel judul="Tata usaha">
+      <Daftar>
+        <Baris n={tanpaPeran} label="Akun menunggu verifikasi (tanpa peran)" href="/admin/pengguna" tanda />
+        <Baris n={tanpaKelas} label={ta ? `Siswa aktif belum masuk kelas (${ta.nama})` : "Siswa aktif belum masuk kelas"} href="/admin/kelas" tanda />
+        <Baris n={tanpaAkun.error ? null : (tanpaAkun.count ?? 0)} label="Siswa aktif belum punya akun portal" href="/admin/akun-portal" />
+      </Daftar>
+    </Panel>
+  );
+}
+
+async function KartuPerpus({ db }: { db: Db }) {
+  const hari = hariIniWIB();
+  const awal = new Date(Date.parse(`${hari}T00:00:00+07:00`)).toISOString();
+  const [dipinjam, telat, denda, kunjungan] = await Promise.all([
+    db.from("pinjaman_buku").select("id", kepala).is("kembali_pada", null),
+    db.from("pinjaman_buku").select("id", kepala).is("kembali_pada", null).lt("jatuh_tempo", hari),
+    db.from("pinjaman_buku").select("id", kepala).gt("denda", 0).eq("denda_lunas", false),
+    db.from("kunjungan_perpus").select("id", kepala).gte("waktu", awal),
+  ]);
+  const c = (r: { count: number | null; error: unknown }) => (r.error ? null : (r.count ?? 0));
+  return (
+    <Panel judul="Perpustakaan">
+      <Daftar>
+        <Baris n={c(dipinjam)} label="Buku sedang dipinjam" href="/admin/perpus" />
+        <Baris n={c(telat)} label="Lewat jatuh tempo" href="/admin/perpus/laporan" tanda />
+        <Baris n={c(denda)} label="Denda belum lunas" href="/admin/perpus/laporan" tanda />
+        <Baris n={c(kunjungan)} label="Kunjungan hari ini" href="/admin/perpus" />
+      </Daftar>
+    </Panel>
+  );
+}
+
+async function KartuLab({ db }: { db: Db }) {
+  const hari = hariIniWIB();
+  const awal = new Date(Date.parse(`${hari}T00:00:00+07:00`)).toISOString();
+  const akhir = new Date(Date.parse(`${geserTanggal(hari, 1)}T00:00:00+07:00`)).toISOString();
+  const [ajuan, hariIni, rusak] = await Promise.all([
+    hitungBersama(db, "peminjamanDiajukan"),
+    db.from("peminjaman").select("id", kepala).in("status", ["disetujui", "dipinjam"]).lt("mulai", akhir).gt("selesai", awal),
+    db.from("barang").select("id", kepala).in("kondisi", ["rusak_ringan", "rusak_berat"]).is("deleted_at", null),
+  ]);
+  return (
+    <Panel judul="Laboratorium">
+      <Daftar>
+        <Baris n={angka(ajuan)} label="Peminjaman lab menunggu persetujuan" href="/admin/sarpras/peminjaman" tanda />
+        <Baris n={hariIni.error ? null : (hariIni.count ?? 0)} label="Jadwal pemakaian lab hari ini" href="/admin/sarpras/peminjaman" />
+        <Baris n={rusak.error ? null : (rusak.count ?? 0)} label="Alat/barang berkondisi rusak" href="/admin/sarpras" tanda />
+      </Daftar>
+    </Panel>
+  );
+}
+
+const NAMA_STATUS_PRESENSI: Record<string, string> = { H: "hadir", T: "terlambat", S: "sakit", I: "izin", DL: "dinas luar", C: "cuti", A: "tanpa keterangan" };
+async function KartuHariIni({ db, pid }: { db: Db; pid: string | null }) {
+  const hari = hariIniWIB();
+  const [presensi, piket, umum] = await Promise.all([
+    pid ? db.from("absensi_pegawai").select("status, jam_masuk, jam_pulang").eq("pegawai_id", pid).eq("tanggal", hari).maybeSingle() : Promise.resolve({ data: null, error: null }),
+    pid ? db.from("piket_guru").select("hari, tahun_ajaran!inner(aktif)").eq("pegawai_id", pid).eq("tahun_ajaran.aktif", true) : Promise.resolve({ data: [], error: null }),
+    db.from("pengumuman").select("id", kepala).eq("sasaran", "pegawai").eq("aktif", true).is("deleted_at", null),
+  ]);
+  const p = presensi.data as { status: string; jam_masuk: string | null; jam_pulang: string | null } | null;
+  const tugasHariIni = ((piket.data ?? []) as { hari: number }[]).some((x) => x.hari === ISO_HARI(hari));
+  return (
+    <Panel judul="Hari ini" aksi={<Link href="/admin/presensi" className="text-sm font-semibold underline underline-offset-2">Presensi saya</Link>}>
+      {!pid ? (
+        <Keadaan jenis="info">Akun ini belum tertaut ke data pegawai. Hubungi operator.</Keadaan>
+      ) : (
+        <p className="text-[0.9375rem]">
+          Presensi: {p ? `${NAMA_STATUS_PRESENSI[p.status] ?? p.status}${p.jam_masuk ? ` · masuk ${jam(p.jam_masuk)}` : ""}${p.jam_pulang ? ` · pulang ${jam(p.jam_pulang)}` : ""}` : "belum presensi"}
+        </p>
+      )}
+      <Daftar>
+        <Baris n={tugasHariIni ? 1 : 0} label={tugasHariIni ? "Anda bertugas piket/jaga hari ini" : "Tidak ada jadwal piket/jaga hari ini"} />
+        <Baris n={umum.error ? null : (umum.count ?? 0)} label="Pengumuman internal aktif" />
+      </Daftar>
+    </Panel>
+  );
+}
+
+async function KartuLiterasi({ db }: { db: Db }) {
+  const hari = hariIniWIB();
+  const [jurnal, tantangan] = await Promise.all([
+    db.from("jurnal_baca").select("id", kepala).eq("status", "diajukan"),
+    db.from("tantangan_literasi").select("id", kepala).is("deleted_at", null).lte("mulai", hari).gte("selesai", hari),
+  ]);
+  return (
+    <Panel judul="Literasi">
+      <Daftar>
+        <Baris n={jurnal.error ? null : (jurnal.count ?? 0)} label="Jurnal baca siswa menunggu diperiksa" href="/admin/perpus/literasi" tanda />
+        <Baris n={tantangan.error ? null : (tantangan.count ?? 0)} label="Tantangan literasi berjalan" href="/admin/perpus/literasi" />
+      </Daftar>
+    </Panel>
+  );
+}
+
+async function KartuAnggaran({ db }: { db: Db }) {
+  const [diajukan, lpj] = await Promise.all([
+    db.from("pengajuan_kegiatan").select("id", kepala).eq("status", "disetujui_pembina"),
+    db.from("pengajuan_kegiatan").select("id", kepala).eq("status", "lpj_diajukan"),
+  ]);
+  return (
+    <Panel judul="Anggaran kegiatan">
+      <Daftar>
+        <Baris n={diajukan.error ? null : (diajukan.count ?? 0)} label="Pengajuan kegiatan menunggu keputusan anggaran" href="/admin/ekskul/pengajuan" tanda />
+        <Baris n={lpj.error ? null : (lpj.count ?? 0)} label="Laporan pertanggungjawaban (LPJ) masuk" href="/admin/ekskul/pengajuan" tanda />
+      </Daftar>
+    </Panel>
+  );
+}
+
+async function KartuMutu({ db }: { db: Db }) {
+  const hari = hariIniWIB();
+  const [evaluasi, temuan, rencana] = await Promise.all([
+    hitungBersama(db, "mutuDiajukan"),
+    db.from("temuan_mutu").select("id", kepala).neq("status", "ditutup"),
+    db.from("rencana_perbaikan").select("id", kepala).in("status", ["rencana", "berjalan"]).lt("tenggat", hari),
+  ]);
+  return (
+    <Panel judul="Penjaminan mutu">
+      <Daftar>
+        <Baris n={angka(evaluasi)} label="Evaluasi indikator menunggu tinjauan" href="/admin/mutu" tanda />
+        <Baris n={temuan.error ? null : (temuan.count ?? 0)} label="Temuan belum ditutup" href="/admin/mutu/temuan" />
+        <Baris n={rencana.error ? null : (rencana.count ?? 0)} label="Rencana perbaikan lewat tenggat" href="/admin/mutu/temuan" tanda />
+      </Daftar>
+    </Panel>
+  );
+}
+
+async function KartuAlumni({ db }: { db: Db }) {
+  const daftar = await hitungBersama(db, "alumniMenunggu");
+  return (
+    <Panel judul="Alumni">
+      <Daftar>
+        <Baris n={angka(daftar)} label="Pendaftaran alumni menunggu verifikasi" href="/admin/alumni" tanda />
+      </Daftar>
+    </Panel>
+  );
+}
+
+/** Kartu sesuai peran (gabungan peran) — daftar kartu dari matriks (lib/admin/menu-peran.ts). Dipanggil halaman Ringkasan. */
 export async function KartuPeran({ supabase, akses }: { supabase: SupabaseClient; akses: Akses }) {
   const pid = await pegawaiSaya(supabase);
-  const kartu: { kunci: string; el: ReactNode }[] = [];
-  if (berperan(akses, "kepala_sekolah")) kartu.push({ kunci: "kepala", el: <KartuKepala db={supabase} /> });
-  if (punya(akses, "pengguna.kelola") || punya(akses, "pengguna.kelola_dasar")) kartu.push({ kunci: "admin", el: <KartuAdmin db={supabase} penuh={punya(akses, "pengguna.kelola")} /> });
-  if (punya(akses, "kurikulum.kelola")) kartu.push({ kunci: "kurikulum", el: <KartuKurikulum db={supabase} /> });
-  if (punya(akses, "kesiswaan.kelola")) kartu.push({ kunci: "kesiswaan", el: <KartuKesiswaan db={supabase} /> });
-  if (punya(akses, "sarpras.kelola") || punya(akses, "sarpras.inventaris")) kartu.push({ kunci: "sarpras", el: <KartuSarpras db={supabase} /> });
-  if (punya(akses, "humas.kelola")) kartu.push({ kunci: "humas", el: <KartuHumas db={supabase} /> });
-  if (punya(akses, "bk.konseling")) kartu.push({ kunci: "bk", el: <KartuBk db={supabase} /> });
-  if (berperan(akses, "wali_kelas")) kartu.push({ kunci: "wali", el: <KartuWali db={supabase} pid={pid} /> });
-  if (berperan(akses, "piket")) kartu.push({ kunci: "piket", el: <KartuPiket db={supabase} /> });
-  if (BOLEH.mengajar(akses)) kartu.push({ kunci: "mengajar", el: <KartuMengajar db={supabase} pid={pid} /> });
+  const buat: Record<KunciKartu, () => ReactNode> = {
+    kepala: () => <KartuKepala db={supabase} />,
+    admin: () => <KartuAdmin db={supabase} />,
+    tu: () => <KartuTu db={supabase} />,
+    kurikulum: () => <KartuKurikulum db={supabase} />,
+    kesiswaan: () => <KartuKesiswaan db={supabase} />,
+    sarpras: () => <KartuSarpras db={supabase} />,
+    lab: () => <KartuLab db={supabase} />,
+    humas: () => <KartuHumas db={supabase} />,
+    bk: () => <KartuBk db={supabase} />,
+    perpus: () => <KartuPerpus db={supabase} />,
+    literasi: () => <KartuLiterasi db={supabase} />,
+    anggaran: () => <KartuAnggaran db={supabase} />,
+    mutu: () => <KartuMutu db={supabase} />,
+    alumni: () => <KartuAlumni db={supabase} />,
+    wali: () => <KartuWali db={supabase} pid={pid} />,
+    piket: () => <KartuPiket db={supabase} />,
+    mengajar: () => <KartuMengajar db={supabase} pid={pid} />,
+    hariini: () => <KartuHariIni db={supabase} pid={pid} />,
+  };
+  const kartu = kartuUntuk(akses.peran);
   if (!kartu.length) return null;
   const nama = akses.peran.map((p) => NAMA_PERAN[p] ?? p).join(", ");
   return (
@@ -360,8 +517,8 @@ export async function KartuPeran({ supabase, akses }: { supabase: SupabaseClient
         Untuk peran Anda · {nama}
       </h2>
       {kartu.map((k) => (
-        <div key={k.kunci} data-kartu-peran={k.kunci} className={k.kunci === "kepala" ? "lg:col-span-3" : ""}>
-          {k.el}
+        <div key={k} data-kartu-peran={k} className={k === "kepala" ? "lg:col-span-3" : ""}>
+          {buat[k]()}
         </div>
       ))}
     </>

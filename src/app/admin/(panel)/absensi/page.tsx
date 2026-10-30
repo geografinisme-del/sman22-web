@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { JudulHalaman, Kartu, Lencana, kelasTabel, kelasTd, kelasTh } from "@/components/admin/ui";
-import { berperan, punya, wajibLogin } from "@/lib/admin/auth";
+import { berperan, punya, wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { hariIniWIB, jamSekarangWIB, tanggalValid } from "@/lib/admin/absensi";
 import { kelasWaliSaya } from "@/lib/admin/kelas-wali";
 import { formatTanggal } from "@/lib/format";
@@ -11,7 +12,7 @@ export const metadata = { title: "Absensi Siswa" };
 
 export default async function AbsensiHariIni({ searchParams }: { searchParams: Promise<{ tanggal?: string }> }) {
   const sp = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.absensiHarian);
   const lihatSemua = punya(akses, "absensi.lihat");
   if (!lihatSemua) {
     if (!berperan(akses, "wali_kelas")) redirect("/admin?pesan=tanpa-akses");

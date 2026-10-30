@@ -237,9 +237,12 @@ export async function BagianHariIni({ supabase, akses }: { supabase: SupabaseCli
           judul="Kehadiran siswa hari ini"
           className="lg:col-span-2"
           aksi={
-            <Link href="/admin/absensi/jp" className="text-sm font-semibold underline underline-offset-2">
-              Absensi per jam pelajaran
-            </Link>
+            // pemantauan per jam pelajaran: pemantau disiplin (kesiswaan, BK, pimpinan, admin) — bukan tugas piket
+            punya(akses, "disiplin.lihat") ? (
+              <Link href="/admin/absensi/jp" className="text-sm font-semibold underline underline-offset-2">
+                Absensi per jam pelajaran
+              </Link>
+            ) : undefined
           }
         >
           {siswaGagal ? (

@@ -4,18 +4,22 @@ import { akunDilindungi, BOLEH, peranDasar } from "./akses-modul.ts";
 
 const akun = (peran: string[], izin: string[] = []) => ({ peran, izin });
 
-test("modul mengajar hanya untuk peran pengajar", () => {
+test("modul mengajar untuk semua pendidik (termasuk waka & kepala), bukan tendik", () => {
   assert.equal(BOLEH.mengajar(akun(["guru"])), true);
   assert.equal(BOLEH.mengajar(akun(["wali_kelas"])), true);
-  assert.equal(BOLEH.mengajar(akun(["waka_sarpras"], ["sarpras.kelola"])), false);
+  assert.equal(BOLEH.mengajar(akun(["waka_sarpras"], ["sarpras.kelola"])), true);
+  assert.equal(BOLEH.mengajar(akun(["kepala_sekolah"], [])), true);
+  assert.equal(BOLEH.mengajar(akun(["pustakawan"], ["perpus.kelola"])), false);
+  assert.equal(BOLEH.mengajar(akun(["operator"], ["data_induk.kelola"])), false);
   assert.equal(BOLEH.mengajar(akun(["pegawai"])), false);
 });
 
-test("struktur kurikulum: pengajar & bidang kurikulum, bukan waka lain", () => {
+test("struktur kurikulum: pendidik & bidang kurikulum, bukan tendik", () => {
   assert.equal(BOLEH.strukturKurikulum(akun(["waka_kurikulum"], ["kurikulum.kelola"])), true);
   assert.equal(BOLEH.strukturKurikulum(akun(["kepala_sekolah"], ["supervisi.kelola"])), true);
-  assert.equal(BOLEH.strukturKurikulum(akun(["waka_humas"], ["humas.kelola"])), false);
-  assert.equal(BOLEH.strukturKurikulum(akun(["waka_sarpras"], ["sarpras.kelola"])), false);
+  assert.equal(BOLEH.strukturKurikulum(akun(["waka_humas"], ["humas.kelola"])), true);
+  assert.equal(BOLEH.strukturKurikulum(akun(["laboran"], ["sarpras.inventaris"])), false);
+  assert.equal(BOLEH.strukturKurikulum(akun(["pegawai"], [])), false);
 });
 
 test("data humas: kelola atau lihat; dasbor humas untuk pengelola humas & pengaduan umum, bukan penangan rahasia saja", () => {

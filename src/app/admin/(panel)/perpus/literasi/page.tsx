@@ -18,7 +18,7 @@ export default async function Literasi({ searchParams }: { searchParams: Promise
   const sp = await searchParams;
   const { supabase, akses } = await wajibLogin();
   const bina = punya(akses, "perpus.kelola") || punya(akses, "literasi.kelola");
-  if (!bina && !punya(akses, "perpus.lihat")) redirect("/admin?pesan=tanpa-akses");
+  if (!bina) redirect("/admin?pesan=tanpa-akses");
   const tab = TAB.some(([k]) => k === sp.tab) ? sp.tab! : "jurnal";
   const { data: tan } = await supabase.from("tantangan_literasi").select("id, judul, deskripsi, mulai, selesai, target_buku, target_menit").is("deleted_at", null).order("mulai", { ascending: false });
   const tantangan = (tan ?? []) as DataTantangan[];

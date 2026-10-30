@@ -722,3 +722,14 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Grup "Buku Tamu" (bukan "Humas") untuk pencatat tamu tanpa tugas humas lain (piket, TU).
 - Uji: `uji-pratinjau.mjs` 2b — kartu per peran (kunci `data-kartu-peran`), tanpa "gagal dimuat", screenshot penuh
   `tangkapan/hak-akses/a3-*`.
+
+## Matriks menu per peran (30 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+- Menu & kartu Ringkasan = `docs/matriks-layanan.md` (disetujui), diterapkan sebagai DATA di `src/lib/admin/menu-peran.ts`
+  (`menuUntuk(peran)`, `kartuUntuk(peran)`): menu ditentukan PERAN, bukan tautan akun ke data pegawai. Pendidik (guru +
+  tugas tambahan, termasuk waka & kepala, literasi) vs tendik (operator, pustakawan, laboran, pegawai, keuangan).
+- "Layanan saya" semua GTK + tambahan pendidik; grup "Mengajar"; grup "Piket"; "Perwalian" berisi semua urusan kelas wali;
+  "Terakhir dibuka" dihapus; setiap peran punya kartu (baru: Tata usaha, Perpustakaan, Laboratorium, Hari ini, Literasi,
+  Anggaran, Mutu, Alumni).
+- Penjaga server diselaraskan (lihat bagian "Keputusan & penyesuaian" di matriks).
+- Uji: `menu-peran.test.ts` (spesifikasi eksplisit 19 peran), `uji-pratinjau.mjs` 2b (menu PERSIS = matriks, setiap item
+  terbuka, halaman bidang lain ditolak, kartu = matriks, screenshot `tangkapan/hak-akses/matriks-*`).

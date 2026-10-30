@@ -1,7 +1,8 @@
 import { JudulHalaman, Kartu, Lencana } from "@/components/admin/ui";
 import { FormPelanggaran, FormPrestasi } from "@/components/kesiswaan/Form";
 import { hariIniWIB } from "@/lib/admin/absensi";
-import { wajibLogin } from "@/lib/admin/auth";
+import { wajibBoleh } from "@/lib/admin/auth";
+import { BOLEH } from "@/lib/admin/akses-modul";
 import { STATUS_LAPORAN } from "@/lib/kesiswaan/label";
 import { formatTanggal } from "@/lib/format";
 import { TabPills } from "@/components/admin/TabPills";
@@ -10,7 +11,7 @@ export const metadata = { title: "Lapor Pelanggaran / Prestasi" };
 
 export default async function Lapor({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const { tab } = await searchParams;
-  const { supabase, akses } = await wajibLogin();
+  const { supabase, akses } = await wajibBoleh(BOLEH.mengajar);
   const prestasi = tab === "prestasi";
   const [{ data: jenis }, { data: pel }, { data: pre }, { data: rujukan }] = await Promise.all([
     supabase.from("jenis_pelanggaran").select("id, nama, kategori, poin").eq("aktif", true).order("kategori").order("poin"),
