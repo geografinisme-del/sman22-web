@@ -30,8 +30,8 @@ export const BOLEH = {
   katalogPerpus: (a: AksesMinimal) => izin(a, "perpus.kelola", "perpus.lihat"),
   poinKesiswaan: (a: AksesMinimal) => izin(a, "kesiswaan.lihat") || peran(a, "wali_kelas"),
   dataHumas: (a: AksesMinimal) => izin(a, "humas.kelola", "humas.lihat"),
-  dasborHumas: (a: AksesMinimal) =>
-    izin(a, "humas.kelola", "humas.lihat", "pengaduan.kelola", "pengaduan.rahasia", "pengaduan.lihat", "pengaduan.metadata"),
+  // penangan pengaduan RAHASIA saja (BK, Wakasek Kesiswaan) tidak termasuk: mereka memakai daftar Pengaduan saja
+  dasborHumas: (a: AksesMinimal) => izin(a, "humas.kelola", "humas.lihat", "pengaduan.kelola", "pengaduan.lihat", "pengaduan.metadata"),
   penggunaPeran: (a: AksesMinimal) => izin(a, "pengguna.kelola", "pengguna.kelola_dasar"),
   laporanBk: (a: AksesMinimal) => izin(a, "bk.agregat"),
   logAksesBk: (a: AksesMinimal) => izin(a, "bk.konseling", "audit.baca"),

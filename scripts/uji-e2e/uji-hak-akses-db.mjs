@@ -4,6 +4,7 @@
 // Peran disimulasikan persis seperti PostgREST: role `authenticated` + request.jwt.claims (sub, aal) + pra_permintaan().
 // Pakai: node scripts/uji-e2e/uji-hak-akses-db.mjs
 import { spawnSync } from "node:child_process";
+import fs from "node:fs";
 
 const KONTAINER = "supabase_db_sman22-web-uji";
 let gagal = 0;
@@ -59,7 +60,10 @@ rollback;`;
 };
 /** psql di kontainer; kembalikan keluaran SETELAH penanda ===MULAI + seluruh pesan galat (stderr) */
 function jalankan(naskah) {
-  const r = spawnSync("docker", ["exec", "-i", KONTAINER, "psql", "-U", "postgres", "-At", "-q"], { input: naskah, encoding: "utf8" });
+  // UJI_PRODUKSI=1: lewat backup/psql-prod.sh (URL dari .env.local, tidak ditampilkan). Semua skenario tetap ROLLBACK.
+  const r = process.env.UJI_PRODUKSI === "1"
+    ? (fs.writeFileSync("backup/_uji-hak-akses.sql", naskah), spawnSync("bash", ["backup/psql-prod.sh", "backup/_uji-hak-akses.sql", "-At", "-q"], { encoding: "utf8" }))
+    : spawnSync("docker", ["exec", "-i", KONTAINER, "psql", "-U", "postgres", "-At", "-q"], { input: naskah, encoding: "utf8" });
   const keluar = (r.stdout ?? "").split("===MULAI")[1]?.trim() ?? r.stdout ?? "";
   const err = (r.stderr ?? "").split("\n").filter((l) => /ERROR/.test(l)).join("\n");
   return err ? `${keluar}\n${err}`.trim() : keluar;
@@ -101,8 +105,7 @@ cek("bk: bisa membaca kasus & rujukan BK", bkBaca === "2", bkBaca);
 {
   const r = sebagai("guru", `select alasan || '|' || status from public.rujukan_saya() where alasan = 'alasan rujukan uji hak akses';`);
   cek("guru perujuk: melihat status rujukannya lewat rujukan_saya()", r === "alasan rujukan uji hak akses|baru", r);
-  const kolom = sebagai("guru", `select string_agg(column_name, ',') from information_schema.routine_columns where routine_name = 'rujukan_saya';`);
-  cek("rujukan_saya() tidak memuat catatan BK", !/catatan/.test(sebagai("guru", `select row_to_json(r)::text from public.rujukan_saya() r limit 1;`)), kolom);
+  cek("rujukan_saya() tidak memuat catatan BK", !/catatan/.test(sebagai("guru", `select row_to_json(r)::text from public.rujukan_saya() r limit 1;`)));
   cek("guru lain: rujukan_saya() kosong", sebagai("guru2", `select count(*) from public.rujukan_saya();`) === "0");
 }
 cek("log aktivitas: perubahan rujukan BK tidak menyimpan alasan/catatan",

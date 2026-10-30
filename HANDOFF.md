@@ -664,7 +664,11 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - PELAJARAN: draf awal mencabut EXECUTE `peran_pratinjau()` dari anon → semua data publik gagal (pre-request berjalan untuk
   anon). Fungsi yang dipanggil pre-request/RLS WAJIB bisa dieksekusi anon.
 
-## Hak akses per bidang — A2a (29 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+## Hak akses per bidang — A2a (DIRILIS 30 Okt 2026)
+- RILIS: kode `b467444` → production `dpl_MPrEKuyLKC5fBHtzTEEPJhrqsoua` (titik kembali `dpl_Fi7QBUfdNfjK78FFT2tKG6CFazLz`).
+  Backup `backup/20261030-045000` (audit_log 213 baris, terverifikasi pg_restore). Migrasi 20261229 via psql satu transaksi
+  21:52 UTC 29 Okt (tercatat di schema_migrations); 0 catatan log lama perlu disamarkan. Uji production:
+  `UJI_PRODUKSI=1 node scripts/uji-e2e/uji-hak-akses-db.mjs` 66/66 (semua ROLLBACK, sisa 0).
 - Rancangan & matriks: `docs/audit-hak-akses.md` (A1), `docs/usulan-a2-hak-akses.md` (A2). Migrasi
   `20261229000000_hak_akses_bidang.sql` (rollback `supabase/rollback/rollback_20261229_hak_akses_bidang.sql`).
 - Peran: `kurikulum/kesiswaan/sarpras/humas` → `waka_kurikulum/waka_kesiswaan/waka_sarpras/waka_humas` ("Wakasek …");
@@ -689,3 +693,30 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   hanya 1 akun (super admin) sehingga jeda singkat aman.
 - A2b (data pribadi: view `siswa_akademik` + RPC tercatat, super admin lepas kelola data induk dengan "akses darurat")
   dikerjakan setelah A2a dirilis.
+
+## Menu "Layanan saya" (A3 bagian menu, 30 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+- Layanan PRIBADI semua GTK digabung ke grup "Layanan saya": Presensi Saya, Jadwal Saya, Tukar Jam (pengajar),
+  Kalender, Lapor Pelanggaran/Prestasi, Lapor Kerusakan, Peminjaman Ruang/Barang, Pinjaman Perpustakaan Saya, Pojok Baca
+  Saya, Rujukan BK Saya, Tamu untuk Saya, Pengaduan Ditugaskan (PIC). Pekerjaan guru di kelas → grup "Mengajar".
+- Grup bernama bidang (Kesiswaan, Jadwal, Kurikulum, Perpustakaan, Sarpras, Humas, Absensi, …) HANYA untuk pengelola
+  bidang itu. Wali kelas: "Perwalian" (Kelas Saya + Prestasi & Poin Kelas).
+- BK & Wakasek Kesiswaan (hanya penangan pengaduan RAHASIA): tanpa grup Humas; grup "Pengaduan" berisi daftar pengaduan
+  (RLS: rahasia + yang ditugaskan kepadanya). Akses server sama dengan A2 (kemitraan/survei/kontak media tetap ditolak).
+- Uji: `uji-pratinjau.mjs` bagian 2b — 13 peran, semua grup dibuka & isinya diperiksa (Layanan saya ⊂ layanan pribadi),
+  URL langsung ditolak, screenshot `tangkapan/hak-akses/a3-*-{1440,390}.png`.
+- Catatan uji lokal: `next start` di Windows kadang keluar sendiri (kode 0xC0000409); jalankan lewat pengawas yang
+  memulai ulang; uji-pratinjau mengulang navigasi yang terputus dan mencetak jumlahnya.
+
+## Ringkasan sesuai peran (A3, 30 Okt 2026, cabang `langit-cerah`, BELUM dirilis — dirilis bersama menu "Layanan saya")
+- `src/components/dashboard/KartuPeran.tsx`: bagian "Untuk peran Anda · <peran>" di ATAS Ringkasan (gabungan bila
+  beberapa peran). Kartu: kepala (angka semua bidang 30 hari, BK hanya agregat), admin (akun tanpa peran, login gagal,
+  notifikasi gagal/antre; operator hanya akun tanpa peran), kurikulum (jurnal hari ini %, tukar jam, pengganti, perangkat,
+  supervisi), kesiswaan (SP & panggilan belum ditindak, verifikasi pelanggaran/prestasi), sarpras/laboran (peminjaman,
+  dipinjam, kerusakan, barang rusak), humas (pengaduan aktif/lewat tenggat, survei, MoU berakhir), BK (kasus aktif,
+  permintaan, jadwal konseling 7 hari tanpa nama), wali kelas (kelas saya), piket (petugas, siswa terlambat, pengajuan),
+  mengajar (jadwal hari ini + status jurnal). Pegawai umum: dasbor dasar (pengumuman, kalender, piket).
+- Data kosong = keadaan kosong (bukan galat). "Izin keluar kelas" belum ada datanya → catatan di kartu piket.
+- BK & Wakasek Kesiswaan: Dasbor Humas juga ditolak server (BOLEH.dasborHumas tanpa pengaduan.rahasia).
+- Grup "Buku Tamu" (bukan "Humas") untuk pencatat tamu tanpa tugas humas lain (piket, TU).
+- Uji: `uji-pratinjau.mjs` 2b — kartu per peran (kunci `data-kartu-peran`), tanpa "gagal dimuat", screenshot penuh
+  `tangkapan/hak-akses/a3-*`.

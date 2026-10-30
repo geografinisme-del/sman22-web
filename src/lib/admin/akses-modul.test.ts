@@ -18,10 +18,11 @@ test("struktur kurikulum: pengajar & bidang kurikulum, bukan waka lain", () => {
   assert.equal(BOLEH.strukturKurikulum(akun(["waka_sarpras"], ["sarpras.kelola"])), false);
 });
 
-test("data humas: kelola atau lihat; dasbor humas juga untuk petugas pengaduan", () => {
+test("data humas: kelola atau lihat; dasbor humas untuk pengelola humas & pengaduan umum, bukan penangan rahasia saja", () => {
   assert.equal(BOLEH.dataHumas(akun(["kepala_sekolah"], ["humas.lihat"])), true);
   assert.equal(BOLEH.dataHumas(akun(["bk"], ["pengaduan.rahasia"])), false);
-  assert.equal(BOLEH.dasborHumas(akun(["bk"], ["pengaduan.rahasia"])), true);
+  assert.equal(BOLEH.dasborHumas(akun(["bk"], ["pengaduan.rahasia"])), false);
+  assert.equal(BOLEH.dasborHumas(akun(["waka_kesiswaan"], ["pengaduan.rahasia", "kesiswaan.kelola"])), false);
   assert.equal(BOLEH.dasborHumas(akun(["super_admin"], ["pengaduan.metadata"])), true);
 });
 

@@ -11,11 +11,13 @@ import {
   Bell,
   BookMarked,
   BookOpen,
+  BookUser,
   Building2,
   CalendarCheck,
   CalendarClock,
   ChevronRight,
   CircleUser,
+  ClipboardList,
   Database,
   ExternalLink,
   Folder,
@@ -39,7 +41,7 @@ import { sekolah } from "@/content/sekolah";
 export type GrupMenu = { judul?: string; item: { href: string; label: string; badge?: number }[] };
 
 /** Urutan grup: yang dipakai harian di atas, pengaturan & arsip di bawah. Grup lain menyusul sesuai urutan asli. */
-const PRIORITAS = ["Absensi", "Perwalian", "Kesiswaan", "Jadwal", "Pembelajaran", "Kurikulum", "Data Induk", "Website", "Bimbingan Konseling", "Ekskul & OSIS", "Perpustakaan", "Sarpras", "Humas", "Alumni", "Mutu", "Pengaturan", "Akun saya"];
+const PRIORITAS = ["Layanan saya", "Mengajar", "Perwalian", "Absensi", "Kesiswaan", "Jadwal", "Kurikulum", "Data Induk", "Website", "Bimbingan Konseling", "Ekskul & OSIS", "Perpustakaan", "Sarpras", "Laboratorium", "Humas", "Buku Tamu", "Alumni", "Mutu", "Pengaturan", "Akun saya"];
 /** Satu gaya ikon (lucide, garis 1.75) per grup modul */
 const IKON_GRUP: Record<string, ComponentType<LucideProps>> = {
   Absensi: CalendarCheck,
@@ -47,6 +49,8 @@ const IKON_GRUP: Record<string, ComponentType<LucideProps>> = {
   Kesiswaan: Award,
   Jadwal: CalendarClock,
   Pembelajaran: BookOpen,
+  Mengajar: BookOpen,
+  "Layanan saya": ClipboardList,
   Kurikulum: BookMarked,
   "Data Induk": Database,
   Website: Globe,
@@ -55,6 +59,7 @@ const IKON_GRUP: Record<string, ComponentType<LucideProps>> = {
   Perpustakaan: Library,
   Sarpras: Building2,
   Humas: Megaphone,
+  "Buku Tamu": BookUser,
   Alumni: GraduationCap,
   Mutu: BadgeCheck,
   Pengaturan: Settings,
