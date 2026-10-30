@@ -48,3 +48,8 @@ akun-uji.local.json
 # backup database (berisi data pribadi) — jangan pernah di-commit
 /backup/
 *.dump
+
+# ekspor & kode SABDA 22 (data siswa) — JANGAN pernah di-commit, walau disalin ke dalam repo
+sabda22-ekspor/
+**/sabda22-ekspor/
+*.xlsx.bak
