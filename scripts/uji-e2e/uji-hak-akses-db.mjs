@@ -105,8 +105,7 @@ cek("bk: bisa membaca kasus & rujukan BK", bkBaca === "2", bkBaca);
 {
   const r = sebagai("guru", `select alasan || '|' || status from public.rujukan_saya() where alasan = 'alasan rujukan uji hak akses';`);
   cek("guru perujuk: melihat status rujukannya lewat rujukan_saya()", r === "alasan rujukan uji hak akses|baru", r);
-  const kolom = sebagai("guru", `select string_agg(column_name, ',') from information_schema.routine_columns where routine_name = 'rujukan_saya';`);
-  cek("rujukan_saya() tidak memuat catatan BK", !/catatan/.test(sebagai("guru", `select row_to_json(r)::text from public.rujukan_saya() r limit 1;`)), kolom);
+  cek("rujukan_saya() tidak memuat catatan BK", !/catatan/.test(sebagai("guru", `select row_to_json(r)::text from public.rujukan_saya() r limit 1;`)));
   cek("guru lain: rujukan_saya() kosong", sebagai("guru2", `select count(*) from public.rujukan_saya();`) === "0");
 }
 cek("log aktivitas: perubahan rujukan BK tidak menyimpan alasan/catatan",
