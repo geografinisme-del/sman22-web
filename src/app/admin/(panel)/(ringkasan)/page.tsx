@@ -1,3 +1,4 @@
+import { KartuPeran } from "@/components/dashboard/KartuPeran";
 import Link from "next/link";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { JudulHalaman, Notifikasi } from "@/components/admin/ui";
@@ -61,6 +62,8 @@ export default async function Ringkasan({ searchParams }: { searchParams: Promis
       {kelolaKonten && <PengingatMedia supabase={supabase} akses={akses} />}
 
       <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        {/* kartu sesuai peran (gabungan bila beberapa peran) di atas; dasbor dasar & tindakan menyusul */}
+        <KartuPeran supabase={supabase} akses={akses} />
         <DasborDasar supabase={supabase} akses={akses} />
         <BagianHariIni supabase={supabase} akses={akses} />
 

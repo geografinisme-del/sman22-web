@@ -1,6 +1,6 @@
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { Sidebar, type GrupMenu } from "@/components/admin/Sidebar";
-import { berperan, NAMA_PERAN, punya, wajibLogin, type Izin } from "@/lib/admin/auth";
+import { berperan, NAMA_PERAN, punya, wajibLogin } from "@/lib/admin/auth";
 import { hitungBersama, pegawaiSaya as cariPegawaiSaya, statusDisiplin, tugasPerluNilai, tukarUntukSaya, type NamaHitungan } from "@/lib/admin/hitungan";
 import { redirect } from "next/navigation";
 import { keluar } from "../actions";
@@ -160,8 +160,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const mengajar = BOLEH.mengajar(akses);
   const kelolaSarpras = punya(akses, "sarpras.kelola") || punya(akses, "sarpras.lihat");
   // bidang humas: pengelola humas & pengaduan umum. Penangan pengaduan RAHASIA saja (BK, Wakasek Kesiswaan) tidak masuk
-  // grup Humas — mereka mendapat grup "Pengaduan" sendiri (akses server tetap sama: BOLEH.dasborHumas, RLS pengaduan).
-  const kelolaHumas = ["humas.kelola", "humas.lihat", "pengaduan.kelola", "pengaduan.lihat", "pengaduan.metadata"].some((i) => punya(akses, i as Izin));
+  // grup Humas — mereka mendapat grup "Pengaduan" sendiri; Dasbor Humas juga ditolak server untuk mereka (BOLEH.dasborHumas).
+  const kelolaHumas = BOLEH.dasborHumas(akses);
   const tanganiRahasia = !kelolaHumas && punya(akses, "pengaduan.rahasia");
   const tamuBidang = punya(akses, "tamu.catat") || BOLEH.dataHumas(akses);
   const layanan: GrupMenu["item"] = [
@@ -232,7 +232,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (kelolaHumas) humas.push({ href: "/admin/humas", label: "Dasbor Humas" }, { href: "/admin/pengaduan", label: "Pengaduan", badge: aduanBaru });
   if (BOLEH.dataHumas(akses)) humas.push({ href: "/admin/kemitraan", label: "Kemitraan & MoU" }, { href: "/admin/survei", label: "Survei" }, { href: "/admin/kontak-media", label: "Kontak Media" });
   if (tamuBidang) humas.push({ href: "/admin/buku-tamu", label: "Buku Tamu", badge: tamuAda });
-  if (humas.length) grup.push({ judul: "Humas", item: humas });
+  // pencatat tamu tanpa tugas humas lain (piket, TU): grupnya bernama "Buku Tamu", bukan bidang Humas
+  if (humas.length) grup.push({ judul: humas.length === 1 && humas[0].href === "/admin/buku-tamu" ? "Buku Tamu" : "Humas", item: humas });
   // penangan pengaduan rahasia: daftar pengaduan (RLS hanya memberi yang rahasia + yang ditugaskan kepadanya)
   if (tanganiRahasia) grup.push({ judul: "Pengaduan", item: [{ href: "/admin/pengaduan", label: "Pengaduan Rahasia & Ditugaskan", badge: aduanBaru }] });
   // BK: hanya peran BK. Pimpinan melihat angka agregat (tanpa isi) dari grup Kesiswaan; log akses BK di Pengaturan.

@@ -706,3 +706,17 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   URL langsung ditolak, screenshot `tangkapan/hak-akses/a3-*-{1440,390}.png`.
 - Catatan uji lokal: `next start` di Windows kadang keluar sendiri (kode 0xC0000409); jalankan lewat pengawas yang
   memulai ulang; uji-pratinjau mengulang navigasi yang terputus dan mencetak jumlahnya.
+
+## Ringkasan sesuai peran (A3, 30 Okt 2026, cabang `langit-cerah`, BELUM dirilis — dirilis bersama menu "Layanan saya")
+- `src/components/dashboard/KartuPeran.tsx`: bagian "Untuk peran Anda · <peran>" di ATAS Ringkasan (gabungan bila
+  beberapa peran). Kartu: kepala (angka semua bidang 30 hari, BK hanya agregat), admin (akun tanpa peran, login gagal,
+  notifikasi gagal/antre; operator hanya akun tanpa peran), kurikulum (jurnal hari ini %, tukar jam, pengganti, perangkat,
+  supervisi), kesiswaan (SP & panggilan belum ditindak, verifikasi pelanggaran/prestasi), sarpras/laboran (peminjaman,
+  dipinjam, kerusakan, barang rusak), humas (pengaduan aktif/lewat tenggat, survei, MoU berakhir), BK (kasus aktif,
+  permintaan, jadwal konseling 7 hari tanpa nama), wali kelas (kelas saya), piket (petugas, siswa terlambat, pengajuan),
+  mengajar (jadwal hari ini + status jurnal). Pegawai umum: dasbor dasar (pengumuman, kalender, piket).
+- Data kosong = keadaan kosong (bukan galat). "Izin keluar kelas" belum ada datanya → catatan di kartu piket.
+- BK & Wakasek Kesiswaan: Dasbor Humas juga ditolak server (BOLEH.dasborHumas tanpa pengaduan.rahasia).
+- Grup "Buku Tamu" (bukan "Humas") untuk pencatat tamu tanpa tugas humas lain (piket, TU).
+- Uji: `uji-pratinjau.mjs` 2b — kartu per peran (kunci `data-kartu-peran`), tanpa "gagal dimuat", screenshot penuh
+  `tangkapan/hak-akses/a3-*`.

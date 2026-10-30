@@ -166,7 +166,7 @@ const mulai = async (kode) => {
   await page.waitForTimeout(800);
 };
 const potret = async (nama) => {
-  await page.screenshot({ path: path.join(keluar, `${nama}-1440.png`) });
+  await page.screenshot({ path: path.join(keluar, `${nama}-1440.png`), fullPage: nama.startsWith("a3-") });
   const hp = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2, storageState: await ctx.storageState() });
   const p2 = await hp.newPage();
   await p2.goto(page.url(), { waitUntil: "load" });
@@ -177,7 +177,7 @@ const potret = async (nama) => {
     return { pita: b && { atas: Math.round(b.top), bawah: Math.round(b.bottom) }, header: h && { atas: Math.round(h.top) }, lebar: document.documentElement.scrollWidth > innerWidth };
   });
   cek(`${nama} 390px: pita terlihat & header di bawahnya (tidak menutupi), tanpa gulir horizontal`, pita.pita && pita.pita.atas === 0 && (!pita.header || pita.header.atas >= pita.pita.bawah - 1) && !pita.lebar, pita);
-  await p2.screenshot({ path: path.join(keluar, `${nama}-390.png`) });
+  await p2.screenshot({ path: path.join(keluar, `${nama}-390.png`), fullPage: nama.startsWith("a3-") });
   await hp.close();
 };
 
@@ -255,19 +255,25 @@ const menuLengkap = async () => {
 };
 // layanan pribadi yang boleh ada di "Layanan saya" (bukan halaman kelola)
 const PRIBADI = new Set(["/admin/presensi", "/admin/jadwal-saya", "/admin/tukar-jam", "/admin/kalender", "/admin/kesiswaan/lapor", "/admin/sarpras/kerusakan", "/admin/sarpras/peminjaman", "/admin/perpus", "/admin/perpus/pojok", "/admin/rujukan-bk", "/admin/buku-tamu", "/admin/pengaduan"]);
-const BIDANG = ["Pengaduan", "Kesiswaan", "Jadwal", "Kurikulum", "Perpustakaan", "Sarpras", "Humas", "Bimbingan Konseling", "Absensi", "Pengaturan", "Data Induk", "Website", "Mutu", "Alumni"];
+const BIDANG = ["Buku Tamu", "Pengaduan", "Kesiswaan", "Jadwal", "Kurikulum", "Perpustakaan", "Sarpras", "Humas", "Bimbingan Konseling", "Absensi", "Pengaturan", "Data Induk", "Website", "Mutu", "Alumni"];
 const NAMA = { waka_sarpras: "Wakasek Sarpras", waka_kurikulum: "Wakasek Kurikulum", waka_kesiswaan: "Wakasek Kesiswaan", waka_humas: "Wakasek Humas", kepala_sekolah: "Kepala Sekolah", operator: "Operator / TU", bk: "Guru BK", guru: "Guru", piket: "Guru Piket", wali_kelas: "Wali Kelas", pegawai: "Pegawai umum", laboran: "Laboran", pustakawan: "Pustakawan" };
 // grup bidang yang BOLEH tampil per peran (selain itu tidak boleh ada); "Layanan saya" & "Akun saya" selalu ada
+// kartu Ringkasan per peran (urutan tampil); pengajar (guru, wali kelas, piket, BK) juga mendapat "mengajar"
+const KARTU = {
+  waka_sarpras: ["sarpras"], waka_kurikulum: ["kurikulum"], waka_kesiswaan: ["kesiswaan"], waka_humas: ["humas"],
+  kepala_sekolah: ["kepala"], operator: ["admin"], bk: ["bk", "mengajar"], guru: ["mengajar"], piket: ["piket", "mengajar"],
+  wali_kelas: ["wali", "mengajar"], pegawai: [], laboran: ["sarpras"], pustakawan: [],
+};
 const ATURAN = {
   waka_sarpras: { grup: ["Sarpras"], buka: ["/admin/sarpras"], tolak: ["/admin/kurikulum", "/admin/kokurikuler", "/admin/bk/laporan", "/admin/survei", "/admin/kontak-media", "/admin/pengguna", "/admin/jadwal", "/admin/kesiswaan", "/admin/perpus/katalog"] },
   waka_kurikulum: { grup: ["Kurikulum", "Jadwal", "Data Induk", "Mutu", "Perpustakaan"], buka: ["/admin/kurikulum", "/admin/jadwal"], tolak: ["/admin/bk/laporan", "/admin/survei", "/admin/pengguna", "/admin/kesiswaan"] },
-  waka_kesiswaan: { grup: ["Kesiswaan", "Absensi", "Data Induk", "Pengaduan", "Ekskul & OSIS"], buka: ["/admin/kesiswaan", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/survei", "/admin/bk", "/admin/pengguna", "/admin/jadwal"] },
+  waka_kesiswaan: { grup: ["Kesiswaan", "Absensi", "Data Induk", "Pengaduan", "Ekskul & OSIS"], buka: ["/admin/kesiswaan", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/survei", "/admin/bk", "/admin/pengguna", "/admin/jadwal", "/admin/humas", "/admin/kemitraan"] },
   waka_humas: { grup: ["Humas", "Website", "Alumni"], buka: ["/admin/survei", "/admin/kontak-media", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/bk/laporan", "/admin/pengguna", "/admin/kesiswaan"] },
   kepala_sekolah: { grup: ["Humas", "Kesiswaan", "Absensi", "Kurikulum", "Pengaturan", "Mutu", "Sarpras", "Data Induk", "Website", "Alumni", "Ekskul & OSIS", "Perpustakaan"], buka: ["/admin/survei", "/admin/kontak-media", "/admin/bk/laporan", "/admin/pengaduan", "/admin/log"], tolak: ["/admin/bk", "/admin/pengguna", "/admin/kesiswaan/pengaturan"] },
-  operator: { grup: ["Pengaturan", "Data Induk", "Absensi", "Sarpras", "Humas"], buka: ["/admin/pengguna", "/admin/siswa"], tolak: ["/admin/bk/laporan", "/admin/survei", "/admin/jadwal", "/admin/absensi/pengaturan", "/admin/kesiswaan"] },
-  bk: { grup: ["Bimbingan Konseling", "Kesiswaan", "Absensi", "Data Induk", "Alumni", "Pengaduan"], buka: ["/admin/bk", "/admin/rujukan-bk", "/admin/pengaduan"], tolak: ["/admin/survei", "/admin/pengguna", "/admin/kemitraan", "/admin/kontak-media"] },
+  operator: { grup: ["Pengaturan", "Data Induk", "Absensi", "Sarpras", "Buku Tamu"], buka: ["/admin/pengguna", "/admin/siswa"], tolak: ["/admin/bk/laporan", "/admin/survei", "/admin/jadwal", "/admin/absensi/pengaturan", "/admin/kesiswaan"] },
+  bk: { grup: ["Bimbingan Konseling", "Kesiswaan", "Absensi", "Data Induk", "Alumni", "Pengaduan"], buka: ["/admin/bk", "/admin/rujukan-bk", "/admin/pengaduan"], tolak: ["/admin/survei", "/admin/pengguna", "/admin/kemitraan", "/admin/kontak-media", "/admin/humas"] },
   guru: { grup: [], buka: ["/admin/kurikulum", "/admin/rujukan-bk"], tolak: ["/admin/kontak-media", "/admin/bk/laporan", "/admin/pengguna", "/admin/kesiswaan", "/admin/perpus/katalog"] },
-  piket: { grup: ["Absensi", "Jadwal", "Humas"], buka: ["/admin/absensi"], tolak: ["/admin/kesiswaan", "/admin/pengguna", "/admin/perpus/katalog"] },
+  piket: { grup: ["Absensi", "Jadwal", "Buku Tamu"], buka: ["/admin/absensi"], tolak: ["/admin/kesiswaan", "/admin/pengguna", "/admin/perpus/katalog"] },
   wali_kelas: { grup: ["Absensi"], buka: ["/admin/kelas-saya", "/admin/kesiswaan"], tolak: ["/admin/pengguna", "/admin/survei"] },
   pegawai: { grup: [], buka: [], tolak: ["/admin/kurikulum", "/admin/lms", "/admin/supervisi", "/admin/kesiswaan"] },
   laboran: { grup: ["Laboratorium"], buka: ["/admin/sarpras"], tolak: ["/admin/kurikulum", "/admin/kesiswaan"] },
@@ -276,6 +282,10 @@ const ATURAN = {
 for (const [kode, a] of Object.entries(ATURAN)) {
   await mulai(kode);
   await page.goto(BASE + "/admin", { waitUntil: "load" });
+  // kartu Ringkasan sesuai peran (A3): kunci kartu yang tampil sama dengan harapan, tanpa pesan galat
+  const kartu = await page.evaluate(() => [...document.querySelectorAll("[data-kartu-peran]")].map((x) => x.getAttribute("data-kartu-peran")));
+  cek(`${kode}: kartu Ringkasan = [${KARTU[kode].join(", ")}]`, JSON.stringify(kartu) === JSON.stringify(KARTU[kode]), kartu);
+  cek(`${kode}: Ringkasan tanpa pesan galat (data kosong tampil rapi)`, !/gagal dimuat/i.test((await page.textContent("main")) ?? ""));
   const label = (await page.locator(".pita-pratinjau strong").first().textContent().catch(() => "")) ?? "";
   cek(`${kode}: pita menyebut nama peran spesifik`, label.includes(NAMA[kode] ?? kode), label);
   const menu = await menuLengkap();
