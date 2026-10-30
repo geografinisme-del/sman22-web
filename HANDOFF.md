@@ -694,7 +694,7 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - A2b (data pribadi: view `siswa_akademik` + RPC tercatat, super admin lepas kelola data induk dengan "akses darurat")
   dikerjakan setelah A2a dirilis.
 
-## Menu "Layanan saya" (A3 bagian menu, 30 Okt 2026, cabang `langit-cerah`, BELUM dirilis)
+## Menu "Layanan saya" (A3 bagian menu, DIRILIS 30 Okt 2026 bersama Ringkasan)
 - Layanan PRIBADI semua GTK digabung ke grup "Layanan saya": Presensi Saya, Jadwal Saya, Tukar Jam (pengajar),
   Kalender, Lapor Pelanggaran/Prestasi, Lapor Kerusakan, Peminjaman Ruang/Barang, Pinjaman Perpustakaan Saya, Pojok Baca
   Saya, Rujukan BK Saya, Tamu untuk Saya, Pengaduan Ditugaskan (PIC). Pekerjaan guru di kelas → grup "Mengajar".
@@ -707,7 +707,9 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
 - Catatan uji lokal: `next start` di Windows kadang keluar sendiri (kode 0xC0000409); jalankan lewat pengawas yang
   memulai ulang; uji-pratinjau mengulang navigasi yang terputus dan mencetak jumlahnya.
 
-## Ringkasan sesuai peran (A3, 30 Okt 2026, cabang `langit-cerah`, BELUM dirilis — dirilis bersama menu "Layanan saya")
+## Ringkasan sesuai peran (A3, DIRILIS 30 Okt 2026)
+- RILIS: kode `07d5878` → production `dpl_6KomU5xpkdLBer9UXdTa1H9aZQcd` (titik kembali `dpl_MPrEKuyLKC5fBHtzTEEPJhrqsoua`), tanpa migrasi.
+  Log 06:50–07:22 UTC: Vercel 0 error, Supabase 0 error & 0 respons 5xx dari 338 permintaan.
 - `src/components/dashboard/KartuPeran.tsx`: bagian "Untuk peran Anda · <peran>" di ATAS Ringkasan (gabungan bila
   beberapa peran). Kartu: kepala (angka semua bidang 30 hari, BK hanya agregat), admin (akun tanpa peran, login gagal,
   notifikasi gagal/antre; operator hanya akun tanpa peran), kurikulum (jurnal hari ini %, tukar jam, pengganti, perangkat,
