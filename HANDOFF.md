@@ -700,6 +700,8 @@ tampil bila URL-nya diisi di CMS; dikerjakan di branch baru.
   Saya, Rujukan BK Saya, Tamu untuk Saya, Pengaduan Ditugaskan (PIC). Pekerjaan guru di kelas → grup "Mengajar".
 - Grup bernama bidang (Kesiswaan, Jadwal, Kurikulum, Perpustakaan, Sarpras, Humas, Absensi, …) HANYA untuk pengelola
   bidang itu. Wali kelas: "Perwalian" (Kelas Saya + Prestasi & Poin Kelas).
+- BK & Wakasek Kesiswaan (hanya penangan pengaduan RAHASIA): tanpa grup Humas; grup "Pengaduan" berisi daftar pengaduan
+  (RLS: rahasia + yang ditugaskan kepadanya). Akses server sama dengan A2 (kemitraan/survei/kontak media tetap ditolak).
 - Uji: `uji-pratinjau.mjs` bagian 2b — 13 peran, semua grup dibuka & isinya diperiksa (Layanan saya ⊂ layanan pribadi),
   URL langsung ditolak, screenshot `tangkapan/hak-akses/a3-*-{1440,390}.png`.
 - Catatan uji lokal: `next start` di Windows kadang keluar sendiri (kode 0xC0000409); jalankan lewat pengawas yang

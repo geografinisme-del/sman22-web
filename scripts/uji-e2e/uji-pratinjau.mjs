@@ -255,17 +255,17 @@ const menuLengkap = async () => {
 };
 // layanan pribadi yang boleh ada di "Layanan saya" (bukan halaman kelola)
 const PRIBADI = new Set(["/admin/presensi", "/admin/jadwal-saya", "/admin/tukar-jam", "/admin/kalender", "/admin/kesiswaan/lapor", "/admin/sarpras/kerusakan", "/admin/sarpras/peminjaman", "/admin/perpus", "/admin/perpus/pojok", "/admin/rujukan-bk", "/admin/buku-tamu", "/admin/pengaduan"]);
-const BIDANG = ["Kesiswaan", "Jadwal", "Kurikulum", "Perpustakaan", "Sarpras", "Humas", "Bimbingan Konseling", "Absensi", "Pengaturan", "Data Induk", "Website", "Mutu", "Alumni"];
+const BIDANG = ["Pengaduan", "Kesiswaan", "Jadwal", "Kurikulum", "Perpustakaan", "Sarpras", "Humas", "Bimbingan Konseling", "Absensi", "Pengaturan", "Data Induk", "Website", "Mutu", "Alumni"];
 const NAMA = { waka_sarpras: "Wakasek Sarpras", waka_kurikulum: "Wakasek Kurikulum", waka_kesiswaan: "Wakasek Kesiswaan", waka_humas: "Wakasek Humas", kepala_sekolah: "Kepala Sekolah", operator: "Operator / TU", bk: "Guru BK", guru: "Guru", piket: "Guru Piket", wali_kelas: "Wali Kelas", pegawai: "Pegawai umum", laboran: "Laboran", pustakawan: "Pustakawan" };
 // grup bidang yang BOLEH tampil per peran (selain itu tidak boleh ada); "Layanan saya" & "Akun saya" selalu ada
 const ATURAN = {
   waka_sarpras: { grup: ["Sarpras"], buka: ["/admin/sarpras"], tolak: ["/admin/kurikulum", "/admin/kokurikuler", "/admin/bk/laporan", "/admin/survei", "/admin/kontak-media", "/admin/pengguna", "/admin/jadwal", "/admin/kesiswaan", "/admin/perpus/katalog"] },
   waka_kurikulum: { grup: ["Kurikulum", "Jadwal", "Data Induk", "Mutu", "Perpustakaan"], buka: ["/admin/kurikulum", "/admin/jadwal"], tolak: ["/admin/bk/laporan", "/admin/survei", "/admin/pengguna", "/admin/kesiswaan"] },
-  waka_kesiswaan: { grup: ["Kesiswaan", "Absensi", "Data Induk", "Humas", "Ekskul & OSIS"], buka: ["/admin/kesiswaan", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/survei", "/admin/bk", "/admin/pengguna", "/admin/jadwal"] },
+  waka_kesiswaan: { grup: ["Kesiswaan", "Absensi", "Data Induk", "Pengaduan", "Ekskul & OSIS"], buka: ["/admin/kesiswaan", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/survei", "/admin/bk", "/admin/pengguna", "/admin/jadwal"] },
   waka_humas: { grup: ["Humas", "Website", "Alumni"], buka: ["/admin/survei", "/admin/kontak-media", "/admin/pengaduan"], tolak: ["/admin/kurikulum", "/admin/bk/laporan", "/admin/pengguna", "/admin/kesiswaan"] },
   kepala_sekolah: { grup: ["Humas", "Kesiswaan", "Absensi", "Kurikulum", "Pengaturan", "Mutu", "Sarpras", "Data Induk", "Website", "Alumni", "Ekskul & OSIS", "Perpustakaan"], buka: ["/admin/survei", "/admin/kontak-media", "/admin/bk/laporan", "/admin/pengaduan", "/admin/log"], tolak: ["/admin/bk", "/admin/pengguna", "/admin/kesiswaan/pengaturan"] },
   operator: { grup: ["Pengaturan", "Data Induk", "Absensi", "Sarpras", "Humas"], buka: ["/admin/pengguna", "/admin/siswa"], tolak: ["/admin/bk/laporan", "/admin/survei", "/admin/jadwal", "/admin/absensi/pengaturan", "/admin/kesiswaan"] },
-  bk: { grup: ["Bimbingan Konseling", "Kesiswaan", "Absensi", "Data Induk", "Alumni", "Humas"], buka: ["/admin/bk", "/admin/rujukan-bk"], tolak: ["/admin/survei", "/admin/pengguna"] },
+  bk: { grup: ["Bimbingan Konseling", "Kesiswaan", "Absensi", "Data Induk", "Alumni", "Pengaduan"], buka: ["/admin/bk", "/admin/rujukan-bk", "/admin/pengaduan"], tolak: ["/admin/survei", "/admin/pengguna", "/admin/kemitraan", "/admin/kontak-media"] },
   guru: { grup: [], buka: ["/admin/kurikulum", "/admin/rujukan-bk"], tolak: ["/admin/kontak-media", "/admin/bk/laporan", "/admin/pengguna", "/admin/kesiswaan", "/admin/perpus/katalog"] },
   piket: { grup: ["Absensi", "Jadwal", "Humas"], buka: ["/admin/absensi"], tolak: ["/admin/kesiswaan", "/admin/pengguna", "/admin/perpus/katalog"] },
   wali_kelas: { grup: ["Absensi"], buka: ["/admin/kelas-saya", "/admin/kesiswaan"], tolak: ["/admin/pengguna", "/admin/survei"] },
@@ -286,6 +286,11 @@ for (const [kode, a] of Object.entries(ATURAN)) {
   cek(`${kode}: ada "Layanan saya" & "Akun saya"`, judul.includes("Akun saya") && (judul.includes("Layanan saya") || kode === "laboran"), judul);
   const bukanPribadi = (menu["Layanan saya"] ?? []).filter((h) => !PRIBADI.has(h));
   cek(`${kode}: "Layanan saya" hanya layanan pribadi`, bukanPribadi.length === 0, { bukanPribadi, isi: menu["Layanan saya"] });
+  if (kode === "bk") {
+    cek("bk: tanpa grup Humas; grup Pengaduan hanya daftar pengaduan", !judul.includes("Humas") && JSON.stringify(menu["Pengaduan"]) === JSON.stringify(["/admin/pengaduan"]), menu);
+    const semua = Object.values(menu).flat();
+    cek("bk: kemitraan, kontak media, survei, website tidak ada di menu", !["/admin/kemitraan", "/admin/kontak-media", "/admin/survei", "/admin/humas", "/admin/berita"].some((h) => semua.includes(h)), semua);
+  }
   if (kode === "waka_sarpras") cek("waka_sarpras: tidak ada grup Kesiswaan/Jadwal/Perpustakaan sama sekali", !["Kesiswaan", "Jadwal", "Perpustakaan"].some((g) => judul.includes(g)), judul);
   for (const u of a.buka) cek(`${kode}: ${u} terbuka`, !(await bukaDitolak(page, u)), page.url());
   for (const u of a.tolak) cek(`${kode}: ${u} dibuka langsung → ditolak server`, await bukaDitolak(page, u), page.url());

@@ -1,6 +1,6 @@
 import { hariIniWIB } from "@/lib/admin/absensi";
 import { Sidebar, type GrupMenu } from "@/components/admin/Sidebar";
-import { berperan, NAMA_PERAN, punya, wajibLogin } from "@/lib/admin/auth";
+import { berperan, NAMA_PERAN, punya, wajibLogin, type Izin } from "@/lib/admin/auth";
 import { hitungBersama, pegawaiSaya as cariPegawaiSaya, statusDisiplin, tugasPerluNilai, tukarUntukSaya, type NamaHitungan } from "@/lib/admin/hitungan";
 import { redirect } from "next/navigation";
 import { keluar } from "../actions";
@@ -159,7 +159,10 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   // - grup bernama bidang (Kurikulum, Jadwal, Kesiswaan, Perpustakaan, Sarpras, Humas, …): HANYA pengelola bidang itu
   const mengajar = BOLEH.mengajar(akses);
   const kelolaSarpras = punya(akses, "sarpras.kelola") || punya(akses, "sarpras.lihat");
-  const kelolaHumas = BOLEH.dasborHumas(akses);
+  // bidang humas: pengelola humas & pengaduan umum. Penangan pengaduan RAHASIA saja (BK, Wakasek Kesiswaan) tidak masuk
+  // grup Humas — mereka mendapat grup "Pengaduan" sendiri (akses server tetap sama: BOLEH.dasborHumas, RLS pengaduan).
+  const kelolaHumas = ["humas.kelola", "humas.lihat", "pengaduan.kelola", "pengaduan.lihat", "pengaduan.metadata"].some((i) => punya(akses, i as Izin));
+  const tanganiRahasia = !kelolaHumas && punya(akses, "pengaduan.rahasia");
   const tamuBidang = punya(akses, "tamu.catat") || BOLEH.dataHumas(akses);
   const layanan: GrupMenu["item"] = [
     ...(pegawaiSaya ? [{ href: "/admin/presensi", label: "Presensi Saya" }] : []),
@@ -173,7 +176,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     ...(!(bina || perpusKelola) && pjPojok ? [{ href: "/admin/perpus/pojok", label: "Pojok Baca Saya" }] : []),
     ...(!punya(akses, "bk.rujukan") && pegawaiSaya ? [{ href: "/admin/rujukan-bk", label: "Rujukan BK Saya" }] : []),
     ...(!tamuBidang && pegawaiSaya ? [{ href: "/admin/buku-tamu", label: "Tamu untuk Saya", badge: tamuAda }] : []),
-    ...(!kelolaHumas && aduanAda > 0 ? [{ href: "/admin/pengaduan", label: "Pengaduan Ditugaskan", badge: aduanBaru }] : []),
+    ...(!kelolaHumas && !tanganiRahasia && aduanAda > 0 ? [{ href: "/admin/pengaduan", label: "Pengaduan Ditugaskan", badge: aduanBaru }] : []),
   ];
   grup.push({ judul: "Layanan saya", item: layanan });
   if (mengajar && pegawaiSaya)
@@ -230,6 +233,8 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   if (BOLEH.dataHumas(akses)) humas.push({ href: "/admin/kemitraan", label: "Kemitraan & MoU" }, { href: "/admin/survei", label: "Survei" }, { href: "/admin/kontak-media", label: "Kontak Media" });
   if (tamuBidang) humas.push({ href: "/admin/buku-tamu", label: "Buku Tamu", badge: tamuAda });
   if (humas.length) grup.push({ judul: "Humas", item: humas });
+  // penangan pengaduan rahasia: daftar pengaduan (RLS hanya memberi yang rahasia + yang ditugaskan kepadanya)
+  if (tanganiRahasia) grup.push({ judul: "Pengaduan", item: [{ href: "/admin/pengaduan", label: "Pengaduan Rahasia & Ditugaskan", badge: aduanBaru }] });
   // BK: hanya peran BK. Pimpinan melihat angka agregat (tanpa isi) dari grup Kesiswaan; log akses BK di Pengaturan.
   if (punya(akses, "bk.konseling"))
     grup.push({
